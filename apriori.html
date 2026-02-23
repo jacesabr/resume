@@ -1,0 +1,1442 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Apriori Algorithm — ML Analytics Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+        :root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        .topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}
+        .topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;} .topbar a:hover{color:var(--text);}
+        .topbar .sep{color:var(--border);} .topbar .pt{color:var(--text-dim);font-size:0.85rem;}
+        .algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+        .hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}
+        .hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;} .hero h1 span{color:var(--terra);}
+        .hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+        .content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}
+        .card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+        .card-h .dot.g{background:var(--green);} .card-h .dot.r{background:var(--red);} .card-h .dot.a{background:var(--amber);}
+        .card-h h2{font-size:0.95rem;font-weight:600;}
+        .card-b{padding:1.5rem;}
+        .eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+        .tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:640px){.tg,.tk-g,.fg{grid-template-columns:1fr!important;}}
+        .ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+        .sl,.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}
+        .ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;} .ti p strong{color:var(--text);}
+        .tr{display:flex;flex-wrap:wrap;gap:0.4rem;}
+        .tg-t{font-size:0.75rem;padding:0.22rem 0.6rem;border-radius:5px;font-weight:500;}
+        .tg-t.ok{background:var(--green-dim);color:var(--green);} .tg-t.fl{background:var(--red-dim);color:var(--red);}
+        .dl{display:inline-flex;align-items:center;gap:0.4rem;color:var(--terra);text-decoration:none;font-weight:500;font-size:0.88rem;padding:0.4rem 0.85rem;background:var(--terra-dim);border-radius:6px;} .dl:hover{background:var(--terra-dim2);}
+        .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.65rem;margin-top:1rem;}
+        .mc{background:var(--surface2);border-radius:8px;padding:0.75rem 0.9rem;}
+        .mc .l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;} .mc .v{font-size:1.05rem;font-weight:700;}
+        .tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+        .tw::-webkit-scrollbar{width:5px;} .tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+        table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+        thead{position:sticky;top:0;z-index:2;}
+        th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+        td{padding:0.45rem 0.9rem;border-bottom:1px solid var(--surface2);font-family:'JetBrains Mono',monospace;font-size:0.79rem;color:var(--text-dim);}
+        tr:hover td{background:var(--terra-dim);color:var(--text);}
+        .cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}
+        .ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}
+        .ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}
+        .ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;} .ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}
+        .cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}
+        .cs::-webkit-scrollbar{width:5px;height:5px;} .cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+        .cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+        .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cmt{color:#546274;font-style:italic;} .num{color:#79c0ff;}
+        .cc{position:relative;height:400px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem;}
+        .mr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.65rem;}
+        .mk{background:var(--surface2);border-radius:8px;padding:0.9rem 1rem;border-left:3px solid var(--terra);}
+        .mk.gd{border-left-color:var(--green);} .mk.bd{border-left-color:var(--red);} .mk.wn{border-left-color:var(--amber);}
+        .mk .ml{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;}
+        .mk .mv{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+        .an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}
+        .an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}
+        .an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}
+        .an.wn{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.15);}
+        .an h4{font-size:0.92rem;margin-bottom:0.5rem;} .an.gd h4{color:var(--green);} .an.bd h4{color:var(--red);} .an.wn h4{color:var(--amber);}
+        .an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;} .an ul{margin-left:1.1rem;margin-top:0.3rem;}
+        .sh{margin:1.4rem 0 0.7rem;font-size:0.9rem;font-weight:600;} .sh .dm{color:var(--text-dim);font-weight:400;font-size:0.8rem;}
+        .prose{} .prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;} .prose p:last-child{margin-bottom:0;} .prose strong{color:var(--text);}
+        .tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}
+        .tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;} .tk h4.u{color:var(--green);} .tk h4.av{color:var(--red);}
+        .tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:1rem 0;}
+        .fi{background:var(--surface2);border-radius:8px;padding:0.9rem;text-align:center;}
+        .fi .fn-l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:600;margin-bottom:0.2rem;}
+        .fi .fn-v{font-size:0.85rem;font-weight:600;color:var(--text);}
+        .foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+    
+/* TLDR blocks above code */
+.prose p { line-height: 1.8; }
+div[style*="green-bg"] { transition: all 0.2s ease; }
+div[style*="red-bg"] { transition: all 0.2s ease; }
+</style></head><body><div class="topbar"><a href="index.html">&larr; All Algorithms</a><span class="sep">/</span><span class="pt">Apriori Algorithm</span><span class="algo-badge">Association · #15</span></div><div class="hero"><h1>Apriori <span>Algorithm</span></h1><p class="sub">Frequent itemsets and association rules — the foundation of market basket analysis and recommendation systems.</p><p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">20 examples across 2 datasets · Individual code snippets · LaTeX equations</p></div><div class="content"><div class="card"><div class="card-h"><div class="dot"></div><h2>Mathematical Foundation</h2></div><div class="card-b"><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Support}(A) = \frac{|\{T:A\subseteq T\}|}{|T|}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Fraction of transactions containing itemset A</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Confidence}(A\Rightarrow B) = \frac{P(A\cap B)}{P(A)}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Probability of B given A was purchased</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Lift}(A\Rightarrow B) = \frac{P(A\cap B)}{P(A)\cdot P(B)}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Lift>1: positive association. Lift=1: independent.</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{If } A \text{ infrequent} \Rightarrow \text{all supersets infrequent}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Anti-monotone property prunes search space</p></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Glossary of Technical Terms</h2></div><div class="card-b"><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Transaction</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">A shopping basket / purchase event.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Itemset</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Set of items. {bread, milk} is a 2-itemset.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Support</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">How often itemset appears. 0.05 = 5% of transactions.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Confidence</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">P(right side | left side purchased).</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Lift</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">How much more likely vs random chance. 3.0 = 3× more likely.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">min_support</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Threshold for frequent items. Too low=noise. Typical: 0.01-0.05.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Candidate Generation</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Building (k+1)-itemsets from frequent k-itemsets.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Frequent Itemset</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Appears in ≥ min_support fraction of transactions.</span></div></div></div><div class="card"><div class="card-h"><div class="dot"></div><h2>All Datasets Used (2 unique)</h2></div><div class="card-b"><div style="columns:2;column-gap:1rem"><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">&#x1F4E6; Grocery Transactions (9,835 records, Itemsets)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/vijayuv/onlineretail" target="_blank">&#x1F4E6; Online Retail (541,909 records, Transactional)</a></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Cross-Dataset Performance</h2></div><div class="card-b"><div class="cc"><canvas id="chMain"></canvas></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#1 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Lift = >3.0 — Strong Association</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 3.5 means items are bought together 3.5× more often than expected by chance — a real pattern.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c1')">Copy</button></div><div class="cs"><pre id="c1"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Classic market basket — top rules</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#2 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Confidence = 0.72 — Strong Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.65 for bread→butter means 65% of bread buyers also buy butter.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c2')">Copy</button></div><div class="cs"><pre id="c2"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: UK retail cross-sell rules</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#3 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/sulmansarwar/transactions-from-a-bakery" target="_blank">📦 Bakery Transactions (20,507 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Bakery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Time</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Transaction</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Item</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Lift = 3.2 — Strong Association</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 3.5 means items are bought together 3.5× more often than expected by chance — a real pattern.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c3')">Copy</button></div><div class="cs"><pre id="c3"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'BreadBasket_DMS.csv'</span>)
+transactions = df.<span class="fn">groupby</span>(<span class="str">'Transaction'</span>)[<span class="str">'Item'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Coffee→bread pairings dominate bakery transactions</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#4 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/sulmansarwar/transactions-from-a-bakery" target="_blank">📦 Bakery Transactions (20,507 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Bakery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Time</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Transaction</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Item</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Rules = 34 — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c4')">Copy</button></div><div class="cs"><pre id="c4"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'BreadBasket_DMS.csv'</span>)
+transactions = df.<span class="fn">groupby</span>(<span class="str">'Transaction'</span>)[<span class="str">'Item'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Bakery rules at support=0.02 — clean patterns</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#5 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/sulmansarwar/transactions-from-a-bakery" target="_blank">📦 Bakery Transactions (20,507 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Bakery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Time</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Transaction</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Item</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Confidence = 0.52 — Strong Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c5')">Copy</button></div><div class="cs"><pre id="c5"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'BreadBasket_DMS.csv'</span>)
+transactions = df.<span class="fn">groupby</span>(<span class="str">'Transaction'</span>)[<span class="str">'Item'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Toast→Coffee — strong morning pairing</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#6 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/c/instacart-market-basket-analysis" target="_blank">📦 Instacart Market Baskets (3,214,874 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Instacart Market Baskets to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">order_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">add_to_cart_order</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">reordered</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_name</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">aisle</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">department</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Lift = 4.1 — Strong Association</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 3.5 means items are bought together 3.5× more often than expected by chance — a real pattern.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c6')">Copy</button></div><div class="cs"><pre id="c6"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'order_products__train.csv'</span>)
+products = pd.<span class="fn">read_csv</span>(<span class="str">'products.csv'</span>)
+df = df.<span class="fn">merge</span>(products[[<span class="str">'product_id'</span>,<span class="str">'product_name'</span>]], on=<span class="str">'product_id'</span>)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Organic produce clusters — organic buyers buy organic</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#7 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/c/instacart-market-basket-analysis" target="_blank">📦 Instacart Market Baskets (3,214,874 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Instacart Market Baskets to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">order_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">add_to_cart_order</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">reordered</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_name</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">aisle</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">department</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Rules = 127 — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c7')">Copy</button></div><div class="cs"><pre id="c7"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'order_products__train.csv'</span>)
+products = pd.<span class="fn">read_csv</span>(<span class="str">'products.csv'</span>)
+df = df.<span class="fn">merge</span>(products[[<span class="str">'product_id'</span>,<span class="str">'product_name'</span>]], on=<span class="str">'product_id'</span>)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: 3.2M orders reveal aisle-level cross-sell patterns</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#8 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/c/instacart-market-basket-analysis" target="_blank">📦 Instacart Market Baskets (3,214,874 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Instacart Market Baskets to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">order_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_id</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">add_to_cart_order</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">reordered</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">product_name</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">aisle</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">department</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:rgba(184,134,11,0.06);border-radius:8px;border:1px solid rgba(184,134,11,0.15);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Confidence = 0.38 — Moderate Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c8')">Copy</button></div><div class="cs"><pre id="c8"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'order_products__train.csv'</span>)
+products = pd.<span class="fn">read_csv</span>(<span class="str">'products.csv'</span>)
+df = df.<span class="fn">merge</span>(products[[<span class="str">'product_id'</span>,<span class="str">'product_name'</span>]], on=<span class="str">'product_id'</span>)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Banana→strawberry in fruit aisle</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#9 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:rgba(184,134,11,0.06);border-radius:8px;border:1px solid rgba(184,134,11,0.15);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Confidence = 0.41 — Moderate Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c9')">Copy</button></div><div class="cs"><pre id="c9"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Yogurt → whole milk</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#10 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Confidence = 0.67 — Strong Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c10')">Copy</button></div><div class="cs"><pre id="c10"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: Birthday card → wrapping paper</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>#11 &#x2717; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Support threshold too low</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Setting min_support=0.001 mines thousands of spurious rules. Most are coincidence, not causation. Raise support until you get 20-50 actionable rules.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--red-bg);border-radius:8px;border:1px solid rgba(192,57,43,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">❌ Rules = 10,000+ — Poor Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c11')">Copy</button></div><div class="cs"><pre id="c11"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># ⚠️ Setting min_support=0.001 is TOO LOW — captures noise</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.001</span>, use_colnames=<span class="kw">True</span>)
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.1</span>)
+<span class="kw">print</span>(<span class="str">f'\n⚠️ Found {len(rules):,} rules — most are NOISE'</span>)
+<span class="kw">print</span>(<span class="str">f'With min_support=0.02, we get ~30-50 actionable rules'</span>)
+<span class="kw">print</span>(<span class="str">f'With min_support=0.001, we get thousands of spurious correlations'</span>)
+
+<span class="cmt"># ⚠️ VERDICT: FAIL: min_support=0.001 — noise explosion</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>#12 &#x2717; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Sanity check</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Shuffling the data destroys all real patterns. If your model still finds 'rules', they're noise. Always test against randomized data as a baseline.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--red-bg);border-radius:8px;border:1px solid rgba(192,57,43,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">❌ Lift = ~1.0 — Poor Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 1.0 means items are bought together at exactly the rate expected by chance — no association.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c12')">Copy</button></div><div class="cs"><pre id="c12"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="cmt"># ⚠️ Shuffle items within transactions to destroy real patterns</span>
+rng = np.random.<span class="fn">RandomState</span>(<span class="num">42</span>)
+<span class="kw">for</span> t <span class="kw">in</span> transactions:
+    rng.<span class="fn">shuffle</span>(t)
+basket_shuffled = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+freq = <span class="fn">apriori</span>(basket_shuffled, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'lift'</span>, min_threshold=<span class="num">1.5</span>)
+<span class="kw">print</span>(<span class="str">f'\n⚠️ After shuffle: {len(rules)} rules with lift>1.5'</span>)
+<span class="kw">print</span>(<span class="str">f'All lift values ≈ 1.0 — no real patterns exist in randomized data'</span>)
+
+<span class="cmt"># ⚠️ VERDICT: FAIL: random shuffle — no patterns</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#13 &#x2B50; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Lift = >3.0 — Strong Association</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 3.5 means items are bought together 3.5× more often than expected by chance — a real pattern.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c13')">Copy</button></div><div class="cs"><pre id="c13"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: BEST: grocery is THE canonical Apriori dataset</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#14 &#x2B50; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Confidence = 0.72 — Strong Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.65 for bread→butter means 65% of bread buyers also buy butter.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c14')">Copy</button></div><div class="cs"><pre id="c14"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: BEST: UK retail for e-commerce rules</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#15 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Rules = 42 — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c15')">Copy</button></div><div class="cs"><pre id="c15"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: PRACTICAL: 42 actionable rules from 9,835 txns</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#16 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Rules = 87 — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c16')">Copy</button></div><div class="cs"><pre id="c16"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: PRACTICAL: 87 cross-sell rules</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#17 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Support = 0.026 — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c17')">Copy</button></div><div class="cs"><pre id="c17"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'support'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: INSIGHT: milk+yogurt most frequent pair</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#18 &#x2713; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Lift = 4.1 — Strong Association</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Lift measures how much more likely items are bought together vs independently</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Lift = 3.5 means items are bought together 3.5× more often than expected by chance — a real pattern.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem"><1.0 = negative association (avoid pairing), 1.0 = random, >1.0 = positive association.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c18')">Copy</button></div><div class="cs"><pre id="c18"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'lift'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: INSIGHT: gift patterns (alarm+birthday)</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#19 &#x2713; Grocery Transactions</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/heeraldedhia/groceries-dataset" target="_blank">📦 Grocery Transactions (9,835 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Grocery Transactions to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Member_number</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Date</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">itemDescription</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:rgba(184,134,11,0.06);border-radius:8px;border:1px solid rgba(184,134,11,0.15);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Confidence = 0.41 — Moderate Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c19')">Copy</button></div><div class="cs"><pre id="c19"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>)
+transactions = df.<span class="fn">groupby</span>([<span class="str">'Member_number'</span>,<span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(list).<span class="fn">tolist</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.02</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: MODERATE: yogurt→milk 41% co-purchase</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#20 &#x2B50; Online Retail</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/carrie1/ecommerce-data" target="_blank">📦 Online Retail (UK) (541,909 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing apriori on Online Retail (UK) to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceNo</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">StockCode</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Description</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Quantity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InvoiceDate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">UnitPrice</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">CustomerID</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Country</span>
+
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Confidence = 0.67 — Strong Rule</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">Confidence is the probability of buying item B given that item A was already purchased</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">Confidence = 0.05 means only 5% of buyers complete the pair — too rare for actionable rules.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">0-1.0. Above 0.30 is usually considered actionable for store layout or recommendations.</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c20')">Copy</button></div><div class="cs"><pre id="c20"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> TransactionEncoder
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_excel</span>(<span class="str">'Online Retail.xlsx'</span>)
+df = df[df[<span class="str">'Quantity'</span>] > <span class="num">0</span>].<span class="fn">dropna</span>(subset=[<span class="str">'InvoiceNo'</span>,<span class="str">'Description'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Total transactions: {len(transactions):,}'</span>)
+<span class="kw">print</span>(<span class="str">f'Average items per transaction: {sum(len(t) for t in transactions)/len(transactions):.1f}'</span>)
+<span class="kw">print</span>(<span class="str">f'\nSample transactions:'</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(transactions))):
+    <span class="kw">print</span>(<span class="str">f'  Transaction {i+1}: {transactions[i][:6]}'</span>)
+
+<span class="cmt"># Find most popular items</span>
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+all_items = [item <span class="kw">for</span> t <span class="kw">in</span> transactions <span class="kw">for</span> item <span class="kw">in</span> t]
+top_items = <span class="fn">Counter</span>(all_items).<span class="fn">most_common</span>(<span class="num">10</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 10 most purchased items:'</span>)
+<span class="kw">for</span> item, count <span class="kw">in</span> top_items:
+    <span class="kw">print</span>(<span class="str">f'  {item:30s}: {count:5d} times ({count/len(transactions)*100:.1f}% of transactions)'</span>)
+
+<span class="cmt"># Convert to binary matrix</span>
+te = <span class="fn">TransactionEncoder</span>()
+basket = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(transactions), columns=te.columns_)
+<span class="kw">print</span>(<span class="str">f'\nBinary matrix: {basket.shape[0]} transactions × {basket.shape[1]} unique items'</span>)
+
+<span class="cmt"># --- MINE ASSOCIATION RULES ---</span>
+freq = <span class="fn">apriori</span>(basket, min_support=<span class="num">0.03</span>, use_colnames=<span class="kw">True</span>)
+<span class="kw">print</span>(<span class="str">f'\nFrequent itemsets found: {len(freq)}'</span>)
+
+rules = <span class="fn">association_rules</span>(freq, metric=<span class="str">'confidence'</span>, min_threshold=<span class="num">0.3</span>)
+<span class="kw">print</span>(<span class="str">f'Association rules found: {len(rules)}'</span>)
+
+<span class="cmt"># --- RESULTS: Top rules ---</span>
+top = rules.<span class="fn">sort_values</span>(<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">8</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop rules by {mname.lower() if mname.lower() in (__STR0__,__STR1__,__STR2__) else __STR3__}:'</span>)
+<span class="kw">for</span> _, row <span class="kw">in</span> top.<span class="fn">iterrows</span>():
+    ant = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'antecedents'</span>]))
+    con = <span class="str">', '</span>.<span class="fn">join</span>(<span class="fn">list</span>(row[<span class="str">'consequents'</span>]))
+    <span class="kw">print</span>(<span class="str">f'  IF buys [{ant}] → THEN also buys [{con}]'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Confidence: {row[__STR0__]:.1%} (of people who buy A, this % also buy B)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Lift: {row[__STR0__]:.2f}× (how much MORE likely than random chance)'</span>)
+    <span class="kw">print</span>(<span class="str">f'    Support: {row[__STR0__]:.3f} ({row[__STR1__]*100:.1f}% of all transactions)'</span>)
+    <span class="kw">print</span>()
+
+<span class="cmt"># --- METRIC EXPLANATIONS ---</span>
+<span class="cmt"># SUPPORT: How often items appear together. Support=0.05 means in 5% of transactions.</span>
+<span class="cmt"># CONFIDENCE: P(B|A) — if someone buys A, probability they also buy B.</span>
+<span class="cmt">#   Confidence=0.6 means 60% of A-buyers also buy B.</span>
+<span class="cmt"># LIFT: Confidence / P(B). Lift>1 means A increases likelihood of B.</span>
+<span class="cmt">#   Lift=3.0 means buying A makes buying B 3× more likely than random.</span>
+<span class="cmt">#   Lift=1.0 means no association. Lift<1.0 means negative association.</span>
+
+<span class="cmt"># ✓ VERDICT: STRONG: birthday→wrapping 67%</span></pre></div></div></div></div><div class="card" style="border:2px solid var(--terra-light)"><div class="card-h"><div class="dot a"></div><h2>🧠 Deep Learning Connection</h2></div><div class="card-b"><div class="prose"><p><strong>Graph neural networks on product co-purchase graphs learn associations beyond pairwise rules. Collaborative filtering with embeddings captures latent purchase patterns.</strong></p><p style="margin-top:.5rem;color:var(--text-dim)"><em>Neural recommendation systems (NCF, DLRM) have largely replaced association rules in production. But Apriori remains valuable for interpretable market basket insights.</em></div></div></div><div class="card" style="border:2px solid var(--green)"><div class="card-h"><div class="dot a"></div><h2>🚀 Advanced AI Applications</h2></div><div class="card-b"><div class="prose"><p><strong>Production applications using this algorithm + deep learning:</strong></p><p style="margin-top:.5rem;color:var(--text-dim)">◇ <strong>Computer Vision</strong> — CNNs, detection, segmentation<br>◇ <strong>NLP / LLMs</strong> — sentiment, NER, fine-tuning transformers<br>◇ <strong>Reinforcement Learning</strong> — Q-learning, policy gradient, robotics<br>◇ <strong>Generative AI</strong> — GANs, diffusion, prompt engineering<br>◇ <strong>Recommender Systems</strong> — collaborative, content-based, hybrid<br>◇ <strong>Time-Series</strong> — LSTM, Transformer, Prophet<br>◇ <strong>MLOps</strong> — Docker, FastAPI, monitoring, A/B testing</p></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Key Takeaways</h2></div><div class="card-b"><div class="tk-g"><div class="tk"><h4 class="u">&#x2705; Best Use Cases</h4><p>&#x2705; Market basket analysis</p><p>&#x2705; Cross-sell recommendations</p><p>&#x2705; Co-occurrence discovery</p><p>&#x2705; Binary transaction data</p></div><div class="tk"><h4 class="av">&#x274C; When to Avoid</h4><p>&#x274C; Continuous features</p><p>&#x274C; Very low min_support</p><p>&#x274C; Dense data</p><p>&#x274C; Real-time (pre-compute rules)</p></div></div></div></div></div><div class="foot"><p>ML Analytics Platform · 20 examples, 2 datasets</p></div><script>new Chart(document.getElementById('chMain'),{type:'bar',data:{labels:["Grocery Tran", "Online Retai"],datasets:[{label:'Lift',data:[3.0, 72.0],backgroundColor:['rgba(184,134,11,0.5)','rgba(193,95,60,0.5)'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Cross-Dataset Performance',color:'#2D2B28',font:{size:13,weight:'600'}}},scales:{x:{ticks:{color:'#6B6861',maxRotation:45,font:{size:10}}},y:{title:{display:true,text:'Lift',color:'#6B6861'},ticks:{color:'#6B6861'},grid:{color:'#EEEDE8'}}}}});
+function cpCode(id){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){var b=document.getElementById(id).closest(".cw").querySelector(".cb");b.textContent="Copied \u2713";setTimeout(function(){b.textContent="Copy"},2000);});}</script></body></html>

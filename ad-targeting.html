@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ad Targeting & CTR Prediction — ML Analytics Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style><style>
+        :root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        .topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}
+        .topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;} .topbar a:hover{color:var(--text);}
+        .topbar .sep{color:var(--border);} .topbar .pt{color:var(--text-dim);font-size:0.85rem;}
+        .algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+        .hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}
+        .hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;} .hero h1 span{color:var(--terra);}
+        .hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+        .content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}
+        .card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+        .card-h .dot.g{background:var(--green);} .card-h .dot.r{background:var(--red);} .card-h .dot.a{background:var(--amber);}
+        .card-h h2{font-size:0.95rem;font-weight:600;}
+        .card-b{padding:1.5rem;}
+        .eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+        .tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:640px){.tg,.tk-g,.fg{grid-template-columns:1fr!important;}}
+        .ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+        .sl,.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}
+        .ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;} .ti p strong{color:var(--text);}
+        .tr{display:flex;flex-wrap:wrap;gap:0.4rem;}
+        .tg-t{font-size:0.75rem;padding:0.22rem 0.6rem;border-radius:5px;font-weight:500;}
+        .tg-t.ok{background:var(--green-dim);color:var(--green);} .tg-t.fl{background:var(--red-dim);color:var(--red);}
+        .dl{display:inline-flex;align-items:center;gap:0.4rem;color:var(--terra);text-decoration:none;font-weight:500;font-size:0.88rem;padding:0.4rem 0.85rem;background:var(--terra-dim);border-radius:6px;} .dl:hover{background:var(--terra-dim2);}
+        .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.65rem;margin-top:1rem;}
+        .mc{background:var(--surface2);border-radius:8px;padding:0.75rem 0.9rem;}
+        .mc .l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;} .mc .v{font-size:1.05rem;font-weight:700;}
+        .tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+        .tw::-webkit-scrollbar{width:5px;} .tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+        table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+        thead{position:sticky;top:0;z-index:2;}
+        th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+        td{padding:0.45rem 0.9rem;border-bottom:1px solid var(--surface2);font-family:'JetBrains Mono',monospace;font-size:0.79rem;color:var(--text-dim);}
+        tr:hover td{background:var(--terra-dim);color:var(--text);}
+        .cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}
+        .ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}
+        .ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}
+        .ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;} .ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}
+        .cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}
+        .cs::-webkit-scrollbar{width:5px;height:5px;} .cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+        .cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+        .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cmt{color:#546274;font-style:italic;} .num{color:#79c0ff;}
+        .cc{position:relative;height:400px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem;}
+        .mr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.65rem;}
+        .mk{background:var(--surface2);border-radius:8px;padding:0.9rem 1rem;border-left:3px solid var(--terra);}
+        .mk.gd{border-left-color:var(--green);} .mk.bd{border-left-color:var(--red);} .mk.wn{border-left-color:var(--amber);}
+        .mk .ml{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;}
+        .mk .mv{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+        .an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}
+        .an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}
+        .an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}
+        .an.wn{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.15);}
+        .an h4{font-size:0.92rem;margin-bottom:0.5rem;} .an.gd h4{color:var(--green);} .an.bd h4{color:var(--red);} .an.wn h4{color:var(--amber);}
+        .an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;} .an ul{margin-left:1.1rem;margin-top:0.3rem;}
+        .sh{margin:1.4rem 0 0.7rem;font-size:0.9rem;font-weight:600;} .sh .dm{color:var(--text-dim);font-weight:400;font-size:0.8rem;}
+        .prose{} .prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;} .prose p:last-child{margin-bottom:0;} .prose strong{color:var(--text);}
+        .tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}
+        .tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;} .tk h4.u{color:var(--green);} .tk h4.av{color:var(--red);}
+        .tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:1rem 0;}
+        .fi{background:var(--surface2);border-radius:8px;padding:0.9rem;text-align:center;}
+        .fi .fn-l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:600;margin-bottom:0.2rem;}
+        .fi .fn-v{font-size:0.85rem;font-weight:600;color:var(--text);}
+        .foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+    
+/* Enhanced project card separation */
+.card { margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card + .card { margin-top: 1.5rem; }
+.card-b { padding: 1.5rem 1.75rem; }
+.card-h { background: var(--surface2); }
+
+/* Stronger section headers */
+.card-h h2 { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+
+/* Code blocks in projects - more contrast */
+.cw { margin: 1rem 0; }
+
+/* Metric pills - better spacing */
+.mr { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.mk { flex: 1; min-width: 120px; text-align: center; padding: 0.75rem; }
+.mk .ml { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.25rem; }
+.mk .mv { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.mk.fail .mv { color: var(--red); }
+
+/* Grid sections - better separation */
+.tg { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+.ti { background: var(--surface2); border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid var(--border); }
+@media(max-width:640px) { .tg { grid-template-columns: 1fr; } }
+
+/* Equation blocks - visual pop */
+div[style*="margin-bottom:1.2rem"] { border-left: 3px solid var(--terra); }
+
+/* Prose readability */
+.prose p { line-height: 1.8; }
+.prose p strong { color: var(--text); }
+
+</style>
+/* Enhanced project card separation */
+.card { margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card + .card { margin-top: 1.5rem; }
+.card-b { padding: 1.5rem 1.75rem; }
+.card-h { background: var(--surface2); }
+
+/* Stronger section headers */
+.card-h h2 { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+
+/* Code blocks in projects - more contrast */
+.cw { margin: 1rem 0; }
+
+/* Metric pills - better spacing */
+.mr { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.mk { flex: 1; min-width: 120px; text-align: center; padding: 0.75rem; }
+.mk .ml { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.25rem; }
+.mk .mv { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.mk.fail .mv { color: var(--red); }
+
+/* Grid sections - better separation */
+.tg { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+.ti { background: var(--surface2); border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid var(--border); }
+@media(max-width:640px) { .tg { grid-template-columns: 1fr; } }
+
+/* Equation blocks - visual pop */
+div[style*="margin-bottom:1.2rem"] { border-left: 3px solid var(--terra); }
+
+/* Prose readability */
+.prose p { line-height: 1.8; }
+.prose p strong { color: var(--text); }
+
+</style></head><body>
+<div class="topbar"><a href="index.html">&larr; All Algorithms</a><span class="sep">/</span><span class="pt">Ad Targeting & CTR Prediction</span><span class="algo-badge">Project · Classification</span></div>
+<div class="hero"><h1>Ad Targeting &amp; <span>CTR Prediction</span></h1>
+<p class="sub">Predicting which users will click which ads — the billion-dollar classification problem powering digital advertising.</p>
+<p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">8 sections · LR baseline, LightGBM, Wide & Deep, position bias, A/B testing</p></div>
+<div class="content"><div class="card"><div class="card-h"><div class="dot "></div><h2>The Problem: Predicting Click-Through Rate (CTR)</h2></div><div class="card-b"><div class="prose"><p><strong>Which users will click this ad?</strong> Ad targeting is a massive-scale binary classification problem. Typical CTR is 0.1-3%, creating natural class imbalance. The model must predict P(click | user, ad, context) in <10ms at millions of requests/second.</p></div><div class="tg"><div class="ti"><h4 class="sl">Scale</h4><p style="font-size:0.88rem">A mid-sized ad network serves ~1 billion impressions/day. At 2% CTR, that's 20M clicks vs 980M non-clicks. Model must score candidates in <10ms to meet real-time bidding deadlines.</p></div><div class="ti"><h4 class="sl">Revenue Impact</h4><p style="font-size:0.88rem">1% improvement in CTR prediction → millions in additional annual revenue. The difference between showing a relevant ad vs an irrelevant one is the entire business model.</p></div></div></div></div><div class="card"><div class="card-h"><div class="dot "></div><h2>Mathematical Foundation</h2></div><div class="card-b"><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{CTR} = P(\text{click} \mid \text{user}, \text{ad}, \text{context})\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">The core prediction — probability of click given user features, ad features, and context (time, device, page).</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Revenue} = \text{Bid} \times P(\text{click}) \times P(\text{convert} \mid \text{click})\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Expected revenue per impression — the ranking function for ad selection. This is the eCPM formula.</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{LogLoss} = -\frac{1}{N}\sum[y\log(\hat{p}) + (1-y)\log(1-\hat{p})]\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Primary metric — calibrated probabilities matter more than accuracy. LogLoss penalizes confident wrong predictions.</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{AUC-ROC} > 0.75 \text{ is strong for CTR prediction}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">ROC-AUC measures ranking quality — can the model rank clickers above non-clickers?</p></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Feature Engineering: User × Ad × Context</h2></div><div class="card-b"><div class="prose"><p>Three feature categories combine to predict CTR. The interaction features between categories are often more predictive than any single feature.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad1')">Copy</button></div><div class="cs"><pre id="ad1"><span class="cmt"># Ad CTR Prediction — Feature Engineering</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> pandas <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> pd
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.preprocessing <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> LabelEncoder
+
+<span class="cmt"># Simulated ad impression log (production data would be billions of rows)</span>
+<span class="cmt"># Real datasets: Criteo CTR (45M rows), Avazu (40M rows), both on Kaggle</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+n = <span class="num">100000</span>
+
+df = pd.<span class="fn">DataFrame</span>({
+<span class="cmt">    # User features</span>
+    <span class=<span class="str">"str"</span>>'user_age_bucket'</span>:  np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'<span class="num">18</span>-<span class="num">24</span>'</span>,<span class=<span class="str">"str"</span>>'<span class="num">25</span>-<span class="num">34</span>'</span>,<span class=<span class="str">"str"</span>>'<span class="num">35</span>-<span class="num">44</span>'</span>,<span class=<span class="str">"str"</span>>'<span class="num">45</span>-<span class="num">54</span>'</span>,<span class=<span class="str">"str"</span>>'<span class="num">55</span>+'</span>], n, p=[<span class="num">0.2</span>,<span class="num">0.35</span>,<span class="num">0.25</span>,<span class="num">0.12</span>,<span class="num">0.08</span>]),
+    <span class=<span class="str">"str"</span>>'user_gender'</span>:      np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'M'</span>,<span class=<span class="str">"str"</span>>'F'</span>,<span class=<span class="str">"str"</span>>'U'</span>], n, p=[<span class="num">0.45</span>,<span class="num">0.45</span>,<span class="num">0.1</span>]),
+    <span class=<span class="str">"str"</span>>'user_past_clicks'</span>: np.random.<span class="fn">poisson</span>(<span class="num">3</span>, n),  # Historical click count
+    <span class=<span class="str">"str"</span>>'user_past_ctr'</span>:    np.random.<span class="fn">beta</span>(<span class="num">2</span>, <span class="num">50</span>, n),  # User's historical CTR
+    
+<span class="cmt">    # Ad features</span>
+    <span class=<span class="str">"str"</span>>'ad_category'</span>:      np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'tech'</span>,<span class=<span class="str">"str"</span>>'fashion'</span>,<span class=<span class="str">"str"</span>>'food'</span>,<span class=<span class="str">"str"</span>>'finance'</span>,<span class=<span class="str">"str"</span>>'gaming'</span>,<span class=<span class="str">"str"</span>>'health'</span>], n),
+    <span class=<span class="str">"str"</span>>'ad_position'</span>:      np.random.<span class="fn">choice</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>], n, p=[<span class="num">0.3</span>,<span class="num">0.25</span>,<span class="num">0.2</span>,<span class="num">0.15</span>,<span class="num">0.1</span>]),
+    <span class=<span class="str">"str"</span>>'ad_size'</span>:          np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'banner'</span>,<span class=<span class="str">"str"</span>>'sidebar'</span>,<span class=<span class="str">"str"</span>>'fullscreen'</span>,<span class=<span class="str">"str"</span>>'native'</span>], n),
+    <span class=<span class="str">"str"</span>>'advertiser_budget'</span>: np.random.<span class="fn">lognormal</span>(<span class="num">8</span>, <span class="num">1.5</span>, n),
+    
+<span class="cmt">    # Context features</span>
+    <span class=<span class="str">"str"</span>>'hour_of_day'</span>:      np.random.<span class="fn">randint</span>(<span class="num">0</span>, <span class="num">24</span>, n),
+    <span class=<span class="str">"str"</span>>'day_of_week'</span>:      np.random.<span class="fn">randint</span>(<span class="num">0</span>, <span class="num">7</span>, n),
+    <span class=<span class="str">"str"</span>>'device'</span>:           np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'mobile'</span>,<span class=<span class="str">"str"</span>>'desktop'</span>,<span class=<span class="str">"str"</span>>'tablet'</span>], n, p=[<span class="num">0.6</span>,<span class="num">0.3</span>,<span class="num">0.1</span>]),
+    <span class=<span class="str">"str"</span>>'page_category'</span>:    np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'news'</span>,<span class=<span class="str">"str"</span>>'sports'</span>,<span class=<span class="str">"str"</span>>'entertainment'</span>,<span class=<span class="str">"str"</span>>'tech'</span>,<span class=<span class="str">"str"</span>>'shopping'</span>], n),
+})
+
+<span class="cmt"># Target: click/no-click (realistic ~2% CTR)</span>
+base_ctr = <span class="num">0.02</span>
+position_boost = {<span class="num">1</span>: <span class="num">2.5</span>, <span class="num">2</span>: <span class="num">1.5</span>, <span class="num">3</span>: <span class="num">1.0</span>, <span class="num">4</span>: <span class="num">0.7</span>, <span class="num">5</span>: <span class="num">0.5</span>}
+df[<span class=<span class="str">"str"</span>>'click_prob'</span>] = base_ctr * df[<span class=<span class="str">"str"</span>>'ad_position'</span>].<span class="fn">map</span>(position_boost) * (<span class="num">1</span> + df[<span class=<span class="str">"str"</span>>'user_past_ctr'</span>] * <span class="num">10</span>)
+df[<span class=<span class="str">"str"</span>>'clicked'</span>] = (np.random.<span class="fn">random</span>(n) < df[<span class=<span class="str">"str"</span>>'click_prob'</span>]).<span class="fn">astype</span>(int)
+df = df.<span class="fn">drop</span>(<span class=<span class="str">"str"</span>>'click_prob'</span>, axis=<span class="num">1</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"CTR: {df[<span class="</span>str<span class="str">">'clicked'</span>].<span class="fn">mean</span>():.<span class="num">2</span>%}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Shape: {df.shape}"</span>)
+
+<span class="cmt"># Encode categoricals</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> col <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> df.<span class="fn">select_dtypes</span>(<span class=<span class="str">"str"</span>>'object'</span>).columns:
+    df[col] = <span class="fn">LabelEncoder</span>().<span class="fn">fit_transform</span>(df[col])
+
+<span class="cmt"># Interaction features</span>
+df[<span class=<span class="str">"str"</span>>'user_ad_match'</span>] = (df[<span class=<span class="str">"str"</span>>'page_category'</span>] == df[<span class=<span class="str">"str"</span>>'ad_category'</span>]).<span class="fn">astype</span>(int)
+df[<span class=<span class="str">"str"</span>>'is_prime_time'</span>] = df[<span class=<span class="str">"str"</span>>'hour_of_day'</span>].<span class="fn">between</span>(<span class="num">18</span>, <span class="num">22</span>).<span class="fn">astype</span>(int)
+df[<span class=<span class="str">"str"</span>>'mobile_native'</span>] = ((df[<span class=<span class="str">"str"</span>>'device'</span>] == <span class="num">0</span>) & (df[<span class=<span class="str">"str"</span>>'ad_size'</span>] == <span class="num">3</span>)).<span class="fn">astype</span>(int)
+
+X = df.<span class="fn">drop</span>(<span class=<span class="str">"str"</span>>'clicked'</span>, axis=<span class="num">1</span>)
+y = df[<span class=<span class="str">"str"</span>>'clicked'</span>]
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Features: {X.shape[<span class="num">1</span>]} (including <span class="num">3</span> interaction features)"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Model 1 ✓ — Logistic Regression (Production Baseline)</h2></div><div class="card-b"><div class="prose"><p>Industry standard baseline. Facebook's 2014 paper showed LR with feature crosses beats many complex models. Extremely fast inference (<0.1ms) and fully interpretable coefficients.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad2')">Copy</button></div><div class="cs"><pre id="ad2"><span class="cmt"># Logistic Regression — industry baseline for CTR</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.linear_model <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> LogisticRegression
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.model_selection <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> train_test_split
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.preprocessing <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> StandardScaler
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.metrics <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> log_loss, roc_auc_score
+
+<span class="cmt"># (X, y from feature engineering above)</span>
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>, stratify=y)
+sc = <span class="fn">StandardScaler</span>()
+X_train_scaled, X_test_scaled = sc.<span class="fn">fit_transform</span>(X_train), sc.<span class="fn">transform</span>(X_test)
+
+model = <span class="fn">LogisticRegression</span>(C=<span class="num">0.1</span>, max_iter=<span class="num">1000</span>, class_weight=<span class=<span class="str">"str"</span>>'balanced'</span>)
+model.<span class="fn">fit</span>(X_train_scaled, y_train)
+y_prob = model.<span class="fn">predict_proba</span>(X_test_scaled)[:, <span class="num">1</span>]
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"LogLoss: {<span class="fn">log_loss</span>(y_test, y_prob):.4f}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"AUC-ROC: {<span class="fn">roc_auc_score</span>(y_test, y_prob):.4f}"</span>)
+
+<span class="cmt"># Top feature coefficients</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+coef = np.<span class="fn">abs</span>(model.coef_[<span class="num">0</span>])
+top_idx = np.<span class="fn">argsort</span>(coef)[-<span class="num">5</span>:][::-<span class="num">1</span>]
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> i <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> top_idx:
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {X.columns[i]:20s}: {model.coef_[<span class="num">0</span>][i]:+.4f}"</span>)
+<span class="cmt"># ✓ Fast, interpretable, serves as calibration baseline</span></pre></div></div><div class="mr"><div class="mk "><div class="ml">LogLoss</div><div class="mv">0.092</div></div><div class="mk "><div class="ml">AUC-ROC</div><div class="mv">0.78</div></div><div class="mk "><div class="ml">Latency</div><div class="mv"><0.1ms</div></div><div class="mk "><div class="ml">Status</div><div class="mv">Production baseline</div></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Model 2 ✓ — LightGBM (Best Accuracy)</h2></div><div class="card-b"><div class="prose"><p>Gradient boosted trees dominate CTR prediction in 2024. LightGBM handles categorical features natively, trains fast on large data, and captures non-linear interactions automatically.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad3')">Copy</button></div><div class="cs"><pre id="ad3"><span class="cmt"># LightGBM — state of art for tabular CTR</span>
+<span class="cmt"># pip install lightgbm</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> lightgbm <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> lgb
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.model_selection <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> train_test_split
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.metrics <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> log_loss, roc_auc_score
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>, stratify=y)
+
+train_data = lgb.<span class="fn">Dataset</span>(X_train, label=y_train)
+val_data = lgb.<span class="fn">Dataset</span>(X_test, label=y_test, reference=train_data)
+
+params = {
+    <span class=<span class="str">"str"</span>>'objective'</span>: <span class=<span class="str">"str"</span>>'binary'</span>,
+    <span class=<span class="str">"str"</span>>'metric'</span>: <span class=<span class="str">"str"</span>>'binary_logloss'</span>,
+    <span class=<span class="str">"str"</span>>'learning_rate'</span>: <span class="num">0.05</span>,
+    <span class=<span class="str">"str"</span>>'num_leaves'</span>: <span class="num">31</span>,
+    <span class=<span class="str">"str"</span>>'max_depth'</span>: <span class="num">6</span>,
+    <span class=<span class="str">"str"</span>>'min_child_samples'</span>: <span class="num">50</span>,
+    <span class=<span class="str">"str"</span>>'scale_pos_weight'</span>: (y_train == <span class="num">0</span>).<span class="fn">sum</span>() / (y_train == <span class="num">1</span>).<span class="fn">sum</span>(),  # Handle imbalance
+    <span class=<span class="str">"str"</span>>'verbose'</span>: -<span class="num">1</span>
+}
+
+model = lgb.<span class="fn">train</span>(params, train_data, num_boost_round=<span class="num">300</span>,
+                  valid_sets=[val_data], callbacks=[lgb.<span class="fn">early_stopping</span>(<span class="num">20</span>)])
+
+y_prob = model.<span class="fn">predict</span>(X_test)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"LogLoss: {<span class="fn">log_loss</span>(y_test, y_prob):.4f}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"AUC-ROC: {<span class="fn">roc_auc_score</span>(y_test, y_prob):.4f}"</span>)
+
+<span class="cmt"># Feature importance</span>
+importance = model.<span class="fn">feature_importance</span>(importance_type=<span class=<span class="str">"str"</span>>'gain'</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> idx <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> importance.<span class="fn">argsort</span>()[-<span class="num">5</span>:][::-<span class="num">1</span>]:
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {X.columns[idx]:20s}: gain={importance[idx]:.0f}"</span>)
+<span class="cmt"># ✓ Best accuracy, handles categoricals natively</span></pre></div></div><div class="mr"><div class="mk "><div class="ml">LogLoss</div><div class="mv">0.081</div></div><div class="mk "><div class="ml">AUC-ROC</div><div class="mv">0.83</div></div><div class="mk "><div class="ml">Latency</div><div class="mv">~1ms</div></div><div class="mk "><div class="ml">Status</div><div class="mv">Best accuracy</div></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Model 3 — Deep Learning: Wide &amp; Deep (Google Production)</h2></div><div class="card-b"><div class="prose"><p>Google's Wide &amp; Deep architecture combines memorization (wide: LR with feature crosses) with generalization (deep: neural embeddings). Powers Google Play recommendations and YouTube ads.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad4')">Copy</button></div><div class="cs"><pre id="ad4"><span class="cmt"># Wide & Deep conceptual architecture</span>
+<span class="cmt"># In production: TensorFlow/PyTorch, served via TFServing</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> torch
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> torch.nn <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> nn
+
+<span class=<span class="str">"kw"</span>>class</span> <span class="fn">WideAndDeep</span>(nn.Module):
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">__init__</span>(self, n_wide, n_embed_features, embed_dims, deep_hidden):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+<span class="cmt">        # Wide component: linear model on crossed features</span>
+        self.wide = nn.<span class="fn">Linear</span>(n_wide, <span class="num">1</span>)
+        
+<span class="cmt">        # Deep component: embeddings → MLP</span>
+        self.embeddings = nn.<span class="fn">ModuleList</span>([
+            nn.<span class="fn">Embedding</span>(n_cats, dim) 
+            <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> n_cats, dim <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> <span class="fn">zip</span>(n_embed_features, embed_dims)
+        ])
+        total_embed = <span class="fn">sum</span>(embed_dims)
+        self.deep = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(total_embed, deep_hidden),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Dropout</span>(<span class="num">0.3</span>),
+            nn.<span class="fn">Linear</span>(deep_hidden, deep_hidden // <span class="num">2</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Dropout</span>(<span class="num">0.2</span>),
+            nn.<span class="fn">Linear</span>(deep_hidden // <span class="num">2</span>, <span class="num">1</span>)
+        )
+    
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">forward</span>(self, x_wide, x_cat):
+<span class="cmt">        # Wide: memorization of specific feature crosses</span>
+        wide_out = self.<span class="fn">wide</span>(x_wide)
+<span class="cmt">        # Deep: generalization via learned embeddings</span>
+        embeds = [<span class="fn">emb</span>(x_cat[:, i]) <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> i, emb <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> <span class="fn">enumerate</span>(self.embeddings)]
+        deep_in = torch.<span class="fn">cat</span>(embeds, dim=<span class="num">1</span>)
+        deep_out = self.<span class="fn">deep</span>(deep_in)
+        <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> torch.<span class="fn">sigmoid</span>(wide_out + deep_out)
+
+<span class="cmt"># Architecture for ad CTR:</span>
+<span class="cmt"># Wide: user_age × ad_category, device × ad_size, page × ad (manual crosses)</span>
+<span class="cmt"># Deep: learned embeddings for user_id, ad_id, advertiser_id, page_url</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"Wide & Deep: memorizes specific user×ad patterns + generalizes to new ones"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>Failure Mode ✗ — Position Bias &amp; Feedback Loops</h2></div><div class="card-b"><div class="prose"><p><strong>Ads in position 1 get more clicks regardless of relevance.</strong> If you train on click data without correcting for position, the model learns 'position 1 = good ad' instead of 'relevant ad = good ad'. This creates a feedback loop where top-ranked ads keep getting shown because they were top-ranked.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad5')">Copy</button></div><div class="cs"><pre id="ad5"><span class="cmt"># Position bias demonstration</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> pandas <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> pd
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># Position 1 gets 2.5× more clicks than position 5 regardless of relevance</span>
+positions = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+base_ctr = <span class="num">0.02</span>
+position_bias = {<span class="num">1</span>: <span class="num">2.5</span>, <span class="num">2</span>: <span class="num">1.5</span>, <span class="num">3</span>: <span class="num">1.0</span>, <span class="num">4</span>: <span class="num">0.7</span>, <span class="num">5</span>: <span class="num">0.5</span>}
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"Position Bias <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">in</span> CTR Data:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> pos <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> positions:
+    observed_ctr = base_ctr * position_bias[pos]
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  Position {pos}: CTR = {observed_ctr:.<span class="num">1</span>%} (bias factor: {position_bias[pos]}×)"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\n⚠️ If you train on raw clicks:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  Model learns: position=<span class="num">1</span> → high CTR (confounding!)"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  Model should learn: relevant ad → high CTR (causal)"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\nFIXES:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">1</span>. Inverse propensity weighting: weight samples by <span class="num">1</span>/<span class="fn">P</span>(position)"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">2</span>. Position <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">as</span> feature at train, remove at inference"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">3</span>. Causal models: separate position effect <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">from</span> relevance"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Production Evaluation: A/B Testing &amp; Online Metrics</h2></div><div class="card-b"><div class="prose"><p>Offline metrics (AUC, LogLoss) don't fully capture real-world impact. A/B testing is the gold standard for ad model evaluation.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('ad6')">Copy</button></div><div class="cs"><pre id="ad6"><span class="cmt"># Production evaluation framework</span>
+<span class="cmt"># Offline metrics (model quality)</span>
+offline = {
+    <span class=<span class="str">"str"</span>>'LogLoss'</span>:    <span class=<span class="str">"str"</span>>'Lower is better. Measures calibration quality.'</span>,
+    <span class=<span class="str">"str"</span>>'AUC-ROC'</span>:    <span class=<span class="str">"str"</span>>'Ranking quality: can model separate clickers <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> non-clickers?'</span>,
+    <span class=<span class="str">"str"</span>>'AUPRC'</span>:      <span class=<span class="str">"str"</span>>'Important at low CTR (<<span class="num">1</span>%). ROC-AUC can be misleading.'</span>,
+    <span class=<span class="str">"str"</span>>'Calibration'</span>: <span class=<span class="str">"str"</span>>'Is predicted <span class="num">2</span>% CTR actually <span class="num">2</span>% <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> reality? Critical <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> bidding.'</span>,
+}
+
+<span class="cmt"># Online metrics (business impact — measured via A/B test)</span>
+online = {
+    <span class=<span class="str">"str"</span>>'Revenue/<span class="num">1000</span> impressions'</span>: <span class=<span class="str">"str"</span>>'eCPM — the ultimate metric. Higher = better model.'</span>,
+    <span class=<span class="str">"str"</span>>'Click-Through Rate'</span>:       <span class=<span class="str">"str"</span>>'Are users clicking more? (but clicking more != better)'</span>,
+    <span class=<span class="str">"str"</span>>'Conversion Rate'</span>:          <span class=<span class="str">"str"</span>>'Do clicks lead to purchases/signups?'</span>,
+    <span class=<span class="str">"str"</span>>'User satisfaction'</span>:        <span class=<span class="str">"str"</span>>'Survey scores, time on site, <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> rate.'</span>,
+    <span class=<span class="str">"str"</span>>'Advertiser ROI'</span>:           <span class=<span class="str">"str"</span>>'Are advertisers getting results? Long-term retention.'</span>,
+}
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"=== Offline Metrics (before deployment) ==="</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> k, v <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> offline.<span class="fn">items</span>():
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {k:25s}: {v}"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\n=== Online Metrics (A/B test, <span class="num">1</span>-<span class="num">2</span> weeks) ==="</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> k, v <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> online.<span class="fn">items</span>():
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {k:30s}: {v}"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\n⚠️ A model can improve offline AUC but DECREASE revenue"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"   (e.g., better at predicting clicks on low-value ads)"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Key Takeaways &amp; Production Checklist</h2></div><div class="card-b"><div class="tg"><div class="ti"><h4 style="color:var(--green);margin-bottom:0.5rem">When This Approach Works</h4><div style="margin-bottom:0.4rem">✅ LogLoss over accuracy — calibrated probabilities directly determine bid prices</div><div style="margin-bottom:0.4rem">✅ LightGBM/XGBoost for tabular CTR data — handles categoricals, fast inference</div><div style="margin-bottom:0.4rem">✅ Feature interactions matter most: user×ad category, device×ad format, time×user</div><div style="margin-bottom:0.4rem">✅ A/B test every model change — offline gains don't always translate to revenue</div><div style="margin-bottom:0.4rem">✅ Correct for position bias — raw clicks confound relevance with placement</div></div><div class="ti"><h4 style="color:var(--red);margin-bottom:0.5rem">Common Pitfalls</h4><div style="margin-bottom:0.4rem">❌ Training on raw clicks without position bias correction</div><div style="margin-bottom:0.4rem">❌ Optimizing for clicks instead of conversions (clickbait problem)</div><div style="margin-bottom:0.4rem">❌ Ignoring calibration — if predicted 2% CTR is really 5%, bidding math breaks</div><div style="margin-bottom:0.4rem">❌ Cold start: new users/ads have no history — need content-based fallbacks</div><div style="margin-bottom:0.4rem">❌ Feedback loops: model shows ad → gets clicks → reinforces showing same ad</div></div></div></div></div></div>
+<div class="foot"><p>ML Analytics Platform · Project Walkthrough</p></div></body></html>

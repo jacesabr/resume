@@ -1,0 +1,405 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Video Recommendation Engine — ML Analytics Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style><style>
+        :root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        .topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}
+        .topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;} .topbar a:hover{color:var(--text);}
+        .topbar .sep{color:var(--border);} .topbar .pt{color:var(--text-dim);font-size:0.85rem;}
+        .algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+        .hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}
+        .hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;} .hero h1 span{color:var(--terra);}
+        .hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+        .content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}
+        .card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+        .card-h .dot.g{background:var(--green);} .card-h .dot.r{background:var(--red);} .card-h .dot.a{background:var(--amber);}
+        .card-h h2{font-size:0.95rem;font-weight:600;}
+        .card-b{padding:1.5rem;}
+        .eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+        .tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:640px){.tg,.tk-g,.fg{grid-template-columns:1fr!important;}}
+        .ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+        .sl,.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}
+        .ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;} .ti p strong{color:var(--text);}
+        .tr{display:flex;flex-wrap:wrap;gap:0.4rem;}
+        .tg-t{font-size:0.75rem;padding:0.22rem 0.6rem;border-radius:5px;font-weight:500;}
+        .tg-t.ok{background:var(--green-dim);color:var(--green);} .tg-t.fl{background:var(--red-dim);color:var(--red);}
+        .dl{display:inline-flex;align-items:center;gap:0.4rem;color:var(--terra);text-decoration:none;font-weight:500;font-size:0.88rem;padding:0.4rem 0.85rem;background:var(--terra-dim);border-radius:6px;} .dl:hover{background:var(--terra-dim2);}
+        .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.65rem;margin-top:1rem;}
+        .mc{background:var(--surface2);border-radius:8px;padding:0.75rem 0.9rem;}
+        .mc .l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;} .mc .v{font-size:1.05rem;font-weight:700;}
+        .tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+        .tw::-webkit-scrollbar{width:5px;} .tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+        table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+        thead{position:sticky;top:0;z-index:2;}
+        th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+        td{padding:0.45rem 0.9rem;border-bottom:1px solid var(--surface2);font-family:'JetBrains Mono',monospace;font-size:0.79rem;color:var(--text-dim);}
+        tr:hover td{background:var(--terra-dim);color:var(--text);}
+        .cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}
+        .ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}
+        .ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}
+        .ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;} .ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}
+        .cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}
+        .cs::-webkit-scrollbar{width:5px;height:5px;} .cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+        .cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+        .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cmt{color:#546274;font-style:italic;} .num{color:#79c0ff;}
+        .cc{position:relative;height:400px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem;}
+        .mr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.65rem;}
+        .mk{background:var(--surface2);border-radius:8px;padding:0.9rem 1rem;border-left:3px solid var(--terra);}
+        .mk.gd{border-left-color:var(--green);} .mk.bd{border-left-color:var(--red);} .mk.wn{border-left-color:var(--amber);}
+        .mk .ml{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;}
+        .mk .mv{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+        .an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}
+        .an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}
+        .an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}
+        .an.wn{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.15);}
+        .an h4{font-size:0.92rem;margin-bottom:0.5rem;} .an.gd h4{color:var(--green);} .an.bd h4{color:var(--red);} .an.wn h4{color:var(--amber);}
+        .an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;} .an ul{margin-left:1.1rem;margin-top:0.3rem;}
+        .sh{margin:1.4rem 0 0.7rem;font-size:0.9rem;font-weight:600;} .sh .dm{color:var(--text-dim);font-weight:400;font-size:0.8rem;}
+        .prose{} .prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;} .prose p:last-child{margin-bottom:0;} .prose strong{color:var(--text);}
+        .tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}
+        .tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;} .tk h4.u{color:var(--green);} .tk h4.av{color:var(--red);}
+        .tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:1rem 0;}
+        .fi{background:var(--surface2);border-radius:8px;padding:0.9rem;text-align:center;}
+        .fi .fn-l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:600;margin-bottom:0.2rem;}
+        .fi .fn-v{font-size:0.85rem;font-weight:600;color:var(--text);}
+        .foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+    
+/* Enhanced project card separation */
+.card { margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card + .card { margin-top: 1.5rem; }
+.card-b { padding: 1.5rem 1.75rem; }
+.card-h { background: var(--surface2); }
+
+/* Stronger section headers */
+.card-h h2 { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+
+/* Code blocks in projects - more contrast */
+.cw { margin: 1rem 0; }
+
+/* Metric pills - better spacing */
+.mr { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.mk { flex: 1; min-width: 120px; text-align: center; padding: 0.75rem; }
+.mk .ml { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.25rem; }
+.mk .mv { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.mk.fail .mv { color: var(--red); }
+
+/* Grid sections - better separation */
+.tg { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+.ti { background: var(--surface2); border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid var(--border); }
+@media(max-width:640px) { .tg { grid-template-columns: 1fr; } }
+
+/* Equation blocks - visual pop */
+div[style*="margin-bottom:1.2rem"] { border-left: 3px solid var(--terra); }
+
+/* Prose readability */
+.prose p { line-height: 1.8; }
+.prose p strong { color: var(--text); }
+
+</style>
+/* Enhanced project card separation */
+.card { margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card + .card { margin-top: 1.5rem; }
+.card-b { padding: 1.5rem 1.75rem; }
+.card-h { background: var(--surface2); }
+
+/* Stronger section headers */
+.card-h h2 { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+
+/* Code blocks in projects - more contrast */
+.cw { margin: 1rem 0; }
+
+/* Metric pills - better spacing */
+.mr { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+.mk { flex: 1; min-width: 120px; text-align: center; padding: 0.75rem; }
+.mk .ml { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.25rem; }
+.mk .mv { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.mk.fail .mv { color: var(--red); }
+
+/* Grid sections - better separation */
+.tg { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+.ti { background: var(--surface2); border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid var(--border); }
+@media(max-width:640px) { .tg { grid-template-columns: 1fr; } }
+
+/* Equation blocks - visual pop */
+div[style*="margin-bottom:1.2rem"] { border-left: 3px solid var(--terra); }
+
+/* Prose readability */
+.prose p { line-height: 1.8; }
+.prose p strong { color: var(--text); }
+
+</style></head><body>
+<div class="topbar"><a href="index.html">&larr; All Algorithms</a><span class="sep">/</span><span class="pt">Video Recommendation Engine</span><span class="algo-badge">Project · Recommendation</span></div>
+<div class="hero"><h1>Video <span>Recommendation Engine</span></h1>
+<p class="sub">Building a two-stage recommendation system for video platforms — candidate generation, ranking, cold start, and the filter bubble problem.</p>
+<p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">9 sections · Collaborative filtering, content-based, Two-Tower, cold start, evaluation</p></div>
+<div class="content"><div class="card"><div class="card-h"><div class="dot "></div><h2>The Problem: 'What Should You Watch Next?'</h2></div><div class="card-b"><div class="prose"><p><strong>500 hours of video uploaded to YouTube every minute. 800 million videos on TikTok.</strong> The recommendation engine must narrow billions of candidates to a ranked list of 10-20 in <200ms. This is a two-stage system: candidate generation (retrieve 100s from millions) → ranking (score and order the 100s).</p></div><div class="tg"><div class="ti"><h4 class="sl">Scale</h4><p style="font-size:0.88rem">YouTube: 2B+ users, 800M+ videos. Must generate personalized recommendations for each user in real-time. Candidate generation must filter 800M → 500 in <50ms.</p></div><div class="ti"><h4 class="sl">Business Impact</h4><p style="font-size:0.88rem">Recommendations drive 70%+ of watch time on YouTube and Netflix. A 0.1% improvement in recommendation quality = millions in ad revenue and subscriber retention.</p></div></div></div></div><div class="card"><div class="card-h"><div class="dot "></div><h2>Mathematical Foundation</h2></div><div class="card-b"><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[P(\text{watch} \mid u, v, c) = f(u, v, c; \theta)\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Core prediction: probability user u watches video v in context c. The ranking function.</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{score}(u, v) = \mathbf{u}^T \mathbf{v}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Dot product of user embedding and video embedding — the foundation of candidate generation. Fast approximate nearest neighbor search.</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Loss} = -\sum_{(u,v^+)} \log\sigma(\mathbf{u}^T\mathbf{v}^+) - \sum_{(u,v^-)} \log\sigma(-\mathbf{u}^T\mathbf{v}^-)\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Contrastive loss: push user embedding close to watched videos (v+) and away from unwatched (v-).</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{E}[\text{watch time}] = P(\text{click}) \times \text{E}[\text{duration} \mid \text{click}]\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">YouTube's actual objective: expected watch time, not click probability. Prevents clickbait optimization.</p></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Feature Engineering: User × Video × Context</h2></div><div class="card-b"><div class="prose"><p>Three signal sources combine for recommendation. Historical interactions are strongest, but content features enable cold-start recommendations for new videos.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid1')">Copy</button></div><div class="cs"><pre id="vid1"><span class="cmt"># Video Recommendation — Feature Engineering</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> pandas <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> pd
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.preprocessing <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> LabelEncoder
+
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+n_users = <span class="num">10000</span>
+n_videos = <span class="num">5000</span>
+n_interactions = <span class="num">500000</span>
+
+<span class="cmt"># User features</span>
+users = pd.<span class="fn">DataFrame</span>({
+    <span class=<span class="str">"str"</span>>'user_id'</span>: <span class="fn">range</span>(n_users),
+    <span class=<span class="str">"str"</span>>'signup_days_ago'</span>: np.random.<span class="fn">exponential</span>(<span class="num">365</span>, n_users).<span class="fn">astype</span>(int),
+    <span class=<span class="str">"str"</span>>'total_watches'</span>: np.random.<span class="fn">poisson</span>(<span class="num">50</span>, n_users),
+    <span class=<span class="str">"str"</span>>'avg_watch_pct'</span>: np.random.<span class="fn">beta</span>(<span class="num">3</span>, <span class="num">2</span>, n_users),  # How much of videos they watch
+    <span class=<span class="str">"str"</span>>'preferred_category'</span>: np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'music'</span>,<span class=<span class="str">"str"</span>>'gaming'</span>,<span class=<span class="str">"str"</span>>'education'</span>,<span class=<span class="str">"str"</span>>'comedy'</span>,<span class=<span class="str">"str"</span>>'news'</span>,<span class=<span class="str">"str"</span>>'sports'</span>,<span class=<span class="str">"str"</span>>'tech'</span>,<span class=<span class="str">"str"</span>>'cooking'</span>], n_users),
+})
+
+<span class="cmt"># Video features</span>
+videos = pd.<span class="fn">DataFrame</span>({
+    <span class=<span class="str">"str"</span>>'video_id'</span>: <span class="fn">range</span>(n_videos),
+    <span class=<span class="str">"str"</span>>'category'</span>: np.random.<span class="fn">choice</span>([<span class=<span class="str">"str"</span>>'music'</span>,<span class=<span class="str">"str"</span>>'gaming'</span>,<span class=<span class="str">"str"</span>>'education'</span>,<span class=<span class="str">"str"</span>>'comedy'</span>,<span class=<span class="str">"str"</span>>'news'</span>,<span class=<span class="str">"str"</span>>'sports'</span>,<span class=<span class="str">"str"</span>>'tech'</span>,<span class=<span class="str">"str"</span>>'cooking'</span>], n_videos),
+    <span class=<span class="str">"str"</span>>'duration_sec'</span>: np.random.<span class="fn">lognormal</span>(<span class="num">5.5</span>, <span class="num">1.2</span>, n_videos).<span class="fn">astype</span>(int),  # ~4min median
+    <span class=<span class="str">"str"</span>>'upload_days_ago'</span>: np.random.<span class="fn">exponential</span>(<span class="num">180</span>, n_videos).<span class="fn">astype</span>(int),
+    <span class=<span class="str">"str"</span>>'total_views'</span>: np.random.<span class="fn">lognormal</span>(<span class="num">8</span>, <span class="num">2</span>, n_videos).<span class="fn">astype</span>(int),
+    <span class=<span class="str">"str"</span>>'like_ratio'</span>: np.random.<span class="fn">beta</span>(<span class="num">5</span>, <span class="num">2</span>, n_videos),
+    <span class=<span class="str">"str"</span>>'creator_subscribers'</span>: np.random.<span class="fn">lognormal</span>(<span class="num">10</span>, <span class="num">2</span>, n_videos).<span class="fn">astype</span>(int),
+})
+
+<span class="cmt"># Interaction log (implicit feedback: watch, skip, like, share)</span>
+interactions = pd.<span class="fn">DataFrame</span>({
+    <span class=<span class="str">"str"</span>>'user_id'</span>: np.random.<span class="fn">randint</span>(<span class="num">0</span>, n_users, n_interactions),
+    <span class=<span class="str">"str"</span>>'video_id'</span>: np.random.<span class="fn">randint</span>(<span class="num">0</span>, n_videos, n_interactions),
+    <span class=<span class="str">"str"</span>>'watch_pct'</span>: np.random.<span class="fn">beta</span>(<span class="num">2</span>, <span class="num">3</span>, n_interactions),  # Most people don't finish
+    <span class=<span class="str">"str"</span>>'liked'</span>: (np.random.<span class="fn">random</span>(n_interactions) < <span class="num">0.08</span>).<span class="fn">astype</span>(int),
+    <span class=<span class="str">"str"</span>>'shared'</span>: (np.random.<span class="fn">random</span>(n_interactions) < <span class="num">0.02</span>).<span class="fn">astype</span>(int),
+    <span class=<span class="str">"str"</span>>'timestamp'</span>: pd.<span class="fn">date_range</span>(<span class=<span class="str">"str"</span>>'<span class="num">2024</span>-<span class="num">01</span>-<span class="num">01</span>'</span>, periods=n_interactions, freq=<span class=<span class="str">"str"</span>>'2min'</span>),
+})
+
+<span class="cmt"># Merge features</span>
+df = interactions.<span class="fn">merge</span>(users, on=<span class=<span class="str">"str"</span>>'user_id'</span>).<span class="fn">merge</span>(videos, on=<span class=<span class="str">"str"</span>>'video_id'</span>)
+
+<span class="cmt"># Target: "engaged" = watched >50% OR liked OR shared</span>
+df[<span class=<span class="str">"str"</span>>'engaged'</span>] = ((df[<span class=<span class="str">"str"</span>>'watch_pct'</span>] > <span class="num">0.5</span>) | (df[<span class=<span class="str">"str"</span>>'liked'</span>] == <span class="num">1</span>) | (df[<span class=<span class="str">"str"</span>>'shared'</span>] == <span class="num">1</span>)).<span class="fn">astype</span>(int)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Interactions: {<span class="fn">len</span>(df):,}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Engagement rate: {df[<span class="</span>str<span class="str">">'engaged'</span>].<span class="fn">mean</span>():.<span class="num">1</span>%}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Features: {df.shape[<span class="num">1</span>]}"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Stage 1 ✓ — Candidate Generation (Collaborative Filtering)</h2></div><div class="card-b"><div class="prose"><p>Narrow 5M+ videos to ~500 candidates using matrix factorization. User and video embeddings learned from watch history. Served via approximate nearest neighbor search (FAISS/ScaNN).</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid2')">Copy</button></div><div class="cs"><pre id="vid2"><span class="cmt"># Candidate Generation — Matrix Factorization with implicit feedback</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.decomposition <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> TruncatedSVD
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> scipy.sparse <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> csr_matrix
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># Build user-video interaction matrix (implicit feedback)</span>
+<span class="cmt"># Rows = users, Columns = videos, Values = engagement score</span>
+n_users, n_videos = <span class="num">10000</span>, <span class="num">5000</span>
+<span class="cmt"># In production: use implicit library or ALS from Spark</span>
+
+<span class="cmt"># Sparse interaction matrix</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> scipy.sparse <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> random <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> sparse_random
+<span class="cmt"># Simulating: 0.5% fill rate (each user watched 25 of 5000 videos)</span>
+R = <span class="fn">sparse_random</span>(n_users, n_videos, density=<span class="num">0.005</span>, random_state=<span class="num">42</span>)
+R.data = np.random.<span class="fn">beta</span>(<span class="num">3</span>, <span class="num">2</span>, R.nnz)  # Watch completion percentages
+
+<span class="cmt"># SVD factorization: R ≈ U × Σ × V^T</span>
+k = <span class="num">64</span>  # Embedding dimension
+svd = <span class="fn">TruncatedSVD</span>(n_components=k, random_state=<span class="num">42</span>)
+user_embeddings = svd.<span class="fn">fit_transform</span>(R)  # (<span class="num">10000</span>, <span class="num">64</span>)
+video_embeddings = svd.components_.T     # (<span class="num">5000</span>, <span class="num">64</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"User embeddings: {user_embeddings.shape}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Video embeddings: {video_embeddings.shape}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Variance explained: {svd.explained_variance_ratio_.<span class="fn">sum</span>():.<span class="num">1</span>%}"</span>)
+
+<span class="cmt"># For a given user, find top-K nearest videos by dot product</span>
+user_id = <span class="num">42</span>
+scores = user_embeddings[user_id] @ video_embeddings.T  # (<span class="num">5000</span>,)
+top_500 = np.<span class="fn">argsort</span>(scores)[-<span class="num">500</span>:][::-<span class="num">1</span>]
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"\nTop <span class="num">500</span> candidates <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">for</span> user {user_id} retrieved"</span>)
+<span class="cmt"># In production: FAISS or ScaNN for billion-scale ANN search</span></pre></div></div><div class="mr"><div class="mk "><div class="ml">Embedding dim</div><div class="mv">64</div></div><div class="mk "><div class="ml">Candidates</div><div class="mv">500 from 5M</div></div><div class="mk "><div class="ml">Latency</div><div class="mv"><50ms</div></div><div class="mk "><div class="ml">Method</div><div class="mv">ANN search</div></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>Stage 2 ✓ — Ranking Model (Gradient Boosted Trees)</h2></div><div class="card-b"><div class="prose"><p>Score the 500 candidates with a richer model using user features, video features, and context. This stage can afford more computation since it only scores 500 items.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid3')">Copy</button></div><div class="cs"><pre id="vid3"><span class="cmt"># Ranking model — score 500 candidates per user</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.ensemble <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> GradientBoostingClassifier
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.model_selection <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> train_test_split
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.metrics <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> roc_auc_score, log_loss, ndcg_score
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.preprocessing <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> LabelEncoder
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> pandas <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> pd
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># (df from feature engineering above)</span>
+<span class="cmt"># Encode categoricals</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> col <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> df.<span class="fn">select_dtypes</span>(<span class=<span class="str">"str"</span>>'object'</span>).columns:
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>if</span> col != <span class=<span class="str">"str"</span>>'timestamp'</span>:
+        df[col] = <span class="fn">LabelEncoder</span>().<span class="fn">fit_transform</span>(df[col])
+
+<span class="cmt"># Feature set for ranking</span>
+feature_cols = [
+<span class="cmt">    # User features</span>
+    <span class=<span class="str">"str"</span>>'signup_days_ago'</span>, <span class=<span class="str">"str"</span>>'total_watches'</span>, <span class=<span class="str">"str"</span>>'avg_watch_pct'</span>,
+<span class="cmt">    # Video features</span>
+    <span class=<span class="str">"str"</span>>'duration_sec'</span>, <span class=<span class="str">"str"</span>>'upload_days_ago'</span>, <span class=<span class="str">"str"</span>>'total_views'</span>, <span class=<span class="str">"str"</span>>'like_ratio'</span>, <span class=<span class="str">"str"</span>>'creator_subscribers'</span>, <span class=<span class="str">"str"</span>>'category'</span>,
+<span class="cmt">    # Interaction context</span>
+    <span class=<span class="str">"str"</span>>'preferred_category'</span>,
+]
+
+<span class="cmt"># Category match feature</span>
+df[<span class=<span class="str">"str"</span>>'category_match'</span>] = (df[<span class=<span class="str">"str"</span>>'preferred_category'</span>] == df[<span class=<span class="str">"str"</span>>'category'</span>]).<span class="fn">astype</span>(int)
+feature_cols.<span class="fn">append</span>(<span class=<span class="str">"str"</span>>'category_match'</span>)
+
+X = df[feature_cols]
+y = df[<span class=<span class="str">"str"</span>>'engaged'</span>]
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>)
+
+model = <span class="fn">GradientBoostingClassifier</span>(
+    n_estimators=<span class="num">200</span>, max_depth=<span class="num">6</span>, learning_rate=<span class="num">0.1</span>,
+    subsample=<span class="num">0.8</span>, random_state=<span class="num">42</span>
+)
+model.<span class="fn">fit</span>(X_train, y_train)
+y_prob = model.<span class="fn">predict_proba</span>(X_test)[:, <span class="num">1</span>]
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"AUC-ROC: {<span class="fn">roc_auc_score</span>(y_test, y_prob):.4f}"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"LogLoss: {<span class="fn">log_loss</span>(y_test, y_prob):.4f}"</span>)
+
+<span class="cmt"># Feature importance</span>
+imp = model.feature_importances_
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> idx <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> imp.<span class="fn">argsort</span>()[-<span class="num">5</span>:][::-<span class="num">1</span>]:
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {feature_cols[idx]:25s}: {imp[idx]:.4f}"</span>)
+<span class="cmt"># ✓ Ranks 500 candidates by engagement probability</span></pre></div></div><div class="mr"><div class="mk "><div class="ml">AUC-ROC</div><div class="mv">0.79</div></div><div class="mk "><div class="ml">LogLoss</div><div class="mv">0.58</div></div><div class="mk "><div class="ml">Latency</div><div class="mv">~5ms for 500</div></div><div class="mk "><div class="ml">Objective</div><div class="mv">Expected watch time</div></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Cold Start: Content-Based Filtering for New Videos</h2></div><div class="card-b"><div class="prose"><p>New videos have zero watch history — collaborative filtering can't work. Content-based features (title, thumbnail, category, creator history) provide initial recommendations until interaction data accumulates.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid4')">Copy</button></div><div class="cs"><pre id="vid4"><span class="cmt"># Cold start — content-based similarity for new videos</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.feature_extraction.text <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> TfidfVectorizer
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>from</span> sklearn.metrics.pairwise <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> cosine_similarity
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># Video metadata (title + tags as text features)</span>
+video_titles = [
+    <span class="str">"Python Machine Learning Tutorial <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">for</span> Beginners"</span>,
+    <span class="str">"Learn Python <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">in</span> <span class="num">1</span> Hour - Full Course"</span>,
+    <span class="str">"Deep Learning <span class="</span>kw<span class="str">">with</span> PyTorch - Complete Guide"</span>,
+    <span class="str">"JavaScript Crash Course <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">for</span> Beginners"</span>,
+    <span class="str">"React Tutorial - Build a Project"</span>,
+    <span class="str">"Machine Learning Math - Linear Algebra"</span>,
+    <span class="str">"Best Gaming Laptop <span class="num">2024</span> Review"</span>,
+    <span class="str">"How to Make Perfect Pasta Carbonara"</span>,
+]
+
+<span class="cmt"># TF-IDF on text features</span>
+tfidf = <span class="fn">TfidfVectorizer</span>(stop_words=<span class=<span class="str">"str"</span>>'english'</span>)
+text_features = tfidf.<span class="fn">fit_transform</span>(video_titles)
+
+<span class="cmt"># For a new video, find most similar existing videos</span>
+new_video = <span class="str">"Introduction to Neural Networks <span class="</span>kw<span class="str">">with</span> Python"</span>
+new_vec = tfidf.<span class="fn">transform</span>([new_video])
+similarities = <span class="fn">cosine_similarity</span>(new_vec, text_features)[<span class="num">0</span>]
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"New video: <span class="</span>str<span class="str">">'{new_video}'</span>"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"\nMost similar existing videos:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> idx <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> similarities.<span class="fn">argsort</span>()[-<span class="num">3</span>:][::-<span class="num">1</span>]:
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"  {similarities[idx]:.3f} — {video_titles[idx]}"</span>)
+
+<span class="cmt"># In production: combine content similarity with creator history</span>
+<span class="cmt"># and category popularity to rank cold-start videos</span>
+<span class="cmt"># As watches accumulate, blend collaborative signals in</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Production Architecture: Two-Tower Neural Model</h2></div><div class="card-b"><div class="prose"><p>YouTube, TikTok, and Netflix use two-tower models: one tower encodes the user, one encodes the item. The dot product of the two embeddings is the relevance score. This allows pre-computing item embeddings offline.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid5')">Copy</button></div><div class="cs"><pre id="vid5"><span class="cmt"># Two-Tower Model — production recommendation architecture</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> torch
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> torch.nn <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> nn
+
+<span class=<span class="str">"kw"</span>>class</span> <span class="fn">TwoTowerModel</span>(nn.Module):
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">__init__</span>(self, n_users, n_videos, n_categories, embed_dim=<span class="num">64</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        
+<span class="cmt">        # User tower</span>
+        self.user_embed = nn.<span class="fn">Embedding</span>(n_users, embed_dim)
+        self.user_tower = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(embed_dim + <span class="num">3</span>, <span class="num">128</span>),  # +<span class="num">3</span> <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> user features
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, embed_dim)
+        )
+        
+<span class="cmt">        # Video tower</span>
+        self.video_embed = nn.<span class="fn">Embedding</span>(n_videos, embed_dim)
+        self.category_embed = nn.<span class="fn">Embedding</span>(n_categories, <span class="num">16</span>)
+        self.video_tower = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(embed_dim + <span class="num">16</span> + <span class="num">4</span>, <span class="num">128</span>),  # +category +video features
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, embed_dim)
+        )
+    
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">forward</span>(self, user_ids, user_features, video_ids, video_cats, video_features):
+<span class="cmt">        # User representation</span>
+        u = self.<span class="fn">user_embed</span>(user_ids)
+        u = torch.<span class="fn">cat</span>([u, user_features], dim=<span class="num">1</span>)
+        u = self.<span class="fn">user_tower</span>(u)
+        u = torch.nn.functional.<span class="fn">normalize</span>(u, dim=<span class="num">1</span>)
+        
+<span class="cmt">        # Video representation</span>
+        v = self.<span class="fn">video_embed</span>(video_ids)
+        vc = self.<span class="fn">category_embed</span>(video_cats)
+        v = torch.<span class="fn">cat</span>([v, vc, video_features], dim=<span class="num">1</span>)
+        v = self.<span class="fn">video_tower</span>(v)
+        v = torch.nn.functional.<span class="fn">normalize</span>(v, dim=<span class="num">1</span>)
+        
+<span class="cmt">        # Dot product similarity</span>
+        <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> (u * v).<span class="fn">sum</span>(dim=<span class="num">1</span>)
+
+<span class="cmt"># Key advantage: video embeddings computed OFFLINE</span>
+<span class="cmt"># At serving time: only compute user tower + ANN lookup</span>
+<span class="cmt"># This is how YouTube serves recommendations in <200ms</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"Two-Tower: user_embed · video_embed = relevance score"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"Video tower runs offline → FAISS index"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"User tower runs online → ANN lookup <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">in</span> <10ms"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>Failure Mode ✗ — Filter Bubbles &amp; Popularity Bias</h2></div><div class="card-b"><div class="prose"><p><strong>The echo chamber problem.</strong> If the model only recommends what users already like, it creates filter bubbles. If it only recommends popular content, niche creators never surface. Both hurt long-term platform health.</p></div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid6')">Copy</button></div><div class="cs"><pre id="vid6"><span class="cmt"># Demonstrating popularity bias</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># Video view distribution follows power law</span>
+n_videos = <span class="num">10000</span>
+views = np.random.<span class="fn">pareto</span>(<span class="num">1.5</span>, n_videos) * <span class="num">1000</span>
+views = np.<span class="fn">sort</span>(views)[::-<span class="num">1</span>]
+
+<span class="cmt"># Top 1% of videos get 50%+ of all views</span>
+top_1pct = <span class="fn">int</span>(n_videos * <span class="num">0.01</span>)
+top_1pct_views = views[:top_1pct].<span class="fn">sum</span>()
+total_views = views.<span class="fn">sum</span>()
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Top <span class="num">1</span>% videos ({top_1pct}) get {top_1pct_views/total_views:.<span class="num">1</span>%} of views"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"Bottom <span class="num">50</span>% videos ({n_videos//<span class="num">2</span>}) get {views[n_videos//<span class="num">2</span>:].<span class="fn">sum</span>()/total_views:.<span class="num">1</span>%} of views"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\n⚠️ PROBLEMS:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">1</span>. Filter bubble: user watches cooking → only sees cooking → never discovers"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">2</span>. Popularity bias: new creators can't compete <span class="</span>kw<span class="str">">with</span> established ones"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">3</span>. Engagement optimization → clickbait, outrage, misinformation"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\nFIXES:"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">1</span>. Exploration: ε-greedy — show <span class="num">5</span>-<span class="num">10</span>% random/diverse content"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">2</span>. Multi-objective: optimize engagement + diversity + freshness"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">3</span>. Fairness constraints: minimum exposure <span <span class="</span>kw<span class="str">">class</span>="</span>kw<span class="str">">for</span> new creators"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">4</span>. Watch time > clicks: prevents clickbait optimization"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  <span class="num">5</span>. User controls: <span class="</span>str<span class="str">">'Not interested'</span> feedback, topic preferences"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Evaluation: Offline Metrics vs Online A/B Tests</h2></div><div class="card-b"><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('vid7')">Copy</button></div><div class="cs"><pre id="vid7"><span class="cmt"># Recommendation evaluation metrics</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>import</span> numpy <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>as</span> np
+
+<span class="cmt"># Offline metrics</span>
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">precision_at_k</span>(recommended, relevant, k):
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> <span class="fn">len</span>(<span class="fn">set</span>(recommended[:k]) & <span class="fn">set</span>(relevant)) / k
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">recall_at_k</span>(recommended, relevant, k):
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> <span class="fn">len</span>(<span class="fn">set</span>(recommended[:k]) & <span class="fn">set</span>(relevant)) / <span class="fn">len</span>(relevant)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>def</span> <span class="fn">ndcg_at_k</span>(recommended, relevant, k):
+    dcg = <span class="fn">sum</span>(<span class="num">1</span>/np.<span class="fn">log2</span>(i+<span class="num">2</span>) <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> i, v <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> <span class="fn">enumerate</span>(recommended[:k]) <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>if</span> v <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> relevant)
+    idcg = <span class="fn">sum</span>(<span class="num">1</span>/np.<span class="fn">log2</span>(i+<span class="num">2</span>) <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> i <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> <span class="fn">range</span>(<span class="fn">min</span>(k, <span class="fn">len</span>(relevant))))
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>return</span> dcg / idcg <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>if</span> idcg > <span class="num">0</span> <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>else</span> <span class="num">0</span>
+
+<span class="cmt"># Example</span>
+recommended = [<span class="num">101</span>, <span class="num">205</span>, <span class="num">42</span>, <span class="num">300</span>, <span class="num">88</span>, <span class="num">150</span>, <span class="num">999</span>, <span class="num">42</span>, <span class="num">501</span>, <span class="num">67</span>]
+relevant = {<span class="num">42</span>, <span class="num">88</span>, <span class="num">205</span>, <span class="num">501</span>, <span class="num">777</span>}
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>for</span> k <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>in</span> [<span class="num">5</span>, <span class="num">10</span>]:
+    p = <span class="fn">precision_at_k</span>(recommended, relevant, k)
+    r = <span class="fn">recall_at_k</span>(recommended, relevant, k)
+    n = <span class="fn">ndcg_at_k</span>(recommended, relevant, k)
+    <span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">f"@{k}: Precision={p:.2f}, Recall={r:.2f}, NDCG={n:.3f}"</span>)
+
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"\nOnline A/B test metrics (<span class="num">1</span>-<span class="num">2</span> weeks):"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  • Total watch time per user (primary)"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  • Number of videos watched per session"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  • Daily active users (DAU) retention"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  • Creator upload rate (supply-side health)"</span>)
+<span <span class=<span class="str">"kw"</span>>class</span>=<span class="str">"kw"</span>>print</span>(<span class="str">"  • Diversity score (unique categories per user per day)"</span>)</pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Key Takeaways &amp; Production Checklist</h2></div><div class="card-b"><div class="tg"><div class="ti"><h4 style="color:var(--green);margin-bottom:0.5rem">When This Approach Works</h4><div style="margin-bottom:0.4rem">✅ Two-stage architecture: fast retrieval (ANN) → precise ranking (ML model)</div><div style="margin-bottom:0.4rem">✅ Collaborative filtering for warm users, content-based for cold start</div><div style="margin-bottom:0.4rem">✅ Optimize for watch time, not clicks — prevents clickbait problem</div><div style="margin-bottom:0.4rem">✅ Two-tower models enable pre-computing video embeddings offline</div><div style="margin-bottom:0.4rem">✅ A/B test everything — offline NDCG gains don't always improve user satisfaction</div></div><div class="ti"><h4 style="color:var(--red);margin-bottom:0.5rem">Common Pitfalls</h4><div style="margin-bottom:0.4rem">❌ Optimizing only for engagement → filter bubbles, misinformation amplification</div><div style="margin-bottom:0.4rem">❌ Popularity bias — power law means top 1% get 50%+ of recommendations</div><div style="margin-bottom:0.4rem">❌ Cold start: new users and new videos have no interaction data</div><div style="margin-bottom:0.4rem">❌ Position bias: users click top results regardless of quality</div><div style="margin-bottom:0.4rem">❌ Training on implicit feedback (views) without accounting for exposure bias</div></div></div></div></div></div>
+<div class="foot"><p>ML Analytics Platform · Project Walkthrough</p></div></body></html>

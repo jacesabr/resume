@@ -1,0 +1,1566 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Grid Search — ML Analytics Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+        :root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        .topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}
+        .topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;} .topbar a:hover{color:var(--text);}
+        .topbar .sep{color:var(--border);} .topbar .pt{color:var(--text-dim);font-size:0.85rem;}
+        .algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+        .hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}
+        .hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;} .hero h1 span{color:var(--terra);}
+        .hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+        .content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}
+        .card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+        .card-h .dot.g{background:var(--green);} .card-h .dot.r{background:var(--red);} .card-h .dot.a{background:var(--amber);}
+        .card-h h2{font-size:0.95rem;font-weight:600;}
+        .card-b{padding:1.5rem;}
+        .eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+        .tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:640px){.tg,.tk-g,.fg{grid-template-columns:1fr!important;}}
+        .ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+        .sl,.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}
+        .ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;} .ti p strong{color:var(--text);}
+        .tr{display:flex;flex-wrap:wrap;gap:0.4rem;}
+        .tg-t{font-size:0.75rem;padding:0.22rem 0.6rem;border-radius:5px;font-weight:500;}
+        .tg-t.ok{background:var(--green-dim);color:var(--green);} .tg-t.fl{background:var(--red-dim);color:var(--red);}
+        .dl{display:inline-flex;align-items:center;gap:0.4rem;color:var(--terra);text-decoration:none;font-weight:500;font-size:0.88rem;padding:0.4rem 0.85rem;background:var(--terra-dim);border-radius:6px;} .dl:hover{background:var(--terra-dim2);}
+        .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.65rem;margin-top:1rem;}
+        .mc{background:var(--surface2);border-radius:8px;padding:0.75rem 0.9rem;}
+        .mc .l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;} .mc .v{font-size:1.05rem;font-weight:700;}
+        .tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+        .tw::-webkit-scrollbar{width:5px;} .tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+        table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+        thead{position:sticky;top:0;z-index:2;}
+        th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+        td{padding:0.45rem 0.9rem;border-bottom:1px solid var(--surface2);font-family:'JetBrains Mono',monospace;font-size:0.79rem;color:var(--text-dim);}
+        tr:hover td{background:var(--terra-dim);color:var(--text);}
+        .cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}
+        .ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}
+        .ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}
+        .ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;} .ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}
+        .cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}
+        .cs::-webkit-scrollbar{width:5px;height:5px;} .cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+        .cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+        .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cmt{color:#546274;font-style:italic;} .num{color:#79c0ff;}
+        .cc{position:relative;height:400px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem;}
+        .mr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.65rem;}
+        .mk{background:var(--surface2);border-radius:8px;padding:0.9rem 1rem;border-left:3px solid var(--terra);}
+        .mk.gd{border-left-color:var(--green);} .mk.bd{border-left-color:var(--red);} .mk.wn{border-left-color:var(--amber);}
+        .mk .ml{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.15rem;font-weight:600;}
+        .mk .mv{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+        .an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}
+        .an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}
+        .an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}
+        .an.wn{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.15);}
+        .an h4{font-size:0.92rem;margin-bottom:0.5rem;} .an.gd h4{color:var(--green);} .an.bd h4{color:var(--red);} .an.wn h4{color:var(--amber);}
+        .an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;} .an ul{margin-left:1.1rem;margin-top:0.3rem;}
+        .sh{margin:1.4rem 0 0.7rem;font-size:0.9rem;font-weight:600;} .sh .dm{color:var(--text-dim);font-weight:400;font-size:0.8rem;}
+        .prose{} .prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;} .prose p:last-child{margin-bottom:0;} .prose strong{color:var(--text);}
+        .tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}
+        .tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;} .tk h4.u{color:var(--green);} .tk h4.av{color:var(--red);}
+        .tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:1rem 0;}
+        .fi{background:var(--surface2);border-radius:8px;padding:0.9rem;text-align:center;}
+        .fi .fn-l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:600;margin-bottom:0.2rem;}
+        .fi .fn-v{font-size:0.85rem;font-weight:600;color:var(--text);}
+        .foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+    
+/* TLDR blocks above code */
+.prose p { line-height: 1.8; }
+div[style*="green-bg"] { transition: all 0.2s ease; }
+div[style*="red-bg"] { transition: all 0.2s ease; }
+</style></head><body><div class="topbar"><a href="index.html">&larr; All Algorithms</a><span class="sep">/</span><span class="pt">Grid Search</span><span class="algo-badge">Evaluation · #18</span></div><div class="hero"><h1>Grid <span>Search</span></h1><p class="sub">Exhaustive hyperparameter search with cross-validation — guaranteed optimal within the grid.</p><p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">20 examples across 13 datasets · Individual code snippets · LaTeX equations</p></div><div class="content"><div class="card"><div class="card-h"><div class="dot"></div><h2>Mathematical Foundation</h2></div><div class="card-b"><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\theta^* = \arg\max_{\theta\in\Theta}\frac{1}{K}\sum_k \text{Score}(\theta,\text{fold}_k)\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Best params = max CV score</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[|\Theta| = \prod_{i=1}^{h}|V_i|\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Total combos = product of values per param</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{Total fits} = |\Theta| \times K\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Each combo × K folds</p></div><div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)"><div style="font-size:1.1rem">\[\text{RandomizedSearch samples } n \text{ combos randomly}\]</div><p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Often finds ~same result in 1/10th time</p></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Glossary of Technical Terms</h2></div><div class="card-b"><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Hyperparameter</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Set BEFORE training — not learned from data (C, max_depth, k).</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Parameter Grid</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Dict of param→values. {'C':[0.1,1,10], 'gamma':[0.01,0.1]}.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">GridSearchCV</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Exhaustive search — tries every combination with CV.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">RandomizedSearchCV</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Random sampling — much faster for large grids.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">best_params_</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Optimal combination found.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">best_score_</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Highest CV score achieved.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">n_jobs=-1</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Parallelize across all CPUs.</span></div><div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)"><strong style="color:var(--terra)">Overfitting to CV</strong><br><span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Too many combos → finds one that happens to score well on CV folds.</span></div></div></div><div class="card"><div class="card-h"><div class="dot"></div><h2>All Datasets Used (13 unique)</h2></div><div class="card-b"><div style="columns:2;column-gap:1rem"><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data" target="_blank">&#x1F4E6; Breast Cancer Wisconsin (569 records, 30 cell nuclei measurements)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/redwankarimsony/heart-disease-dataset" target="_blank">&#x1F4E6; Heart Disease UCI (1,025 records, 13 clinical features)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#iris-plants-dataset" target="_blank">&#x1F4E6; Iris (150 records, 4 measurements)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#wine-recognition-dataset" target="_blank">&#x1F4E6; Wine Recognition (178 records, 13 chemical analyses)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database" target="_blank">&#x1F4E6; Pima Indians Diabetes (768 records, 8 medical features)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html#optical-recognition-of-handwritten-digits-dataset" target="_blank">&#x1F4E6; Handwritten Digits (1,797 records, 64 (8×8 pixels))</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/brendan45774/test-file" target="_blank">&#x1F4E6; Titanic (891 records, 12 (class, sex, age, fare, etc.))</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn" target="_blank">&#x1F4E6; Telco Customer Churn (7,043 records, 21 service features)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data" target="_blank">&#x1F4E6; Palmer Penguins (344 records, 7 body measurements)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/henriqueyamahata/bank-marketing" target="_blank">&#x1F4E6; Bank Marketing (45,211 records, 17 campaign features)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset" target="_blank">&#x1F4E6; SMS Spam Collection (5,574 records, TF-IDF text)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://www.kaggle.com/datasets/uciml/autompg-dataset" target="_blank">&#x1F4E6; Auto MPG (392 records, 8 car attributes)</a></div><div style="margin-bottom:0.35rem"><a class="dl" href="https://scikit-learn.org/stable/datasets/real_world.html#california-housing-dataset" target="_blank">&#x1F4E6; California Housing (20,640 records, 8 census features)</a></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Cross-Dataset Performance</h2></div><div class="card-b"><div class="cc"><canvas id="chMain"></canvas></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#1 &#x2713; Breast Cancer Wisconsin</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html" target="_blank">📦 Breast Cancer Wisconsin (569 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Medical classification</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">30 cell measurements contain strong cancer biomarkers. False negatives (missed cancer) are far worse than false positives (unnecessary biopsy). This teaches you to optimize recall, not accuracy.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_radius</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_texture</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_perimeter</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_area</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_smoothness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_compactness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_concavity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_concave_points</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_symmetry</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">mean_fractal_dimension</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">... (30 features total)</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> diagnosis (0=malignant, 1=benign)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 97.2% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c1')">Copy</button></div><div class="cs"><pre id="c1"><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_breast_cancer
+data = <span class="fn">load_breast_cancer</span>()
+X, y = data.data, data.target
+feature_names = data.feature_names
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>(data.data, columns=data.feature_names)
+df[<span class="str">'target'</span>] = data.target
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM C×gamma 4×4=16 combos</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#2 &#x2713; Heart Disease UCI</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/redwankarimsony/heart-disease-data" target="_blank">📦 Heart Disease UCI (1,025 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Clinical decision support</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">13 medical features predict heart disease. Shows how ML can augment doctor decisions. Also demonstrates that medical data often has moderate accuracy (70-85%) because biology is complex.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">age</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">sex</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">cp (chest_pain_type)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">trestbps (resting_bp)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">chol (cholesterol)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">fbs (fasting_blood_sugar)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">restecg</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">thalach (max_heart_rate)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">exang (exercise_angina)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">oldpeak (ST_depression)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">slope</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ca (num_vessels)</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+1 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> target (0=no disease, 1=disease)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 87.1% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c2')">Copy</button></div><div class="cs"><pre id="c2"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'heart.csv'</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'target'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'target'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF trees×depth 4×4=16</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#3 &#x2713; Iris</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html" target="_blank">📦 Iris Flower Dataset (150 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Clean separation</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">The 'Hello World' of ML. Three species with almost no overlap in petal/sepal measurements. If your model can't get 95%+ here, something is wrong with your code, not the data.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">sepal_length</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">sepal_width</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">petal_length</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">petal_width</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> species (0=setosa, 1=versicolor, 2=virginica)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 98.7% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c3')">Copy</button></div><div class="cs"><pre id="c3"><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_iris
+data = <span class="fn">load_iris</span>()
+X, y = data.data, data.target
+feature_names = data.feature_names
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>(data.data, columns=data.feature_names)
+df[<span class="str">'target'</span>] = data.target
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_neighbors'</span>: <span class="fn">list</span>(<span class="fn">range</span>(<span class="num">1</span>,<span class="num">21</span>))}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: KNN k=1..20 — 20 combos</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#4 &#x2713; Wine Recognition</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html" target="_blank">📦 Wine Recognition (178 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Dataset exploration</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Testing grid search on Wine Recognition to understand its strengths and limitations.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">alcohol</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">malic_acid</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ash</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">alcalinity_of_ash</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">magnesium</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">total_phenols</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">flavanoids</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">nonflavanoid_phenols</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">proanthocyanins</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">color_intensity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">hue</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">od280/od315</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+1 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> cultivar (0, 1, 2)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 98.9% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c4')">Copy</button></div><div class="cs"><pre id="c4"><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_wine
+data = <span class="fn">load_wine</span>()
+X, y = data.data, data.target
+feature_names = data.feature_names
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>(data.data, columns=data.feature_names)
+df[<span class="str">'target'</span>] = data.target
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM C×gamma×kernel 48 combos</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#5 &#x2713; Pima Indians Diabetes</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database" target="_blank">📦 Pima Indians Diabetes (768 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Class imbalance</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">35% diabetes positive means the model has fewer examples to learn from. Shows why stratified splitting and class-weighted models matter.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Pregnancies</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Glucose</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">BloodPressure</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">SkinThickness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Insulin</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">BMI</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">DiabetesPedigreeFunction</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Age</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Outcome (0=no diabetes, 1=diabetes)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 77.8% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c5')">Copy</button></div><div class="cs"><pre id="c5"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'diabetes.csv'</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'Outcome'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'Outcome'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: LR C×penalty 8 combos</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#6 &#x2713; Handwritten Digits</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://scikit-learn.org/stable/datasets/toy_dataset.html" target="_blank">📦 Handwritten Digits (1,797 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Image as features</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Each 8×8 pixel is a feature (64 total). This miniature image classification problem shows how pixel values feed into standard ML algorithms.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">pixel_0_0</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">pixel_0_1</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">... (64 pixel features, 8×8 image)</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> digit (0-9)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 98.9% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c6')">Copy</button></div><div class="cs"><pre id="c6"><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_digits
+data = <span class="fn">load_digits</span>()
+X, y = data.data, data.target
+feature_names = [<span class="str">f'pixel_{i}'</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">64</span>)]
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>(data.data, columns=data.feature_names)
+df[<span class="str">'target'</span>] = data.target
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM 64 combos, 5-fold=320 fits</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#7 &#x2713; Titanic</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/c/titanic" target="_blank">📦 Titanic Survival (891 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Historical bias encoded in data</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">'Women and children first' means sex and age dominate predictions. This dataset teaches that models learn whatever patterns exist — including societal biases.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Pclass (ticket_class)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Sex</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Age</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">SibSp (siblings/spouses)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Parch (parents/children)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Fare</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Embarked (port)</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Survived (0=died, 1=survived)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 84.2% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c7')">Copy</button></div><div class="cs"><pre id="c7"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'titanic.csv'</span>).<span class="fn">dropna</span>(subset=[<span class="str">'Age'</span>,<span class="str">'Fare'</span>])
+df = pd.<span class="fn">get_dummies</span>(df[[<span class="str">'Pclass'</span>,<span class="str">'Sex'</span>,<span class="str">'Age'</span>,<span class="str">'Fare'</span>,<span class="str">'SibSp'</span>,<span class="str">'Parch'</span>,<span class="str">'Survived'</span>]], drop_first=<span class="kw">True</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'Survived'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'Survived'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF RandomizedSearch 30 iters</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#8 &#x2713; Telco Customer Churn</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn" target="_blank">📦 Telco Customer Churn (7,043 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Business impact</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Contract type is the #1 predictor — month-to-month customers churn 3× more. This teaches that the most predictive feature is often the simplest one.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">gender</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">SeniorCitizen</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Partner</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Dependents</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">tenure</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">PhoneService</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MultipleLines</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">InternetService</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">OnlineSecurity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">OnlineBackup</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">DeviceProtection</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">TechSupport</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+7 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Churn (Yes/No)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 80.5% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c8')">Copy</button></div><div class="cs"><pre id="c8"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'WA_Fn-UseC_-Telco-Customer-Churn.csv'</span>)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF grid vs random comparison</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#9 &#x2713; Palmer Penguins</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data" target="_blank">📦 Palmer Penguins (344 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Modern Iris replacement</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Three species with clear body-size differences. Gentoo are much larger. This dataset has missing values — teaching you to handle NaN in real data.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">species</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">island</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">culmen_length_mm</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">culmen_depth_mm</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">flipper_length_mm</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">body_mass_g</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">sex</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> species (Adelie, Chinstrap, Gentoo)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 99.3% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c9')">Copy</button></div><div class="cs"><pre id="c9"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'penguins_size.csv'</span>).<span class="fn">dropna</span>()
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM minimal tuning needed</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#10 &#x2713; Bank Marketing</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset" target="_blank">📦 Bank Marketing (45,211 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Leakage warning</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Call duration is the best predictor but you can't know it before calling! This is the classic data leakage example — never use features unavailable at prediction time.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">age</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">job</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">marital</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">education</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">default</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">balance</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">housing</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">loan</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">contact</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">day</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">month</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">duration</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+4 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> y (subscribed to term deposit: yes/no)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 90.1% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c10')">Copy</button></div><div class="cs"><pre id="c10"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'bank-full.csv'</span>, sep=<span class="str">';'</span>)
+df = pd.<span class="fn">get_dummies</span>(df, drop_first=<span class="kw">True</span>)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF 3 params tuned</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#11 &#x2713; SMS Spam Collection</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset" target="_blank">📦 SMS Spam Collection (5,574 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Text classification</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Words like 'free', 'win', 'prize' strongly indicate spam. Bag-of-words features work surprisingly well for simple text problems.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">label (ham/spam)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">message (text)</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> label (ham=legitimate, spam=junk)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">📊 Best = 98.4% — Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c11')">Copy</button></div><div class="cs"><pre id="c11"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'spam.csv'</span>, encoding=<span class="str">'latin-1'</span>)[[<span class="str">'v1'</span>,<span class="str">'v2'</span>]]
+df.columns = [<span class="str">'label'</span>,<span class="str">'text'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: NB alpha — 1 param, 10 values</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#12 &#x2713; Auto MPG</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/9/auto+mpg" target="_blank">📦 Auto MPG (392 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Physics-backed features</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Heavier cars with more cylinders burn more fuel — physics guarantees this relationship. When your features have a causal relationship with the target, models work well.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">cylinders</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">displacement</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">horsepower</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">weight</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">acceleration</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">model_year</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">origin</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> mpg (miles per gallon)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ R² = 0.88 — Good Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">R-squared measures what percentage of the variation in the target your model explains</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">R² = 0.85 means your model explains 85% of why values differ. The remaining 15% is noise or missing features.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">Scale: <strong>excellent</strong>: >0.90, <strong>good</strong>: 0.70-0.90, <strong>mediocre</strong>: 0.50-0.70, <strong>poor</strong>: <0.50</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c12')">Copy</button></div><div class="cs"><pre id="c12"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'auto-mpg.csv'</span>).<span class="fn">dropna</span>()
+X = df.<span class="fn">drop</span>(<span class="str">'mpg'</span>, axis=<span class="num">1</span>).<span class="fn">select_dtypes</span>(<span class="str">'number'</span>)
+y = df[<span class="str">'mpg'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget stats: min={y.min():.2f}, max={y.max():.2f}, mean={y.mean():.2f}, std={y.std():.2f}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF trees×depth×min_leaf 27 combos</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>#13 &#x2713; California Housing</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://scikit-learn.org/stable/datasets/real_world.html" target="_blank">📦 California Housing (20,640 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Geographic prediction</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Latitude, longitude, and median income predict home values. This shows how location-based features carry strong signals and why feature engineering (combining lat/long) helps.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MedInc</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">HouseAge</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">AveRooms</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">AveBedrms</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Population</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">AveOccup</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Latitude</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Longitude</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> MedHouseVal (median house value in $100k)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ R² = 0.81 — Good Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65">R-squared measures what percentage of the variation in the target your model explains</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem">R² = 0.85 means your model explains 85% of why values differ. The remaining 15% is noise or missing features.</div>
+<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.2rem">Scale: <strong>excellent</strong>: >0.90, <strong>good</strong>: 0.70-0.90, <strong>mediocre</strong>: 0.50-0.70, <strong>poor</strong>: <0.50</div>
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c13')">Copy</button></div><div class="cs"><pre id="c13"><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> fetch_california_housing
+data = <span class="fn">fetch_california_housing</span>()
+X, y = data.data, data.target
+feature_names = data.feature_names
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">DataFrame</span>(data.data, columns=data.feature_names)
+df[<span class="str">'target'</span>] = data.target
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget stats: min={y.min():.2f}, max={y.max():.2f}, mean={y.mean():.2f}, std={y.std():.2f}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF Grid vs Random comparison</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>#14 &#x2717; Breast Cancer Wisconsin</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/uciml/mushroom-classification" target="_blank">📦 Mushroom Classification (8,124 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Single dominant feature</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Odor alone classifies 98%+ of mushrooms. Teaches that sometimes you don't need 22 features — feature importance analysis can reveal that one feature does all the work.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">cap_shape</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">cap_surface</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">cap_color</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">bruises</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">odor</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">gill_attachment</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">gill_spacing</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">gill_size</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">gill_color</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">stalk_shape</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">stalk_root</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">stalk_surface_above</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+10 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> class (poisonous/edible)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.999 — Excellent</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c14')">Copy</button></div><div class="cs"><pre id="c14"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder
+df = pd.<span class="fn">read_csv</span>(<span class="str">'mushrooms.csv'</span>)
+<span class="kw">for</span> col <span class="kw">in</span> df.columns:
+    df[col] = <span class="fn">LabelEncoder</span>().<span class="fn">fit_transform</span>(df[col])
+X = df.<span class="fn">drop</span>(<span class="str">'class'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'class'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM tuning — data is so easy params barely matter</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot r"></div><h2>#15 &#x2717; Heart Disease UCI</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/2/adult" target="_blank">📦 Adult Income (Census) (32,561 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Structural inequality</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Education and occupation predict income because the economy is structured that way. The model doesn't discover causation — it mirrors existing patterns.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">age</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">workclass</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">fnlwgt</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">education</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">education_num</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">marital_status</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">occupation</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">relationship</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">race</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">sex</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">capital_gain</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">capital_loss</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+2 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> income (<=50K or >50K)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.86 — Good Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c15')">Copy</button></div><div class="cs"><pre id="c15"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'adult.csv'</span>)
+df = pd.<span class="fn">get_dummies</span>(df, drop_first=<span class="kw">True</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'income_>50K'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'income_>50K'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF tuning on 32K rows — n_estimators matters most</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#16 &#x2B50; Breast Cancer Wisconsin</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/602/dry+bean+dataset" target="_blank">📦 Dry Bean Classification (13,611 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Computer vision features</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">16 shape features from photographs. Near-perfect classification because beans are physically distinctive. Shows how CV features feed into ML.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Area</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Perimeter</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MajorAxisLength</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MinorAxisLength</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">AspectRatio</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Eccentricity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ConvexArea</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">EquivDiameter</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Extent</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Solidity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Roundness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Compactness</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+4 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Class (7 bean types)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.94 — Excellent</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c16')">Copy</button></div><div class="cs"><pre id="c16"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder
+df = pd.<span class="fn">read_csv</span>(<span class="str">'Dry_Bean.csv'</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'Class'</span>, axis=<span class="num">1</span>)
+y = <span class="fn">LabelEncoder</span>().<span class="fn">fit_transform</span>(df[<span class="str">'Class'</span>])
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_neighbors'</span>: <span class="fn">list</span>(<span class="fn">range</span>(<span class="num">1</span>,<span class="num">21</span>))}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: KNN tuning — k=5 beats k=1 (less noise)</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#17 &#x2B50; Wine Recognition</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/236/seeds" target="_blank">📦 Seeds Dataset (210 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Clean cluster structure</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Three wheat varieties have distinct shapes. Even simple models get 90%+. Good for validating that your pipeline works correctly.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">area</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">perimeter</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">compactness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">kernel_length</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">kernel_width</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">asymmetry_coefficient</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">groove_length</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> variety (Kama, Rosa, Canadian)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.95 — Excellent</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c17')">Copy</button></div><div class="cs"><pre id="c17"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'seeds.csv'</span>, sep=<span class="str">'\t'</span>, header=<span class="kw">None</span>)
+df.columns = [<span class="str">'area'</span>,<span class="str">'perimeter'</span>,<span class="str">'compactness'</span>,<span class="str">'kernel_length'</span>,<span class="str">'kernel_width'</span>,<span class="str">'asymmetry'</span>,<span class="str">'groove_length'</span>,<span class="str">'variety'</span>]
+X = df.<span class="fn">drop</span>(<span class="str">'variety'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'variety'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM C×gamma on 210 rows — risk of CV overfit</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#18 &#x2B50; Handwritten Digits</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset" target="_blank">📦 Online Shoppers Intention (12,330 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Conversion prediction</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Only 15% of sessions convert. Bounce rate is the strongest negative signal. Teaches e-commerce analytics and imbalanced classification.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Administrative</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Administrative_Duration</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Informational</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Informational_Duration</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ProductRelated</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ProductRelated_Duration</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">BounceRates</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ExitRates</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">PageValues</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">SpecialDay</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Month</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">OperatingSystems</span><span style="display:inline-block;padding:0.15rem 0.3rem;font-size:0.78rem;color:var(--text-dim)">+5 more</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Revenue (True/False)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.90 — Excellent</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c18')">Copy</button></div><div class="cs"><pre id="c18"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'online_shoppers_intention.csv'</span>)
+df = pd.<span class="fn">get_dummies</span>(df, drop_first=<span class="kw">True</span>)
+X = df.<span class="fn">drop</span>(<span class="str">'Revenue'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'Revenue'</span>].<span class="fn">astype</span>(int)
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: RF tuning — max_depth=10 prevents overfitting</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#19 &#x2B50; Iris</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://www.kaggle.com/datasets/adityakadiwal/water-potability" target="_blank">📦 Water Potability (3,276 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 No magic features</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Sometimes the features just don't contain enough signal. 9 water chemistry measurements can't reliably separate safe from unsafe — you need more lab tests or different measurements entirely. Not every problem is solvable with the data you have.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">ph</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Hardness</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Solids</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Chloramines</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Sulfate</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Conductivity</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Organic_carbon</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Trihalomethanes</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Turbidity</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> Potability (0=not safe, 1=safe)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--red-bg);border-radius:8px;border:1px solid rgba(192,57,43,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">❌ Best CV = 0.69 — Poor Result</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c19')">Copy</button></div><div class="cs"><pre id="c19"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'water_potability.csv'</span>).<span class="fn">dropna</span>()
+X = df.<span class="fn">drop</span>(<span class="str">'Potability'</span>, axis=<span class="num">1</span>)
+y = df[<span class="str">'Potability'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'n_estimators'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">500</span>], <span class="str">'max_depth'</span>: [<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>], <span class="str">'min_samples_leaf'</span>: [<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ⚠️ VERDICT: FAIL: Best params can't fix weak features</span></pre></div></div></div></div><div class="card"><div class="card-h"><div class="dot g"></div><h2>#20 &#x2B50; Bank Marketing</h2></div><div class="card-b"><div style="margin:0.5rem 0"><a class="dl" href="https://archive.ics.uci.edu/dataset/174/parkinsons" target="_blank">📦 Parkinsons Disease (195 records)</a></div>
+<div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin:0.7rem 0;border-left:3px solid var(--terra)">
+<div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">💡 Voice biomarkers</div>
+<div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">22 voice measurements detect tremors humans can't hear. Medical AI at its best — augmenting human senses with quantitative analysis.</div>
+</div>
+<div style="margin:0.5rem 0">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Features</div>
+<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Fo(Hz)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Fhi(Hz)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Flo(Hz)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Jitter(%)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Jitter(Abs)</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:RAP</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:PPQ</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">Jitter:DDP</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">MDVP:Shimmer</span><span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.15rem 0.5rem;font-size:0.78rem;margin:0.15rem 0.1rem;font-family:'JetBrains Mono',monospace">... (22 voice features)</span>
+<div style="margin-top:0.3rem;font-size:0.82rem;color:var(--text-dim)"><strong style="color:var(--terra)">Target:</strong> status (0=healthy, 1=Parkinsons)</div>
+</div>
+<div style="padding:0.8rem 1rem;background:var(--green-bg);border-radius:8px;border:1px solid rgba(58,125,68,0.12);margin:0.7rem 0">
+<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">✅ Best CV = 0.92 — Excellent</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65"></div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-top:0.15rem"></div>
+
+</div><div class="cw"><div class="ct"><span class="ln">Python 3</span><button class="cb" onclick="cpCode('c20')">Copy</button></div><div class="cs"><pre id="c20"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">'parkinsons.csv'</span>)
+X = df.<span class="fn">drop</span>([<span class="str">'name'</span>,<span class="str">'status'</span>], axis=<span class="num">1</span>)
+y = df[<span class="str">'status'</span>]
+
+<span class="cmt"># --- DATA EXPLORATION ---</span>
+<span class="kw">print</span>(<span class="str">f'Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns'</span>)
+<span class="kw">print</span>(<span class="str">f'\nColumn names and types:'</span>)
+<span class="kw">print</span>(df.dtypes.<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nFirst 10 rows — get a feel for the data:'</span>)
+<span class="kw">print</span>(df.<span class="fn">head</span>(<span class="num">10</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nBasic statistics:'</span>)
+<span class="kw">print</span>(df.<span class="fn">describe</span>().<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">to_string</span>())
+<span class="kw">print</span>(<span class="str">f'\nMissing values: {df.isnull().sum().sum()}'</span>)
+
+<span class="cmt"># --- TARGET DISTRIBUTION ---</span>
+<span class="cmt"># Understanding the class balance is CRITICAL before modeling</span>
+<span class="kw">print</span>(<span class="str">f'\nTarget distribution:'</span>)
+<span class="kw">print</span>(y.<span class="fn">value_counts</span>())
+<span class="kw">print</span>(<span class="str">f'\nClass balance: {y.value_counts(normalize=True).round(3).to_dict()}'</span>)
+
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {<span class="str">'svc__C'</span>: [<span class="num">0.1</span>,<span class="num">1</span>,<span class="num">10</span>,<span class="num">100</span>], <span class="str">'svc__gamma'</span>: [<span class="str">'scale'</span>,<span class="num">0.001</span>,<span class="num">0.01</span>,<span class="num">0.1</span>]}
+<span class="kw">print</span>(<span class="str">f'Parameter grid:'</span>)
+<span class="kw">for</span> param, values <span class="kw">in</span> param_grid.<span class="fn">items</span>():
+    <span class="kw">print</span>(<span class="str">f'  {param}: {values}'</span>)
+
+total_combos = <span class="num">1</span>
+<span class="kw">for</span> v <span class="kw">in</span> param_grid.<span class="fn">values</span>():
+    total_combos *= <span class="fn">len</span>(v)
+<span class="kw">print</span>(<span class="str">f'\nTotal combinations: {total_combos} × 5 folds = {total_combos*5} model fits'</span>)
+
+gs = <span class="fn">GridSearchCV</span>(<span class="fn">RandomForestClassifier</span>(random_state=<span class="num">42</span>), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>, return_train_score=<span class="kw">True</span>)
+gs.<span class="fn">fit</span>(X, y)
+
+<span class="cmt"># --- RESULTS ---</span>
+<span class="kw">print</span>(<span class="str">f'\n{'</span>=<span class="str">'*50}'</span>)
+<span class="kw">print</span>(<span class="str">f'Best CV score: {gs.best_score_:.4f} ({gs.best_score_*100:.1f}%)'</span>)
+<span class="kw">print</span>(<span class="str">f'Best parameters: {gs.best_params_}'</span>)
+
+<span class="cmt"># Show all results ranked</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+results = pd.<span class="fn">DataFrame</span>(gs.cv_results_)[[<span class="str">'params'</span>,<span class="str">'mean_test_score'</span>,<span class="str">'std_test_score'</span>,<span class="str">'mean_train_score'</span>,<span class="str">'rank_test_score'</span>]]
+results = results.<span class="fn">sort_values</span>(<span class="str">'rank_test_score'</span>).<span class="fn">head</span>(<span class="num">5</span>)
+<span class="kw">print</span>(<span class="str">f'\nTop 5 parameter combinations:'</span>)
+<span class="kw">print</span>(results.<span class="fn">to_string</span>())
+
+<span class="cmt"># Check for overfitting: if train >> test, model is too complex</span>
+best_train = gs.cv_results_[<span class="str">'mean_train_score'</span>][gs.best_index_]
+best_test = gs.best_score_
+gap = best_train - best_test
+<span class="kw">print</span>(<span class="str">f'\nOverfit check: train={best_train:.4f}, test={best_test:.4f}, gap={gap:.4f}'</span>)
+<span class="kw">if</span> gap > <span class="num">0.05</span>:
+    <span class="kw">print</span>(<span class="str">f'⚠️ Gap > 5% — model may be overfitting. Try simpler parameters.'</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">f'✓ Gap < 5% — model generalizes well.'</span>)
+
+<span class="cmt"># ✓ VERDICT: SVM tuning on small medical data</span></pre></div></div></div></div><div class="card" style="border:2px solid var(--terra-light)"><div class="card-h"><div class="dot a"></div><h2>🧠 Deep Learning Connection</h2></div><div class="card-b"><div class="prose"><p><strong>For deep learning: Bayesian optimization (Optuna, W&B Sweeps) replaces grid search. Learning rate, batch size, architecture choices are tuned efficiently.</strong></p><p style="margin-top:.5rem;color:var(--text-dim)"><em>Neural nets have too many hyperparameters for grid search. Optuna, Ray Tune, and population-based training explore the space orders of magnitude faster.</em></div></div></div><div class="card" style="border:2px solid var(--green)"><div class="card-h"><div class="dot a"></div><h2>🚀 Advanced AI Applications</h2></div><div class="card-b"><div class="prose"><p><strong>Production applications using this algorithm + deep learning:</strong></p><p style="margin-top:.5rem;color:var(--text-dim)">◇ <strong>Computer Vision</strong> — CNNs, detection, segmentation<br>◇ <strong>NLP / LLMs</strong> — sentiment, NER, fine-tuning transformers<br>◇ <strong>Reinforcement Learning</strong> — Q-learning, policy gradient, robotics<br>◇ <strong>Generative AI</strong> — GANs, diffusion, prompt engineering<br>◇ <strong>Recommender Systems</strong> — collaborative, content-based, hybrid<br>◇ <strong>Time-Series</strong> — LSTM, Transformer, Prophet<br>◇ <strong>MLOps</strong> — Docker, FastAPI, monitoring, A/B testing</p></div></div></div><div class="card"><div class="card-h"><div class="dot a"></div><h2>Key Takeaways</h2></div><div class="card-b"><div class="tk-g"><div class="tk"><h4 class="u">&#x2705; Best Use Cases</h4><p>&#x2705; Small grid (<100 combos)</p><p>&#x2705; Critical apps (0.5% matters)</p><p>&#x2705; SVM (C,gamma crucial)</p><p>&#x2705; With cross-validation</p></div><div class="tk"><h4 class="av">&#x274C; When to Avoid</h4><p>&#x274C; Large grid → RandomizedSearch</p><p>&#x274C; Many params → combinatorial explosion</p><p>&#x274C; Diminishing returns</p><p>&#x274C; Test too many → overfit to CV</p></div></div></div></div></div><div class="foot"><p>ML Analytics Platform · 20 examples, 13 datasets</p></div><script>new Chart(document.getElementById('chMain'),{type:'bar',data:{labels:["Breast Cance", "Heart Diseas", "Iris", "Wine Recogni", "Pima Indians", "Handwritten ", "Titanic", "Telco Custom", "Palmer Pengu", "Bank Marketi", "SMS Spam Col", "Auto MPG"],datasets:[{label:'Best',data:[97.2, 87.1, 98.7, 98.9, 77.8, 98.9, 84.2, 80.5, 99.3, 90.1, 98.4, 88.0],backgroundColor:['rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(193,95,60,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)','rgba(58,125,68,0.5)'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Cross-Dataset Performance',color:'#2D2B28',font:{size:13,weight:'600'}}},scales:{x:{ticks:{color:'#6B6861',maxRotation:45,font:{size:10}}},y:{title:{display:true,text:'Best',color:'#6B6861'},ticks:{color:'#6B6861'},grid:{color:'#EEEDE8'}}}}});
+function cpCode(id){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){var b=document.getElementById(id).closest(".cw").querySelector(".cb");b.textContent="Copied \u2713";setTimeout(function(){b.textContent="Copy"},2000);});}</script></body></html>
