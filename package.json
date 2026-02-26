@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Jace Sabr — AI & Robotics Consultant Portfolio",
   "scripts": {
-    "start": "npx serve -s . -l $PORT"
+    "start": "serve -s . -p $PORT"
   },
   "dependencies": {
     "serve": "^14.2.0"
