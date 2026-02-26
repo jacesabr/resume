@@ -3,21 +3,23 @@ const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
+
+// Startup diagnostics
+console.log("=== STARTUP ===");
+console.log("PORT:", PORT);
+console.log("__dirname:", __dirname);
+console.log("files:", fs.readdirSync(__dirname).filter(f => f.endsWith(".html")).length, "html files");
+console.log("index.html exists:", fs.existsSync(path.join(__dirname, "index.html")));
+
 const MIME = {
-  ".html": "text/html",
-  ".css": "text/css",
-  ".js": "application/javascript",
-  ".json": "application/json",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".svg": "image/svg+xml",
-  ".ico": "image/x-icon",
-  ".woff": "font/woff",
-  ".woff2": "font/woff2",
-  ".txt": "text/plain",
+  ".html": "text/html", ".css": "text/css", ".js": "application/javascript",
+  ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg",
+  ".svg": "image/svg+xml", ".ico": "image/x-icon", ".woff": "font/woff",
+  ".woff2": "font/woff2", ".txt": "text/plain",
 };
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
+  console.log(req.method, req.url);
   let url = decodeURIComponent(req.url.split("?")[0]);
   if (url === "/") url = "/index.html";
   if (!path.extname(url)) url += ".html";
@@ -39,4 +41,12 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream" });
     res.end(data);
   });
-}).listen(PORT, "0.0.0.0", () => console.log(`Listening on port ${PORT}`));
+});
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log("=== SERVER READY on 0.0.0.0:" + PORT + " ===");
+});
+
+server.on("error", (err) => {
+  console.error("SERVER ERROR:", err);
+});
