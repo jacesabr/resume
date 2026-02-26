@@ -12,14 +12,22 @@ const MIME = {
   ".jpg": "image/jpeg",
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".txt": "text/plain",
 };
 
 http.createServer((req, res) => {
-  let url = req.url.split("?")[0];
+  let url = decodeURIComponent(req.url.split("?")[0]);
   if (url === "/") url = "/index.html";
   if (!path.extname(url)) url += ".html";
 
-  const file = path.join(__dirname, url);
+  const file = path.resolve(path.join(__dirname, url));
+  if (!file.startsWith(__dirname)) {
+    res.writeHead(403);
+    return res.end("Forbidden");
+  }
+
   fs.readFile(file, (err, data) => {
     if (err) {
       fs.readFile(path.join(__dirname, "index.html"), (e, d) => {
