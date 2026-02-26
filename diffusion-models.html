@@ -1,0 +1,696 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Diffusion Models — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+.fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+.fc{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;border-left:3px solid var(--terra);}
+.fc.g{border-left-color:var(--green);}.fc.a{border-left-color:var(--amber);}.fc.r{border-left-color:var(--red);}
+.fc h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;font-weight:600;color:var(--terra);}
+.fc.g h4{color:var(--green);}.fc.a h4{color:var(--amber);}.fc.r h4{color:var(--red);}
+.fc p{font-size:0.84rem;color:var(--text-dim);line-height:1.65;}.fc p strong{color:var(--text);}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+@media(max-width:640px){.tg,.tk-g,.fg{grid-template-columns:1fr!important;}}
+</style></head>
+
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+    <a href="index.html">Portfolio</a>
+    <span class="sep">/</span>
+    <span class="pt">Diffusion Models</span>
+    <span class="algo-badge">Generative &middot; DL8</span>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+    <h1>Diffusion <span>Models</span></h1>
+    <p class="sub">Learning to generate data by reversing a gradual noising process. The mathematical framework behind DALL-E, Stable Diffusion, Imagen, and the modern generative AI revolution.</p>
+</div>
+
+<div class="content">
+
+<!-- ═══ SECTION 1: Mathematical Foundation ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot"></div>
+        <h2>Mathematical Foundation</h2>
+    </div>
+    <div class="card-b prose">
+        <p>Diffusion models are rooted in <strong>non-equilibrium thermodynamics</strong>. The core idea: define a forward process that gradually destroys data by adding noise, then learn a reverse process that reconstructs data from noise. The mathematics are elegant and surprisingly tractable.</p>
+
+        <div class="eq">
+            Forward Process (Noise Addition)
+        </div>
+
+        <p>The <strong>forward process</strong> \( q \) adds Gaussian noise to data over \( T \) timesteps. Each step is a simple Gaussian transition:</p>
+
+        <div class="eq" style="font-size:1rem;">
+            \( q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1-\beta_t}\,\mathbf{x}_{t-1},\; \beta_t \mathbf{I}) \)
+        </div>
+
+        <p>Here \( \beta_t \in (0, 1) \) is the <strong>noise schedule</strong>, controlling how much noise is injected at each step. A key property is that we can sample any \( \mathbf{x}_t \) directly from \( \mathbf{x}_0 \) without iterating through all intermediate steps. Define \( \alpha_t = 1 - \beta_t \) and \( \bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s \), then:</p>
+
+        <div class="eq" style="font-size:1rem;">
+            \( q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0,\; (1-\bar{\alpha}_t)\mathbf{I}) \)
+        </div>
+
+        <p>This means: \( \mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon} \), where \( \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \). As \( t \to T \), the signal vanishes and \( \mathbf{x}_T \approx \mathcal{N}(\mathbf{0}, \mathbf{I}) \).</p>
+
+        <div class="eq">
+            Reverse Process (Learned Denoising)
+        </div>
+
+        <p>The <strong>reverse process</strong> \( p_\theta \) learns to undo each noising step. It is parameterized as a Gaussian whose mean and variance are predicted by a neural network:</p>
+
+        <div class="eq" style="font-size:1rem;">
+            \( p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1};\; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t),\; \sigma_t^2 \mathbf{I}) \)
+        </div>
+
+        <p>In practice, the network predicts the <strong>noise</strong> \( \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \) rather than the mean directly. The mean is then recovered as:</p>
+
+        <div class="eq" style="font-size:1rem;">
+            \( \boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right) \)
+        </div>
+
+        <div class="eq">
+            Training Objective (Simplified Loss)
+        </div>
+
+        <p>The full variational lower bound (ELBO) decomposes into per-timestep KL divergence terms. Ho et al. (2020) showed that a <strong>simplified objective</strong> works remarkably well in practice:</p>
+
+        <div class="eq" style="font-size:1rem;">
+            \( L_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}} \left[ \| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \|^2 \right] \)
+        </div>
+
+        <p>The training procedure is beautifully simple: sample a clean image \( \mathbf{x}_0 \), pick a random timestep \( t \), add the corresponding noise to get \( \mathbf{x}_t \), and train the network to predict the noise that was added. That is the entire algorithm.</p>
+
+        <div class="tg" style="margin-top:1.25rem;">
+            <div class="ti">
+                <h4>Noise Schedule</h4>
+                <p><strong>Linear schedule</strong>: \( \beta_t \) increases linearly from \( \beta_1 = 10^{-4} \) to \( \beta_T = 0.02 \). <strong>Cosine schedule</strong> (Nichol & Dhariwal, 2021) produces smoother degradation and better FID scores, especially for low-resolution images.</p>
+            </div>
+            <div class="ti">
+                <h4>Variance Choice</h4>
+                <p>The variance \( \sigma_t^2 \) can be fixed to \( \beta_t \) (DDPM default) or to \( \tilde{\beta}_t = \frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t \). <strong>Learned variance</strong> interpolation between these bounds (Nichol & Dhariwal) reduces the number of required sampling steps.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 2: The Diffusion Process ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>The Diffusion Process</h2>
+    </div>
+    <div class="card-b prose">
+        <p><strong>The ink-in-water analogy.</strong> Imagine placing a single drop of ink into a glass of still water. At first, the ink has a clear, structured form -- you can see the drop, its tendrils, its shape. Over time, the ink diffuses outward. The structure dissolves. Eventually, the water becomes a uniform, featureless gray. Every trace of the original drop is gone.</p>
+
+        <p>This is the <strong>forward process</strong>. A clean, structured image (the ink drop) is gradually corrupted with Gaussian noise (the diffusion through water) until it becomes pure static -- indistinguishable from random noise. The process is trivial to define and requires no learning.</p>
+
+        <p>Now imagine you could <strong>reverse time</strong> on that glass of water. Watch the uniform gray spontaneously coalesce, tendrils forming, structure emerging, until you recover the exact original ink drop. This reversal -- reconstructing structure from chaos -- is the <strong>reverse process</strong>, and it is what the neural network learns to do.</p>
+
+        <p>The key insight is that each individual reverse step is small. The network does not need to hallucinate an entire image from nothing. It only needs to answer: <strong>"Given this slightly noisy version, what does the slightly less noisy version look like?"</strong> Repeated 1,000 times, these tiny denoising steps accumulate into the generation of a complete, coherent image.</p>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Forward Process (Destruction)</h4>
+                <p><strong>No parameters to learn.</strong> Start with a clean data sample \( \mathbf{x}_0 \). At each of \( T \) timesteps, add a small amount of Gaussian noise according to the noise schedule. By step \( T \) (typically 1000), the result is indistinguishable from pure noise \( \mathcal{N}(\mathbf{0}, \mathbf{I}) \). The process is a fixed Markov chain.</p>
+            </div>
+            <div class="ti">
+                <h4>Reverse Process (Generation)</h4>
+                <p><strong>Learned via neural network.</strong> Start from pure noise \( \mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \). At each step, the model predicts and removes a small amount of noise. After \( T \) steps, the result is a clean, realistic sample \( \mathbf{x}_0 \). Each step is a learned Gaussian transition conditioned on the current noisy input and the timestep.</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Why This Works</h4>
+            <p>The forward process has a known, tractable posterior \( q(\mathbf{x}_{t-1}|\mathbf{x}_t, \mathbf{x}_0) \). When each step adds only a tiny amount of noise, the reverse conditional is also approximately Gaussian (Feller, 1949). This means a neural network parameterizing a Gaussian can closely approximate each reverse step. The small step size is what makes the problem tractable -- large jumps would require modeling arbitrarily complex distributions.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 3: Architecture Overview ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot a"></div>
+        <h2>Architecture Overview</h2>
+    </div>
+    <div class="card-b prose">
+        <p>The noise prediction network \( \boldsymbol{\epsilon}_\theta \) is almost universally a <strong>U-Net</strong> -- an encoder-decoder architecture with skip connections. The U-Net was originally designed for medical image segmentation, but its ability to preserve spatial detail while capturing global context makes it ideal for denoising.</p>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>U-Net Backbone</h4>
+                <p>The encoder <strong>downsamples</strong> the input through a series of residual blocks and attention layers, compressing the spatial dimensions while expanding channels (e.g., 64 &rarr; 128 &rarr; 256 &rarr; 512). The decoder <strong>upsamples</strong> symmetrically, and <strong>skip connections</strong> concatenate encoder features to decoder layers at each resolution, preserving fine-grained spatial information that would otherwise be lost in the bottleneck.</p>
+            </div>
+            <div class="ti">
+                <h4>Timestep Conditioning</h4>
+                <p>The network must know <strong>which timestep</strong> it is denoising at, because the amount and character of noise varies with \( t \). The timestep is embedded using <strong>sinusoidal positional encoding</strong> (borrowed from Transformers), then projected through a linear layer and <strong>added to each residual block</strong> via adaptive normalization (AdaGN) or simple addition. This tells each layer how aggressive to be in its denoising.</p>
+            </div>
+        </div>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Self-Attention Layers</h4>
+                <p>Inserted at <strong>lower resolutions</strong> (16x16 or 32x32) within the U-Net. These allow the model to capture <strong>long-range spatial dependencies</strong> -- ensuring that, for example, both eyes in a face are consistent even though they are far apart in pixel space. At higher resolutions, convolutions alone handle local patterns efficiently.</p>
+            </div>
+            <div class="ti">
+                <h4>The Denoising Loop</h4>
+                <p>At inference time, start with \( \mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \). For each \( t = T, T-1, \ldots, 1 \): feed \( \mathbf{x}_t \) and \( t \) into the U-Net to predict \( \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \), compute \( \boldsymbol{\mu}_\theta \), sample \( \mathbf{x}_{t-1} \sim \mathcal{N}(\boldsymbol{\mu}_\theta, \sigma_t^2\mathbf{I}) \). After \( T \) steps, \( \mathbf{x}_0 \) is the generated image. This is <strong>ancestral sampling</strong>.</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Latent Diffusion (Stable Diffusion)</h4>
+            <p>Running the full diffusion loop in pixel space for 512x512 images is computationally prohibitive. <strong>Latent Diffusion Models</strong> (Rombach et al., 2022) first compress images to a low-dimensional latent space using a pre-trained VAE encoder (e.g., 512x512x3 &rarr; 64x64x4), run the entire diffusion process in this compact space, then decode back to pixels. This reduces computation by roughly 50x while maintaining image quality.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 4: Key Concepts ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot"></div>
+        <h2>Key Concepts</h2>
+    </div>
+    <div class="card-b">
+        <div class="tg">
+            <div class="ti">
+                <h4>Forward Process</h4>
+                <p>The fixed Markov chain that gradually adds noise to data over \( T \) timesteps. Each step is a small Gaussian perturbation. The entire chain has a <strong>closed-form solution</strong>, allowing direct sampling of any \( \mathbf{x}_t \) from \( \mathbf{x}_0 \) without iteration. This is critical for efficient training.</p>
+            </div>
+            <div class="ti">
+                <h4>Reverse Process</h4>
+                <p>The learned Markov chain that iteratively denoises from \( \mathbf{x}_T \) back to \( \mathbf{x}_0 \). Each transition is a <strong>learned Gaussian</strong> whose parameters are output by a neural network. The reverse process is what we sample from at generation time.</p>
+            </div>
+            <div class="ti">
+                <h4>Noise Schedule</h4>
+                <p>The sequence \( \beta_1, \ldots, \beta_T \) controlling how much noise is added at each step. <strong>Linear</strong>: simple ramp from small to large. <strong>Cosine</strong>: smoother curve that preserves more signal at early steps, yielding better sample quality. The schedule directly determines \( \bar{\alpha}_t \) and thus the signal-to-noise ratio at each timestep.</p>
+            </div>
+            <div class="ti">
+                <h4>U-Net Architecture</h4>
+                <p>Encoder-decoder with <strong>skip connections</strong> at each resolution level. The encoder captures semantics, the decoder reconstructs spatial detail, and the skips preserve fine structure. <strong>ResNet blocks</strong> + <strong>self-attention</strong> + <strong>timestep conditioning</strong> form the standard recipe. Modern variants add cross-attention for text conditioning.</p>
+            </div>
+            <div class="ti">
+                <h4>Classifier-Free Guidance (CFG)</h4>
+                <p>A technique to improve sample quality and text alignment <strong>without a separate classifier</strong>. During training, the text condition is randomly dropped (replaced with null) some fraction of the time. At inference, two predictions are made -- conditional and unconditional -- and the output is extrapolated: \( \hat{\boldsymbol{\epsilon}} = \boldsymbol{\epsilon}_\text{uncond} + w \cdot (\boldsymbol{\epsilon}_\text{cond} - \boldsymbol{\epsilon}_\text{uncond}) \). The guidance scale \( w \) (typically 7-15) controls the quality/diversity tradeoff.</p>
+            </div>
+            <div class="ti">
+                <h4>DDPM vs DDIM</h4>
+                <p><strong>DDPM</strong> (Ho et al., 2020): stochastic sampling with \( T = 1000 \) steps. High quality but slow. <strong>DDIM</strong> (Song et al., 2021): a deterministic, non-Markovian generalization that uses the same trained model but skips steps. DDIM can generate in <strong>50-100 steps</strong> with minimal quality loss, and its determinism enables meaningful latent space interpolation.</p>
+            </div>
+            <div class="ti">
+                <h4>Latent Diffusion</h4>
+                <p>Instead of operating on raw pixels, diffuse in the <strong>latent space of a pre-trained VAE</strong>. A 512x512 image becomes a 64x64 latent, reducing the computational cost by orders of magnitude. The VAE is trained separately and frozen during diffusion training. This is the architecture behind <strong>Stable Diffusion</strong> and most modern text-to-image systems.</p>
+            </div>
+            <div class="ti">
+                <h4>Text Conditioning via CLIP</h4>
+                <p>Text prompts are encoded using a <strong>frozen CLIP text encoder</strong> (or T5) into a sequence of token embeddings. These embeddings are injected into the U-Net via <strong>cross-attention layers</strong>: the image features attend to the text tokens, allowing the model to steer generation toward the described content. CLIP was pre-trained on 400M image-text pairs, providing rich semantic representations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 5: Code Example 1 — Simple DDPM on MNIST ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code Example 1 &mdash; Simple DDPM Training on MNIST</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>A minimal but complete DDPM implementation in PyTorch. We define a noise schedule, a small U-Net noise predictor, and the training loop that learns to predict the noise added to MNIST digits. This is the core algorithm from Ho et al. (2020) distilled to its essentials.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; ddpm_mnist.py</span>
+                <button class="cb" onclick="cpCode('c1')">Copy</button>
+            </div>
+            <div class="cs"><pre id="c1"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">import</span> math
+
+<span class="cmt"># ─── Noise Schedule ───────────────────────────────────────────</span>
+T = <span class="num">1000</span>
+beta_start = <span class="num">1e-4</span>
+beta_end   = <span class="num">0.02</span>
+
+betas = torch.<span class="fn">linspace</span>(beta_start, beta_end, T)          <span class="cmt"># linear schedule</span>
+alphas = <span class="num">1.0</span> - betas
+alpha_bar = torch.<span class="fn">cumprod</span>(alphas, dim=<span class="num">0</span>)                  <span class="cmt"># cumulative product</span>
+sqrt_alpha_bar     = torch.<span class="fn">sqrt</span>(alpha_bar)
+sqrt_one_minus_ab  = torch.<span class="fn">sqrt</span>(<span class="num">1.0</span> - alpha_bar)
+
+<span class="cmt"># ─── Sinusoidal Timestep Embedding ────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">SinusoidalPE</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, dim):
+        <span class="fn">super</span>().__init__()
+        self.dim = dim
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, t):
+        device = t.device
+        half = self.dim // <span class="num">2</span>
+        emb = math.<span class="fn">log</span>(<span class="num">10000</span>) / (half - <span class="num">1</span>)
+        emb = torch.<span class="fn">exp</span>(torch.<span class="fn">arange</span>(half, device=device) * -emb)
+        emb = t[:, <span class="kw">None</span>].float() * emb[<span class="kw">None</span>, :]
+        <span class="kw">return</span> torch.<span class="fn">cat</span>([torch.<span class="fn">sin</span>(emb), torch.<span class="fn">cos</span>(emb)], dim=-<span class="num">1</span>)
+
+<span class="cmt"># ─── Simplified U-Net for 28x28 Grayscale ─────────────────────</span>
+<span class="kw">class</span> <span class="fn">SimpleUNet</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, ch=<span class="num">64</span>, time_dim=<span class="num">256</span>):
+        <span class="fn">super</span>().__init__()
+        self.time_mlp = nn.<span class="fn">Sequential</span>(
+            <span class="fn">SinusoidalPE</span>(time_dim),
+            nn.<span class="fn">Linear</span>(time_dim, time_dim),
+            nn.<span class="fn">GELU</span>(),
+        )
+        <span class="cmt"># Encoder</span>
+        self.enc1 = nn.<span class="fn">Sequential</span>(nn.<span class="fn">Conv2d</span>(<span class="num">1</span>, ch, <span class="num">3</span>, padding=<span class="num">1</span>), nn.<span class="fn">GroupNorm</span>(<span class="num">8</span>, ch), nn.<span class="fn">GELU</span>())
+        self.enc2 = nn.<span class="fn">Sequential</span>(nn.<span class="fn">Conv2d</span>(ch, ch*<span class="num">2</span>, <span class="num">3</span>, stride=<span class="num">2</span>, padding=<span class="num">1</span>), nn.<span class="fn">GroupNorm</span>(<span class="num">8</span>, ch*<span class="num">2</span>), nn.<span class="fn">GELU</span>())
+        self.enc3 = nn.<span class="fn">Sequential</span>(nn.<span class="fn">Conv2d</span>(ch*<span class="num">2</span>, ch*<span class="num">4</span>, <span class="num">3</span>, stride=<span class="num">2</span>, padding=<span class="num">1</span>), nn.<span class="fn">GroupNorm</span>(<span class="num">8</span>, ch*<span class="num">4</span>), nn.<span class="fn">GELU</span>())
+        <span class="cmt"># Time projection</span>
+        self.t_proj = nn.<span class="fn">Linear</span>(time_dim, ch*<span class="num">4</span>)
+        <span class="cmt"># Decoder</span>
+        self.dec3 = nn.<span class="fn">Sequential</span>(nn.<span class="fn">ConvTranspose2d</span>(ch*<span class="num">4</span>, ch*<span class="num">2</span>, <span class="num">4</span>, stride=<span class="num">2</span>, padding=<span class="num">1</span>), nn.<span class="fn">GroupNorm</span>(<span class="num">8</span>, ch*<span class="num">2</span>), nn.<span class="fn">GELU</span>())
+        self.dec2 = nn.<span class="fn">Sequential</span>(nn.<span class="fn">ConvTranspose2d</span>(ch*<span class="num">4</span>, ch, <span class="num">4</span>, stride=<span class="num">2</span>, padding=<span class="num">1</span>), nn.<span class="fn">GroupNorm</span>(<span class="num">8</span>, ch), nn.<span class="fn">GELU</span>())
+        self.dec1 = nn.<span class="fn">Conv2d</span>(ch*<span class="num">2</span>, <span class="num">1</span>, <span class="num">1</span>)  <span class="cmt"># output noise prediction</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        t_emb = self.time_mlp(t)
+        <span class="cmt"># Encoder path</span>
+        e1 = self.enc1(x)          <span class="cmt"># [B, 64, 28, 28]</span>
+        e2 = self.enc2(e1)         <span class="cmt"># [B, 128, 14, 14]</span>
+        e3 = self.enc3(e2)         <span class="cmt"># [B, 256, 7, 7]</span>
+        <span class="cmt"># Add timestep embedding at bottleneck</span>
+        e3 = e3 + self.t_proj(t_emb)[:, :, <span class="kw">None</span>, <span class="kw">None</span>]
+        <span class="cmt"># Decoder path with skip connections</span>
+        d3 = self.dec3(e3)                          <span class="cmt"># [B, 128, 14, 14]</span>
+        d2 = self.dec2(torch.<span class="fn">cat</span>([d3, e2], dim=<span class="num">1</span>))  <span class="cmt"># [B, 64, 28, 28]</span>
+        d1 = self.dec1(torch.<span class="fn">cat</span>([d2, e1], dim=<span class="num">1</span>))  <span class="cmt"># [B, 1, 28, 28]</span>
+        <span class="kw">return</span> d1
+
+<span class="cmt"># ─── Forward Diffusion: Add Noise ─────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">q_sample</span>(x_0, t, noise=<span class="kw">None</span>):
+    <span class="str">"""Sample x_t from q(x_t | x_0) using the reparameterization trick."""</span>
+    <span class="kw">if</span> noise <span class="kw">is None</span>:
+        noise = torch.<span class="fn">randn_like</span>(x_0)
+    s_ab = sqrt_alpha_bar[t][:, <span class="kw">None</span>, <span class="kw">None</span>, <span class="kw">None</span>].to(x_0.device)
+    s_om = sqrt_one_minus_ab[t][:, <span class="kw">None</span>, <span class="kw">None</span>, <span class="kw">None</span>].to(x_0.device)
+    <span class="kw">return</span> s_ab * x_0 + s_om * noise
+
+<span class="cmt"># ─── Training Loop ────────────────────────────────────────────</span>
+device = <span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.<span class="fn">is_available</span>() <span class="kw">else</span> <span class="str">"cpu"</span>
+model = <span class="fn">SimpleUNet</span>().<span class="fn">to</span>(device)
+optimizer = torch.optim.<span class="fn">AdamW</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">2e-4</span>)
+
+transform = transforms.<span class="fn">Compose</span>([
+    transforms.<span class="fn">ToTensor</span>(),
+    transforms.<span class="fn">Normalize</span>((<span class="num">0.5</span>,), (<span class="num">0.5</span>,))  <span class="cmt"># scale to [-1, 1]</span>
+])
+dataset = datasets.<span class="fn">MNIST</span>(<span class="str">"./data"</span>, train=<span class="kw">True</span>, download=<span class="kw">True</span>, transform=transform)
+loader  = <span class="fn">DataLoader</span>(dataset, batch_size=<span class="num">128</span>, shuffle=<span class="kw">True</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">50</span>):
+    total_loss = <span class="num">0.0</span>
+    <span class="kw">for</span> x_0, _ <span class="kw">in</span> loader:
+        x_0 = x_0.<span class="fn">to</span>(device)
+        t = torch.<span class="fn">randint</span>(<span class="num">0</span>, T, (x_0.shape[<span class="num">0</span>],), device=device)
+        noise = torch.<span class="fn">randn_like</span>(x_0)
+        x_t = <span class="fn">q_sample</span>(x_0, t, noise)
+
+        <span class="cmt"># Predict the noise that was added</span>
+        noise_pred = model(x_t, t)
+        loss = F.<span class="fn">mse_loss</span>(noise_pred, noise)
+
+        optimizer.<span class="fn">zero_grad</span>()
+        loss.<span class="fn">backward</span>()
+        optimizer.<span class="fn">step</span>()
+        total_loss += loss.item()
+
+    <span class="fn">print</span>(<span class="str">f"Epoch </span>{epoch+<span class="num">1</span>}<span class="str"> | Loss: </span>{total_loss / <span class="fn">len</span>(loader):<span class="str">.4f</span>}<span class="str">"</span>)</pre></div>
+        </div>
+
+        <div class="an gd">
+            <h4>Training Summary</h4>
+            <ul>
+                <li><strong>Sample</strong> a clean image \( \mathbf{x}_0 \) and a random timestep \( t \sim \text{Uniform}(1, T) \)</li>
+                <li><strong>Noise</strong> the image: \( \mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon} \)</li>
+                <li><strong>Predict</strong> the noise: \( \hat{\boldsymbol{\epsilon}} = \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \)</li>
+                <li><strong>Minimize</strong> the MSE: \( \| \boldsymbol{\epsilon} - \hat{\boldsymbol{\epsilon}} \|^2 \)</li>
+                <li>That is the entire algorithm. No adversarial training, no mode collapse, no training instability.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 6: Code Example 2 — Sampling with HuggingFace Diffusers ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code Example 2 &mdash; Sampling with HuggingFace Diffusers</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>Using the HuggingFace <strong>diffusers</strong> library to generate images with Stable Diffusion. This demonstrates the high-level API for text-to-image generation, image-to-image refinement, and the effect of classifier-free guidance scale.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; stable_diffusion_sampling.py</span>
+                <button class="cb" onclick="cpCode('c2')">Copy</button>
+            </div>
+            <div class="cs"><pre id="c2"><span class="kw">import</span> torch
+<span class="kw">from</span> diffusers <span class="kw">import</span> StableDiffusionPipeline, DDIMScheduler
+<span class="kw">from</span> PIL <span class="kw">import</span> Image
+
+<span class="cmt"># ─── Load Stable Diffusion v2.1 ───────────────────────────────</span>
+model_id = <span class="str">"stabilityai/stable-diffusion-2-1"</span>
+scheduler = <span class="fn">DDIMScheduler</span>.<span class="fn">from_pretrained</span>(model_id, subfolder=<span class="str">"scheduler"</span>)
+
+pipe = <span class="fn">StableDiffusionPipeline</span>.<span class="fn">from_pretrained</span>(
+    model_id,
+    scheduler=scheduler,
+    torch_dtype=torch.float16,
+).<span class="fn">to</span>(<span class="str">"cuda"</span>)
+
+<span class="cmt"># Enable memory-efficient attention (xformers or sliced)</span>
+pipe.<span class="fn">enable_attention_slicing</span>()
+
+<span class="cmt"># ─── Basic Text-to-Image Generation ──────────────────────────</span>
+prompt = <span class="str">"A serene Japanese garden at sunset, koi pond reflecting "</span> \
+         <span class="str">"cherry blossoms, watercolor style, highly detailed"</span>
+
+image = pipe(
+    prompt=prompt,
+    num_inference_steps=<span class="num">50</span>,       <span class="cmt"># DDIM allows fewer steps</span>
+    guidance_scale=<span class="num">7.5</span>,            <span class="cmt"># classifier-free guidance weight</span>
+    height=<span class="num">768</span>,
+    width=<span class="num">768</span>,
+    generator=torch.<span class="fn">Generator</span>(device=<span class="str">"cuda"</span>).<span class="fn">manual_seed</span>(<span class="num">42</span>),
+).images[<span class="num">0</span>]
+
+image.<span class="fn">save</span>(<span class="str">"garden_sunset.png"</span>)
+
+<span class="cmt"># ─── Exploring Guidance Scale ─────────────────────────────────</span>
+<span class="cmt"># Low guidance (1-3): more diverse but less prompt-faithful</span>
+<span class="cmt"># Medium guidance (7-8): good balance (default)</span>
+<span class="cmt"># High guidance (15-20): very prompt-faithful but can oversaturate</span>
+
+guidance_scales = [<span class="num">1.0</span>, <span class="num">3.0</span>, <span class="num">7.5</span>, <span class="num">15.0</span>, <span class="num">20.0</span>]
+images = []
+
+<span class="kw">for</span> scale <span class="kw">in</span> guidance_scales:
+    img = pipe(
+        prompt=<span class="str">"A photorealistic owl wearing a tiny top hat"</span>,
+        guidance_scale=scale,
+        num_inference_steps=<span class="num">30</span>,
+        generator=torch.<span class="fn">Generator</span>(device=<span class="str">"cuda"</span>).<span class="fn">manual_seed</span>(<span class="num">42</span>),
+    ).images[<span class="num">0</span>]
+    images.<span class="fn">append</span>(img)
+
+<span class="cmt"># ─── Negative Prompts for Quality Control ─────────────────────</span>
+result = pipe(
+    prompt=<span class="str">"Portrait of a Renaissance queen, oil painting, masterpiece"</span>,
+    negative_prompt=<span class="str">"blurry, low quality, deformed hands, extra fingers, "</span>
+                    <span class="str">"watermark, text, cropped, out of frame"</span>,
+    num_inference_steps=<span class="num">50</span>,
+    guidance_scale=<span class="num">9.0</span>,
+).images[<span class="num">0</span>]
+
+result.<span class="fn">save</span>(<span class="str">"renaissance_queen.png"</span>)
+
+<span class="cmt"># ─── Batch Generation with Different Seeds ────────────────────</span>
+<span class="kw">def</span> <span class="fn">generate_variations</span>(prompt, n=<span class="num">4</span>, steps=<span class="num">40</span>):
+    <span class="str">"""Generate n variations of the same prompt with different seeds."""</span>
+    results = []
+    <span class="kw">for</span> seed <span class="kw">in</span> <span class="fn">range</span>(n):
+        img = pipe(
+            prompt=prompt,
+            num_inference_steps=steps,
+            guidance_scale=<span class="num">7.5</span>,
+            generator=torch.<span class="fn">Generator</span>(device=<span class="str">"cuda"</span>).<span class="fn">manual_seed</span>(seed),
+        ).images[<span class="num">0</span>]
+        results.<span class="fn">append</span>(img)
+    <span class="kw">return</span> results
+
+variations = <span class="fn">generate_variations</span>(
+    <span class="str">"An astronaut riding a horse on Mars, digital art"</span>
+)
+<span class="fn">print</span>(<span class="str">f"Generated </span>{<span class="fn">len</span>(variations)}<span class="str"> variations"</span>)</pre></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 7: Code Example 3 — Noise Schedule Visualization ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code Example 3 &mdash; Noise Schedule Visualization</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>Visualizing the forward diffusion process and comparing linear vs. cosine noise schedules. This code shows how an image is progressively destroyed at different timesteps, and plots the signal-to-noise ratio over time for both schedule types.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; noise_schedule_viz.py</span>
+                <button class="cb" onclick="cpCode('c3')">Copy</button>
+            </div>
+            <div class="cs"><pre id="c3"><span class="kw">import</span> torch
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">from</span> torchvision.utils <span class="kw">import</span> make_grid
+
+T = <span class="num">1000</span>
+
+<span class="cmt"># ─── Define Two Noise Schedules ───────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">linear_schedule</span>(T, beta_start=<span class="num">1e-4</span>, beta_end=<span class="num">0.02</span>):
+    <span class="str">"""Linear noise schedule from Ho et al. (2020)"""</span>
+    betas = torch.<span class="fn">linspace</span>(beta_start, beta_end, T)
+    alphas = <span class="num">1.0</span> - betas
+    alpha_bar = torch.<span class="fn">cumprod</span>(alphas, dim=<span class="num">0</span>)
+    <span class="kw">return</span> betas, alpha_bar
+
+<span class="kw">def</span> <span class="fn">cosine_schedule</span>(T, s=<span class="num">0.008</span>):
+    <span class="str">"""Cosine schedule from Nichol & Dhariwal (2021)
+    Produces smoother noise injection and better results at low resolution."""</span>
+    steps = torch.<span class="fn">arange</span>(T + <span class="num">1</span>, dtype=torch.float64)
+    f = torch.<span class="fn">cos</span>(((steps / T) + s) / (<span class="num">1</span> + s) * (np.pi / <span class="num">2</span>)) ** <span class="num">2</span>
+    alpha_bar = f / f[<span class="num">0</span>]
+    betas = <span class="num">1</span> - (alpha_bar[<span class="num">1</span>:] / alpha_bar[:-<span class="num">1</span>])
+    betas = torch.<span class="fn">clamp</span>(betas, min=<span class="num">1e-5</span>, max=<span class="num">0.999</span>)
+    <span class="kw">return</span> betas, alpha_bar[:-<span class="num">1</span>]
+
+betas_lin, ab_lin = <span class="fn">linear_schedule</span>(T)
+betas_cos, ab_cos = <span class="fn">cosine_schedule</span>(T)
+
+<span class="cmt"># ─── Plot 1: Alpha-Bar Over Time ──────────────────────────────</span>
+fig, axes = plt.<span class="fn">subplots</span>(<span class="num">1</span>, <span class="num">3</span>, figsize=(<span class="num">18</span>, <span class="num">5</span>))
+
+axes[<span class="num">0</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), ab_lin.<span class="fn">numpy</span>(), label=<span class="str">"Linear"</span>, color=<span class="str">"#C15F3C"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">0</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), ab_cos.<span class="fn">numpy</span>(), label=<span class="str">"Cosine"</span>, color=<span class="str">"#3A7D44"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">0</span>].<span class="fn">set_xlabel</span>(<span class="str">"Timestep t"</span>)
+axes[<span class="num">0</span>].<span class="fn">set_ylabel</span>(<span class="str">"ᾱ(t) — signal remaining"</span>)
+axes[<span class="num">0</span>].<span class="fn">set_title</span>(<span class="str">"Cumulative Signal Retention"</span>)
+axes[<span class="num">0</span>].<span class="fn">legend</span>()
+axes[<span class="num">0</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+<span class="cmt"># ─── Plot 2: SNR in Decibels ──────────────────────────────────</span>
+snr_lin = ab_lin / (<span class="num">1</span> - ab_lin)
+snr_cos = ab_cos / (<span class="num">1</span> - ab_cos)
+
+axes[<span class="num">1</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), <span class="num">10</span> * torch.<span class="fn">log10</span>(snr_lin).<span class="fn">numpy</span>(),
+         label=<span class="str">"Linear"</span>, color=<span class="str">"#C15F3C"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">1</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), <span class="num">10</span> * torch.<span class="fn">log10</span>(snr_cos).<span class="fn">numpy</span>(),
+         label=<span class="str">"Cosine"</span>, color=<span class="str">"#3A7D44"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">1</span>].<span class="fn">set_xlabel</span>(<span class="str">"Timestep t"</span>)
+axes[<span class="num">1</span>].<span class="fn">set_ylabel</span>(<span class="str">"SNR (dB)"</span>)
+axes[<span class="num">1</span>].<span class="fn">set_title</span>(<span class="str">"Signal-to-Noise Ratio"</span>)
+axes[<span class="num">1</span>].<span class="fn">legend</span>()
+axes[<span class="num">1</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+<span class="cmt"># ─── Plot 3: Beta Schedule Comparison ─────────────────────────</span>
+axes[<span class="num">2</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), betas_lin.<span class="fn">numpy</span>(), label=<span class="str">"Linear β"</span>, color=<span class="str">"#C15F3C"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">2</span>].<span class="fn">plot</span>(<span class="fn">range</span>(T), betas_cos.<span class="fn">numpy</span>(), label=<span class="str">"Cosine β"</span>, color=<span class="str">"#3A7D44"</span>, linewidth=<span class="num">2</span>)
+axes[<span class="num">2</span>].<span class="fn">set_xlabel</span>(<span class="str">"Timestep t"</span>)
+axes[<span class="num">2</span>].<span class="fn">set_ylabel</span>(<span class="str">"β(t)"</span>)
+axes[<span class="num">2</span>].<span class="fn">set_title</span>(<span class="str">"Per-Step Noise Magnitude"</span>)
+axes[<span class="num">2</span>].<span class="fn">legend</span>()
+axes[<span class="num">2</span>].<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)
+
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">savefig</span>(<span class="str">"noise_schedules.png"</span>, dpi=<span class="num">150</span>, bbox_inches=<span class="str">"tight"</span>)
+plt.<span class="fn">show</span>()
+
+<span class="cmt"># ─── Visualize Forward Process on a Real Image ───────────────</span>
+dataset = datasets.<span class="fn">MNIST</span>(<span class="str">"./data"</span>, train=<span class="kw">True</span>, download=<span class="kw">True</span>,
+                         transform=transforms.<span class="fn">ToTensor</span>())
+x_0 = dataset[<span class="num">7</span>][<span class="num">0</span>].<span class="fn">unsqueeze</span>(<span class="num">0</span>)  <span class="cmt"># single digit</span>
+x_0 = x_0 * <span class="num">2</span> - <span class="num">1</span>                  <span class="cmt"># scale to [-1, 1]</span>
+
+timesteps = [<span class="num">0</span>, <span class="num">50</span>, <span class="num">100</span>, <span class="num">250</span>, <span class="num">500</span>, <span class="num">750</span>, <span class="num">999</span>]
+noisy_images = []
+
+<span class="kw">for</span> t <span class="kw">in</span> timesteps:
+    noise = torch.<span class="fn">randn_like</span>(x_0)
+    t_tensor = torch.<span class="fn">tensor</span>([t])
+    sqrt_ab  = torch.<span class="fn">sqrt</span>(ab_lin[t])
+    sqrt_oab = torch.<span class="fn">sqrt</span>(<span class="num">1</span> - ab_lin[t])
+    x_t = sqrt_ab * x_0 + sqrt_oab * noise
+    noisy_images.<span class="fn">append</span>((x_t.<span class="fn">squeeze</span>() + <span class="num">1</span>) / <span class="num">2</span>)  <span class="cmt"># back to [0,1]</span>
+
+fig, axes = plt.<span class="fn">subplots</span>(<span class="num">1</span>, <span class="fn">len</span>(timesteps), figsize=(<span class="num">16</span>, <span class="num">3</span>))
+<span class="kw">for</span> i, (t, img) <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="fn">zip</span>(timesteps, noisy_images)):
+    axes[i].<span class="fn">imshow</span>(img.<span class="fn">numpy</span>(), cmap=<span class="str">"gray"</span>, vmin=<span class="num">0</span>, vmax=<span class="num">1</span>)
+    axes[i].<span class="fn">set_title</span>(<span class="str">f"t = </span>{t}<span class="str">"</span>, fontsize=<span class="num">11</span>)
+    axes[i].<span class="fn">axis</span>(<span class="str">"off"</span>)
+
+plt.<span class="fn">suptitle</span>(<span class="str">"Forward Diffusion Process (Linear Schedule)"</span>, fontsize=<span class="num">14</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">savefig</span>(<span class="str">"forward_process.png"</span>, dpi=<span class="num">150</span>, bbox_inches=<span class="str">"tight"</span>)
+plt.<span class="fn">show</span>()</pre></div>
+        </div>
+
+        <div class="an gd">
+            <h4>What the Visualization Reveals</h4>
+            <ul>
+                <li><strong>Linear schedule</strong> destroys information rapidly in early steps, wasting capacity on nearly-pure-noise timesteps</li>
+                <li><strong>Cosine schedule</strong> preserves signal longer, giving the model more useful training signal at intermediate timesteps</li>
+                <li>At \( t = 500 \), the cosine schedule retains roughly twice as much signal as the linear schedule</li>
+                <li>Both converge to pure noise by \( t = T \), but the path there differs significantly</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 8: The Diffusion Family ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot a"></div>
+        <h2>The Diffusion Family</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1.25rem;">
+            <p>The diffusion framework has spawned a family of models, each building on the core idea of iterative denoising but introducing architectural innovations, efficiency improvements, or new conditioning mechanisms.</p>
+        </div>
+
+        <div class="fg">
+            <div class="fc">
+                <h4>DDPM</h4>
+                <p><strong>Ho et al., 2020</strong></p>
+                <p>The foundational work. Stochastic sampling with 1000 steps. Proved diffusion models can match GANs on image quality. Simple MSE training objective on predicted noise. Set the mathematical framework for everything that followed.</p>
+            </div>
+            <div class="fc g">
+                <h4>DDIM</h4>
+                <p><strong>Song et al., 2021</strong></p>
+                <p>Deterministic, non-Markovian sampler compatible with any DDPM-trained model. Enables 10-50x faster sampling by skipping steps. Meaningful latent space interpolation. Same trained model, different inference procedure.</p>
+            </div>
+            <div class="fc a">
+                <h4>Stable Diffusion</h4>
+                <p><strong>Rombach et al., 2022</strong></p>
+                <p>Latent diffusion: compress images to 64x64 latents via VAE, diffuse there. CLIP text encoder for conditioning. Open-source weights. Runs on consumer GPUs. The model that democratized AI image generation.</p>
+            </div>
+            <div class="fc r">
+                <h4>DALL-E 2</h4>
+                <p><strong>Ramesh et al., 2022</strong></p>
+                <p>Two-stage: CLIP text&rarr;image embedding prior + diffusion decoder. Unrolls CLIP image embeddings into full images. Strong text-image alignment via CLIP's contrastive learned space. Introduced inpainting and variations.</p>
+            </div>
+            <div class="fc">
+                <h4>Imagen</h4>
+                <p><strong>Saharia et al., 2022</strong></p>
+                <p>Google's text-to-image model. Uses a frozen T5-XXL text encoder (4.6B params) instead of CLIP. Cascaded diffusion: 64x64&rarr;256x256&rarr;1024x1024. Showed that scaling the language model matters more than scaling the image model.</p>
+            </div>
+            <div class="fc g">
+                <h4>ControlNet</h4>
+                <p><strong>Zhang et al., 2023</strong></p>
+                <p>Adds spatial conditioning to pre-trained diffusion models. Accepts edge maps, depth maps, poses, segmentation masks as input. Copies the encoder of the U-Net and trains only the copy. Zero-convolution initialization preserves the base model's quality.</p>
+            </div>
+        </div>
+
+        <div class="tg" style="margin-top:1.25rem;">
+            <div class="ti">
+                <h4>Flow Matching (Newer Direction)</h4>
+                <p><strong>Lipman et al., 2023</strong> reformulated diffusion as learning a vector field that transports a noise distribution to the data distribution. <strong>Rectified flows</strong> learn straight-line paths, enabling single-step or few-step generation. Stable Diffusion 3 and Flux use this framework for faster, higher-quality synthesis.</p>
+            </div>
+            <div class="ti">
+                <h4>Consistency Models</h4>
+                <p><strong>Song et al., 2023</strong> proposed models that learn to directly map any point on the diffusion trajectory to \( \mathbf{x}_0 \), enabling <strong>single-step generation</strong>. Can be trained by distillation from a pre-trained diffusion model or from scratch. Trades some quality for dramatic speed improvements.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SECTION 9: When to Use / When to Avoid ═══ -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot r"></div>
+        <h2>When to Use / When to Avoid</h2>
+    </div>
+    <div class="card-b">
+        <div class="tk-g">
+            <div class="tk">
+                <h4 class="u">When to Use Diffusion Models</h4>
+                <p><strong>High-fidelity image generation</strong> -- photorealistic or artistic synthesis from text, layouts, or other conditions</p>
+                <p><strong>Controllable generation</strong> -- inpainting, outpainting, style transfer, image editing with ControlNet or IP-Adapter</p>
+                <p><strong>Mode coverage matters</strong> -- diffusion models capture the full data distribution without mode collapse (unlike GANs)</p>
+                <p><strong>Audio and video synthesis</strong> -- WaveGrad for audio, video diffusion for temporal generation</p>
+                <p><strong>Scientific applications</strong> -- molecular design, protein structure generation (e.g., RFdiffusion), material discovery</p>
+                <p><strong>Super-resolution and restoration</strong> -- upscaling, deblurring, denoising where iterative refinement excels</p>
+                <p><strong>Training stability is critical</strong> -- no adversarial dynamics, no discriminator collapse, straightforward MSE loss</p>
+            </div>
+            <div class="tk">
+                <h4 class="av">When to Avoid Diffusion Models</h4>
+                <p><strong>Real-time generation required</strong> -- even 20-step DDIM is slower than a single GAN forward pass; latency-critical applications may need GANs or VAEs</p>
+                <p><strong>Low compute budget</strong> -- training large diffusion models requires significant GPU resources (hundreds of A100-hours for custom models)</p>
+                <p><strong>Discrete/non-continuous data</strong> -- standard diffusion assumes continuous data; text generation is better handled by autoregressive models</p>
+                <p><strong>Simple distributions</strong> -- if a VAE or normalizing flow suffices, diffusion's iterative process adds unnecessary complexity</p>
+                <p><strong>Exact likelihood needed</strong> -- diffusion provides a lower bound (ELBO), not exact log-likelihood; normalizing flows give exact values</p>
+                <p><strong>Memory-constrained deployment</strong> -- the U-Net model is large (~3.4GB for SD v2.1); edge devices may struggle</p>
+                <p><strong>High-resolution without latent compression</strong> -- pixel-space diffusion at 1024x1024+ is prohibitively expensive</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>The Broader Perspective</h4>
+            <p>Diffusion models have become the dominant paradigm for high-quality image generation, displacing GANs in most applications. Their advantages -- training stability, mode coverage, and controllability -- outweigh their main weakness (slow sampling) in most practical settings. With continued progress in distillation (consistency models), flow matching (rectified flows), and architectural innovations (DiT -- Diffusion Transformers), the sampling speed gap is rapidly closing. Understanding the mathematical foundation covered here provides the basis for working with any member of the diffusion family.</p>
+        </div>
+
+        <div class="an bd">
+            <h4>Common Pitfalls</h4>
+            <ul>
+                <li><strong>Ignoring the noise schedule</strong> -- the choice between linear and cosine schedules significantly affects quality; cosine is generally preferred for images below 256x256</li>
+                <li><strong>Too few sampling steps</strong> -- reducing below 20 steps without using DDIM/DPM-Solver causes noticeable quality degradation</li>
+                <li><strong>Guidance scale too high</strong> -- CFG values above 15-20 produce oversaturated, artifact-heavy images; 7-9 is usually optimal</li>
+                <li><strong>Training on small datasets without augmentation</strong> -- diffusion models can memorize training data; regularization and augmentation are essential for small datasets</li>
+                <li><strong>Neglecting the VAE</strong> -- in latent diffusion, the VAE quality sets a ceiling; a poor autoencoder means blurry final images regardless of the diffusion model quality</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+
+</body></html>

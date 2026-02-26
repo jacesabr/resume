@@ -88,6 +88,7 @@ section{max-width:1100px;margin:0 auto;padding:5rem 2rem}.section-header{margin-
 .contact-link:hover{border-color:var(--terra);color:var(--terra);transform:translateY(-2px)}
 .contact-link.primary{background:var(--terra);color:#fff;border-color:var(--terra)}.contact-link.primary:hover{background:var(--terra-light);box-shadow:0 10px 28px rgba(193,95,60,0.25)}
 footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text-light);font-size:0.75rem;letter-spacing:0.04em}
+.featured-bottom-6{grid-template-columns:repeat(6,1fr)}
 .featured{max-width:1100px;margin:0 auto;padding:2rem 2rem 0}
 .featured-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:relative}
 .featured-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue),var(--teal))}
@@ -105,7 +106,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 .fs-val{font-size:0.85rem;font-weight:700;color:var(--text)}.fs-label{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em}
 @media(max-width:768px){.featured-embed{height:360px}.featured-bottom{grid-template-columns:1fr 1fr}.featured-top{flex-direction:column;align-items:flex-start}}
 .section-divider{max-width:1100px;margin:0 auto;height:1px;background:var(--border)}
-@media(max-width:768px){nav .nav-links{display:none}.hero-stats{gap:1.5rem;flex-wrap:wrap}.edu-grid,.project-grid{grid-template-columns:1fr}.domain-grid{grid-template-columns:1fr}.value-grid{grid-template-columns:1fr}section{padding:3rem 1.25rem}}
+@media(max-width:768px){nav .nav-links{display:none}.hero-stats{gap:1.5rem;flex-wrap:wrap}.edu-grid,.project-grid{grid-template-columns:1fr}.domain-grid{grid-template-columns:1fr}.value-grid{grid-template-columns:1fr}section{padding:3rem 1.25rem}.featured-bottom-6,.featured-bottom{grid-template-columns:repeat(3,1fr) !important}.featured-card div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}}
 @media(max-width:480px){.hero-stats{gap:1rem}.stat-item .stat-num{font-size:1.6rem}}
 </style>
 </head>
@@ -113,7 +114,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 
 <nav>
 <div class="logo">Jace<span>.</span>AI</div>
-<div class="nav-links"><a href="#flagship">Flagship</a><a href="#services">Services</a><a href="#education">Credentials</a><a href="#expertise">Expertise</a><a href="#projects">Case Studies</a><a href="#robotics">Robotics</a></div>
+<div class="nav-links"><a href="#flagship">Morrigan</a><a href="#services">Services</a><a href="#education">Credentials</a><a href="#expertise">Expertise</a><a href="#ml">ML Algorithms</a><a href="#deep-learning">Deep Learning</a><a href="#projects">Case Studies</a></div>
 <a href="mailto:jace100233260@gmail.com" class="nav-cta">Schedule a Call</a>
 </nav>
 
@@ -128,7 +129,7 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 <div class="hero-stats">
 <div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">Strategy &amp; Implementation</div></div>
 <div class="stat-item"><div class="stat-num">IoT</div><div class="stat-label">Robotics &amp; Automation</div></div>
-<div class="stat-item"><div class="stat-num">ML</div><div class="stat-label">18 Algorithms Mastered</div></div>
+<div class="stat-item"><div class="stat-num">ML</div><div class="stat-label">18 ML + 8 DL Algorithms</div></div>
 <div class="stat-item"><div class="stat-num">3+</div><div class="stat-label">Years Building Software</div></div>
 </div>
 </div>
@@ -137,22 +138,43 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 <div class="featured-card">
 <div class="featured-top">
 <div class="ft-left">
-<div class="ft-icon">⚡</div>
-<div><h3>Unleashed AI — Self-Hosted LLM Platform</h3><div class="ft-sub">Custom-built chat &amp; image generation platform · MERN Stack · Colab · Stable Diffusion</div></div>
+<div class="ft-icon">🧠</div>
+<div><h3>Morrigan — Emotionally Intelligent AI Companion</h3><div class="ft-sub">Deep personalization engine with persistent memory, inner thought pipeline &amp; trust progression · MERN · LLaMA · OpenRouter</div></div>
 </div>
 <div class="ft-tags">
-<span class="ft-tag" style="background:var(--purple-glow);color:var(--purple)">LLM</span>
-<span class="ft-tag" style="background:var(--blue-glow);color:var(--blue)">Image Gen</span>
-<span class="ft-tag" style="background:var(--teal-glow);color:var(--teal-deep)">Full-Stack</span>
+<span class="ft-tag" style="background:var(--purple-glow);color:var(--purple)">Emotional AI</span>
+<span class="ft-tag" style="background:var(--blue-glow);color:var(--blue)">Memory System</span>
+<span class="ft-tag" style="background:var(--teal-glow);color:var(--teal-deep)">6-Phase Pipeline</span>
 <span class="ft-tag" style="background:var(--terra-glow);color:var(--terra)">Live Demo</span>
 </div>
 <a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="ft-link">Open Full App →</a>
 </div>
-<iframe src="https://uncensored-ai-production-d462.up.railway.app/" class="featured-embed" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" title="Unleashed AI Demo"></iframe>
-<div class="featured-bottom">
-<div class="featured-stat"><div class="fs-val">Dolphin LLaMA 3</div><div class="fs-label">Chat Model</div></div>
-<div class="featured-stat"><div class="fs-val">Stable Diffusion</div><div class="fs-label">Image Engine</div></div>
-<div class="featured-stat"><div class="fs-val">SSE Streaming</div><div class="fs-label">Real-Time Chat</div></div>
+
+<div style="padding:1.5rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;border-bottom:1px solid var(--border)">
+<div style="display:flex;flex-direction:column;gap:0.75rem">
+<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple)">Core Architecture</div>
+<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.7">
+A fully custom AI character (<strong>Morrigan</strong>) with a 6-phase inner thought system that processes emotions, retrieves contextual memories, generates candidate thoughts, scores them for relevance and timing, then weaves the winning thought naturally into her response — all in real time via SSE streaming.
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:0.75rem">
+<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal-deep)">Key Systems</div>
+<div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.8rem;color:var(--text-dim)">
+<span>◈ <strong>Persistent Memory</strong> — embedding-based retrieval with cosine similarity, temporal decay &amp; importance weighting</span>
+<span>◈ <strong>Contradiction Detection</strong> — 5-category classifier (temporal evolution, ambivalence, genuine contradiction, refinement)</span>
+<span>◈ <strong>Trust Progression</strong> — 7-level system gating vulnerability depth &amp; self-disclosure</span>
+<span>◈ <strong>Self-Atom Framework</strong> — 40 depth-gated personality atoms across 4 tiers</span>
+<span>◈ <strong>Relationship Health</strong> — 5-signal model tracking engagement, voice consistency &amp; at-risk detection</span>
+</div>
+</div>
+</div>
+
+<div class="featured-bottom" style="grid-template-columns:repeat(6,1fr)">
+<div class="featured-stat"><div class="fs-val">LLaMA 3</div><div class="fs-label">Chat Model</div></div>
+<div class="featured-stat"><div class="fs-val">OpenRouter</div><div class="fs-label">API Gateway</div></div>
+<div class="featured-stat"><div class="fs-val">MongoDB</div><div class="fs-label">Persistent Store</div></div>
+<div class="featured-stat"><div class="fs-val">Embeddings</div><div class="fs-label">Memory Retrieval</div></div>
+<div class="featured-stat"><div class="fs-val">SSE Stream</div><div class="fs-label">Real-Time Chat</div></div>
 <div class="featured-stat"><div class="fs-val">Railway</div><div class="fs-label">Cloud Deployed</div></div>
 </div>
 </div>
@@ -218,7 +240,24 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 <div class="section-header"><div class="label">Algorithm Library</div><h2>18 ML Algorithms <span class="dim">Explored in Depth</span></h2><p>Each algorithm built with 20 code examples, real datasets, LaTeX equations, and clear analysis of strengths and limitations.</p></div>
 <div class="algo-categories"><div class="algo-cat">Regression <span class="count">6</span></div><div class="algo-cat">Classification <span class="count">6</span></div><div class="algo-cat">Clustering <span class="count">2</span></div><div class="algo-cat">Association <span class="count">1</span></div><div class="algo-cat">Evaluation <span class="count">3</span></div></div>
 <div class="algo-grid">
-<div class="algo-pill"><span class="num">01</span> Simple Linear Regression</div><div class="algo-pill"><span class="num">02</span> Multiple Linear Regression</div><div class="algo-pill"><span class="num">03</span> Polynomial Regression</div><div class="algo-pill"><span class="num">04</span> Support Vector Regression</div><div class="algo-pill"><span class="num">05</span> Decision Tree Regression</div><div class="algo-pill"><span class="num">06</span> Random Forest Regression</div><div class="algo-pill"><span class="num">07</span> Logistic Regression</div><div class="algo-pill"><span class="num">08</span> K-Nearest Neighbors</div><div class="algo-pill"><span class="num">09</span> Support Vector Machine</div><div class="algo-pill"><span class="num">10</span> Naive Bayes</div><div class="algo-pill"><span class="num">11</span> Decision Tree Classification</div><div class="algo-pill"><span class="num">12</span> Random Forest Classification</div><div class="algo-pill"><span class="num">13</span> K-Means Clustering</div><div class="algo-pill"><span class="num">14</span> Hierarchical Clustering</div><div class="algo-pill"><span class="num">15</span> Apriori Algorithm</div><div class="algo-pill"><span class="num">16</span> Classification Metrics</div><div class="algo-pill"><span class="num">17</span> K-Fold Cross Validation</div><div class="algo-pill"><span class="num">18</span> Grid Search</div>
+<a href="simple-linear-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">01</span> Simple Linear Regression</a><a href="multiple-linear-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">02</span> Multiple Linear Regression</a><a href="polynomial-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">03</span> Polynomial Regression</a><a href="support-vector-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">04</span> Support Vector Regression</a><a href="decision-tree-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">05</span> Decision Tree Regression</a><a href="random-forest-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">06</span> Random Forest Regression</a><a href="logistic-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">07</span> Logistic Regression</a><a href="k-nearest-neighbors.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">08</span> K-Nearest Neighbors</a><a href="support-vector-machine.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">09</span> Support Vector Machine</a><a href="naive-bayes.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">10</span> Naive Bayes</a><a href="decision-tree-classification.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">11</span> Decision Tree Classification</a><a href="random-forest-classification.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">12</span> Random Forest Classification</a><a href="k-means-clustering.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">13</span> K-Means Clustering</a><a href="hierarchical-clustering.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">14</span> Hierarchical Clustering</a><a href="apriori.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">15</span> Apriori Algorithm</a><a href="classification-metrics.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">16</span> Classification Metrics</a><a href="k-fold-cross-validation.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">17</span> K-Fold Cross Validation</a><a href="grid-search.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">18</span> Grid Search</a>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<section id="deep-learning">
+<div class="section-header"><div class="label">Deep Learning</div><h2>8 Major DL Architectures <span class="dim">Built &amp; Documented</span></h2><p>The neural network architectures powering modern AI — each explored with theory, code implementations, real-world applications, and architectural diagrams.</p></div>
+<div class="algo-categories"><div class="algo-cat">Vision <span class="count">2</span></div><div class="algo-cat">Sequence <span class="count">2</span></div><div class="algo-cat">Generative <span class="count">2</span></div><div class="algo-cat">Attention <span class="count">1</span></div><div class="algo-cat">RL <span class="count">1</span></div></div>
+<div class="algo-grid">
+<a href="cnn.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--purple);border-left:3px solid var(--purple)"><span class="num" style="color:var(--purple)">DL1</span> Convolutional Neural Networks</a>
+<a href="rnn-lstm.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--blue);border-left:3px solid var(--blue)"><span class="num" style="color:var(--blue)">DL2</span> RNNs &amp; LSTMs</a>
+<a href="transformers.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--teal);border-left:3px solid var(--teal)"><span class="num" style="color:var(--teal)">DL3</span> Transformers &amp; Attention</a>
+<a href="gan.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--terra);border-left:3px solid var(--terra)"><span class="num" style="color:var(--terra)">DL4</span> Generative Adversarial Networks</a>
+<a href="autoencoder.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--amber);border-left:3px solid var(--amber)"><span class="num" style="color:var(--amber)">DL5</span> Autoencoders &amp; VAEs</a>
+<a href="resnet.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--purple);border-left:3px solid var(--purple)"><span class="num" style="color:var(--purple)">DL6</span> ResNets &amp; Skip Connections</a>
+<a href="reinforcement-learning.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--blue);border-left:3px solid var(--blue)"><span class="num" style="color:var(--blue)">DL7</span> Reinforcement Learning (DQN/PPO)</a>
+<a href="diffusion-models.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--teal);border-left:3px solid var(--teal)"><span class="num" style="color:var(--teal)">DL8</span> Diffusion Models</a>
 </div>
 </section>
 
@@ -255,6 +294,6 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 </div>
 </section>
 
-<footer>© 2025 Jace Sabr · AI &amp; Robotics Consultant · Advising &amp; Implementing Solutions for the Future</footer>
+<footer>© 2026 Jace Sabr · AI &amp; Robotics Consultant · Advising &amp; Implementing Solutions for the Future</footer>
 </body>
 </html>

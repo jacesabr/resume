@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Autoencoders &amp; VAEs — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;}
+.vg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}.vi{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;border-left:3px solid var(--terra);}.vi h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin-bottom:0.45rem;font-weight:600;}.vi p{font-size:0.84rem;color:var(--text-dim);line-height:1.65;}.vi p strong{color:var(--text);}
+.arch-flow{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;padding:1.5rem 1rem;}.arch-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1.2rem;text-align:center;min-width:110px;}.arch-box.accent{background:var(--terra-dim);border-color:var(--terra-dim2);}.arch-box h5{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.2rem;font-weight:600;}.arch-box.accent h5{color:var(--terra);}.arch-box p{font-size:0.82rem;font-weight:600;color:var(--text);}.arch-arrow{font-size:1.2rem;color:var(--terra);font-weight:700;}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+@media(max-width:640px){.tg,.tk-g,.vg{grid-template-columns:1fr!important;}.arch-flow{flex-direction:column;}.arch-arrow{transform:rotate(90deg);}}
+</style></head>
+<body>
+
+<!-- ─── TOPBAR ─── -->
+<div class="topbar">
+    <a href="index.html">Portfolio</a>
+    <span class="sep">/</span>
+    <span class="pt">Autoencoders &amp; VAEs</span>
+    <span class="algo-badge">Generative &middot; DL5</span>
+</div>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+    <h1>Autoencoders &amp; <span>Variational Autoencoders</span></h1>
+    <p class="sub">Neural networks that learn compressed representations by reconstructing their own input &mdash; and generative extensions that sample new data from structured latent spaces.</p>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 1: Mathematical Foundation         -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot"></div>
+            <h2>Mathematical Foundation</h2>
+        </div>
+        <div class="card-b prose">
+            <p><strong>Autoencoders</strong> are trained to minimize the difference between input \( \mathbf{x} \) and its reconstruction \( \hat{\mathbf{x}} \). The simplest loss is the <strong>Mean Squared Error (MSE)</strong>:</p>
+
+            <div class="eq">
+                \[ \mathcal{L}_{\text{recon}} = \frac{1}{n} \sum_{i=1}^{n} \| \mathbf{x}_i - \hat{\mathbf{x}}_i \|^2 \]
+            </div>
+
+            <p>For binary data (e.g., MNIST pixel intensities normalized to [0, 1]), <strong>Binary Cross-Entropy</strong> is often preferred:</p>
+
+            <div class="eq">
+                \[ \mathcal{L}_{\text{BCE}} = -\frac{1}{n} \sum_{i=1}^{n} \left[ x_i \log(\hat{x}_i) + (1 - x_i) \log(1 - \hat{x}_i) \right] \]
+            </div>
+
+            <p><strong>Variational Autoencoders (VAEs)</strong> add a regularization term. Instead of encoding to a single point, the encoder outputs parameters \( \boldsymbol{\mu} \) and \( \boldsymbol{\sigma}^2 \) of a Gaussian distribution over the latent space. The total loss combines reconstruction with <strong>KL divergence</strong>:</p>
+
+            <div class="eq">
+                \[ \mathcal{L}_{\text{VAE}} = \mathcal{L}_{\text{recon}} + D_{\text{KL}}\left( q(\mathbf{z}|\mathbf{x}) \;\|\; p(\mathbf{z}) \right) \]
+            </div>
+
+            <p>Where the KL term (against a standard normal prior) has a closed-form solution:</p>
+
+            <div class="eq">
+                \[ D_{\text{KL}} = -\frac{1}{2} \sum_{j=1}^{d} \left( 1 + \log(\sigma_j^2) - \mu_j^2 - \sigma_j^2 \right) \]
+            </div>
+
+            <p>The <strong>reparameterization trick</strong> enables backpropagation through the stochastic sampling layer. Instead of sampling \( \mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \) directly, we compute:</p>
+
+            <div class="eq">
+                \[ \mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \]
+            </div>
+
+            <p>This moves the randomness to an input (\( \boldsymbol{\epsilon} \)) that does not depend on the model parameters, making the gradient with respect to \( \boldsymbol{\mu} \) and \( \boldsymbol{\sigma} \) well-defined.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 2: The Bottleneck Principle        -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot a"></div>
+            <h2>The Bottleneck Principle</h2>
+        </div>
+        <div class="card-b prose">
+            <p>The central insight behind autoencoders is deceptively simple: <strong>force a neural network to copy its input through a narrow bottleneck</strong>, and it must learn a compressed representation that captures the most salient features of the data.</p>
+
+            <p>If the latent dimension equals the input dimension, the network could learn the identity function &mdash; trivial and useless. By making the bottleneck <strong>smaller than the input</strong>, the encoder is forced to prioritize: it must decide which patterns matter and discard noise or redundancy. This is lossy compression learned end-to-end.</p>
+
+            <p>The learned representations are often <strong>more useful than the raw data</strong> for downstream tasks. The bottleneck acts as an information filter, producing features that capture structure, ignore noise, and generalize across examples. This is why autoencoders are used for <strong>dimensionality reduction</strong>, <strong>feature learning</strong>, and <strong>pretraining</strong>.</p>
+
+            <p>In VAEs, the bottleneck is further regularized: the latent space must conform to a known distribution (typically a unit Gaussian). This ensures the latent space is <strong>smooth and continuous</strong> &mdash; nearby points decode to similar outputs, and random samples produce coherent outputs. This is what makes VAEs <strong>generative</strong>.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 3: Architecture Overview           -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Architecture Overview</h2>
+        </div>
+        <div class="card-b">
+            <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1.25rem;font-weight:500;">Vanilla Autoencoder</p>
+            <div class="arch-flow">
+                <div class="arch-box">
+                    <h5>Input</h5>
+                    <p>x &isin; R<sup>784</sup></p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Encoder</h5>
+                    <p>fc &rarr; ReLU &rarr; fc</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box accent">
+                    <h5>Bottleneck</h5>
+                    <p>z &isin; R<sup>32</sup></p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Decoder</h5>
+                    <p>fc &rarr; ReLU &rarr; fc</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Output</h5>
+                    <p>x&#770; &isin; R<sup>784</sup></p>
+                </div>
+            </div>
+
+            <p style="font-size:0.85rem;color:var(--text-dim);margin:1.5rem 0 1.25rem;font-weight:500;">Variational Autoencoder (VAE)</p>
+            <div class="arch-flow">
+                <div class="arch-box">
+                    <h5>Input</h5>
+                    <p>x &isin; R<sup>784</sup></p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Encoder</h5>
+                    <p>fc &rarr; ReLU &rarr; fc</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box accent">
+                    <h5>&mu;, log &sigma;&sup2;</h5>
+                    <p>Two heads</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box accent">
+                    <h5>Sample</h5>
+                    <p>z = &mu; + &sigma;&epsilon;</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Decoder</h5>
+                    <p>fc &rarr; ReLU &rarr; fc</p>
+                </div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-box">
+                    <h5>Output</h5>
+                    <p>x&#770; &isin; R<sup>784</sup></p>
+                </div>
+            </div>
+
+            <div class="an gd" style="margin-top:1.5rem;">
+                <h4>Key Difference</h4>
+                <p>A vanilla autoencoder maps input to a <strong>fixed point</strong> in latent space. A VAE maps input to a <strong>distribution</strong> (mean and variance), then samples from it. This makes the latent space continuous and suitable for generation &mdash; you can sample z ~ N(0, I) and decode novel outputs.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 4: Key Concepts                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot"></div>
+            <h2>Key Concepts</h2>
+        </div>
+        <div class="card-b">
+            <div class="tg">
+                <div class="ti">
+                    <h4>Latent Space</h4>
+                    <p>The <strong>compressed representation</strong> learned by the encoder. Each dimension captures a learned feature. In VAEs, this space is structured to be smooth and continuous, enabling interpolation and generation.</p>
+                </div>
+                <div class="ti">
+                    <h4>Encoder</h4>
+                    <p>Maps high-dimensional input \( \mathbf{x} \) to a low-dimensional latent vector \( \mathbf{z} \). Can be fully connected, convolutional, or any differentiable function. <strong>Learns to compress.</strong></p>
+                </div>
+                <div class="ti">
+                    <h4>Decoder</h4>
+                    <p>Maps the latent vector \( \mathbf{z} \) back to the original input space, producing reconstruction \( \hat{\mathbf{x}} \). Mirrors the encoder architecture. <strong>Learns to reconstruct.</strong></p>
+                </div>
+                <div class="ti">
+                    <h4>Bottleneck</h4>
+                    <p>The narrowest layer between encoder and decoder. Its <strong>dimensionality controls compression</strong>: too large and the model memorizes; too small and it loses critical information. Typical: 2&ndash;512 dimensions.</p>
+                </div>
+                <div class="ti">
+                    <h4>Reconstruction Loss</h4>
+                    <p>Measures how well the decoder output matches the original input. <strong>MSE</strong> for continuous data, <strong>BCE</strong> for binary/normalized data. This is the primary training signal for all autoencoders.</p>
+                </div>
+                <div class="ti">
+                    <h4>KL Divergence</h4>
+                    <p>In VAEs, regularizes the latent distribution toward the prior \( \mathcal{N}(0, I) \). Prevents the encoder from collapsing to delta functions. <strong>Balances reconstruction quality vs. latent structure.</strong></p>
+                </div>
+                <div class="ti">
+                    <h4>Reparameterization Trick</h4>
+                    <p>Rewrites sampling as a deterministic function of \( \mu, \sigma \) and external noise \( \epsilon \). Makes the VAE <strong>fully differentiable</strong> so gradients flow through the sampling step during backpropagation.</p>
+                </div>
+                <div class="ti">
+                    <h4>Disentangled Representations</h4>
+                    <p>When each latent dimension captures an <strong>independent factor of variation</strong> (e.g., rotation, thickness, style). Achieved via Beta-VAE by upweighting the KL term, encouraging factorial latent distributions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 5: Code — Vanilla AE (Keras)       -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Code: Vanilla Autoencoder on MNIST</h2>
+        </div>
+        <div class="card-b">
+            <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:1rem;">A minimal autoencoder using Keras. The encoder compresses 784-pixel MNIST images to a 32-dimensional bottleneck, and the decoder reconstructs them.</p>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">Python &mdash; Keras</span>
+                    <button class="cb" onclick="cpCode('ae1')">Copy</button>
+                </div>
+                <div class="cs"><pre id="ae1"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow <span class="kw">import</span> keras
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers
+
+<span class="cmt"># ── Load &amp; preprocess MNIST ──</span>
+(x_train, _), (x_test, _) = keras.datasets.mnist.<span class="fn">load_data</span>()
+x_train = x_train.<span class="fn">astype</span>(<span class="str">"float32"</span>) / <span class="num">255.0</span>
+x_test  = x_test.<span class="fn">astype</span>(<span class="str">"float32"</span>) / <span class="num">255.0</span>
+x_train = x_train.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">784</span>)
+x_test  = x_test.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">784</span>)
+
+<span class="cmt"># ── Encoder ──</span>
+encoder_input = layers.<span class="fn">Input</span>(shape=(<span class="num">784</span>,), name=<span class="str">"encoder_input"</span>)
+x = layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">"relu"</span>)(encoder_input)
+x = layers.<span class="fn">Dense</span>(<span class="num">128</span>, activation=<span class="str">"relu"</span>)(x)
+latent = layers.<span class="fn">Dense</span>(<span class="num">32</span>, activation=<span class="str">"relu"</span>, name=<span class="str">"bottleneck"</span>)(x)
+encoder = keras.<span class="fn">Model</span>(encoder_input, latent, name=<span class="str">"encoder"</span>)
+
+<span class="cmt"># ── Decoder ──</span>
+decoder_input = layers.<span class="fn">Input</span>(shape=(<span class="num">32</span>,), name=<span class="str">"decoder_input"</span>)
+x = layers.<span class="fn">Dense</span>(<span class="num">128</span>, activation=<span class="str">"relu"</span>)(decoder_input)
+x = layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">"relu"</span>)(x)
+decoder_output = layers.<span class="fn">Dense</span>(<span class="num">784</span>, activation=<span class="str">"sigmoid"</span>)(x)
+decoder = keras.<span class="fn">Model</span>(decoder_input, decoder_output, name=<span class="str">"decoder"</span>)
+
+<span class="cmt"># ── Full Autoencoder ──</span>
+autoencoder = keras.<span class="fn">Model</span>(
+    encoder_input,
+    decoder(encoder(encoder_input)),
+    name=<span class="str">"autoencoder"</span>
+)
+autoencoder.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>, loss=<span class="str">"mse"</span>)
+
+<span class="cmt"># ── Train ──</span>
+autoencoder.<span class="fn">fit</span>(
+    x_train, x_train,           <span class="cmt"># input == target</span>
+    epochs=<span class="num">50</span>,
+    batch_size=<span class="num">256</span>,
+    shuffle=<span class="kw">True</span>,
+    validation_data=(x_test, x_test)
+)
+
+<span class="cmt"># ── Evaluate reconstruction ──</span>
+reconstructed = autoencoder.<span class="fn">predict</span>(x_test)
+mse = np.<span class="fn">mean</span>((x_test - reconstructed) ** <span class="num">2</span>)
+<span class="fn">print</span>(<span class="str">f"Test MSE: <span class="kw">{</span>mse<span class="kw">:</span>.5f<span class="kw">}</span>"</span>)
+
+<span class="cmt"># ── Extract latent representations ──</span>
+latent_vectors = encoder.<span class="fn">predict</span>(x_test)
+<span class="fn">print</span>(<span class="str">f"Latent shape: <span class="kw">{</span>latent_vectors.shape<span class="kw">}</span>"</span>)  <span class="cmt"># (10000, 32)</span></pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 6: Code — VAE (PyTorch)            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot"></div>
+            <h2>Code: Variational Autoencoder (VAE)</h2>
+        </div>
+        <div class="card-b">
+            <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:1rem;">A complete VAE in PyTorch with the reparameterization trick. The encoder outputs mu and log-variance, the sampling layer draws z, and the loss combines BCE reconstruction with KL divergence.</p>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">Python &mdash; PyTorch</span>
+                    <button class="cb" onclick="cpCode('vae1')">Copy</button>
+                </div>
+                <div class="cs"><pre id="vae1"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+
+<span class="cmt"># ── Hyperparameters ──</span>
+LATENT_DIM = <span class="num">20</span>
+EPOCHS     = <span class="num">30</span>
+BATCH_SIZE = <span class="num">128</span>
+LR         = <span class="num">1e-3</span>
+DEVICE     = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.<span class="fn">is_available</span>() <span class="kw">else</span> <span class="str">"cpu"</span>)
+
+
+<span class="kw">class</span> <span class="fn">VAE</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, input_dim=<span class="num">784</span>, hidden=<span class="num">400</span>, latent=<span class="num">20</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        <span class="cmt"># Encoder</span>
+        self.fc1    = nn.<span class="fn">Linear</span>(input_dim, hidden)
+        self.fc_mu  = nn.<span class="fn">Linear</span>(hidden, latent)      <span class="cmt"># mean</span>
+        self.fc_var = nn.<span class="fn">Linear</span>(hidden, latent)      <span class="cmt"># log-variance</span>
+        <span class="cmt"># Decoder</span>
+        self.fc3 = nn.<span class="fn">Linear</span>(latent, hidden)
+        self.fc4 = nn.<span class="fn">Linear</span>(hidden, input_dim)
+
+    <span class="kw">def</span> <span class="fn">encode</span>(self, x):
+        h = F.<span class="fn">relu</span>(self.<span class="fn">fc1</span>(x))
+        <span class="kw">return</span> self.<span class="fn">fc_mu</span>(h), self.<span class="fn">fc_var</span>(h)
+
+    <span class="kw">def</span> <span class="fn">reparameterize</span>(self, mu, log_var):
+        <span class="cmt">"""Sample z = mu + sigma * epsilon"""</span>
+        std = torch.<span class="fn">exp</span>(<span class="num">0.5</span> * log_var)
+        eps = torch.<span class="fn">randn_like</span>(std)          <span class="cmt"># epsilon ~ N(0, I)</span>
+        <span class="kw">return</span> mu + std * eps
+
+    <span class="kw">def</span> <span class="fn">decode</span>(self, z):
+        h = F.<span class="fn">relu</span>(self.<span class="fn">fc3</span>(z))
+        <span class="kw">return</span> torch.<span class="fn">sigmoid</span>(self.<span class="fn">fc4</span>(h))
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        mu, log_var = self.<span class="fn">encode</span>(x.<span class="fn">view</span>(-<span class="num">1</span>, <span class="num">784</span>))
+        z = self.<span class="fn">reparameterize</span>(mu, log_var)
+        <span class="kw">return</span> self.<span class="fn">decode</span>(z), mu, log_var
+
+
+<span class="kw">def</span> <span class="fn">vae_loss</span>(recon_x, x, mu, log_var):
+    <span class="cmt">"""ELBO = Reconstruction (BCE) + KL Divergence"""</span>
+    bce = F.<span class="fn">binary_cross_entropy</span>(recon_x, x.<span class="fn">view</span>(-<span class="num">1</span>, <span class="num">784</span>), reduction=<span class="str">"sum"</span>)
+    kl  = -<span class="num">0.5</span> * torch.<span class="fn">sum</span>(<span class="num">1</span> + log_var - mu.<span class="fn">pow</span>(<span class="num">2</span>) - log_var.<span class="fn">exp</span>())
+    <span class="kw">return</span> bce + kl
+
+
+<span class="cmt"># ── Data ──</span>
+train_loader = <span class="fn">DataLoader</span>(
+    datasets.MNIST(<span class="str">"./data"</span>, train=<span class="kw">True</span>, download=<span class="kw">True</span>,
+                   transform=transforms.<span class="fn">ToTensor</span>()),
+    batch_size=BATCH_SIZE, shuffle=<span class="kw">True</span>
+)
+
+<span class="cmt"># ── Train ──</span>
+model     = <span class="fn">VAE</span>(latent=LATENT_DIM).<span class="fn">to</span>(DEVICE)
+optimizer = torch.optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=LR)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, EPOCHS + <span class="num">1</span>):
+    model.<span class="fn">train</span>()
+    total_loss = <span class="num">0</span>
+    <span class="kw">for</span> batch, _ <span class="kw">in</span> train_loader:
+        batch = batch.<span class="fn">to</span>(DEVICE)
+        recon, mu, log_var = <span class="fn">model</span>(batch)
+        loss = <span class="fn">vae_loss</span>(recon, batch, mu, log_var)
+        optimizer.<span class="fn">zero_grad</span>()
+        loss.<span class="fn">backward</span>()
+        optimizer.<span class="fn">step</span>()
+        total_loss += loss.<span class="fn">item</span>()
+    <span class="fn">print</span>(<span class="str">f"Epoch {epoch}: Loss = {total_loss / len(train_loader.dataset):.2f}"</span>)
+
+<span class="cmt"># ── Generate new samples ──</span>
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    z = torch.<span class="fn">randn</span>(<span class="num">16</span>, LATENT_DIM).<span class="fn">to</span>(DEVICE)
+    samples = model.<span class="fn">decode</span>(z).<span class="fn">view</span>(-<span class="num">1</span>, <span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>)
+    <span class="fn">print</span>(<span class="str">f"Generated {samples.shape[0]} novel images from latent space"</span>)</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 7: Code — Denoising Autoencoder    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot r"></div>
+            <h2>Code: Denoising Autoencoder</h2>
+        </div>
+        <div class="card-b">
+            <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:1rem;">A practical denoising autoencoder that learns to remove Gaussian noise from MNIST images. The model receives corrupted input but is trained to reconstruct the clean original &mdash; forcing it to learn robust features rather than memorize pixel values.</p>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">Python &mdash; Keras</span>
+                    <button class="cb" onclick="cpCode('dae1')">Copy</button>
+                </div>
+                <div class="cs"><pre id="dae1"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow <span class="kw">import</span> keras
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers
+
+<span class="cmt"># ── Load &amp; preprocess ──</span>
+(x_train, _), (x_test, _) = keras.datasets.mnist.<span class="fn">load_data</span>()
+x_train = x_train.<span class="fn">astype</span>(<span class="str">"float32"</span>) / <span class="num">255.0</span>
+x_test  = x_test.<span class="fn">astype</span>(<span class="str">"float32"</span>) / <span class="num">255.0</span>
+x_train = x_train.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">784</span>)
+x_test  = x_test.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">784</span>)
+
+<span class="cmt"># ── Add Gaussian noise ──</span>
+NOISE_FACTOR = <span class="num">0.35</span>
+
+<span class="kw">def</span> <span class="fn">add_noise</span>(data, factor=NOISE_FACTOR):
+    noisy = data + factor * np.random.<span class="fn">normal</span>(size=data.shape)
+    <span class="kw">return</span> np.<span class="fn">clip</span>(noisy, <span class="num">0.0</span>, <span class="num">1.0</span>)
+
+x_train_noisy = <span class="fn">add_noise</span>(x_train)
+x_test_noisy  = <span class="fn">add_noise</span>(x_test)
+
+<span class="cmt"># ── Denoising Autoencoder ──</span>
+inputs  = layers.<span class="fn">Input</span>(shape=(<span class="num">784</span>,))
+<span class="cmt"># Encoder</span>
+x = layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">"relu"</span>)(inputs)
+x = layers.<span class="fn">Dropout</span>(<span class="num">0.3</span>)(x)
+x = layers.<span class="fn">Dense</span>(<span class="num">128</span>, activation=<span class="str">"relu"</span>)(x)
+encoded = layers.<span class="fn">Dense</span>(<span class="num">64</span>, activation=<span class="str">"relu"</span>, name=<span class="str">"bottleneck"</span>)(x)
+<span class="cmt"># Decoder</span>
+x = layers.<span class="fn">Dense</span>(<span class="num">128</span>, activation=<span class="str">"relu"</span>)(encoded)
+x = layers.<span class="fn">Dropout</span>(<span class="num">0.3</span>)(x)
+x = layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">"relu"</span>)(x)
+decoded = layers.<span class="fn">Dense</span>(<span class="num">784</span>, activation=<span class="str">"sigmoid"</span>)(x)
+
+denoiser = keras.<span class="fn">Model</span>(inputs, decoded, name=<span class="str">"denoising_ae"</span>)
+denoiser.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>, loss=<span class="str">"binary_crossentropy"</span>)
+
+<span class="cmt"># ── Train: noisy input → clean target ──</span>
+denoiser.<span class="fn">fit</span>(
+    x_train_noisy, x_train,     <span class="cmt"># noisy → clean</span>
+    epochs=<span class="num">50</span>,
+    batch_size=<span class="num">256</span>,
+    shuffle=<span class="kw">True</span>,
+    validation_data=(x_test_noisy, x_test)
+)
+
+<span class="cmt"># ── Evaluate denoising quality ──</span>
+denoised = denoiser.<span class="fn">predict</span>(x_test_noisy)
+mse_noisy    = np.<span class="fn">mean</span>((x_test - x_test_noisy) ** <span class="num">2</span>)
+mse_denoised = np.<span class="fn">mean</span>((x_test - denoised) ** <span class="num">2</span>)
+<span class="fn">print</span>(<span class="str">f"MSE (noisy input):    {mse_noisy:.5f}"</span>)
+<span class="fn">print</span>(<span class="str">f"MSE (denoised output): {mse_denoised:.5f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Noise reduction:       {(1 - mse_denoised/mse_noisy)*100:.1f}%"</span>)</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 8: Variants                        -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot a"></div>
+            <h2>Autoencoder Variants</h2>
+        </div>
+        <div class="card-b">
+            <div class="vg">
+                <div class="vi">
+                    <h4>Vanilla AE</h4>
+                    <p><strong>Deterministic encoder-decoder.</strong> Learns compressed representations via reconstruction loss alone. Simple, fast, good for dimensionality reduction. No generative capability.</p>
+                </div>
+                <div class="vi">
+                    <h4>Sparse AE</h4>
+                    <p><strong>Adds sparsity penalty</strong> (L1 or KL on activations) to the bottleneck. Encourages only a few neurons to activate per input, learning more interpretable features even with overcomplete latent spaces.</p>
+                </div>
+                <div class="vi">
+                    <h4>Denoising AE</h4>
+                    <p><strong>Trained on corrupted inputs</strong> to reconstruct clean originals. The corruption (Gaussian noise, masking, dropout) forces the model to learn robust, noise-invariant features rather than the identity.</p>
+                </div>
+                <div class="vi">
+                    <h4>VAE</h4>
+                    <p><strong>Probabilistic encoder</strong> outputs distribution parameters (&mu;, &sigma;). KL divergence regularizes latent space toward N(0, I). Enables generation via sampling. Reparameterization trick enables training.</p>
+                </div>
+                <div class="vi" style="border-left-color:var(--amber);">
+                    <h4 style="color:var(--amber);">Beta-VAE</h4>
+                    <p><strong>Upweights KL term</strong> by factor &beta; &gt; 1. Encourages disentangled latent representations where each dimension controls an independent factor of variation. Trades reconstruction quality for interpretability.</p>
+                </div>
+                <div class="vi" style="border-left-color:var(--green);">
+                    <h4 style="color:var(--green);">VQ-VAE</h4>
+                    <p><strong>Vector Quantized VAE.</strong> Replaces continuous latent space with a discrete codebook of learned embeddings. Encoder output is snapped to nearest codebook vector. Enables high-fidelity generation (used in DALL-E).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 9: When to Use / Avoid             -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>When to Use / When to Avoid</h2>
+        </div>
+        <div class="card-b">
+            <div class="tk-g">
+                <div class="tk">
+                    <h4 class="u">When to Use</h4>
+                    <p><strong>Dimensionality reduction</strong> &mdash; nonlinear alternative to PCA, especially for image and sequence data</p>
+                    <p><strong>Feature learning / pretraining</strong> &mdash; extract useful representations for downstream classifiers</p>
+                    <p><strong>Anomaly detection</strong> &mdash; high reconstruction error flags outliers the model has never seen</p>
+                    <p><strong>Denoising</strong> &mdash; remove noise, fill missing values, or inpaint corrupted regions</p>
+                    <p><strong>Data generation (VAE)</strong> &mdash; sample from latent space to produce novel, plausible examples</p>
+                    <p><strong>Compression</strong> &mdash; learned codecs that adapt to specific data distributions</p>
+                </div>
+                <div class="tk">
+                    <h4 class="av">When to Avoid</h4>
+                    <p><strong>Small tabular datasets</strong> &mdash; PCA or simple feature selection is faster and sufficient</p>
+                    <p><strong>When interpretability is required</strong> &mdash; latent dimensions are not inherently meaningful (unless disentangled)</p>
+                    <p><strong>High-fidelity image generation</strong> &mdash; VAEs produce blurry outputs; GANs and diffusion models are superior</p>
+                    <p><strong>Discrete/categorical data</strong> &mdash; reconstruction loss is poorly defined; consider VQ-VAE or specialized architectures</p>
+                    <p><strong>Real-time inference on edge devices</strong> &mdash; encoder-decoder adds latency; simpler models may suffice</p>
+                    <p><strong>When labels are abundant</strong> &mdash; supervised methods usually outperform unsupervised representation learning</p>
+                </div>
+            </div>
+
+            <div class="an gd">
+                <h4>Best Practice</h4>
+                <ul>
+                    <li>Start with a <strong>vanilla autoencoder</strong> to validate your pipeline, then upgrade to VAE or denoising variants</li>
+                    <li>Monitor <strong>both reconstruction loss and KL divergence</strong> separately &mdash; if KL collapses to zero, the model ignores the latent space (posterior collapse)</li>
+                    <li>Use <strong>KL annealing</strong> (gradually increase KL weight from 0 to 1 during training) to mitigate posterior collapse</li>
+                    <li>Visualize the <strong>latent space</strong> with t-SNE or UMAP to verify meaningful clustering</li>
+                    <li>For convolutional autoencoders, use <strong>transposed convolutions</strong> or <strong>upsampling + conv</strong> in the decoder to avoid checkerboard artifacts</li>
+                </ul>
+            </div>
+
+            <div class="an bd">
+                <h4>Common Pitfalls</h4>
+                <ul>
+                    <li><strong>Posterior collapse</strong> &mdash; the decoder learns to ignore z and generate from the prior alone. Fix with KL annealing, free bits, or delta-VAE</li>
+                    <li><strong>Blurry reconstructions</strong> &mdash; MSE loss averages over modes. Consider perceptual loss, adversarial loss (VAE-GAN), or VQ-VAE</li>
+                    <li><strong>Overfitting</strong> &mdash; if the bottleneck is too large, the model memorizes rather than generalizes. Add dropout, noise, or reduce latent dim</li>
+                    <li><strong>Wrong loss function</strong> &mdash; using MSE on binary data or BCE on unbounded data produces poor gradients and training instability</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+</body></html>

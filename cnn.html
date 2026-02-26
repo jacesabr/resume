@@ -1,0 +1,718 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Convolutional Neural Networks — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}
+.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;} .topbar a:hover{color:var(--text);}
+.topbar .sep{color:var(--border);} .topbar .pt{color:var(--text-dim);font-size:0.85rem;}
+.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}
+.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;} .hero h1 span{color:var(--terra);}
+.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}
+.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}
+.card-h .dot.g{background:var(--green);} .card-h .dot.r{background:var(--red);} .card-h .dot.a{background:var(--amber);}
+.card-h h2{font-size:0.95rem;font-weight:600;}
+.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}
+.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;} .ti p strong{color:var(--text);}
+.tr{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.tg-t{font-size:0.75rem;padding:0.22rem 0.6rem;border-radius:5px;font-weight:500;}
+.tg-t.ok{background:var(--green-dim);color:var(--green);} .tg-t.fl{background:var(--red-dim);color:var(--red);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}
+.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}
+.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}
+.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;} .ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}
+.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}
+.cs::-webkit-scrollbar{width:5px;height:5px;} .cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cmt{color:#546274;font-style:italic;} .num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;} .prose p:last-child{margin-bottom:0;} .prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}
+.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;} .tk h4.u{color:var(--green);} .tk h4.av{color:var(--red);}
+.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}
+.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}
+.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}
+.an.wn{background:rgba(184,134,11,0.06);border:1px solid rgba(184,134,11,0.15);}
+.an h4{font-size:0.92rem;margin-bottom:0.5rem;} .an.gd h4{color:var(--green);} .an.bd h4{color:var(--red);} .an.wn h4{color:var(--amber);}
+.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;} .an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:1rem 0;}
+.fi{background:var(--surface2);border-radius:8px;padding:0.9rem;text-align:center;}
+.fi .fn-l{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:600;margin-bottom:0.2rem;}
+.fi .fn-v{font-size:0.85rem;font-weight:600;color:var(--text);}
+.sh{margin:1.4rem 0 0.7rem;font-size:0.9rem;font-weight:600;} .sh .dm{color:var(--text-dim);font-weight:400;font-size:0.8rem;}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.arch-card{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;border-left:3px solid var(--terra);}
+.arch-card h4{font-size:0.85rem;font-weight:700;color:var(--terra);margin-bottom:0.3rem;}
+.arch-card .arch-year{font-size:0.7rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
+.arch-card p{font-size:0.84rem;color:var(--text-dim);line-height:1.65;}
+.ascii-diagram{background:var(--code-bg);border-radius:8px;padding:1.2rem 1.5rem;border:1px solid var(--code-border);overflow-x:auto;}
+.ascii-diagram pre{font-family:'JetBrains Mono',monospace;font-size:0.72rem;line-height:1.55;color:var(--code-text);white-space:pre;margin:0;}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+@media(max-width:640px){.tg,.tk-g,.fg,.arch-grid{grid-template-columns:1fr!important;}}
+</style></head><body>
+
+<!-- ========== TOPBAR ========== -->
+<div class="topbar">
+    <a href="index.html">&larr; All Algorithms</a>
+    <span class="sep">/</span>
+    <span class="pt">Deep Learning</span>
+    <span class="sep">/</span>
+    <span class="pt">Convolutional Neural Networks</span>
+    <span class="algo-badge">Vision &middot; DL1</span>
+</div>
+
+<!-- ========== HERO ========== -->
+<div class="hero">
+    <h1>Convolutional Neural <span>Networks</span></h1>
+    <p class="sub">The architecture that taught machines to see — from handwritten digits to self-driving cars, CNNs extract spatial hierarchies through learnable filters.</p>
+    <p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">3 complete code examples &middot; 5 landmark architectures &middot; Full mathematical foundation</p>
+</div>
+
+<!-- ========== CONTENT ========== -->
+<div class="content">
+
+<!-- ===== 1. MATHEMATICAL FOUNDATION ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Mathematical Foundation</h2></div>
+    <div class="card-b">
+        <div class="prose"><p>CNNs are built on three core mathematical operations: <strong>convolution</strong> to detect local patterns, <strong>activation</strong> to introduce non-linearity, and <strong>pooling</strong> to reduce spatial dimensions while preserving dominant features.</p></div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[(f * g)(i, j) = \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} f(m, n) \cdot g(i - m, j - n)\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">2D Discrete Convolution</strong> &mdash; The input image f is convolved with kernel g of size M&times;N. Each output pixel is the weighted sum of a local neighborhood. In practice, CNNs compute cross-correlation (no kernel flip).</p>
+        </div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[O_{out} = \left\lfloor \frac{W_{in} - K + 2P}{S} \right\rfloor + 1\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">Output Size Formula</strong> &mdash; Given input width W<sub>in</sub>, kernel size K, padding P, and stride S. This same formula applies to both height and width independently. Critical for designing architectures that don't collapse spatial dimensions too fast.</p>
+        </div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\text{MaxPool}(x)_{i,j} = \max_{(m,n) \in R_{i,j}} x_{m,n}\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">Max Pooling</strong> &mdash; Takes the maximum value within each pooling region R. A 2&times;2 max pool with stride 2 halves both spatial dimensions, reducing parameters by 75% while retaining the strongest activations.</p>
+        </div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\text{ReLU}(x) = \max(0, x)\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">ReLU Activation</strong> &mdash; Rectified Linear Unit. Zeroes out negative values, keeping positive values unchanged. Computationally cheap, avoids vanishing gradients, and is the default activation in modern CNNs.</p>
+        </div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\text{Softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">Softmax Output</strong> &mdash; Converts the final fully-connected layer's raw logits into a probability distribution over K classes. Each output is in [0, 1] and all outputs sum to 1.</p>
+        </div>
+
+        <div style="margin:1rem 0;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\mathcal{L} = -\sum_{i=1}^{K} y_i \log(\hat{y}_i)\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5"><strong style="color:var(--text)">Categorical Cross-Entropy Loss</strong> &mdash; The standard loss function for multi-class classification. Penalizes confident wrong predictions exponentially. y is the one-hot true label, y&#770; is the predicted probability.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 2. ARCHITECTURE OVERVIEW ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Architecture Overview</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p>A CNN processes data through a <strong>feature extraction</strong> front-end (convolutional + pooling layers) followed by a <strong>classification</strong> back-end (fully connected layers). Early layers detect low-level features like edges and textures; deeper layers compose these into high-level concepts like eyes, wheels, or handwritten strokes.</p>
+            <p>The key insight: <strong>parameter sharing</strong>. A single 3&times;3 kernel with 9 weights scans the entire image, dramatically reducing parameters compared to a fully-connected network. A 224&times;224&times;3 image has 150,528 input neurons &mdash; a fully-connected first layer with 1,000 neurons would need 150 million weights. A Conv layer with 64 filters of size 3&times;3 needs only 1,728.</p>
+        </div>
+
+        <div class="ascii-diagram" style="margin-top:1rem">
+<pre>
+  INPUT          CONV + ReLU       POOL         CONV + ReLU       POOL         FLATTEN      FC          OUTPUT
+ (image)        (feature maps)   (downsample)  (deeper maps)    (downsample)   (vector)   (dense)     (classes)
+
+ +--------+     +--------+      +------+      +--------+      +----+
+ |        |     | filter |      |      |      | filter |      |    |
+ | 28x28  | --> | 26x26  | -->  |13x13 | -->  | 11x11  | -->  |5x5 | -->  [  625  ] --> [128] --> [10]
+ |  x1    |     |  x32   |      | x32  |      |  x64   |      |x64 |       neurons     neurons   classes
+ +--------+     +--------+      +------+      +--------+      +----+
+                 3x3 kern        2x2 max       3x3 kern       2x2 max        reshape     ReLU      softmax
+                 stride=1        stride=2       stride=1       stride=2                   dropout
+
+ SPATIAL:  28 --> 26 --> 13 --> 11 --> 5       DEPTH:  1 --> 32 --> 32 --> 64 --> 64
+ (shrinks with each conv/pool)                 (grows with each conv layer)
+
+ INFORMATION FLOW:
+ pixels --> edges --> textures --> parts --> objects --> class probabilities
+</pre>
+        </div>
+
+        <div class="tg" style="margin-top:1.2rem">
+            <div class="ti">
+                <h4>Feature Extraction</h4>
+                <p>Alternating <strong>Conv + ReLU</strong> and <strong>Pooling</strong> layers. Spatial dimensions shrink while channel depth grows. Each conv layer learns increasingly abstract patterns. No manual feature engineering required.</p>
+            </div>
+            <div class="ti">
+                <h4>Classification Head</h4>
+                <p>Feature maps are <strong>flattened</strong> into a 1D vector, then passed through one or more <strong>Dense layers</strong> with dropout for regularization. Final layer uses <strong>softmax</strong> for multi-class or <strong>sigmoid</strong> for binary classification.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 3. KEY CONCEPTS GLOSSARY ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Key Concepts Glossary</h2></div>
+    <div class="card-b">
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Kernel / Filter</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">A small learnable weight matrix (typically 3&times;3 or 5&times;5) that slides across the input to detect a specific pattern. Each filter produces one feature map. A layer with 64 filters learns 64 different pattern detectors simultaneously.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Stride</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">The number of pixels the kernel moves between applications. Stride=1 means the kernel shifts one pixel at a time (maximum overlap). Stride=2 skips every other position, halving the output dimensions and acting as a form of downsampling.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Padding</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Adding zeros (or other values) around the input border. "Same" padding preserves spatial dimensions (output = input size). "Valid" padding means no padding, so the output shrinks by (kernel_size - 1). Padding prevents information loss at image edges.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Feature Map</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">The 2D output produced by applying one filter across the entire input. Each pixel in the feature map indicates how strongly that filter's pattern was detected at that spatial location. A Conv layer with 64 filters outputs 64 feature maps stacked as channels.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Receptive Field</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">The region of the original input image that influences a single neuron's output. Early layers have small receptive fields (local edges). Deeper layers have larger receptive fields through successive convolutions, enabling them to "see" larger structures. This is how CNNs build spatial hierarchy.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Pooling (Max / Average)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">A downsampling operation that reduces spatial dimensions. Max pooling takes the largest value in each window (preserves strongest activation). Average pooling takes the mean (smoother). Both reduce computation and provide slight translation invariance.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Flatten</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Reshaping the 3D feature map tensor (height &times; width &times; channels) into a 1D vector. This bridge connects the convolutional feature extractor to the fully-connected classification head. A 5&times;5&times;64 tensor becomes a 1,600-element vector.</span>
+        </div>
+        <div style="padding:0.5rem 0">
+            <strong style="color:var(--terra)">Batch Normalization</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Normalizes each mini-batch to zero mean and unit variance between layers. Dramatically stabilizes training, allows higher learning rates, and acts as mild regularization. Nearly universal in modern CNN architectures.</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 4. CODE EXAMPLE 1: MNIST ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 1: MNIST Classification with Keras</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p>The "Hello World" of deep learning. <strong>MNIST</strong> contains 70,000 grayscale images of handwritten digits (28&times;28 pixels). This CNN achieves ~99% accuracy &mdash; far beyond what simple ML models can reach on raw pixels.</p>
+        </div>
+        <div class="tg" style="margin:0.8rem 0">
+            <div class="ti">
+                <h4>Dataset</h4>
+                <p><strong>60,000 training</strong> + 10,000 test images, 28&times;28&times;1 grayscale, 10 classes (digits 0-9). Pixel values normalized to [0, 1].</p>
+            </div>
+            <div class="ti">
+                <h4>Architecture</h4>
+                <p><strong>Conv(32) &rarr; Conv(64) &rarr; MaxPool &rarr; Dropout &rarr; Flatten &rarr; Dense(128) &rarr; Dense(10)</strong>. ~420K trainable parameters.</p>
+            </div>
+        </div>
+        <div class="cw"><div class="ct"><span class="ln">Python 3 &mdash; TensorFlow / Keras</span><button class="cb" onclick="cpCode('c1')">Copy</button></div><div class="cs"><pre id="c1"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> mnist
+
+<span class="cmt"># --- LOAD AND PREPROCESS ---</span>
+(X_train, y_train), (X_test, y_test) = mnist.<span class="fn">load_data</span>()
+
+<span class="cmt"># Reshape to (samples, height, width, channels) — CNN expects 4D input</span>
+X_train = X_train.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>, <span class="num">1</span>).<span class="fn">astype</span>(<span class="str">'float32'</span>) / <span class="num">255.0</span>
+X_test = X_test.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>, <span class="num">1</span>).<span class="fn">astype</span>(<span class="str">'float32'</span>) / <span class="num">255.0</span>
+
+<span class="cmt"># One-hot encode labels: 3 → [0,0,0,1,0,0,0,0,0,0]</span>
+y_train = tf.keras.utils.<span class="fn">to_categorical</span>(y_train, <span class="num">10</span>)
+y_test = tf.keras.utils.<span class="fn">to_categorical</span>(y_test, <span class="num">10</span>)
+
+<span class="kw">print</span>(<span class="str">f'Training: {X_train.shape}, Test: {X_test.shape}'</span>)
+<span class="cmt"># → Training: (60000, 28, 28, 1), Test: (10000, 28, 28, 1)</span>
+
+<span class="cmt"># --- BUILD CNN MODEL ---</span>
+model = models.<span class="fn">Sequential</span>([
+    <span class="cmt"># Block 1: First convolution</span>
+    layers.<span class="fn">Conv2D</span>(<span class="num">32</span>, (<span class="num">3</span>, <span class="num">3</span>), activation=<span class="str">'relu'</span>, input_shape=(<span class="num">28</span>, <span class="num">28</span>, <span class="num">1</span>)),
+    <span class="cmt"># → Output: (26, 26, 32) — 32 filters detect 32 different edge patterns</span>
+
+    <span class="cmt"># Block 2: Second convolution — learns combinations of edges</span>
+    layers.<span class="fn">Conv2D</span>(<span class="num">64</span>, (<span class="num">3</span>, <span class="num">3</span>), activation=<span class="str">'relu'</span>),
+    <span class="cmt"># → Output: (24, 24, 64) — 64 filters detect textures and curves</span>
+
+    <span class="cmt"># Downsample: cut spatial dimensions in half</span>
+    layers.<span class="fn">MaxPooling2D</span>((<span class="num">2</span>, <span class="num">2</span>)),
+    <span class="cmt"># → Output: (12, 12, 64)</span>
+
+    <span class="cmt"># Regularization: randomly zero 25% of neurons during training</span>
+    layers.<span class="fn">Dropout</span>(<span class="num">0.25</span>),
+
+    <span class="cmt"># Bridge: 3D feature maps → 1D vector</span>
+    layers.<span class="fn">Flatten</span>(),
+    <span class="cmt"># → Output: (9216,) — 12 * 12 * 64 = 9,216 features</span>
+
+    <span class="cmt"># Classification head</span>
+    layers.<span class="fn">Dense</span>(<span class="num">128</span>, activation=<span class="str">'relu'</span>),
+    layers.<span class="fn">Dropout</span>(<span class="num">0.5</span>),
+    layers.<span class="fn">Dense</span>(<span class="num">10</span>, activation=<span class="str">'softmax'</span>),
+    <span class="cmt"># → Output: (10,) — probability for each digit</span>
+])
+
+model.<span class="fn">summary</span>()
+<span class="cmt"># Total params: ~421,642 (compare to 150M+ for a fully-connected equivalent)</span>
+
+<span class="cmt"># --- COMPILE AND TRAIN ---</span>
+model.<span class="fn">compile</span>(
+    optimizer=<span class="str">'adam'</span>,
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+history = model.<span class="fn">fit</span>(
+    X_train, y_train,
+    batch_size=<span class="num">128</span>,
+    epochs=<span class="num">10</span>,
+    validation_split=<span class="num">0.1</span>,
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># --- EVALUATE ---</span>
+test_loss, test_acc = model.<span class="fn">evaluate</span>(X_test, y_test, verbose=<span class="num">0</span>)
+<span class="kw">print</span>(<span class="str">f'\nTest accuracy: {test_acc:.4f}'</span>)
+<span class="kw">print</span>(<span class="str">f'Test loss:     {test_loss:.4f}'</span>)
+<span class="cmt"># → Test accuracy: ~0.9910 (99.1%)</span>
+
+<span class="cmt"># --- PREDICTIONS ---</span>
+predictions = model.<span class="fn">predict</span>(X_test[:<span class="num">5</span>])
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    predicted = np.<span class="fn">argmax</span>(predictions[i])
+    actual = np.<span class="fn">argmax</span>(y_test[i])
+    confidence = predictions[i][predicted]
+    <span class="kw">print</span>(<span class="str">f'Predicted: {predicted}, Actual: {actual}, Confidence: {confidence:.3f}'</span>)
+
+<span class="cmt"># --- TRAINING CURVES ---</span>
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+fig, (ax1, ax2) = plt.<span class="fn">subplots</span>(<span class="num">1</span>, <span class="num">2</span>, figsize=(<span class="num">12</span>, <span class="num">4</span>))
+ax1.<span class="fn">plot</span>(history.history[<span class="str">'accuracy'</span>], label=<span class="str">'Train'</span>)
+ax1.<span class="fn">plot</span>(history.history[<span class="str">'val_accuracy'</span>], label=<span class="str">'Validation'</span>)
+ax1.<span class="fn">set_title</span>(<span class="str">'Accuracy'</span>); ax1.<span class="fn">legend</span>()
+
+ax2.<span class="fn">plot</span>(history.history[<span class="str">'loss'</span>], label=<span class="str">'Train'</span>)
+ax2.<span class="fn">plot</span>(history.history[<span class="str">'val_loss'</span>], label=<span class="str">'Validation'</span>)
+ax2.<span class="fn">set_title</span>(<span class="str">'Loss'</span>); ax2.<span class="fn">legend</span>()
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()</pre></div></div>
+    </div>
+</div>
+
+<!-- ===== 5. CODE EXAMPLE 2: TRANSFER LEARNING VGG16 ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 2: Transfer Learning with VGG16</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p><strong>Transfer learning</strong> is the most practical CNN technique in production. Instead of training from scratch on millions of images, you take a model pre-trained on ImageNet (1.2M images, 1,000 classes) and fine-tune it on your specific dataset. This works because early CNN layers learn universal features (edges, textures) that transfer across domains.</p>
+        </div>
+        <div class="tg" style="margin:0.8rem 0">
+            <div class="ti">
+                <h4>Why Transfer Learning</h4>
+                <p><strong>VGG16 trained for 2-3 weeks</strong> on 4 GPUs. You get those learned features for free, then fine-tune the last layers on your data in minutes. Works even with as few as 100-500 images per class.</p>
+            </div>
+            <div class="ti">
+                <h4>Strategy</h4>
+                <p><strong>Freeze</strong> the pre-trained convolutional base (feature extractor). <strong>Replace</strong> the classification head. <strong>Train</strong> only the new dense layers on your dataset. Optionally unfreeze top conv layers for fine-tuning.</p>
+            </div>
+        </div>
+        <div class="cw"><div class="ct"><span class="ln">Python 3 &mdash; TensorFlow / Keras</span><button class="cb" onclick="cpCode('c2')">Copy</button></div><div class="cs"><pre id="c2"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+<span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> VGG16
+<span class="kw">from</span> tensorflow.keras.preprocessing.image <span class="kw">import</span> ImageDataGenerator
+
+<span class="cmt"># --- LOAD PRE-TRAINED VGG16 (without classification head) ---</span>
+base_model = <span class="fn">VGG16</span>(
+    weights=<span class="str">'imagenet'</span>,        <span class="cmt"># Pre-trained on 1.2M images</span>
+    include_top=<span class="kw">False</span>,         <span class="cmt"># Remove the 3 FC layers (4,096 → 4,096 → 1,000)</span>
+    input_shape=(<span class="num">224</span>, <span class="num">224</span>, <span class="num">3</span>)  <span class="cmt"># Standard VGG input size</span>
+)
+
+<span class="cmt"># Freeze all convolutional layers — don't update their weights</span>
+base_model.trainable = <span class="kw">False</span>
+
+<span class="kw">print</span>(<span class="str">f'VGG16 base: {len(base_model.layers)} layers'</span>)
+<span class="kw">print</span>(<span class="str">f'Trainable params: {base_model.count_params():,} (all frozen)'</span>)
+<span class="cmt"># → VGG16 base: 19 layers, 14,714,688 params (all frozen)</span>
+
+<span class="cmt"># --- BUILD CUSTOM CLASSIFICATION HEAD ---</span>
+model = models.<span class="fn">Sequential</span>([
+    base_model,
+    layers.<span class="fn">GlobalAveragePooling2D</span>(),  <span class="cmt"># (7, 7, 512) → (512,) — better than Flatten</span>
+    layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">'relu'</span>),
+    layers.<span class="fn">Dropout</span>(<span class="num">0.5</span>),
+    layers.<span class="fn">Dense</span>(<span class="num">5</span>, activation=<span class="str">'softmax'</span>)   <span class="cmt"># 5 classes — adjust for your dataset</span>
+])
+
+model.<span class="fn">compile</span>(
+    optimizer=tf.keras.optimizers.<span class="fn">Adam</span>(learning_rate=<span class="num">1e-4</span>),
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+model.<span class="fn">summary</span>()
+<span class="cmt"># → Total params: 14,846,469 — but only 131,781 are trainable!</span>
+
+<span class="cmt"># --- DATA AUGMENTATION (critical for small datasets) ---</span>
+train_datagen = <span class="fn">ImageDataGenerator</span>(
+    rescale=<span class="num">1.0</span>/<span class="num">255</span>,
+    rotation_range=<span class="num">20</span>,
+    width_shift_range=<span class="num">0.2</span>,
+    height_shift_range=<span class="num">0.2</span>,
+    horizontal_flip=<span class="kw">True</span>,
+    zoom_range=<span class="num">0.15</span>,
+    validation_split=<span class="num">0.2</span>
+)
+
+train_gen = train_datagen.<span class="fn">flow_from_directory</span>(
+    <span class="str">'data/train'</span>,
+    target_size=(<span class="num">224</span>, <span class="num">224</span>),
+    batch_size=<span class="num">32</span>,
+    class_mode=<span class="str">'categorical'</span>,
+    subset=<span class="str">'training'</span>
+)
+
+val_gen = train_datagen.<span class="fn">flow_from_directory</span>(
+    <span class="str">'data/train'</span>,
+    target_size=(<span class="num">224</span>, <span class="num">224</span>),
+    batch_size=<span class="num">32</span>,
+    class_mode=<span class="str">'categorical'</span>,
+    subset=<span class="str">'validation'</span>
+)
+
+<span class="cmt"># --- PHASE 1: TRAIN ONLY THE NEW HEAD ---</span>
+<span class="kw">print</span>(<span class="str">'Phase 1: Training classification head only...'</span>)
+history = model.<span class="fn">fit</span>(
+    train_gen,
+    epochs=<span class="num">10</span>,
+    validation_data=val_gen,
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># --- PHASE 2: FINE-TUNE TOP CONV LAYERS ---</span>
+<span class="kw">print</span>(<span class="str">'\nPhase 2: Unfreezing top conv block for fine-tuning...'</span>)
+base_model.trainable = <span class="kw">True</span>
+
+<span class="cmt"># Freeze everything except the last 4 layers (block5_conv1 through block5_pool)</span>
+<span class="kw">for</span> layer <span class="kw">in</span> base_model.layers[:-<span class="num">4</span>]:
+    layer.trainable = <span class="kw">False</span>
+
+<span class="cmt"># Re-compile with a much lower learning rate to avoid destroying pre-trained weights</span>
+model.<span class="fn">compile</span>(
+    optimizer=tf.keras.optimizers.<span class="fn">Adam</span>(learning_rate=<span class="num">1e-5</span>),  <span class="cmt"># 10x lower than phase 1</span>
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+history_fine = model.<span class="fn">fit</span>(
+    train_gen,
+    epochs=<span class="num">10</span>,
+    validation_data=val_gen,
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># --- EVALUATE ---</span>
+val_loss, val_acc = model.<span class="fn">evaluate</span>(val_gen, verbose=<span class="num">0</span>)
+<span class="kw">print</span>(<span class="str">f'\nFinal validation accuracy: {val_acc:.4f}'</span>)
+<span class="cmt"># → Typically 90-95%+ even with only a few hundred images per class</span>
+
+<span class="cmt"># --- SAVE MODEL ---</span>
+model.<span class="fn">save</span>(<span class="str">'vgg16_transfer_model.keras'</span>)
+<span class="kw">print</span>(<span class="str">'Model saved.'</span>)</pre></div></div>
+    </div>
+</div>
+
+<!-- ===== 6. CODE EXAMPLE 3: CUSTOM CNN FOR CIFAR-10 ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 3: Custom CNN for CIFAR-10</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p><strong>CIFAR-10</strong> is significantly harder than MNIST: 60,000 color images (32&times;32&times;3) across 10 real-world classes (airplane, car, bird, cat, deer, dog, frog, horse, ship, truck). This requires a deeper architecture with batch normalization, data augmentation, and learning rate scheduling to reach competitive accuracy.</p>
+        </div>
+        <div class="tg" style="margin:0.8rem 0">
+            <div class="ti">
+                <h4>Dataset</h4>
+                <p><strong>50,000 training</strong> + 10,000 test, 32&times;32&times;3 RGB, 10 classes. Much more noise and variation than MNIST &mdash; objects at different scales, orientations, and backgrounds.</p>
+            </div>
+            <div class="ti">
+                <h4>Architecture</h4>
+                <p><strong>3 Conv blocks</strong> (Conv &rarr; BN &rarr; Conv &rarr; BN &rarr; MaxPool &rarr; Dropout) + Dense head. Batch norm + aggressive augmentation. ~1.2M parameters.</p>
+            </div>
+        </div>
+        <div class="cw"><div class="ct"><span class="ln">Python 3 &mdash; TensorFlow / Keras</span><button class="cb" onclick="cpCode('c3')">Copy</button></div><div class="cs"><pre id="c3"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models, callbacks
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> cifar10
+<span class="kw">from</span> tensorflow.keras.preprocessing.image <span class="kw">import</span> ImageDataGenerator
+
+<span class="cmt"># --- LOAD AND PREPROCESS ---</span>
+(X_train, y_train), (X_test, y_test) = cifar10.<span class="fn">load_data</span>()
+class_names = [<span class="str">'airplane'</span>, <span class="str">'automobile'</span>, <span class="str">'bird'</span>, <span class="str">'cat'</span>, <span class="str">'deer'</span>,
+               <span class="str">'dog'</span>, <span class="str">'frog'</span>, <span class="str">'horse'</span>, <span class="str">'ship'</span>, <span class="str">'truck'</span>]
+
+<span class="cmt"># Normalize to [0, 1]</span>
+X_train = X_train.<span class="fn">astype</span>(<span class="str">'float32'</span>) / <span class="num">255.0</span>
+X_test = X_test.<span class="fn">astype</span>(<span class="str">'float32'</span>) / <span class="num">255.0</span>
+
+<span class="cmt"># Per-channel mean subtraction (zero-center the data)</span>
+channel_mean = X_train.<span class="fn">mean</span>(axis=(<span class="num">0</span>, <span class="num">1</span>, <span class="num">2</span>))
+X_train -= channel_mean
+X_test -= channel_mean
+
+<span class="cmt"># One-hot encode</span>
+y_train = tf.keras.utils.<span class="fn">to_categorical</span>(y_train, <span class="num">10</span>)
+y_test = tf.keras.utils.<span class="fn">to_categorical</span>(y_test, <span class="num">10</span>)
+
+<span class="kw">print</span>(<span class="str">f'Training: {X_train.shape}, Test: {X_test.shape}'</span>)
+<span class="cmt"># → Training: (50000, 32, 32, 3), Test: (10000, 32, 32, 3)</span>
+
+<span class="cmt"># --- DATA AUGMENTATION ---</span>
+datagen = <span class="fn">ImageDataGenerator</span>(
+    rotation_range=<span class="num">15</span>,
+    width_shift_range=<span class="num">0.1</span>,
+    height_shift_range=<span class="num">0.1</span>,
+    horizontal_flip=<span class="kw">True</span>,
+    zoom_range=<span class="num">0.1</span>
+)
+datagen.<span class="fn">fit</span>(X_train)
+
+<span class="cmt"># --- BUILD DEEP CNN ---</span>
+<span class="kw">def</span> <span class="fn">build_cifar_cnn</span>():
+    model = models.<span class="fn">Sequential</span>()
+
+    <span class="cmt"># Block 1: 32 → 32 spatial, 3 → 64 channels</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">64</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>, input_shape=(<span class="num">32</span>, <span class="num">32</span>, <span class="num">3</span>)))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">64</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">MaxPooling2D</span>((<span class="num">2</span>, <span class="num">2</span>)))    <span class="cmt"># → 16×16×64</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Dropout</span>(<span class="num">0.2</span>))
+
+    <span class="cmt"># Block 2: 16 → 8 spatial, 64 → 128 channels</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">128</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">128</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">MaxPooling2D</span>((<span class="num">2</span>, <span class="num">2</span>)))    <span class="cmt"># → 8×8×128</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Dropout</span>(<span class="num">0.3</span>))
+
+    <span class="cmt"># Block 3: 8 → 4 spatial, 128 → 256 channels</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">256</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">Conv2D</span>(<span class="num">256</span>, (<span class="num">3</span>, <span class="num">3</span>), padding=<span class="str">'same'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">MaxPooling2D</span>((<span class="num">2</span>, <span class="num">2</span>)))    <span class="cmt"># → 4×4×256</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Dropout</span>(<span class="num">0.4</span>))
+
+    <span class="cmt"># Classification head</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Flatten</span>())               <span class="cmt"># → 4096</span>
+    model.<span class="fn">add</span>(layers.<span class="fn">Dense</span>(<span class="num">512</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">BatchNormalization</span>())
+    model.<span class="fn">add</span>(layers.<span class="fn">Activation</span>(<span class="str">'relu'</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">Dropout</span>(<span class="num">0.5</span>))
+    model.<span class="fn">add</span>(layers.<span class="fn">Dense</span>(<span class="num">10</span>, activation=<span class="str">'softmax'</span>))
+
+    <span class="kw">return</span> model
+
+model = <span class="fn">build_cifar_cnn</span>()
+model.<span class="fn">summary</span>()
+<span class="cmt"># → Total params: ~1,250,000</span>
+
+<span class="cmt"># --- COMPILE ---</span>
+model.<span class="fn">compile</span>(
+    optimizer=tf.keras.optimizers.<span class="fn">Adam</span>(learning_rate=<span class="num">1e-3</span>),
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+<span class="cmt"># --- CALLBACKS ---</span>
+cb = [
+    callbacks.<span class="fn">ReduceLROnPlateau</span>(
+        monitor=<span class="str">'val_loss'</span>, factor=<span class="num">0.5</span>, patience=<span class="num">5</span>, min_lr=<span class="num">1e-6</span>, verbose=<span class="num">1</span>
+    ),
+    callbacks.<span class="fn">EarlyStopping</span>(
+        monitor=<span class="str">'val_loss'</span>, patience=<span class="num">15</span>, restore_best_weights=<span class="kw">True</span>
+    ),
+    callbacks.<span class="fn">ModelCheckpoint</span>(
+        <span class="str">'cifar10_best.keras'</span>, monitor=<span class="str">'val_accuracy'</span>,
+        save_best_only=<span class="kw">True</span>, verbose=<span class="num">1</span>
+    )
+]
+
+<span class="cmt"># --- TRAIN WITH AUGMENTATION ---</span>
+history = model.<span class="fn">fit</span>(
+    datagen.<span class="fn">flow</span>(X_train, y_train, batch_size=<span class="num">64</span>),
+    epochs=<span class="num">100</span>,
+    validation_data=(X_test, y_test),
+    callbacks=cb,
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># --- EVALUATE ---</span>
+test_loss, test_acc = model.<span class="fn">evaluate</span>(X_test, y_test, verbose=<span class="num">0</span>)
+<span class="kw">print</span>(<span class="str">f'\nTest accuracy: {test_acc:.4f}'</span>)
+<span class="cmt"># → Test accuracy: ~0.9200 (92%) — strong for this architecture</span>
+
+<span class="cmt"># --- PER-CLASS ACCURACY ---</span>
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> classification_report
+y_pred = model.<span class="fn">predict</span>(X_test)
+y_pred_classes = np.<span class="fn">argmax</span>(y_pred, axis=<span class="num">1</span>)
+y_true_classes = np.<span class="fn">argmax</span>(y_test, axis=<span class="num">1</span>)
+
+<span class="kw">print</span>(<span class="str">'\nPer-class results:'</span>)
+<span class="kw">print</span>(<span class="fn">classification_report</span>(y_true_classes, y_pred_classes,
+                          target_names=class_names, digits=<span class="num">3</span>))
+
+<span class="cmt"># --- CONFUSION MATRIX ---</span>
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+
+cm = <span class="fn">confusion_matrix</span>(y_true_classes, y_pred_classes)
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">8</span>))
+sns.<span class="fn">heatmap</span>(cm, annot=<span class="kw">True</span>, fmt=<span class="str">'d'</span>, cmap=<span class="str">'Blues'</span>,
+            xticklabels=class_names, yticklabels=class_names)
+plt.<span class="fn">xlabel</span>(<span class="str">'Predicted'</span>); plt.<span class="fn">ylabel</span>(<span class="str">'Actual'</span>)
+plt.<span class="fn">title</span>(<span class="str">'CIFAR-10 Confusion Matrix'</span>)
+plt.<span class="fn">tight_layout</span>(); plt.<span class="fn">show</span>()</pre></div></div>
+    </div>
+</div>
+
+<!-- ===== 7. FAMOUS ARCHITECTURES ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Famous Architectures</h2></div>
+    <div class="card-b">
+        <div class="prose"><p>The evolution of CNN architectures mirrors the field's progress. Each landmark model introduced a key insight that changed how we build neural networks.</p></div>
+
+        <div class="arch-grid" style="margin-top:1rem">
+            <div class="arch-card">
+                <h4>LeNet-5</h4>
+                <div class="arch-year">1998 &mdash; Yann LeCun</div>
+                <p>The original CNN. Two conv layers, two pooling layers, three FC layers. Designed for 32&times;32 grayscale digit recognition. Only ~60K parameters. Proved that learnable filters outperform hand-crafted feature extractors for vision tasks. Used tanh activations (pre-ReLU era).</p>
+                <div class="tr" style="margin-top:0.5rem">
+                    <span class="tg-t ok">60K params</span>
+                    <span class="tg-t ok">Digit recognition</span>
+                </div>
+            </div>
+            <div class="arch-card">
+                <h4>AlexNet</h4>
+                <div class="arch-year">2012 &mdash; Krizhevsky, Sutskever, Hinton</div>
+                <p>Won ImageNet 2012 by a massive margin (top-5 error: 15.3% vs 26.2%). Introduced ReLU activations, dropout regularization, and GPU training to CNNs. 5 conv layers + 3 FC layers, ~60M parameters. Sparked the deep learning revolution. Used local response normalization (later replaced by batch norm).</p>
+                <div class="tr" style="margin-top:0.5rem">
+                    <span class="tg-t ok">60M params</span>
+                    <span class="tg-t ok">ReLU + Dropout</span>
+                    <span class="tg-t ok">GPU training</span>
+                </div>
+            </div>
+            <div class="arch-card">
+                <h4>VGGNet (VGG-16/19)</h4>
+                <div class="arch-year">2014 &mdash; Simonyan &amp; Zisserman</div>
+                <p>Proved that depth matters: stacking 3&times;3 convolutions achieves the same receptive field as larger kernels with fewer parameters and more non-linearities. VGG-16 has 13 conv + 3 FC layers, ~138M parameters. Elegant uniform architecture. Still widely used as a feature extractor for transfer learning.</p>
+                <div class="tr" style="margin-top:0.5rem">
+                    <span class="tg-t ok">138M params</span>
+                    <span class="tg-t ok">All 3&times;3 kernels</span>
+                    <span class="tg-t fl">Very slow inference</span>
+                </div>
+            </div>
+            <div class="arch-card">
+                <h4>GoogLeNet / Inception</h4>
+                <div class="arch-year">2014 &mdash; Szegedy et al. (Google)</div>
+                <p>Introduced the Inception module: parallel paths with 1&times;1, 3&times;3, 5&times;5 convolutions and max pooling, concatenated along the channel axis. 22 layers deep but only ~5M parameters (12x fewer than AlexNet). 1&times;1 convolutions as bottleneck layers to reduce computation. Won ImageNet 2014.</p>
+                <div class="tr" style="margin-top:0.5rem">
+                    <span class="tg-t ok">5M params</span>
+                    <span class="tg-t ok">Multi-scale features</span>
+                    <span class="tg-t ok">1&times;1 bottlenecks</span>
+                </div>
+            </div>
+            <div class="arch-card" style="grid-column:1/-1;border-left-color:var(--green)">
+                <h4 style="color:var(--green)">ResNet (Residual Networks)</h4>
+                <div class="arch-year">2015 &mdash; He et al. (Microsoft Research)</div>
+                <p>Solved the degradation problem that plagued deeper networks. <strong>Skip connections</strong> (shortcut connections) let gradients flow directly through identity mappings: <code style="background:var(--code-bg);color:var(--code-text);padding:0.1rem 0.4rem;border-radius:3px;font-size:0.82rem">output = F(x) + x</code>. This lets the network learn residual functions rather than complete transformations. Enabled training of networks with 50, 101, and even 152 layers. Won ImageNet 2015 with 3.57% top-5 error (surpassing human-level performance of ~5%). ResNet-50 is arguably the most important CNN architecture ever designed &mdash; still the default backbone for most computer vision tasks.</p>
+                <div class="tr" style="margin-top:0.5rem">
+                    <span class="tg-t ok">25.6M params (ResNet-50)</span>
+                    <span class="tg-t ok">Skip connections</span>
+                    <span class="tg-t ok">152+ layers deep</span>
+                    <span class="tg-t ok">Below human error</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 8. WHEN TO USE / WHEN TO AVOID ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>When to Use / When to Avoid</h2></div>
+    <div class="card-b">
+        <div class="tk-g">
+            <div class="tk">
+                <h4 class="u">Use CNNs When</h4>
+                <p><strong>Image classification</strong> &mdash; Assigning labels to images (medical scans, product defects, species identification).</p>
+                <p><strong>Object detection</strong> &mdash; Locating and classifying objects within images (YOLO, Faster R-CNN use CNN backbones).</p>
+                <p><strong>Spatial patterns matter</strong> &mdash; Any data where local neighborhood relationships carry information (images, spectrograms, heatmaps).</p>
+                <p><strong>Transfer learning is possible</strong> &mdash; Pre-trained models available for your domain, especially when you have limited labeled data (100-1,000 images).</p>
+                <p><strong>Video analysis</strong> &mdash; Frame-level feature extraction for action recognition, surveillance, and content moderation.</p>
+                <p><strong>Medical imaging</strong> &mdash; X-rays, MRIs, CT scans, histopathology slides. CNNs often match or exceed radiologist performance.</p>
+            </div>
+            <div class="tk">
+                <h4 class="av">Avoid CNNs When</h4>
+                <p><strong>Tabular data</strong> &mdash; Structured rows/columns with no spatial relationships. Gradient-boosted trees (XGBoost, LightGBM) will outperform CNNs here.</p>
+                <p><strong>Sequential text</strong> &mdash; For NLP tasks, Transformers (BERT, GPT) dominate. CNNs can work for text classification but are not the best choice.</p>
+                <p><strong>Very small datasets (&lt;50 samples)</strong> &mdash; CNNs need data. Even with transfer learning, fewer than 50 images per class is risky. Consider traditional ML or heavy augmentation.</p>
+                <p><strong>No GPU available</strong> &mdash; Training CNNs on CPU is 10-50x slower. Inference can be CPU-bound for real-time applications. Consider lighter architectures (MobileNet) or model distillation.</p>
+                <p><strong>Interpretability required</strong> &mdash; CNNs are largely black boxes. Grad-CAM and SHAP help, but if full explainability is legally required, simpler models may be mandatory.</p>
+                <p><strong>1D non-spatial data</strong> &mdash; Feature vectors without spatial structure (user demographics, financial metrics) gain nothing from convolution.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 9. KEY TAKEAWAYS ===== -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Key Takeaways</h2></div>
+    <div class="card-b">
+        <div class="an gd">
+            <h4>Summary</h4>
+            <ul>
+                <li><strong>CNNs learn spatial hierarchies automatically</strong> &mdash; edges in early layers, textures in middle layers, objects in deep layers. No manual feature engineering needed.</li>
+                <li><strong>Parameter sharing is the key insight</strong> &mdash; A 3&times;3 filter with 9 weights scans the entire image, making CNNs orders of magnitude more efficient than fully-connected networks for vision tasks.</li>
+                <li><strong>Transfer learning is your most powerful tool</strong> &mdash; Pre-trained models (ResNet-50, VGG16, EfficientNet) encode universal visual features. Fine-tuning them on small datasets is faster, cheaper, and more accurate than training from scratch.</li>
+                <li><strong>Architecture matters more than hyperparameter tuning</strong> &mdash; The jump from LeNet to AlexNet to ResNet each delivered 10+ percentage point improvements. Deeper networks with skip connections and batch normalization consistently outperform shallow ones.</li>
+                <li><strong>Data augmentation is essential</strong> &mdash; Flips, rotations, crops, and color jitter can effectively multiply your dataset size by 10-50x, dramatically reducing overfitting on small datasets.</li>
+                <li><strong>The output size formula is your friend</strong> &mdash; Always compute spatial dimensions at each layer: O = floor((W - K + 2P) / S) + 1. Architectures that collapse dimensions too quickly lose fine-grained spatial information.</li>
+                <li><strong>Start with proven architectures</strong> &mdash; Unless you have a compelling reason, begin with ResNet-50 or EfficientNet-B0 and transfer learning. Custom architectures are for research or highly specialized domains.</li>
+            </ul>
+        </div>
+        <div class="an wn" style="margin-top:1rem">
+            <h4>Common Pitfalls</h4>
+            <ul>
+                <li><strong>Not normalizing inputs</strong> &mdash; Always scale pixel values to [0, 1] or standardize per-channel. Raw [0, 255] values cause unstable training.</li>
+                <li><strong>Too aggressive pooling</strong> &mdash; Multiple MaxPool(2,2) layers in sequence can destroy spatial information before the network learns useful features.</li>
+                <li><strong>Forgetting the batch dimension</strong> &mdash; CNNs expect 4D input: (batch, height, width, channels). A single image needs reshaping from (28, 28, 1) to (1, 28, 28, 1).</li>
+                <li><strong>Fine-tuning with a high learning rate</strong> &mdash; When unfreezing pre-trained layers, use 10-100x lower learning rate than initial training. High rates destroy the learned representations.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+</body></html>

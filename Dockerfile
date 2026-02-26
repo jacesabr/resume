@@ -1,0 +1,7 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+RUN npm install
+ENV PORT=3000
+EXPOSE 3000
+CMD sh -c "npx serve -s . -l tcp://0.0.0.0:$PORT"

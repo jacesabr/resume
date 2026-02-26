@@ -1,0 +1,830 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Reinforcement Learning (DQN/PPO) — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.eq{background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;color:var(--terra);margin:0.75rem 0 1.25rem;overflow-x:auto;}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+.algo-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.algo-card{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}
+.algo-card h4{font-size:0.82rem;font-weight:700;color:var(--terra);margin-bottom:0.35rem;}
+.algo-card .algo-type{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-bottom:0.45rem;font-weight:600;}
+.algo-card p{font-size:0.84rem;color:var(--text-dim);line-height:1.65;}
+.algo-card p strong{color:var(--text);}
+@media(max-width:640px){.tg,.tk-g,.algo-grid{grid-template-columns:1fr!important;}}
+</style></head>
+<body>
+
+<!-- ==================== TOPBAR ==================== -->
+<div class="topbar">
+    <a href="index.html">Portfolio</a>
+    <span class="sep">/</span>
+    <span class="pt">Reinforcement Learning (DQN/PPO)</span>
+    <span class="algo-badge">RL &middot; DL7</span>
+</div>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+    <h1>Reinforcement Learning:<br><span>DQN &amp; PPO</span></h1>
+    <p class="sub">Teaching agents to make sequential decisions through trial and error. From the Bellman equation to modern policy optimization, covering value-based and policy-gradient methods with full PyTorch implementations.</p>
+</div>
+
+<div class="content">
+
+<!-- ==================== 1. MATHEMATICAL FOUNDATION ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot"></div>
+        <h2>Mathematical Foundation</h2>
+    </div>
+    <div class="card-b prose">
+        <p>Reinforcement learning rests on a handful of foundational equations. Every modern algorithm &mdash; from tabular Q-learning to PPO &mdash; is a practical approximation of these core ideas.</p>
+
+        <p><strong>Bellman Equation for Optimal Value</strong></p>
+        <p>The optimal value of a state equals the best immediate reward plus the discounted value of the next state. This recursive relationship is the backbone of all value-based RL.</p>
+        <div class="eq">
+            \[ V^*(s) = \max_a \left[ R(s, a) + \gamma \sum_{s'} P(s' | s, a) \, V^*(s') \right] \]
+        </div>
+
+        <p><strong>Bellman Equation for Q-Values</strong></p>
+        <p>The action-value function \( Q(s,a) \) captures the expected return of taking action \( a \) in state \( s \) and then following the optimal policy. DQN directly approximates this function with a neural network.</p>
+        <div class="eq">
+            \[ Q^*(s, a) = R(s, a) + \gamma \sum_{s'} P(s' | s, a) \, \max_{a'} Q^*(s', a') \]
+        </div>
+
+        <p><strong>Q-Learning Update Rule</strong></p>
+        <p>The temporal-difference (TD) update bootstraps from the current estimate. The learning rate \( \alpha \) controls step size, and the term in brackets is the <strong>TD error</strong> &mdash; the surprise signal that drives learning.</p>
+        <div class="eq">
+            \[ Q(s, a) \leftarrow Q(s, a) + \alpha \Big[ r + \gamma \max_{a'} Q(s', a') - Q(s, a) \Big] \]
+        </div>
+
+        <p><strong>Policy Gradient Theorem</strong></p>
+        <p>Instead of estimating values, policy gradient methods directly optimize the policy parameters \( \theta \). The gradient of the expected return points in the direction that makes high-reward actions more probable.</p>
+        <div class="eq">
+            \[ \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \Big[ \nabla_\theta \log \pi_\theta(a|s) \, A^{\pi}(s, a) \Big] \]
+        </div>
+
+        <p><strong>PPO Clipped Surrogate Objective</strong></p>
+        <p>PPO constrains how much the policy can change in a single update. The ratio \( r_t(\theta) \) measures the probability shift, and the clip function prevents destructively large updates &mdash; achieving the stability of trust region methods without the computational cost.</p>
+        <div class="eq">
+            \[ L^{CLIP}(\theta) = \mathbb{E}_t \Big[ \min \big( r_t(\theta) \, \hat{A}_t, \; \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \, \hat{A}_t \big) \Big] \]
+        </div>
+        <p>where \( r_t(\theta) = \frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_\text{old}}(a_t | s_t)} \) and \( \epsilon \) is typically 0.2.</p>
+
+        <p><strong>Generalized Advantage Estimation (GAE)</strong></p>
+        <p>GAE provides a smooth trade-off between bias and variance in advantage estimates. The parameter \( \lambda \) interpolates between one-step TD (low variance, high bias) and Monte Carlo (high variance, low bias).</p>
+        <div class="eq">
+            \[ \hat{A}_t^{GAE(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma \lambda)^l \, \delta_{t+l} \quad \text{where} \quad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t) \]
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 2. THE RL FRAMEWORK ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>The RL Framework</h2>
+    </div>
+    <div class="card-b prose">
+        <p>Reinforcement learning formalizes the problem of an <strong>agent</strong> learning to act in an <strong>environment</strong> through interaction. Unlike supervised learning, there is no labeled dataset &mdash; the agent discovers what works through trial and error, guided only by scalar reward signals.</p>
+
+        <p><strong>The Agent-Environment Loop</strong></p>
+        <p>At each discrete time step \( t \), the agent observes the current <strong>state</strong> \( s_t \), selects an <strong>action</strong> \( a_t \) according to its <strong>policy</strong> \( \pi \), receives a <strong>reward</strong> \( r_t \) from the environment, and transitions to a new state \( s_{t+1} \). The objective is to learn a policy that maximizes the <strong>expected cumulative discounted reward</strong> (the return).</p>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Agent</h4>
+                <p>The decision-maker. It maintains a <strong>policy</strong> \( \pi(a|s) \) &mdash; a mapping from states to actions (or a probability distribution over actions). The agent's goal is to improve this policy over time.</p>
+            </div>
+            <div class="ti">
+                <h4>Environment</h4>
+                <p>Everything outside the agent. It receives actions, produces <strong>next states</strong> and <strong>rewards</strong>. The agent does not need to know the environment's internal dynamics &mdash; it learns from experience alone.</p>
+            </div>
+            <div class="ti">
+                <h4>State &amp; Action Spaces</h4>
+                <p><strong>State space</strong> \( \mathcal{S} \): the set of all possible observations (pixel arrays, sensor readings, game boards). <strong>Action space</strong> \( \mathcal{A} \): discrete (left/right/fire) or continuous (torque, velocity).</p>
+            </div>
+            <div class="ti">
+                <h4>Reward &amp; Return</h4>
+                <p>The <strong>reward</strong> \( r_t \) is a scalar feedback signal. The <strong>return</strong> \( G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k} \) is the discounted sum of future rewards. The discount factor \( \gamma \in [0,1) \) encodes how much the agent cares about the future vs. the present.</p>
+            </div>
+            <div class="ti">
+                <h4>Policy</h4>
+                <p>A policy \( \pi \) can be <strong>deterministic</strong> \( a = \mu(s) \) or <strong>stochastic</strong> \( a \sim \pi(\cdot|s) \). Value-based methods (DQN) derive the policy implicitly from Q-values. Policy-gradient methods (PPO) parameterize and optimize it directly.</p>
+            </div>
+            <div class="ti">
+                <h4>Value Function</h4>
+                <p>The <strong>state-value function</strong> \( V^\pi(s) \) estimates expected return from state \( s \) under policy \( \pi \). The <strong>action-value function</strong> \( Q^\pi(s,a) \) estimates expected return from taking action \( a \) in state \( s \). The <strong>advantage</strong> \( A(s,a) = Q(s,a) - V(s) \) measures how much better an action is relative to the average.</p>
+            </div>
+        </div>
+
+        <div class="an gd" style="margin-top:1.25rem;">
+            <h4>The Loop in Practice</h4>
+            <p>1. Environment resets &rarr; agent receives initial state \( s_0 \).<br>
+            2. Agent picks action \( a_0 \sim \pi(\cdot|s_0) \).<br>
+            3. Environment returns reward \( r_0 \) and next state \( s_1 \).<br>
+            4. Agent stores transition \( (s_0, a_0, r_0, s_1) \).<br>
+            5. Agent updates its policy/value using stored experience.<br>
+            6. Repeat until the episode terminates (done=True) or a time limit is reached.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 3. ARCHITECTURE OVERVIEW ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot a"></div>
+        <h2>Architecture Overview</h2>
+    </div>
+    <div class="card-b prose">
+        <p><strong>DQN Architecture &mdash; Value-Based</strong></p>
+        <p>DQN approximates the optimal action-value function \( Q^*(s,a) \) with a neural network. The network takes the <strong>state</strong> as input and outputs a Q-value for <strong>each possible action</strong>. The agent acts greedily by selecting the action with the highest Q-value (with epsilon-greedy exploration).</p>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Input Layer</h4>
+                <p><strong>State representation.</strong> For CartPole: 4-dimensional vector (cart position, velocity, pole angle, angular velocity). For Atari: 84x84 grayscale frames stacked 4-deep, processed through convolutional layers.</p>
+            </div>
+            <div class="ti">
+                <h4>Hidden Layers</h4>
+                <p><strong>Feature extraction.</strong> Typically 2&ndash;3 fully connected layers with ReLU activations (128&ndash;512 units each). For pixel inputs, 3 convolutional layers (32, 64, 64 filters) followed by a fully connected layer.</p>
+            </div>
+            <div class="ti">
+                <h4>Output Layer</h4>
+                <p><strong>Q-values.</strong> One output neuron per discrete action. No activation function &mdash; Q-values are unbounded real numbers. The agent picks \( \arg\max_a Q(s,a) \).</p>
+            </div>
+            <div class="ti">
+                <h4>Target Network</h4>
+                <p><strong>Stability mechanism.</strong> A frozen copy of the Q-network, updated every \( C \) steps. The TD target uses the target network's Q-values, preventing the "moving target" problem that destabilizes training.</p>
+            </div>
+        </div>
+
+        <p style="margin-top:1.5rem;"><strong>Actor-Critic Architecture &mdash; PPO</strong></p>
+        <p>PPO uses two function approximators that typically <strong>share a feature backbone</strong>. The <strong>actor</strong> (policy network) outputs a probability distribution over actions. The <strong>critic</strong> (value network) estimates the state-value function \( V(s) \) used to compute advantages.</p>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Shared Backbone</h4>
+                <p>Both actor and critic process the state through shared layers. This <strong>parameter sharing</strong> improves sample efficiency &mdash; the feature extractor is trained by both policy and value gradients simultaneously.</p>
+            </div>
+            <div class="ti">
+                <h4>Actor Head</h4>
+                <p>For <strong>discrete actions</strong>: outputs logits passed through softmax to produce action probabilities. For <strong>continuous actions</strong>: outputs mean \( \mu \) and log-std \( \log\sigma \) of a Gaussian distribution. Actions are sampled as \( a = \mu + \sigma \cdot \epsilon, \; \epsilon \sim \mathcal{N}(0,1) \).</p>
+            </div>
+            <div class="ti">
+                <h4>Critic Head</h4>
+                <p>A single linear output neuron producing the scalar state-value estimate \( \hat{V}(s) \). Trained with MSE loss against the <strong>return-to-go</strong> or GAE targets. Never directly used for action selection.</p>
+            </div>
+            <div class="ti">
+                <h4>Training Loop</h4>
+                <p>PPO collects a batch of trajectories, computes advantages via GAE, then runs <strong>multiple epochs of minibatch SGD</strong> on the clipped objective. The ratio between new and old action probabilities is clipped to \( [1-\epsilon, 1+\epsilon] \) to prevent policy collapse.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 4. KEY CONCEPTS ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot"></div>
+        <h2>Key Concepts</h2>
+    </div>
+    <div class="card-b">
+        <div class="tg">
+            <div class="ti">
+                <h4>Markov Decision Process (MDP)</h4>
+                <p>The mathematical formalism behind RL. An MDP is defined by the tuple \( (\mathcal{S}, \mathcal{A}, P, R, \gamma) \). The <strong>Markov property</strong> states that the future depends only on the current state, not the history: \( P(s_{t+1} | s_t, a_t) \). All RL algorithms assume the environment is (at least approximately) an MDP.</p>
+            </div>
+            <div class="ti">
+                <h4>Exploration vs. Exploitation</h4>
+                <p>The fundamental dilemma. <strong>Exploitation</strong>: act greedily according to current knowledge. <strong>Exploration</strong>: try new actions to discover better strategies. Too little exploration and the agent gets stuck in local optima. Too much and it never converges. Epsilon-greedy, Boltzmann exploration, and intrinsic curiosity are common solutions.</p>
+            </div>
+            <div class="ti">
+                <h4>Epsilon-Greedy Strategy</h4>
+                <p>With probability \( \epsilon \), select a <strong>random action</strong>; otherwise, select the <strong>greedy action</strong> \( \arg\max_a Q(s,a) \). Epsilon typically decays from 1.0 to 0.01 over training. Simple but effective &mdash; ensures every action has a nonzero chance of being selected, guaranteeing asymptotic convergence in the tabular case.</p>
+            </div>
+            <div class="ti">
+                <h4>Experience Replay</h4>
+                <p>Store transitions \( (s, a, r, s', \text{done}) \) in a <strong>replay buffer</strong> (typically 100K&ndash;1M entries). During training, sample random minibatches from the buffer. This breaks temporal correlations between consecutive samples, dramatically improving stability and sample efficiency. Introduced by Mnih et al. (2015) in the original DQN paper.</p>
+            </div>
+            <div class="ti">
+                <h4>Target Network</h4>
+                <p>A separate copy of the Q-network whose parameters are updated infrequently (hard update every \( C \) steps) or slowly (soft update: \( \theta^- \leftarrow \tau\theta + (1-\tau)\theta^- \)). Without it, the TD target \( r + \gamma \max Q(s',a'; \theta) \) shifts every gradient step, causing divergent oscillation. The target network provides a <strong>stable regression target</strong>.</p>
+            </div>
+            <div class="ti">
+                <h4>Advantage Function</h4>
+                <p>\( A(s,a) = Q(s,a) - V(s) \). It measures how much better an action is compared to the average action in that state. Using advantages instead of raw returns <strong>reduces variance</strong> in policy gradient estimates without introducing bias. The critic network estimates \( V(s) \), and the advantage is computed from TD errors.</p>
+            </div>
+            <div class="ti">
+                <h4>Clipped Surrogate Objective</h4>
+                <p>PPO's core innovation. The probability ratio \( r_t(\theta) = \pi_\theta(a|s) / \pi_{\theta_\text{old}}(a|s) \) is clipped to \( [1-\epsilon, 1+\epsilon] \). If the advantage is positive, the objective caps the ratio at \( 1+\epsilon \) (preventing over-commitment). If negative, it caps at \( 1-\epsilon \). This creates a <strong>pessimistic lower bound</strong> on policy improvement.</p>
+            </div>
+            <div class="ti">
+                <h4>Generalized Advantage Estimation</h4>
+                <p>GAE computes advantages as an exponentially-weighted average of multi-step TD errors. \( \lambda = 0 \) gives one-step TD (low variance, high bias). \( \lambda = 1 \) gives Monte Carlo returns (high variance, low bias). In practice, \( \lambda = 0.95 \) provides a good balance. GAE is the standard advantage estimator in PPO, A2C, and most modern policy gradient methods.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 5. CODE: DQN FOR CARTPOLE ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code: DQN for CartPole</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>A complete Deep Q-Network implementation in PyTorch with <strong>experience replay</strong>, <strong>target network</strong>, and <strong>epsilon-greedy exploration</strong>. This agent learns to balance a pole on a cart, achieving the maximum score of 500 within a few hundred episodes.</p>
+        </div>
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; dqn_cartpole.py</span>
+                <button class="cb" onclick="cpCode('dqn-code')">Copy</button>
+            </div>
+            <div class="cs">
+                <pre id="dqn-code"><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> random
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="cmt"># ── Hyperparameters ──────────────────────────────────────────</span>
+GAMMA          = <span class="num">0.99</span>      <span class="cmt"># discount factor</span>
+LR             = <span class="num">1e-3</span>      <span class="cmt"># learning rate</span>
+BATCH_SIZE     = <span class="num">64</span>
+BUFFER_SIZE    = <span class="num">100_000</span>
+EPSILON_START  = <span class="num">1.0</span>
+EPSILON_END    = <span class="num">0.01</span>
+EPSILON_DECAY  = <span class="num">0.995</span>
+TARGET_UPDATE  = <span class="num">10</span>        <span class="cmt"># sync target network every N episodes</span>
+NUM_EPISODES   = <span class="num">500</span>
+
+<span class="cmt"># ── Q-Network ────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">QNetwork</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, state_dim, action_dim):
+        <span class="fn">super</span>().__init__()
+        self.net = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(state_dim, <span class="num">128</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, <span class="num">128</span>),
+            nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, action_dim)
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.<span class="fn">net</span>(x)
+
+<span class="cmt"># ── Replay Buffer ────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">ReplayBuffer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, capacity):
+        self.buffer = <span class="fn">deque</span>(maxlen=capacity)
+
+    <span class="kw">def</span> <span class="fn">push</span>(self, state, action, reward, next_state, done):
+        self.buffer.<span class="fn">append</span>((state, action, reward, next_state, done))
+
+    <span class="kw">def</span> <span class="fn">sample</span>(self, batch_size):
+        batch = random.<span class="fn">sample</span>(self.buffer, batch_size)
+        states, actions, rewards, next_states, dones = <span class="fn">zip</span>(*batch)
+        <span class="kw">return</span> (
+            torch.<span class="fn">FloatTensor</span>(np.<span class="fn">array</span>(states)),
+            torch.<span class="fn">LongTensor</span>(actions),
+            torch.<span class="fn">FloatTensor</span>(rewards),
+            torch.<span class="fn">FloatTensor</span>(np.<span class="fn">array</span>(next_states)),
+            torch.<span class="fn">FloatTensor</span>(dones)
+        )
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(self):
+        <span class="kw">return</span> <span class="fn">len</span>(self.buffer)
+
+<span class="cmt"># ── DQN Agent ────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">DQNAgent</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, state_dim, action_dim):
+        self.action_dim = action_dim
+        self.epsilon = EPSILON_START
+
+        <span class="cmt"># Online network (learns) + Target network (provides stable targets)</span>
+        self.q_net     = <span class="fn">QNetwork</span>(state_dim, action_dim)
+        self.target_net = <span class="fn">QNetwork</span>(state_dim, action_dim)
+        self.target_net.<span class="fn">load_state_dict</span>(self.q_net.<span class="fn">state_dict</span>())
+
+        self.optimizer = optim.<span class="fn">Adam</span>(self.q_net.<span class="fn">parameters</span>(), lr=LR)
+        self.buffer    = <span class="fn">ReplayBuffer</span>(BUFFER_SIZE)
+
+    <span class="kw">def</span> <span class="fn">select_action</span>(self, state):
+        <span class="cmt"># Epsilon-greedy: explore with probability epsilon</span>
+        <span class="kw">if</span> random.<span class="fn">random</span>() &lt; self.epsilon:
+            <span class="kw">return</span> random.<span class="fn">randint</span>(<span class="num">0</span>, self.action_dim - <span class="num">1</span>)
+        <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+            state_t = torch.<span class="fn">FloatTensor</span>(state).<span class="fn">unsqueeze</span>(<span class="num">0</span>)
+            q_vals  = self.q_net(state_t)
+            <span class="kw">return</span> q_vals.<span class="fn">argmax</span>(dim=<span class="num">1</span>).<span class="fn">item</span>()
+
+    <span class="kw">def</span> <span class="fn">train_step</span>(self):
+        <span class="kw">if</span> <span class="fn">len</span>(self.buffer) &lt; BATCH_SIZE:
+            <span class="kw">return</span>
+
+        states, actions, rewards, next_states, dones = \
+            self.buffer.<span class="fn">sample</span>(BATCH_SIZE)
+
+        <span class="cmt"># Current Q-values for chosen actions</span>
+        q_values = self.q_net(states).<span class="fn">gather</span>(<span class="num">1</span>, actions.<span class="fn">unsqueeze</span>(<span class="num">1</span>)).<span class="fn">squeeze</span>()
+
+        <span class="cmt"># Target Q-values: r + gamma * max_a' Q_target(s', a')</span>
+        <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+            next_q = self.target_net(next_states).<span class="fn">max</span>(dim=<span class="num">1</span>)[<span class="num">0</span>]
+            targets = rewards + GAMMA * next_q * (<span class="num">1</span> - dones)
+
+        <span class="cmt"># Huber loss (smooth L1) — less sensitive to outliers than MSE</span>
+        loss = nn.functional.<span class="fn">smooth_l1_loss</span>(q_values, targets)
+
+        self.optimizer.<span class="fn">zero_grad</span>()
+        loss.<span class="fn">backward</span>()
+        <span class="cmt"># Gradient clipping for stability</span>
+        nn.utils.<span class="fn">clip_grad_norm_</span>(self.q_net.<span class="fn">parameters</span>(), <span class="num">1.0</span>)
+        self.optimizer.<span class="fn">step</span>()
+
+    <span class="kw">def</span> <span class="fn">sync_target</span>(self):
+        self.target_net.<span class="fn">load_state_dict</span>(self.q_net.<span class="fn">state_dict</span>())
+
+    <span class="kw">def</span> <span class="fn">decay_epsilon</span>(self):
+        self.epsilon = <span class="fn">max</span>(EPSILON_END, self.epsilon * EPSILON_DECAY)
+
+<span class="cmt"># ── Training Loop ────────────────────────────────────────────</span>
+env   = gym.<span class="fn">make</span>(<span class="str">"CartPole-v1"</span>)
+agent = <span class="fn">DQNAgent</span>(
+    state_dim  = env.observation_space.shape[<span class="num">0</span>],
+    action_dim = env.action_space.n
+)
+
+<span class="kw">for</span> ep <span class="kw">in</span> <span class="fn">range</span>(NUM_EPISODES):
+    state, _ = env.<span class="fn">reset</span>()
+    total_reward = <span class="num">0</span>
+
+    <span class="kw">while</span> <span class="kw">True</span>:
+        action = agent.<span class="fn">select_action</span>(state)
+        next_state, reward, terminated, truncated, _ = env.<span class="fn">step</span>(action)
+        done = terminated <span class="kw">or</span> truncated
+
+        agent.buffer.<span class="fn">push</span>(state, action, reward, next_state, <span class="fn">float</span>(done))
+        agent.<span class="fn">train_step</span>()
+
+        state = next_state
+        total_reward += reward
+
+        <span class="kw">if</span> done:
+            <span class="kw">break</span>
+
+    agent.<span class="fn">decay_epsilon</span>()
+
+    <span class="kw">if</span> ep % TARGET_UPDATE == <span class="num">0</span>:
+        agent.<span class="fn">sync_target</span>()
+
+    <span class="kw">if</span> ep % <span class="num">20</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">f"Episode </span>{ep}<span class="str"> | Reward: </span>{total_reward:.0f}<span class="str"> | Eps: </span>{agent.epsilon:.3f}<span class="str">"</span>)
+
+env.<span class="fn">close</span>()
+<span class="fn">print</span>(<span class="str">"Training complete."</span>)</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 6. CODE: PPO WITH STABLE-BASELINES3 ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code: PPO with Stable-Baselines3</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>Stable-Baselines3 provides battle-tested implementations of major RL algorithms. This example shows how to train PPO on both <strong>discrete</strong> (CartPole) and <strong>continuous</strong> (LunarLander) environments with proper evaluation, logging, and model persistence.</p>
+        </div>
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; ppo_sb3.py</span>
+                <button class="cb" onclick="cpCode('ppo-sb3-code')">Copy</button>
+            </div>
+            <div class="cs">
+                <pre id="ppo-sb3-code"><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">from</span> stable_baselines3 <span class="kw">import</span> PPO
+<span class="kw">from</span> stable_baselines3.common.env_util <span class="kw">import</span> make_vec_env
+<span class="kw">from</span> stable_baselines3.common.evaluation <span class="kw">import</span> evaluate_policy
+<span class="kw">from</span> stable_baselines3.common.callbacks <span class="kw">import</span> EvalCallback, CheckpointCallback
+
+<span class="cmt"># ── 1. Vectorized environments for parallel rollout collection ──</span>
+<span class="cmt"># SB3 runs N envs in parallel to fill the rollout buffer faster</span>
+train_env = <span class="fn">make_vec_env</span>(<span class="str">"CartPole-v1"</span>, n_envs=<span class="num">4</span>)
+eval_env  = gym.<span class="fn">make</span>(<span class="str">"CartPole-v1"</span>)
+
+<span class="cmt"># ── 2. Configure PPO ─────────────────────────────────────────</span>
+model = <span class="fn">PPO</span>(
+    policy          = <span class="str">"MlpPolicy"</span>,       <span class="cmt"># 2-layer MLP (64, 64)</span>
+    env             = train_env,
+    learning_rate   = <span class="num">3e-4</span>,             <span class="cmt"># Adam LR</span>
+    n_steps         = <span class="num">2048</span>,             <span class="cmt"># rollout length per env</span>
+    batch_size      = <span class="num">64</span>,               <span class="cmt"># minibatch size for SGD</span>
+    n_epochs        = <span class="num">10</span>,               <span class="cmt"># epochs per rollout update</span>
+    gamma           = <span class="num">0.99</span>,             <span class="cmt"># discount factor</span>
+    gae_lambda      = <span class="num">0.95</span>,             <span class="cmt"># GAE lambda</span>
+    clip_range      = <span class="num">0.2</span>,              <span class="cmt"># PPO epsilon clip</span>
+    ent_coef        = <span class="num">0.01</span>,             <span class="cmt"># entropy bonus (exploration)</span>
+    vf_coef         = <span class="num">0.5</span>,              <span class="cmt"># value function loss weight</span>
+    max_grad_norm   = <span class="num">0.5</span>,              <span class="cmt"># gradient clipping</span>
+    verbose         = <span class="num">1</span>,
+    tensorboard_log = <span class="str">"./ppo_logs/"</span>
+)
+
+<span class="cmt"># ── 3. Callbacks for evaluation &amp; checkpointing ──────────────</span>
+eval_cb = <span class="fn">EvalCallback</span>(
+    eval_env,
+    best_model_save_path = <span class="str">"./best_model/"</span>,
+    log_path             = <span class="str">"./eval_logs/"</span>,
+    eval_freq            = <span class="num">5000</span>,
+    n_eval_episodes      = <span class="num">10</span>,
+    deterministic        = <span class="kw">True</span>
+)
+
+ckpt_cb = <span class="fn">CheckpointCallback</span>(
+    save_freq  = <span class="num">10_000</span>,
+    save_path  = <span class="str">"./checkpoints/"</span>,
+    name_prefix = <span class="str">"ppo_cartpole"</span>
+)
+
+<span class="cmt"># ── 4. Train ─────────────────────────────────────────────────</span>
+model.<span class="fn">learn</span>(
+    total_timesteps = <span class="num">100_000</span>,
+    callback        = [eval_cb, ckpt_cb],
+    progress_bar    = <span class="kw">True</span>
+)
+
+<span class="cmt"># ── 5. Evaluate final model ──────────────────────────────────</span>
+mean_reward, std_reward = <span class="fn">evaluate_policy</span>(model, eval_env, n_eval_episodes=<span class="num">20</span>)
+<span class="fn">print</span>(<span class="str">f"Final evaluation: </span>{mean_reward:.1f}<span class="str"> +/- </span>{std_reward:.1f}<span class="str">"</span>)
+
+<span class="cmt"># ── 6. Save &amp; reload ─────────────────────────────────────────</span>
+model.<span class="fn">save</span>(<span class="str">"ppo_cartpole_final"</span>)
+
+<span class="cmt"># Later: load and deploy</span>
+loaded_model = PPO.<span class="fn">load</span>(<span class="str">"ppo_cartpole_final"</span>)
+
+<span class="cmt"># ── 7. Watch the trained agent ────────────────────────────────</span>
+env = gym.<span class="fn">make</span>(<span class="str">"CartPole-v1"</span>, render_mode=<span class="str">"human"</span>)
+obs, _ = env.<span class="fn">reset</span>()
+
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1000</span>):
+    action, _ = loaded_model.<span class="fn">predict</span>(obs, deterministic=<span class="kw">True</span>)
+    obs, reward, terminated, truncated, info = env.<span class="fn">step</span>(action)
+    <span class="kw">if</span> terminated <span class="kw">or</span> truncated:
+        obs, _ = env.<span class="fn">reset</span>()
+
+env.<span class="fn">close</span>()
+
+<span class="cmt"># ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt"># Continuous control example: LunarLander</span>
+<span class="cmt"># ═══════════════════════════════════════════════════════════════</span>
+cont_env = <span class="fn">make_vec_env</span>(<span class="str">"LunarLanderContinuous-v3"</span>, n_envs=<span class="num">8</span>)
+
+cont_model = <span class="fn">PPO</span>(
+    <span class="str">"MlpPolicy"</span>,
+    cont_env,
+    learning_rate = <span class="num">3e-4</span>,
+    n_steps       = <span class="num">1024</span>,
+    batch_size    = <span class="num">64</span>,
+    n_epochs      = <span class="num">4</span>,
+    clip_range    = <span class="num">0.2</span>,
+    gae_lambda    = <span class="num">0.98</span>,        <span class="cmt"># higher lambda for continuous</span>
+    ent_coef      = <span class="num">0.0</span>,         <span class="cmt"># no entropy bonus needed</span>
+    verbose       = <span class="num">1</span>
+)
+cont_model.<span class="fn">learn</span>(total_timesteps=<span class="num">500_000</span>, progress_bar=<span class="kw">True</span>)
+cont_model.<span class="fn">save</span>(<span class="str">"ppo_lunar_continuous"</span>)</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 7. CODE: CUSTOM ACTOR-CRITIC (A2C) ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot g"></div>
+        <h2>Code: Custom Actor-Critic (A2C) from Scratch</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>A from-scratch <strong>Advantage Actor-Critic</strong> implementation in PyTorch. This builds the shared-backbone architecture, collects rollouts, computes GAE advantages, and updates both the actor (policy) and critic (value) heads. Understanding this code gives you the foundation for implementing PPO &mdash; the only additions are the probability ratio and the clip.</p>
+        </div>
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; a2c_scratch.py</span>
+                <button class="cb" onclick="cpCode('a2c-code')">Copy</button>
+            </div>
+            <div class="cs">
+                <pre id="a2c-code"><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torch.distributions <span class="kw">import</span> Categorical
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cmt"># ── Hyperparameters ──────────────────────────────────────────</span>
+GAMMA       = <span class="num">0.99</span>
+GAE_LAMBDA  = <span class="num">0.95</span>
+LR          = <span class="num">2.5e-4</span>
+ENT_COEF    = <span class="num">0.01</span>     <span class="cmt"># entropy bonus encourages exploration</span>
+VF_COEF     = <span class="num">0.5</span>      <span class="cmt"># value loss weight</span>
+ROLLOUT_LEN = <span class="num">128</span>      <span class="cmt"># steps before each update</span>
+NUM_UPDATES = <span class="num">1000</span>
+
+<span class="cmt"># ── Actor-Critic Network ─────────────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">ActorCritic</span>(nn.Module):
+    <span class="str">"""Shared backbone with separate actor and critic heads."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, state_dim, action_dim):
+        <span class="fn">super</span>().__init__()
+
+        <span class="cmt"># Shared feature extractor</span>
+        self.backbone = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(state_dim, <span class="num">256</span>),
+            nn.<span class="fn">Tanh</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">256</span>, <span class="num">128</span>),
+            nn.<span class="fn">Tanh</span>()
+        )
+
+        <span class="cmt"># Policy head → action probabilities</span>
+        self.actor = nn.<span class="fn">Linear</span>(<span class="num">128</span>, action_dim)
+
+        <span class="cmt"># Value head → scalar state value V(s)</span>
+        self.critic = nn.<span class="fn">Linear</span>(<span class="num">128</span>, <span class="num">1</span>)
+
+        <span class="cmt"># Orthogonal initialization (improves RL training)</span>
+        <span class="kw">for</span> layer <span class="kw">in</span> self.<span class="fn">modules</span>():
+            <span class="kw">if</span> <span class="fn">isinstance</span>(layer, nn.Linear):
+                nn.init.<span class="fn">orthogonal_</span>(layer.weight, gain=np.<span class="fn">sqrt</span>(<span class="num">2</span>))
+                nn.init.<span class="fn">zeros_</span>(layer.bias)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        features = self.<span class="fn">backbone</span>(x)
+        logits   = self.<span class="fn">actor</span>(features)
+        value    = self.<span class="fn">critic</span>(features).<span class="fn">squeeze</span>(-<span class="num">1</span>)
+        <span class="kw">return</span> logits, value
+
+    <span class="kw">def</span> <span class="fn">get_action_and_value</span>(self, state):
+        <span class="str">"""Sample action, return log_prob, entropy, and value."""</span>
+        logits, value = self.<span class="fn">forward</span>(state)
+        dist   = <span class="fn">Categorical</span>(logits=logits)
+        action = dist.<span class="fn">sample</span>()
+        <span class="kw">return</span> action, dist.<span class="fn">log_prob</span>(action), dist.<span class="fn">entropy</span>(), value
+
+    <span class="kw">def</span> <span class="fn">evaluate</span>(self, states, actions):
+        <span class="str">"""Re-evaluate stored actions under current policy."""</span>
+        logits, values = self.<span class="fn">forward</span>(states)
+        dist = <span class="fn">Categorical</span>(logits=logits)
+        <span class="kw">return</span> dist.<span class="fn">log_prob</span>(actions), dist.<span class="fn">entropy</span>(), values
+
+<span class="cmt"># ── GAE Computation ──────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">compute_gae</span>(rewards, values, dones, next_value):
+    <span class="str">"""Generalized Advantage Estimation.
+
+    Computes advantages as exponentially-weighted sum of TD errors:
+        A_t = sum_{l=0}^{T-t} (gamma * lambda)^l * delta_{t+l}
+    where delta_t = r_t + gamma * V(s_{t+1}) - V(s_t)
+    """</span>
+    advantages = torch.<span class="fn">zeros_like</span>(rewards)
+    gae = <span class="num">0.0</span>
+
+    <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">reversed</span>(<span class="fn">range</span>(<span class="fn">len</span>(rewards))):
+        <span class="kw">if</span> t == <span class="fn">len</span>(rewards) - <span class="num">1</span>:
+            next_val = next_value
+        <span class="kw">else</span>:
+            next_val = values[t + <span class="num">1</span>]
+
+        <span class="cmt"># TD error: r + gamma * V(s') - V(s)</span>
+        delta = rewards[t] + GAMMA * next_val * (<span class="num">1</span> - dones[t]) - values[t]
+
+        <span class="cmt"># Accumulate GAE with decay</span>
+        gae = delta + GAMMA * GAE_LAMBDA * (<span class="num">1</span> - dones[t]) * gae
+        advantages[t] = gae
+
+    returns = advantages + values
+    <span class="kw">return</span> advantages, returns
+
+<span class="cmt"># ── Training Loop ────────────────────────────────────────────</span>
+env   = gym.<span class="fn">make</span>(<span class="str">"CartPole-v1"</span>)
+model = <span class="fn">ActorCritic</span>(
+    state_dim  = env.observation_space.shape[<span class="num">0</span>],
+    action_dim = env.action_space.n
+)
+optimizer = optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=LR, eps=<span class="num">1e-5</span>)
+
+state, _ = env.<span class="fn">reset</span>()
+ep_reward   = <span class="num">0</span>
+ep_rewards  = []
+
+<span class="kw">for</span> update <span class="kw">in</span> <span class="fn">range</span>(NUM_UPDATES):
+    <span class="cmt"># ── Collect rollout ──────────────────────────────────────</span>
+    states, actions, rewards, dones = [], [], [], []
+    log_probs, values, entropies   = [], [], []
+
+    <span class="kw">for</span> step <span class="kw">in</span> <span class="fn">range</span>(ROLLOUT_LEN):
+        state_t = torch.<span class="fn">FloatTensor</span>(state).<span class="fn">unsqueeze</span>(<span class="num">0</span>)
+
+        <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+            action, lp, ent, val = model.<span class="fn">get_action_and_value</span>(state_t)
+
+        next_state, reward, terminated, truncated, _ = env.<span class="fn">step</span>(action.<span class="fn">item</span>())
+        done = terminated <span class="kw">or</span> truncated
+
+        states.<span class="fn">append</span>(state)
+        actions.<span class="fn">append</span>(action.<span class="fn">item</span>())
+        rewards.<span class="fn">append</span>(reward)
+        dones.<span class="fn">append</span>(<span class="fn">float</span>(done))
+        log_probs.<span class="fn">append</span>(lp)
+        values.<span class="fn">append</span>(val)
+        entropies.<span class="fn">append</span>(ent)
+
+        ep_reward += reward
+        state = next_state
+
+        <span class="kw">if</span> done:
+            ep_rewards.<span class="fn">append</span>(ep_reward)
+            ep_reward = <span class="num">0</span>
+            state, _ = env.<span class="fn">reset</span>()
+
+    <span class="cmt"># ── Compute advantages via GAE ────────────────────────────</span>
+    states_t  = torch.<span class="fn">FloatTensor</span>(np.<span class="fn">array</span>(states))
+    actions_t = torch.<span class="fn">LongTensor</span>(actions)
+    rewards_t = torch.<span class="fn">FloatTensor</span>(rewards)
+    dones_t   = torch.<span class="fn">FloatTensor</span>(dones)
+    values_t  = torch.<span class="fn">cat</span>(values)
+
+    <span class="cmt"># Bootstrap from last state</span>
+    <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+        _, next_value = model(torch.<span class="fn">FloatTensor</span>(state).<span class="fn">unsqueeze</span>(<span class="num">0</span>))
+
+    advantages, returns = <span class="fn">compute_gae</span>(
+        rewards_t, values_t.<span class="fn">detach</span>(), dones_t, next_value.<span class="fn">item</span>()
+    )
+
+    <span class="cmt"># Normalize advantages (reduces variance)</span>
+    advantages = (advantages - advantages.<span class="fn">mean</span>()) / (advantages.<span class="fn">std</span>() + <span class="num">1e-8</span>)
+
+    <span class="cmt"># ── Compute losses ────────────────────────────────────────</span>
+    new_lp, new_ent, new_vals = model.<span class="fn">evaluate</span>(states_t, actions_t)
+
+    <span class="cmt"># Policy loss: -log_prob * advantage (maximize expected advantage)</span>
+    policy_loss = -(new_lp * advantages.<span class="fn">detach</span>()).<span class="fn">mean</span>()
+
+    <span class="cmt"># Value loss: MSE between predicted values and GAE returns</span>
+    value_loss = nn.functional.<span class="fn">mse_loss</span>(new_vals, returns.<span class="fn">detach</span>())
+
+    <span class="cmt"># Entropy bonus: encourages exploration by penalizing certainty</span>
+    entropy_loss = -new_ent.<span class="fn">mean</span>()
+
+    <span class="cmt"># Combined loss</span>
+    loss = policy_loss + VF_COEF * value_loss + ENT_COEF * entropy_loss
+
+    optimizer.<span class="fn">zero_grad</span>()
+    loss.<span class="fn">backward</span>()
+    nn.utils.<span class="fn">clip_grad_norm_</span>(model.<span class="fn">parameters</span>(), <span class="num">0.5</span>)
+    optimizer.<span class="fn">step</span>()
+
+    <span class="cmt"># ── Logging ──────────────────────────────────────────────</span>
+    <span class="kw">if</span> update % <span class="num">25</span> == <span class="num">0</span> <span class="kw">and</span> ep_rewards:
+        avg = np.<span class="fn">mean</span>(ep_rewards[-<span class="num">10</span>:])
+        <span class="fn">print</span>(<span class="str">f"Update </span>{update:<span class="num">4</span>d}<span class="str"> | Avg Reward: </span>{avg:<span class="num">6</span>.1f}<span class="str"> | Policy Loss: </span>{policy_loss:.4f}<span class="str">"</span>)
+
+env.<span class="fn">close</span>()
+<span class="fn">print</span>(<span class="str">f"Training complete. Best avg: </span>{<span class="fn">max</span>(
+    [np.<span class="fn">mean</span>(ep_rewards[i:i+<span class="num">10</span>]) <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(ep_rewards)-<span class="num">9</span>)]
+    ) <span class="kw">if</span> <span class="fn">len</span>(ep_rewards) >= <span class="num">10</span> <span class="kw">else</span> <span class="num">0</span>:.1f}<span class="str">"</span>)</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 8. ALGORITHM LANDSCAPE ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot a"></div>
+        <h2>Algorithm Landscape</h2>
+    </div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>The RL algorithm space is broadly divided into <strong>value-based</strong> methods (learn Q-values, derive policy implicitly), <strong>policy-gradient</strong> methods (optimize the policy directly), and <strong>actor-critic</strong> methods (combine both). Here is where the major algorithms fall.</p>
+        </div>
+        <div class="algo-grid">
+            <div class="algo-card">
+                <div class="algo-type">Value-Based &middot; Tabular</div>
+                <h4>Q-Learning</h4>
+                <p>The original off-policy TD algorithm. Maintains a <strong>Q-table</strong> \( Q(s,a) \) for every state-action pair. Converges to optimal Q-values given sufficient exploration. <strong>Limitation:</strong> only works for small, discrete state spaces. Cannot generalize to unseen states.</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Value-Based &middot; Deep</div>
+                <h4>DQN</h4>
+                <p>Deep Q-Network (Mnih et al., 2015). Replaces the Q-table with a <strong>neural network</strong>. Key innovations: <strong>experience replay</strong> and <strong>target network</strong>. First algorithm to achieve human-level performance on Atari games from raw pixels. Works only with <strong>discrete actions</strong>.</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Value-Based &middot; Deep</div>
+                <h4>Double DQN</h4>
+                <p>Addresses DQN's <strong>overestimation bias</strong>. Standard DQN uses the same network to select and evaluate actions, inflating Q-values. Double DQN <strong>decouples selection</strong> (online net picks the best action) <strong>from evaluation</strong> (target net evaluates it). Simple change, significant improvement.</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Actor-Critic &middot; On-Policy</div>
+                <h4>A2C</h4>
+                <p>Advantage Actor-Critic. Synchronous version of A3C. The actor learns the policy, the critic learns the value function. Uses the <strong>advantage</strong> \( A = Q - V \) to reduce gradient variance. On-policy &mdash; data is discarded after each update, making it less sample-efficient but more stable.</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Actor-Critic &middot; On-Policy</div>
+                <h4>PPO</h4>
+                <p>Proximal Policy Optimization (Schulman et al., 2017). The <strong>de facto standard</strong> for policy optimization. Clips the probability ratio to prevent large policy updates. Achieves trust-region-like stability with first-order optimization. Used to train <strong>ChatGPT (RLHF)</strong>, robotic locomotion, and game AI.</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Actor-Critic &middot; Off-Policy</div>
+                <h4>SAC</h4>
+                <p>Soft Actor-Critic (Haarnoja et al., 2018). Maximizes a <strong>maximum entropy objective</strong>: reward + entropy bonus. The entropy term encourages exploration and produces robust, multi-modal policies. Off-policy with a replay buffer. State-of-the-art for <strong>continuous control</strong> (robotics, locomotion).</p>
+            </div>
+            <div class="algo-card">
+                <div class="algo-type">Actor-Critic &middot; Off-Policy</div>
+                <h4>TD3</h4>
+                <p>Twin Delayed DDPG (Fujimoto et al., 2018). Builds on DDPG with three fixes: <strong>twin Q-networks</strong> (take the minimum to reduce overestimation), <strong>delayed policy updates</strong> (update actor less frequently than critic), and <strong>target policy smoothing</strong> (add noise to target actions). Strong baseline for continuous control.</p>
+            </div>
+            <div class="algo-card" style="border:1px solid var(--border);background:var(--surface);">
+                <div class="algo-type" style="color:var(--terra);">Choosing an Algorithm</div>
+                <h4 style="color:var(--text);">Decision Heuristic</h4>
+                <p><strong>Discrete actions?</strong> Start with DQN or Double DQN. <strong>Continuous actions?</strong> Start with PPO (simplicity) or SAC (sample efficiency). <strong>Need RLHF?</strong> PPO is the standard. <strong>Sim-to-real robotics?</strong> SAC or TD3. <strong>Massively parallel envs?</strong> PPO with vectorized rollouts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 9. WHEN TO USE / WHEN TO AVOID ==================== -->
+<div class="card">
+    <div class="card-h">
+        <div class="dot r"></div>
+        <h2>When to Use / When to Avoid</h2>
+    </div>
+    <div class="card-b">
+        <div class="tk-g">
+            <div class="tk">
+                <h4 class="u">When to Use RL</h4>
+                <p><strong>Sequential decision-making</strong> &mdash; the problem involves a series of actions over time, not a single prediction.</p>
+                <p><strong>Delayed rewards</strong> &mdash; the payoff of an action is not immediately clear (chess moves, treatment plans, resource allocation).</p>
+                <p><strong>No labeled data</strong> &mdash; you can define a reward function but cannot label optimal actions for every state.</p>
+                <p><strong>Simulation available</strong> &mdash; you have a simulator (game, physics engine, market model) where the agent can safely explore millions of trajectories.</p>
+                <p><strong>Adaptive control</strong> &mdash; the system dynamics are unknown, nonlinear, or change over time (robotics, autonomous driving, HVAC optimization).</p>
+                <p><strong>RLHF for LLMs</strong> &mdash; aligning language models to human preferences (PPO on reward models trained from human comparisons).</p>
+            </div>
+            <div class="tk">
+                <h4 class="av">When to Avoid RL</h4>
+                <p><strong>Labeled data exists</strong> &mdash; if you have (input, correct_output) pairs, supervised learning will be faster, cheaper, and more reliable.</p>
+                <p><strong>No simulator</strong> &mdash; RL requires millions of interactions. If each interaction is expensive or dangerous in the real world (surgery, nuclear reactors), pure RL is impractical without sim-to-real transfer.</p>
+                <p><strong>Reward shaping is hard</strong> &mdash; poorly designed reward functions cause reward hacking (the agent optimizes the metric without achieving the goal). If you cannot define a clear reward, RL will fail.</p>
+                <p><strong>Stateless problems</strong> &mdash; if the decision does not depend on a sequence of prior states (image classification, regression), RL adds unnecessary complexity.</p>
+                <p><strong>Real-time safety constraints</strong> &mdash; RL agents must explore, which means they will take bad actions during training. If safety violations are unacceptable, use constrained RL or a different paradigm.</p>
+                <p><strong>Small, deterministic problems</strong> &mdash; if the environment is small enough to enumerate, dynamic programming or classical search (A*, BFS) will solve it exactly and far more efficiently.</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Best Practices</h4>
+            <ul>
+                <li><strong>Start with a baseline.</strong> Random policy, then a simple heuristic, then RL. If the heuristic is already good, RL may not be worth the engineering cost.</li>
+                <li><strong>Normalize observations and rewards.</strong> Neural networks train better when inputs are zero-mean, unit-variance. Clip rewards to [-10, 10] or use reward normalization.</li>
+                <li><strong>Use vectorized environments.</strong> Collect data from 8-64 parallel environments. This is the single biggest throughput improvement for on-policy methods.</li>
+                <li><strong>Monitor entropy.</strong> If the policy's entropy collapses to zero too quickly, the agent has stopped exploring. Increase the entropy coefficient or use curiosity-driven exploration.</li>
+                <li><strong>Seed everything.</strong> RL training is notoriously noisy. Run at least 3-5 seeds and report mean/std of returns, not a single cherry-picked run.</li>
+                <li><strong>Log everything.</strong> Use TensorBoard or Weights &amp; Biases to track episode returns, policy loss, value loss, entropy, KL divergence, and gradient norms. RL debugging is nearly impossible without good logging.</li>
+            </ul>
+        </div>
+
+        <div class="an bd">
+            <h4>Common Pitfalls</h4>
+            <ul>
+                <li><strong>Reward hacking.</strong> The agent finds a loophole in the reward function. A boat-racing agent learned to drive in circles collecting power-ups instead of finishing the race. Always sanity-check learned behavior.</li>
+                <li><strong>Hyperparameter sensitivity.</strong> RL algorithms are more sensitive to hyperparameters than supervised learning. Learning rate, clip range, GAE lambda, and entropy coefficient all interact nonlinearly. Use established defaults from the papers.</li>
+                <li><strong>Catastrophic forgetting.</strong> On-policy methods (PPO, A2C) discard old data. If the environment distribution shifts (new levels, curriculum learning), the agent can forget previous skills.</li>
+                <li><strong>Sparse rewards.</strong> If the agent only receives reward at the end of a long episode, credit assignment becomes extremely difficult. Use reward shaping, curriculum learning, or hindsight experience replay.</li>
+                <li><strong>Overestimation bias.</strong> DQN systematically overestimates Q-values. Use Double DQN, clipped double-Q (TD3/SAC), or ensemble methods to mitigate.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+</body></html>

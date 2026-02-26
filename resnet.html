@@ -1,0 +1,864 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ResNets &amp; Skip Connections — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+.tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+.tw::-webkit-scrollbar{width:5px;}.tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+thead{position:sticky;top:0;z-index:2;}
+th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:0.55rem 0.9rem;border-bottom:1px solid var(--surface2);font-size:0.82rem;color:var(--text-dim);}
+tr:hover td{background:var(--terra-dim);color:var(--text);}
+.cs::-webkit-scrollbar{width:5px;height:5px;}.cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+@media(max-width:640px){.tg,.tk-g{grid-template-columns:1fr!important;}}
+</style></head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+    <a href="index.html">&larr; All Algorithms</a>
+    <span class="sep">/</span>
+    <span class="pt">ResNets &amp; Skip Connections</span>
+    <span class="algo-badge">Vision &middot; DL6</span>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+    <h1>ResNets &amp; <span>Skip Connections</span></h1>
+    <p class="sub">Residual networks that learn identity mappings through shortcut connections &mdash; enabling training of networks 100+ layers deep without degradation.</p>
+    <p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">He et al., 2015 &middot; ImageNet champion &middot; Foundation of modern deep learning</p>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="content">
+
+<!-- ────── 1. MATHEMATICAL FOUNDATION ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Mathematical Foundation</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1.2rem">
+            <p>The core insight of ResNets is elegantly simple: instead of learning a direct mapping \(\mathcal{H}(\mathbf{x})\), the network learns a <strong>residual mapping</strong> \(\mathcal{F}(\mathbf{x}) = \mathcal{H}(\mathbf{x}) - \mathbf{x}\). The original mapping is then recast as \(\mathcal{F}(\mathbf{x}) + \mathbf{x}\). If the optimal function is close to identity, it is easier to push the residual toward zero than to fit an identity mapping with a stack of nonlinear layers.</p>
+        </div>
+
+        <!-- Residual mapping -->
+        <div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\mathbf{y} = \mathcal{F}(\mathbf{x}, \{W_i\}) + \mathbf{x}\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Residual mapping: the output is the learned residual \(\mathcal{F}\) plus the identity shortcut \(\mathbf{x}\)</p>
+        </div>
+
+        <!-- Basic block -->
+        <div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\mathcal{F}(\mathbf{x}) = W_2 \cdot \sigma\!\bigl(W_1 \cdot \mathbf{x} + b_1\bigr) + b_2\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Basic residual block: two weighted layers with ReLU activation \(\sigma\) between them</p>
+        </div>
+
+        <!-- Bottleneck block -->
+        <div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1rem">\[\mathcal{F}(\mathbf{x}) = W_3^{(1 \times 1)} \cdot \sigma\!\Bigl(W_2^{(3 \times 3)} \cdot \sigma\!\bigl(W_1^{(1 \times 1)} \cdot \mathbf{x}\bigr)\Bigr)\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Bottleneck block: 1&times;1 reduce &rarr; 3&times;3 convolve &rarr; 1&times;1 expand. Used in ResNet-50+</p>
+        </div>
+
+        <!-- Projection shortcut -->
+        <div style="margin-bottom:1.2rem;background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\mathbf{y} = \mathcal{F}(\mathbf{x}, \{W_i\}) + W_s \mathbf{x}\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Projection shortcut: when dimensions change, a linear projection \(W_s\) (1&times;1 conv) matches the shortcut to the residual dimensions</p>
+        </div>
+
+        <!-- Gradient flow -->
+        <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border)">
+            <div style="font-size:1.1rem">\[\frac{\partial \mathcal{L}}{\partial \mathbf{x}} = \frac{\partial \mathcal{L}}{\partial \mathbf{y}} \cdot \left(1 + \frac{\partial \mathcal{F}}{\partial \mathbf{x}}\right)\]</div>
+            <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.88rem;line-height:1.5">Gradient flow: the additive &ldquo;1&rdquo; ensures gradients always have a direct path back &mdash; preventing vanishing gradients even in very deep networks</p>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 2. THE DEGRADATION PROBLEM ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot r"></div><h2>The Degradation Problem</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p>Before ResNets, a paradox plagued deep learning: <strong>deeper networks performed worse than shallower ones</strong>, even on training data. This was not overfitting &mdash; both training and test error increased. A 56-layer plain network had higher training error than a 20-layer one on CIFAR-10.</p>
+            <p>In theory, a deeper network should never do worse: extra layers could simply learn identity mappings and replicate the shallower network. In practice, <strong>optimizers struggled to learn identity through stacked nonlinear layers</strong>. Gradient signals degraded across dozens of layers, making it nearly impossible to converge to a good solution.</p>
+            <p>He et al. (2015) recognized that if identity mappings are what the extra layers need, we should <strong>make identity the default behavior</strong>. By adding a skip connection that carries the input directly to the output, the layers only need to learn the <strong>residual</strong> &mdash; the difference from identity. If no modification is needed, the weights can simply go to zero.</p>
+        </div>
+
+        <div class="tg" style="margin-top:1.2rem">
+            <div class="ti">
+                <h4>Plain Network (No Skip)</h4>
+                <p>Layers must learn full mapping \(\mathcal{H}(\mathbf{x})\). <strong>Identity is hard</strong> to learn through nonlinearities. Gradients vanish or explode across 50+ layers. Training error increases with depth.</p>
+            </div>
+            <div class="ti">
+                <h4>Residual Network (Skip)</h4>
+                <p>Layers learn residual \(\mathcal{F}(\mathbf{x}) = \mathcal{H}(\mathbf{x}) - \mathbf{x}\). <strong>Identity is free</strong> (just zero the weights). Gradients flow directly through shortcut. Training error decreases with depth.</p>
+            </div>
+        </div>
+
+        <div class="an bd" style="margin-top:1.15rem">
+            <h4>The Critical Insight</h4>
+            <p>The degradation problem is <strong>not</strong> caused by vanishing gradients alone (batch normalization already addressed that). It is a fundamental optimization difficulty: the loss landscape of plain deep networks has regions that SGD cannot navigate. Skip connections reshape the loss landscape into a smoother, more convex surface that optimizers can traverse efficiently.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 3. ARCHITECTURE OVERVIEW ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Architecture Overview</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem">
+            <p>ResNets use two types of residual blocks. <strong>Basic blocks</strong> (two 3&times;3 convolutions) are used in ResNet-18 and ResNet-34. <strong>Bottleneck blocks</strong> (1&times;1 &rarr; 3&times;3 &rarr; 1&times;1) are used in ResNet-50, 101, and 152 &mdash; they reduce parameters while increasing depth.</p>
+        </div>
+
+        <div class="tg" style="margin-bottom:1.2rem">
+            <div class="ti">
+                <h4>Basic Block (ResNet-18/34)</h4>
+                <p><strong>Input (64-ch)</strong><br>
+                &darr; 3&times;3 Conv &rarr; BN &rarr; ReLU<br>
+                &darr; 3&times;3 Conv &rarr; BN<br>
+                &darr; <strong>+ skip(x)</strong> &rarr; ReLU<br>
+                <strong>Output (64-ch)</strong></p>
+                <p style="margin-top:0.5rem">2 conv layers per block. Simple, efficient for shallower nets.</p>
+            </div>
+            <div class="ti">
+                <h4>Bottleneck Block (ResNet-50/101/152)</h4>
+                <p><strong>Input (256-ch)</strong><br>
+                &darr; 1&times;1 Conv (64) &rarr; BN &rarr; ReLU<br>
+                &darr; 3&times;3 Conv (64) &rarr; BN &rarr; ReLU<br>
+                &darr; 1&times;1 Conv (256) &rarr; BN<br>
+                &darr; <strong>+ skip(x)</strong> &rarr; ReLU<br>
+                <strong>Output (256-ch)</strong></p>
+                <p style="margin-top:0.5rem">3 conv layers. 1&times;1 reduces/expands channels, saving FLOPs.</p>
+            </div>
+        </div>
+
+        <!-- Architecture comparison table -->
+        <div class="tw">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Architecture</th>
+                        <th>Layers</th>
+                        <th>Block Type</th>
+                        <th>Params</th>
+                        <th>Top-1 Acc (ImageNet)</th>
+                        <th>FLOPs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ResNet-18</strong></td>
+                        <td>18</td>
+                        <td>Basic [2,2,2,2]</td>
+                        <td>11.7M</td>
+                        <td>69.8%</td>
+                        <td>1.8G</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ResNet-34</strong></td>
+                        <td>34</td>
+                        <td>Basic [3,4,6,3]</td>
+                        <td>21.8M</td>
+                        <td>73.3%</td>
+                        <td>3.7G</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ResNet-50</strong></td>
+                        <td>50</td>
+                        <td>Bottleneck [3,4,6,3]</td>
+                        <td>25.6M</td>
+                        <td>76.1%</td>
+                        <td>4.1G</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ResNet-101</strong></td>
+                        <td>101</td>
+                        <td>Bottleneck [3,4,23,3]</td>
+                        <td>44.5M</td>
+                        <td>77.4%</td>
+                        <td>7.8G</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ResNet-152</strong></td>
+                        <td>152</td>
+                        <td>Bottleneck [3,8,36,3]</td>
+                        <td>60.2M</td>
+                        <td>78.3%</td>
+                        <td>11.6G</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="an gd" style="margin-top:1.15rem">
+            <h4>All ResNets share the same macro structure</h4>
+            <ul>
+                <li><strong>conv1:</strong> 7&times;7, 64 filters, stride 2 &rarr; BN &rarr; ReLU &rarr; 3&times;3 max pool</li>
+                <li><strong>conv2_x through conv5_x:</strong> Stacked residual blocks (channel doubling at each stage)</li>
+                <li><strong>Global average pooling</strong> &rarr; fully connected &rarr; softmax (1000 classes)</li>
+                <li>Spatial dimensions: 224&rarr;112&rarr;56&rarr;28&rarr;14&rarr;7&rarr;1 (via stride-2 convolutions)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 4. KEY CONCEPTS ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Key Concepts</h2></div>
+    <div class="card-b">
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Skip / Shortcut Connection</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">A direct path that bypasses one or more layers, adding the input \(\mathbf{x}\) directly to the block output. Zero parameters, zero computational cost. The single most important innovation in ResNets.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Identity Mapping</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">When the skip carries the input unchanged (\(\mathbf{y} = \mathcal{F}(\mathbf{x}) + \mathbf{x}\)). Requires input and output dimensions to match. This is the default behavior &mdash; blocks only need to learn the deviation from identity.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Residual Learning</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Rather than learning the full target function \(\mathcal{H}(\mathbf{x})\), the network learns the residual \(\mathcal{F}(\mathbf{x}) = \mathcal{H}(\mathbf{x}) - \mathbf{x}\). Easier to optimize because the baseline is identity, not a randomly-initialized transformation.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Batch Normalization</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Applied after every convolution, before ReLU. Normalizes activations to zero mean and unit variance, then scales/shifts with learned parameters. Stabilizes training, enables higher learning rates, acts as mild regularization.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Bottleneck Block</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">A 3-layer design: 1&times;1 conv compresses channels (e.g., 256&rarr;64), 3&times;3 conv processes spatial features, 1&times;1 conv expands back (64&rarr;256). Same representational power, ~75% fewer parameters than two 3&times;3 layers at full width.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">1&times;1 Convolutions</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Pointwise convolutions that mix channel information without spatial context. Used in bottleneck blocks for dimensionality reduction/expansion and in projection shortcuts to match dimensions when spatial size or channel count changes.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Pre-activation ResNet</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">He et al. (2016) variant: BN &rarr; ReLU &rarr; Conv instead of Conv &rarr; BN &rarr; ReLU. Cleaner gradient flow through the identity path (no BN/ReLU on the shortcut). Improves results on very deep networks (1001 layers).</span>
+        </div>
+        <div style="padding:0.5rem 0">
+            <strong style="color:var(--terra)">Projection Shortcut</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">When dimensions change (spatial downsampling or channel expansion), a 1&times;1 convolution with stride 2 adapts the shortcut: \(\mathbf{y} = \mathcal{F}(\mathbf{x}) + W_s \mathbf{x}\). Only used at stage transitions, not within stages.</span>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 5. CODE: RESNET-50 TRANSFER LEARNING ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code: ResNet-50 Transfer Learning (Keras/TF)</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem">
+            <p>Transfer learning with ResNet-50 is the most common practical use case. <strong>Freeze the convolutional base</strong> pretrained on ImageNet, replace the classification head, then optionally fine-tune the last few layers for your domain.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; TensorFlow / Keras</span>
+                <button class="cb" onclick="cpCode('c1')">Copy</button>
+            </div>
+            <div class="cs">
+<pre id="c1"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+<span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> ResNet50
+<span class="kw">from</span> tensorflow.keras.preprocessing.image <span class="kw">import</span> ImageDataGenerator
+
+<span class="cmt"># ── Configuration ──</span>
+IMG_SIZE = (<span class="num">224</span>, <span class="num">224</span>)
+BATCH_SIZE = <span class="num">32</span>
+NUM_CLASSES = <span class="num">5</span>
+EPOCHS_FROZEN = <span class="num">10</span>
+EPOCHS_FINETUNE = <span class="num">15</span>
+
+<span class="cmt"># ── Data pipeline with augmentation ──</span>
+train_gen = <span class="fn">ImageDataGenerator</span>(
+    rescale=<span class="num">1.0</span>/<span class="num">255</span>,
+    rotation_range=<span class="num">20</span>,
+    width_shift_range=<span class="num">0.2</span>,
+    height_shift_range=<span class="num">0.2</span>,
+    horizontal_flip=<span class="kw">True</span>,
+    validation_split=<span class="num">0.2</span>
+)
+
+train_data = train_gen.<span class="fn">flow_from_directory</span>(
+    <span class="str">"data/train"</span>,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode=<span class="str">"categorical"</span>,
+    subset=<span class="str">"training"</span>
+)
+
+val_data = train_gen.<span class="fn">flow_from_directory</span>(
+    <span class="str">"data/train"</span>,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode=<span class="str">"categorical"</span>,
+    subset=<span class="str">"validation"</span>
+)
+
+<span class="cmt"># ── Load pretrained ResNet-50 (freeze all layers) ──</span>
+base_model = <span class="fn">ResNet50</span>(
+    weights=<span class="str">"imagenet"</span>,
+    include_top=<span class="kw">False</span>,          <span class="cmt"># Remove ImageNet classification head</span>
+    input_shape=(*IMG_SIZE, <span class="num">3</span>)
+)
+base_model.trainable = <span class="kw">False</span>    <span class="cmt"># Freeze all 23.5M parameters</span>
+
+<span class="cmt"># ── Build new classification head ──</span>
+model = models.<span class="fn">Sequential</span>([
+    base_model,
+    layers.<span class="fn">GlobalAveragePooling2D</span>(),
+    layers.<span class="fn">BatchNormalization</span>(),
+    layers.<span class="fn">Dropout</span>(<span class="num">0.3</span>),
+    layers.<span class="fn">Dense</span>(<span class="num">256</span>, activation=<span class="str">"relu"</span>),
+    layers.<span class="fn">BatchNormalization</span>(),
+    layers.<span class="fn">Dropout</span>(<span class="num">0.3</span>),
+    layers.<span class="fn">Dense</span>(NUM_CLASSES, activation=<span class="str">"softmax"</span>)
+])
+
+<span class="cmt"># ── Phase 1: Train head only (base frozen) ──</span>
+model.<span class="fn">compile</span>(
+    optimizer=tf.keras.optimizers.<span class="fn">Adam</span>(learning_rate=<span class="num">1e-3</span>),
+    loss=<span class="str">"categorical_crossentropy"</span>,
+    metrics=[<span class="str">"accuracy"</span>]
+)
+
+<span class="fn">print</span>(<span class="str">f"Trainable params (head only): {model.count_params() - base_model.count_params():,}"</span>)
+
+history_frozen = model.<span class="fn">fit</span>(
+    train_data,
+    validation_data=val_data,
+    epochs=EPOCHS_FROZEN,
+    callbacks=[
+        tf.keras.callbacks.<span class="fn">EarlyStopping</span>(patience=<span class="num">3</span>, restore_best_weights=<span class="kw">True</span>),
+        tf.keras.callbacks.<span class="fn">ReduceLROnPlateau</span>(factor=<span class="num">0.5</span>, patience=<span class="num">2</span>)
+    ]
+)
+
+<span class="cmt"># ── Phase 2: Fine-tune last 30 layers of ResNet ──</span>
+base_model.trainable = <span class="kw">True</span>
+<span class="kw">for</span> layer <span class="kw">in</span> base_model.layers[:-<span class="num">30</span>]:
+    layer.trainable = <span class="kw">False</span>
+
+model.<span class="fn">compile</span>(
+    optimizer=tf.keras.optimizers.<span class="fn">Adam</span>(learning_rate=<span class="num">1e-5</span>),  <span class="cmt"># Much lower LR</span>
+    loss=<span class="str">"categorical_crossentropy"</span>,
+    metrics=[<span class="str">"accuracy"</span>]
+)
+
+<span class="fn">print</span>(<span class="str">f"Trainable params (fine-tune): {sum(p.numpy().size for p in model.trainable_weights):,}"</span>)
+
+history_ft = model.<span class="fn">fit</span>(
+    train_data,
+    validation_data=val_data,
+    epochs=EPOCHS_FINETUNE,
+    callbacks=[
+        tf.keras.callbacks.<span class="fn">EarlyStopping</span>(patience=<span class="num">5</span>, restore_best_weights=<span class="kw">True</span>),
+        tf.keras.callbacks.<span class="fn">ReduceLROnPlateau</span>(factor=<span class="num">0.5</span>, patience=<span class="num">3</span>)
+    ]
+)
+
+<span class="cmt"># ── Evaluate ──</span>
+loss, acc = model.<span class="fn">evaluate</span>(val_data)
+<span class="fn">print</span>(<span class="str">f"Final validation accuracy: {acc:.4f}"</span>)
+model.<span class="fn">save</span>(<span class="str">"resnet50_transfer.keras"</span>)</pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Transfer Learning Strategy</h4>
+            <ul>
+                <li><strong>Phase 1 (frozen):</strong> High learning rate (1e-3), only trains the new head. Prevents destroying pretrained features.</li>
+                <li><strong>Phase 2 (fine-tune):</strong> Very low learning rate (1e-5), unfreezes last ~30 layers. Adapts high-level features to your domain.</li>
+                <li>With only 500-1000 images per class, transfer learning often achieves 90%+ accuracy where training from scratch would fail.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 6. CODE: RESIDUAL BLOCK FROM SCRATCH ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code: Building a Residual Block from Scratch (PyTorch)</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem">
+            <p>Understanding what happens inside a residual block is essential. Here we build both the <strong>basic block</strong> and <strong>bottleneck block</strong>, then assemble them into a complete ResNet.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; PyTorch</span>
+                <button class="cb" onclick="cpCode('c2')">Copy</button>
+            </div>
+            <div class="cs">
+<pre id="c2"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+
+<span class="cmt"># ═══════════════════════════════════════════
+#  BASIC RESIDUAL BLOCK (ResNet-18/34)
+#  Two 3×3 convolutions with skip connection
+# ═══════════════════════════════════════════</span>
+
+<span class="kw">class</span> <span class="fn">BasicBlock</span>(nn.Module):
+    expansion = <span class="num">1</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, in_channels, out_channels, stride=<span class="num">1</span>, downsample=<span class="kw">None</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+
+        <span class="cmt"># First 3×3 conv (may downsample via stride)</span>
+        self.conv1 = nn.<span class="fn">Conv2d</span>(
+            in_channels, out_channels,
+            kernel_size=<span class="num">3</span>, stride=stride, padding=<span class="num">1</span>, bias=<span class="kw">False</span>
+        )
+        self.bn1 = nn.<span class="fn">BatchNorm2d</span>(out_channels)
+
+        <span class="cmt"># Second 3×3 conv (always stride 1)</span>
+        self.conv2 = nn.<span class="fn">Conv2d</span>(
+            out_channels, out_channels,
+            kernel_size=<span class="num">3</span>, stride=<span class="num">1</span>, padding=<span class="num">1</span>, bias=<span class="kw">False</span>
+        )
+        self.bn2 = nn.<span class="fn">BatchNorm2d</span>(out_channels)
+
+        <span class="cmt"># Projection shortcut (when dimensions change)</span>
+        self.downsample = downsample
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        identity = x                          <span class="cmt"># Save input for skip</span>
+
+        out = F.<span class="fn">relu</span>(self.<span class="fn">bn1</span>(self.<span class="fn">conv1</span>(x)))   <span class="cmt"># Conv → BN → ReLU</span>
+        out = self.<span class="fn">bn2</span>(self.<span class="fn">conv2</span>(out))          <span class="cmt"># Conv → BN (no ReLU yet)</span>
+
+        <span class="kw">if</span> self.downsample <span class="kw">is not</span> <span class="kw">None</span>:
+            identity = self.<span class="fn">downsample</span>(x)       <span class="cmt"># Match dimensions via 1×1 conv</span>
+
+        out += identity                        <span class="cmt"># THE SKIP CONNECTION</span>
+        out = F.<span class="fn">relu</span>(out)                       <span class="cmt"># ReLU after addition</span>
+        <span class="kw">return</span> out
+
+
+<span class="cmt"># ═══════════════════════════════════════════
+#  BOTTLENECK BLOCK (ResNet-50/101/152)
+#  1×1 reduce → 3×3 convolve → 1×1 expand
+# ═══════════════════════════════════════════</span>
+
+<span class="kw">class</span> <span class="fn">Bottleneck</span>(nn.Module):
+    expansion = <span class="num">4</span>   <span class="cmt"># Output channels = out_channels × 4</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, in_channels, out_channels, stride=<span class="num">1</span>, downsample=<span class="kw">None</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+
+        <span class="cmt"># 1×1 reduce (256 → 64)</span>
+        self.conv1 = nn.<span class="fn">Conv2d</span>(in_channels, out_channels, <span class="num">1</span>, bias=<span class="kw">False</span>)
+        self.bn1 = nn.<span class="fn">BatchNorm2d</span>(out_channels)
+
+        <span class="cmt"># 3×3 spatial conv (64 → 64)</span>
+        self.conv2 = nn.<span class="fn">Conv2d</span>(
+            out_channels, out_channels,
+            <span class="num">3</span>, stride=stride, padding=<span class="num">1</span>, bias=<span class="kw">False</span>
+        )
+        self.bn2 = nn.<span class="fn">BatchNorm2d</span>(out_channels)
+
+        <span class="cmt"># 1×1 expand (64 → 256)</span>
+        self.conv3 = nn.<span class="fn">Conv2d</span>(
+            out_channels, out_channels * self.expansion, <span class="num">1</span>, bias=<span class="kw">False</span>
+        )
+        self.bn3 = nn.<span class="fn">BatchNorm2d</span>(out_channels * self.expansion)
+
+        self.downsample = downsample
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        identity = x
+
+        out = F.<span class="fn">relu</span>(self.<span class="fn">bn1</span>(self.<span class="fn">conv1</span>(x)))    <span class="cmt"># 1×1 reduce</span>
+        out = F.<span class="fn">relu</span>(self.<span class="fn">bn2</span>(self.<span class="fn">conv2</span>(out)))   <span class="cmt"># 3×3 spatial</span>
+        out = self.<span class="fn">bn3</span>(self.<span class="fn">conv3</span>(out))           <span class="cmt"># 1×1 expand</span>
+
+        <span class="kw">if</span> self.downsample <span class="kw">is not</span> <span class="kw">None</span>:
+            identity = self.<span class="fn">downsample</span>(x)
+
+        out += identity                         <span class="cmt"># THE SKIP CONNECTION</span>
+        out = F.<span class="fn">relu</span>(out)
+        <span class="kw">return</span> out
+
+
+<span class="cmt"># ═══════════════════════════════════════════
+#  FULL RESNET ASSEMBLY
+# ═══════════════════════════════════════════</span>
+
+<span class="kw">class</span> <span class="fn">ResNet</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, block, layers, num_classes=<span class="num">1000</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        self.in_channels = <span class="num">64</span>
+
+        <span class="cmt"># Stem: 7×7 conv, stride 2, then max pool</span>
+        self.conv1 = nn.<span class="fn">Conv2d</span>(<span class="num">3</span>, <span class="num">64</span>, <span class="num">7</span>, stride=<span class="num">2</span>, padding=<span class="num">3</span>, bias=<span class="kw">False</span>)
+        self.bn1 = nn.<span class="fn">BatchNorm2d</span>(<span class="num">64</span>)
+        self.maxpool = nn.<span class="fn">MaxPool2d</span>(<span class="num">3</span>, stride=<span class="num">2</span>, padding=<span class="num">1</span>)
+
+        <span class="cmt"># Residual stages (conv2_x through conv5_x)</span>
+        self.layer1 = self.<span class="fn">_make_layer</span>(block, <span class="num">64</span>,  layers[<span class="num">0</span>], stride=<span class="num">1</span>)
+        self.layer2 = self.<span class="fn">_make_layer</span>(block, <span class="num">128</span>, layers[<span class="num">1</span>], stride=<span class="num">2</span>)
+        self.layer3 = self.<span class="fn">_make_layer</span>(block, <span class="num">256</span>, layers[<span class="num">2</span>], stride=<span class="num">2</span>)
+        self.layer4 = self.<span class="fn">_make_layer</span>(block, <span class="num">512</span>, layers[<span class="num">3</span>], stride=<span class="num">2</span>)
+
+        self.avgpool = nn.<span class="fn">AdaptiveAvgPool2d</span>((<span class="num">1</span>, <span class="num">1</span>))
+        self.fc = nn.<span class="fn">Linear</span>(<span class="num">512</span> * block.expansion, num_classes)
+
+        <span class="cmt"># Kaiming initialization</span>
+        <span class="kw">for</span> m <span class="kw">in</span> self.<span class="fn">modules</span>():
+            <span class="kw">if</span> <span class="fn">isinstance</span>(m, nn.Conv2d):
+                nn.init.<span class="fn">kaiming_normal_</span>(m.weight, mode=<span class="str">"fan_out"</span>)
+
+    <span class="kw">def</span> <span class="fn">_make_layer</span>(self, block, out_channels, num_blocks, stride):
+        downsample = <span class="kw">None</span>
+        <span class="kw">if</span> stride != <span class="num">1</span> <span class="kw">or</span> self.in_channels != out_channels * block.expansion:
+            downsample = nn.<span class="fn">Sequential</span>(
+                nn.<span class="fn">Conv2d</span>(self.in_channels, out_channels * block.expansion,
+                         <span class="num">1</span>, stride=stride, bias=<span class="kw">False</span>),
+                nn.<span class="fn">BatchNorm2d</span>(out_channels * block.expansion)
+            )
+
+        layers = [<span class="fn">block</span>(self.in_channels, out_channels, stride, downsample)]
+        self.in_channels = out_channels * block.expansion
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(num_blocks - <span class="num">1</span>):
+            layers.<span class="fn">append</span>(<span class="fn">block</span>(self.in_channels, out_channels))
+        <span class="kw">return</span> nn.<span class="fn">Sequential</span>(*layers)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        x = F.<span class="fn">relu</span>(self.<span class="fn">bn1</span>(self.<span class="fn">conv1</span>(x)))
+        x = self.<span class="fn">maxpool</span>(x)
+        x = self.<span class="fn">layer1</span>(x)
+        x = self.<span class="fn">layer2</span>(x)
+        x = self.<span class="fn">layer3</span>(x)
+        x = self.<span class="fn">layer4</span>(x)
+        x = self.<span class="fn">avgpool</span>(x)
+        x = torch.<span class="fn">flatten</span>(x, <span class="num">1</span>)
+        x = self.<span class="fn">fc</span>(x)
+        <span class="kw">return</span> x
+
+<span class="cmt"># ── Instantiate standard architectures ──</span>
+<span class="kw">def</span> <span class="fn">resnet18</span>(num_classes=<span class="num">1000</span>):
+    <span class="kw">return</span> <span class="fn">ResNet</span>(BasicBlock,  [<span class="num">2</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">2</span>], num_classes)
+
+<span class="kw">def</span> <span class="fn">resnet50</span>(num_classes=<span class="num">1000</span>):
+    <span class="kw">return</span> <span class="fn">ResNet</span>(Bottleneck, [<span class="num">3</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">3</span>], num_classes)
+
+<span class="kw">def</span> <span class="fn">resnet101</span>(num_classes=<span class="num">1000</span>):
+    <span class="kw">return</span> <span class="fn">ResNet</span>(Bottleneck, [<span class="num">3</span>, <span class="num">4</span>, <span class="num">23</span>, <span class="num">3</span>], num_classes)
+
+<span class="cmt"># ── Verify ──</span>
+model = <span class="fn">resnet50</span>(num_classes=<span class="num">10</span>)
+x = torch.<span class="fn">randn</span>(<span class="num">2</span>, <span class="num">3</span>, <span class="num">224</span>, <span class="num">224</span>)
+<span class="fn">print</span>(<span class="str">f"Output shape: {model(x).shape}"</span>)   <span class="cmt"># → torch.Size([2, 10])</span>
+<span class="fn">print</span>(<span class="str">f"Parameters: {sum(p.numel() for p in model.parameters()):,}"</span>)</pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Anatomy of the Skip Connection</h4>
+            <ul>
+                <li>Line <code>out += identity</code> is the entire skip connection &mdash; a single addition operation</li>
+                <li><strong>downsample</strong> is only needed when spatial dimensions or channel counts change (at stage boundaries)</li>
+                <li>ReLU is applied <strong>after</strong> the addition, not before &mdash; this is the post-activation design from the original paper</li>
+                <li>All convolutions use <code>bias=False</code> because BatchNorm already has a learnable bias term</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 7. CODE: MEDICAL IMAGE CLASSIFICATION ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code: ResNet for Medical Image Classification</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem">
+            <p>Medical imaging is one of the highest-impact applications of ResNets. This example classifies <strong>chest X-rays for pneumonia detection</strong> using a fine-tuned ResNet-18 with class-weighted loss to handle the typical data imbalance in clinical datasets.</p>
+        </div>
+
+        <div class="cw">
+            <div class="ct">
+                <span class="ln">Python &mdash; PyTorch (Medical Imaging)</span>
+                <button class="cb" onclick="cpCode('c3')">Copy</button>
+            </div>
+            <div class="cs">
+<pre id="c3"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+<span class="kw">from</span> torchvision <span class="kw">import</span> transforms, datasets, models
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> classification_report, roc_auc_score
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cmt"># ═══════════════════════════════════════════
+#  CHEST X-RAY PNEUMONIA DETECTION
+#  Dataset: Kaggle Chest X-Ray (5,863 images)
+#  Classes: NORMAL vs PNEUMONIA
+# ═══════════════════════════════════════════</span>
+
+device = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.<span class="fn">is_available</span>() <span class="kw">else</span> <span class="str">"cpu"</span>)
+
+<span class="cmt"># ── Medical-specific preprocessing ──</span>
+<span class="cmt"># ImageNet stats work well even for grayscale X-rays (replicate to 3 channels)</span>
+train_transforms = transforms.<span class="fn">Compose</span>([
+    transforms.<span class="fn">Resize</span>((<span class="num">256</span>, <span class="num">256</span>)),
+    transforms.<span class="fn">RandomResizedCrop</span>(<span class="num">224</span>, scale=(<span class="num">0.8</span>, <span class="num">1.0</span>)),
+    transforms.<span class="fn">RandomHorizontalFlip</span>(),
+    transforms.<span class="fn">RandomRotation</span>(<span class="num">10</span>),      <span class="cmt"># Conservative — anatomy is orientation-sensitive</span>
+    transforms.<span class="fn">ColorJitter</span>(brightness=<span class="num">0.2</span>, contrast=<span class="num">0.2</span>),
+    transforms.<span class="fn">ToTensor</span>(),
+    transforms.<span class="fn">Normalize</span>([<span class="num">0.485</span>, <span class="num">0.456</span>, <span class="num">0.406</span>], [<span class="num">0.229</span>, <span class="num">0.224</span>, <span class="num">0.225</span>])
+])
+
+val_transforms = transforms.<span class="fn">Compose</span>([
+    transforms.<span class="fn">Resize</span>((<span class="num">224</span>, <span class="num">224</span>)),
+    transforms.<span class="fn">ToTensor</span>(),
+    transforms.<span class="fn">Normalize</span>([<span class="num">0.485</span>, <span class="num">0.456</span>, <span class="num">0.406</span>], [<span class="num">0.229</span>, <span class="num">0.224</span>, <span class="num">0.225</span>])
+])
+
+<span class="cmt"># ── Load dataset ──</span>
+train_set = datasets.<span class="fn">ImageFolder</span>(<span class="str">"chest_xray/train"</span>, transform=train_transforms)
+val_set   = datasets.<span class="fn">ImageFolder</span>(<span class="str">"chest_xray/val"</span>,   transform=val_transforms)
+test_set  = datasets.<span class="fn">ImageFolder</span>(<span class="str">"chest_xray/test"</span>,  transform=val_transforms)
+
+train_loader = <span class="fn">DataLoader</span>(train_set, batch_size=<span class="num">32</span>, shuffle=<span class="kw">True</span>,  num_workers=<span class="num">4</span>)
+val_loader   = <span class="fn">DataLoader</span>(val_set,   batch_size=<span class="num">32</span>, shuffle=<span class="kw">False</span>, num_workers=<span class="num">4</span>)
+test_loader  = <span class="fn">DataLoader</span>(test_set,  batch_size=<span class="num">32</span>, shuffle=<span class="kw">False</span>, num_workers=<span class="num">4</span>)
+
+<span class="cmt"># ── Class imbalance handling ──</span>
+class_counts = np.<span class="fn">bincount</span>([label <span class="kw">for</span> _, label <span class="kw">in</span> train_set])
+class_weights = <span class="num">1.0</span> / torch.<span class="fn">tensor</span>(class_counts, dtype=torch.float32)
+class_weights = class_weights / class_weights.<span class="fn">sum</span>()
+<span class="fn">print</span>(<span class="str">f"Class weights: NORMAL={class_weights[0]:.3f}, PNEUMONIA={class_weights[1]:.3f}"</span>)
+
+<span class="cmt"># ── Load pretrained ResNet-18 & modify for binary classification ──</span>
+model = models.<span class="fn">resnet18</span>(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+
+<span class="cmt"># Freeze early layers (low-level features transfer well)</span>
+<span class="kw">for</span> name, param <span class="kw">in</span> model.<span class="fn">named_parameters</span>():
+    <span class="kw">if</span> <span class="str">"layer3"</span> <span class="kw">not in</span> name <span class="kw">and</span> <span class="str">"layer4"</span> <span class="kw">not in</span> name <span class="kw">and</span> <span class="str">"fc"</span> <span class="kw">not in</span> name:
+        param.requires_grad = <span class="kw">False</span>
+
+<span class="cmt"># Replace final FC for binary classification</span>
+model.fc = nn.<span class="fn">Sequential</span>(
+    nn.<span class="fn">Dropout</span>(<span class="num">0.4</span>),
+    nn.<span class="fn">Linear</span>(model.fc.in_features, <span class="num">1</span>)    <span class="cmt"># Single output → sigmoid</span>
+)
+model = model.<span class="fn">to</span>(device)
+
+<span class="cmt"># ── Training setup ──</span>
+criterion = nn.<span class="fn">BCEWithLogitsLoss</span>(
+    pos_weight=torch.<span class="fn">tensor</span>([class_weights[<span class="num">0</span>] / class_weights[<span class="num">1</span>]]).<span class="fn">to</span>(device)
+)
+optimizer = torch.optim.<span class="fn">AdamW</span>(
+    <span class="fn">filter</span>(<span class="kw">lambda</span> p: p.requires_grad, model.<span class="fn">parameters</span>()),
+    lr=<span class="num">3e-4</span>, weight_decay=<span class="num">1e-4</span>
+)
+scheduler = torch.optim.lr_scheduler.<span class="fn">CosineAnnealingLR</span>(optimizer, T_max=<span class="num">20</span>)
+
+<span class="cmt"># ── Training loop ──</span>
+best_auc = <span class="num">0.0</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">20</span>):
+    model.<span class="fn">train</span>()
+    running_loss = <span class="num">0.0</span>
+
+    <span class="kw">for</span> images, labels <span class="kw">in</span> train_loader:
+        images, labels = images.<span class="fn">to</span>(device), labels.<span class="fn">float</span>().<span class="fn">to</span>(device)
+        logits = model(images).<span class="fn">squeeze</span>()
+        loss = <span class="fn">criterion</span>(logits, labels)
+
+        optimizer.<span class="fn">zero_grad</span>()
+        loss.<span class="fn">backward</span>()
+        optimizer.<span class="fn">step</span>()
+        running_loss += loss.<span class="fn">item</span>()
+
+    scheduler.<span class="fn">step</span>()
+
+    <span class="cmt"># ── Validation with AUC ──</span>
+    model.<span class="fn">eval</span>()
+    all_probs, all_labels = [], []
+    <span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+        <span class="kw">for</span> images, labels <span class="kw">in</span> val_loader:
+            images = images.<span class="fn">to</span>(device)
+            probs = torch.<span class="fn">sigmoid</span>(model(images).<span class="fn">squeeze</span>())
+            all_probs.<span class="fn">extend</span>(probs.<span class="fn">cpu</span>().<span class="fn">numpy</span>())
+            all_labels.<span class="fn">extend</span>(labels.<span class="fn">numpy</span>())
+
+    auc = <span class="fn">roc_auc_score</span>(all_labels, all_probs)
+    <span class="fn">print</span>(<span class="str">f"Epoch {epoch+1:2d} | Loss: {running_loss/len(train_loader):.4f} | AUC: {auc:.4f}"</span>)
+
+    <span class="kw">if</span> auc > best_auc:
+        best_auc = auc
+        torch.<span class="fn">save</span>(model.<span class="fn">state_dict</span>(), <span class="str">"best_pneumonia_resnet18.pth"</span>)
+
+<span class="cmt"># ── Final evaluation on test set ──</span>
+model.<span class="fn">load_state_dict</span>(torch.<span class="fn">load</span>(<span class="str">"best_pneumonia_resnet18.pth"</span>))
+model.<span class="fn">eval</span>()
+all_preds, all_probs, all_labels = [], [], []
+
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    <span class="kw">for</span> images, labels <span class="kw">in</span> test_loader:
+        images = images.<span class="fn">to</span>(device)
+        probs = torch.<span class="fn">sigmoid</span>(model(images).<span class="fn">squeeze</span>())
+        preds = (probs > <span class="num">0.5</span>).<span class="fn">long</span>()
+        all_probs.<span class="fn">extend</span>(probs.<span class="fn">cpu</span>().<span class="fn">numpy</span>())
+        all_preds.<span class="fn">extend</span>(preds.<span class="fn">cpu</span>().<span class="fn">numpy</span>())
+        all_labels.<span class="fn">extend</span>(labels.<span class="fn">numpy</span>())
+
+<span class="fn">print</span>(<span class="str">"\n"</span> + <span class="fn">classification_report</span>(all_labels, all_preds, target_names=[<span class="str">"Normal"</span>, <span class="str">"Pneumonia"</span>]))
+<span class="fn">print</span>(<span class="str">f"Test AUC-ROC: {roc_auc_score(all_labels, all_probs):.4f}"</span>)</pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Medical Imaging Considerations</h4>
+            <ul>
+                <li><strong>Conservative augmentation:</strong> Limited rotation (10 degrees) &mdash; flipping a chest X-ray upside-down is anatomically meaningless</li>
+                <li><strong>Class imbalance:</strong> Pneumonia cases vastly outnumber normal in the dataset. <code>pos_weight</code> in BCEWithLogitsLoss compensates</li>
+                <li><strong>AUC over accuracy:</strong> In medical diagnostics, AUC-ROC is the primary metric &mdash; it measures discrimination ability regardless of threshold</li>
+                <li><strong>Sensitivity matters:</strong> Missing a pneumonia case (false negative) is more dangerous than a false positive. Adjust the classification threshold accordingly</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 8. EVOLUTION ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Evolution of Residual Architectures</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem">
+            <p>ResNet launched an entire family of architectures built on the skip connection idea. Each successor addresses a specific limitation while preserving the core principle of <strong>identity shortcuts enabling gradient flow</strong>.</p>
+        </div>
+
+        <div class="tw">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Architecture</th>
+                        <th>Year</th>
+                        <th>Key Innovation</th>
+                        <th>Relationship to ResNet</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ResNet</strong></td>
+                        <td>2015</td>
+                        <td>Skip connections, residual learning</td>
+                        <td>The original. Identity shortcuts + residual mapping</td>
+                        <td>General-purpose baseline, transfer learning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ResNeXt</strong></td>
+                        <td>2017</td>
+                        <td>Grouped convolutions (cardinality)</td>
+                        <td>Split-transform-merge: 32 parallel 4-wide paths in each block</td>
+                        <td>When you want better accuracy with same parameter count</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DenseNet</strong></td>
+                        <td>2017</td>
+                        <td>Concatenation instead of addition</td>
+                        <td>Every layer connects to every later layer. Extreme feature reuse</td>
+                        <td>Small datasets, medical imaging, when features must not be lost</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SE-Net</strong></td>
+                        <td>2018</td>
+                        <td>Squeeze-and-excitation channel attention</td>
+                        <td>Adds channel weighting to residual blocks. Learns which channels matter</td>
+                        <td>When channel interdependencies are important</td>
+                    </tr>
+                    <tr>
+                        <td><strong>EfficientNet</strong></td>
+                        <td>2019</td>
+                        <td>Compound scaling (depth + width + resolution)</td>
+                        <td>MBConv blocks with skip connections. NAS-designed optimal scaling</td>
+                        <td>Mobile/edge deployment, efficiency-critical applications</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tg" style="margin-top:1.2rem">
+            <div class="ti">
+                <h4>ResNet vs ResNeXt</h4>
+                <p>ResNeXt introduces a <strong>cardinality</strong> dimension: instead of one wide path, use 32 narrow parallel paths grouped together. Same FLOPs, higher accuracy. ResNeXt-101 (32&times;4d) outperforms ResNet-101 by ~1% on ImageNet.</p>
+            </div>
+            <div class="ti">
+                <h4>ResNet vs DenseNet</h4>
+                <p>DenseNet <strong>concatenates</strong> all previous feature maps rather than adding. Encourages feature reuse, requires fewer parameters, but uses much more memory. DenseNet-121 achieves ResNet-level accuracy with <strong>fewer parameters</strong>.</p>
+            </div>
+            <div class="ti">
+                <h4>SE-Net Enhancement</h4>
+                <p>SE blocks can be <strong>inserted into any ResNet</strong>. Global average pool &rarr; FC &rarr; ReLU &rarr; FC &rarr; Sigmoid produces per-channel scaling weights. Adds only ~2.5% more parameters for ~1% accuracy gain.</p>
+            </div>
+            <div class="ti">
+                <h4>EfficientNet Scaling</h4>
+                <p>Rather than arbitrarily deepening (ResNet approach), EfficientNet <strong>scales depth, width, and resolution together</strong> using a compound coefficient. EfficientNet-B4 matches ResNet-152 accuracy at <strong>8.4&times; fewer FLOPs</strong>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ────── 9. WHEN TO USE / WHEN TO AVOID ────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>When to Use / When to Avoid</h2></div>
+    <div class="card-b">
+        <div class="tk-g">
+            <div class="tk">
+                <h4 class="u">When to Use ResNets</h4>
+                <p><strong>Image classification</strong> &mdash; the default starting architecture for any vision task</p>
+                <p><strong>Transfer learning</strong> &mdash; pretrained ResNet-50 is the most widely available and battle-tested backbone</p>
+                <p><strong>Feature extraction</strong> &mdash; intermediate layers produce excellent general-purpose visual features</p>
+                <p><strong>Object detection / segmentation</strong> &mdash; ResNet backbones power Faster R-CNN, Mask R-CNN, RetinaNet, FPN</p>
+                <p><strong>Medical imaging</strong> &mdash; proven on X-rays, CT scans, histopathology. Transfer from ImageNet works surprisingly well</p>
+                <p><strong>When you need depth</strong> &mdash; any task where a deeper representation hierarchy improves performance</p>
+                <p><strong>Production systems</strong> &mdash; extremely well-optimized in every framework. TensorRT, ONNX, CoreML all have native support</p>
+            </div>
+            <div class="tk">
+                <h4 class="av">When to Avoid ResNets</h4>
+                <p><strong>Tabular / structured data</strong> &mdash; gradient-boosted trees (XGBoost) still dominate non-image tasks</p>
+                <p><strong>Sequence data</strong> &mdash; Transformers and LSTMs are better for text, time series, audio</p>
+                <p><strong>Tiny datasets (&lt;100 images)</strong> &mdash; even transfer learning struggles; consider few-shot learning approaches</p>
+                <p><strong>Real-time mobile inference</strong> &mdash; MobileNet, EfficientNet-Lite, or ShuffleNet are 5-10&times; faster</p>
+                <p><strong>When ViTs are available</strong> &mdash; Vision Transformers now outperform ResNets on large datasets (300M+ images)</p>
+                <p><strong>Very low resolution</strong> &mdash; 7&times;7 stem conv assumes 224px input; small images (32&times;32) need modified stems</p>
+                <p><strong>Memory-constrained training</strong> &mdash; DenseNet achieves similar accuracy with fewer parameters</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>The Practical Default</h4>
+            <p>When starting any computer vision project, <strong>begin with a pretrained ResNet-50</strong>. It is the single most reliable baseline in deep learning:</p>
+            <ul>
+                <li>Pretrained weights available in every major framework (PyTorch, TensorFlow, JAX)</li>
+                <li>25.6M parameters &mdash; large enough to be expressive, small enough to fine-tune on a single GPU</li>
+                <li>Extensive deployment tooling: quantization, pruning, distillation all well-documented</li>
+                <li>If ResNet-50 does not meet your accuracy needs, try ResNeXt-101 or EfficientNet-B4 before going larger</li>
+            </ul>
+        </div>
+
+        <div class="an bd">
+            <h4>Common Pitfalls</h4>
+            <ul>
+                <li><strong>Forgetting to freeze early layers</strong> during fine-tuning destroys pretrained features with large gradients</li>
+                <li><strong>Using too high a learning rate</strong> when unfreezing &mdash; fine-tuning needs 10-100&times; lower LR than training the head</li>
+                <li><strong>Not using learning rate warmup</strong> for training from scratch &mdash; initial large updates can derail BatchNorm statistics</li>
+                <li><strong>Ignoring input normalization</strong> &mdash; pretrained ResNets expect ImageNet mean/std. Skipping this drops accuracy by 5-10%</li>
+                <li><strong>Resizing images incorrectly</strong> &mdash; always resize to 256 then center-crop to 224 for evaluation (not direct resize to 224)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div><!-- end .content -->
+
+<!-- ═══ FOOTER ═══ -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+</body></html>

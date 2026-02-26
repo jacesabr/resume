@@ -1,0 +1,726 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Generative Adversarial Networks — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+@media(max-width:640px){.tg,.tk-g{grid-template-columns:1fr!important;}}
+</style></head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <a href="index.html">&larr; All Algorithms</a>
+    <span class="sep">/</span>
+    <span class="pt">Generative Adversarial Networks</span>
+    <span class="algo-badge">Generative &middot; DL4</span>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>Generative Adversarial <span>Networks</span></h1>
+    <p class="sub">Two neural networks locked in a minimax game &mdash; a Generator that forges data and a Discriminator that detects forgeries &mdash; training each other until the Generator produces samples indistinguishable from real data.</p>
+    <p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">3 full code examples &middot; 6 GAN variants &middot; LaTeX equations via MathJax</p>
+</div>
+
+<div class="content">
+
+    <!-- Section 1: Mathematical Foundation -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot"></div>
+            <h2>Mathematical Foundation</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1.2rem;">
+                <p>The GAN framework is formulated as a <strong>two-player minimax game</strong> between a Generator \(G\) and a Discriminator \(D\). The Generator maps latent noise \(z \sim p_z(z)\) to data space, while the Discriminator outputs the probability that a sample came from the real data distribution rather than \(G\).</p>
+            </div>
+
+            <div style="margin-bottom:1.2rem;background:var(--surface);padding:1.2rem;border-radius:var(--radius);border:1px solid var(--border)">
+                <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.6rem;font-weight:600">Minimax Objective (Value Function)</div>
+                <div style="font-size:1.05rem;overflow-x:auto">\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]\]</div>
+                <p style="margin-top:0.5rem;color:var(--text-dim);font-size:0.86rem;line-height:1.6">The Discriminator maximizes the probability of correctly classifying real vs. fake. The Generator minimizes the Discriminator's ability to distinguish.</p>
+            </div>
+
+            <div class="tg">
+                <div style="background:var(--surface);padding:1.1rem;border-radius:var(--radius);border:1px solid var(--border)">
+                    <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600">Discriminator Loss</div>
+                    <div style="font-size:0.95rem">\[\mathcal{L}_D = -\mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] - \mathbb{E}_{z \sim p_z}[\log(1 - D(G(z)))]\]</div>
+                    <p style="margin-top:0.5rem;color:var(--text-dim);font-size:0.84rem;line-height:1.6">Binary cross-entropy: push \(D(x) \to 1\) for real, \(D(G(z)) \to 0\) for fake.</p>
+                </div>
+                <div style="background:var(--surface);padding:1.1rem;border-radius:var(--radius);border:1px solid var(--border)">
+                    <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600">Generator Loss</div>
+                    <div style="font-size:0.95rem">\[\mathcal{L}_G = -\mathbb{E}_{z \sim p_z}[\log D(G(z))]\]</div>
+                    <p style="margin-top:0.5rem;color:var(--text-dim);font-size:0.84rem;line-height:1.6">Non-saturating form: maximize \(\log D(G(z))\) instead of minimizing \(\log(1 - D(G(z)))\) for stronger early gradients.</p>
+                </div>
+            </div>
+
+            <div style="margin-top:1.2rem;background:var(--surface);padding:1.1rem;border-radius:var(--radius);border:1px solid var(--border)">
+                <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600">Optimal Discriminator</div>
+                <div style="font-size:0.95rem">\[D^*_G(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_g(x)}\]</div>
+                <p style="margin-top:0.5rem;color:var(--text-dim);font-size:0.84rem;line-height:1.6">At optimality, the global minimum of \(V(D^*, G)\) is achieved if and only if \(p_g = p_{\text{data}}\), yielding \(D^*(x) = \frac{1}{2}\) everywhere.</p>
+            </div>
+
+            <div style="margin-top:1.2rem;background:var(--surface);padding:1.1rem;border-radius:var(--radius);border:1px solid var(--border)">
+                <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600">Global Minimum &amp; Jensen-Shannon Divergence</div>
+                <div style="font-size:0.95rem">\[C(G) = -\log 4 + 2 \cdot \text{JSD}(p_{\text{data}} \| p_g)\]</div>
+                <p style="margin-top:0.5rem;color:var(--text-dim);font-size:0.84rem;line-height:1.6">The minimax game implicitly minimizes the Jensen-Shannon Divergence between the real and generated distributions. The global minimum \(-\log 4\) is reached when \(p_g = p_{\text{data}}\).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: The Adversarial Game -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot a"></div>
+            <h2>The Adversarial Game</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1.2rem;">
+                <p><strong>The Counterfeiter vs. Detective Analogy.</strong> Imagine a counterfeiter (Generator) trying to produce fake currency, and a detective (Discriminator) trying to tell real bills from fakes. Each time the detective catches a forgery, the counterfeiter learns what went wrong and improves. Each time the counterfeiter succeeds, the detective sharpens their eye. Over thousands of rounds, the counterfeiter becomes so skilled that even the detective cannot distinguish fake from real.</p>
+                <p><strong>Nash Equilibrium.</strong> The theoretical convergence point is a Nash equilibrium where the Generator perfectly replicates \(p_{\text{data}}\) and the Discriminator outputs \(\frac{1}{2}\) for every sample &mdash; it genuinely cannot tell the difference. In practice, GANs rarely reach true equilibrium; instead they oscillate near it.</p>
+            </div>
+
+            <div class="tg">
+                <div class="ti">
+                    <h4>Training Dynamics</h4>
+                    <p><strong>Alternating optimization:</strong> Train D for \(k\) steps (typically \(k=1\)), then train G for 1 step. D must stay ahead of G so its gradients remain informative, but not so far ahead that gradients vanish.</p>
+                </div>
+                <div class="ti">
+                    <h4>Gradient Flow</h4>
+                    <p><strong>G never sees real data directly.</strong> Its only learning signal comes through backpropagation from D's output. If D becomes too strong too early, gradients saturate and G stops learning. If D is too weak, G receives no useful signal.</p>
+                </div>
+                <div class="ti">
+                    <h4>Convergence Challenges</h4>
+                    <p><strong>Non-convex, non-cooperative game.</strong> Standard gradient descent guarantees do not apply. Training can oscillate, diverge, or collapse. Careful hyperparameter tuning and architectural choices are essential.</p>
+                </div>
+                <div class="ti">
+                    <h4>Measuring Progress</h4>
+                    <p><strong>Loss is not a good metric.</strong> G and D losses oscillate by design. Use FID (Frechet Inception Distance) or IS (Inception Score) to evaluate sample quality. Visual inspection remains important.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Architecture Overview -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Architecture Overview</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1.2rem;">
+                <p>The GAN consists of two competing neural networks trained simultaneously. The <strong>Generator</strong> takes random noise from a latent space and transforms it into synthetic data samples. The <strong>Discriminator</strong> receives both real data and generated samples, outputting a probability that the input is real.</p>
+            </div>
+
+            <div class="tg" style="margin-bottom:1.2rem;">
+                <div class="ti">
+                    <h4>Generator Network</h4>
+                    <p><strong>Input:</strong> Latent vector \(z \in \mathbb{R}^{d_z}\) sampled from \(\mathcal{N}(0, I)\) or \(\text{Uniform}(-1, 1)\).<br>
+                    <strong>Architecture:</strong> Fully connected or transposed convolutional layers. Maps low-dimensional noise to high-dimensional data space.<br>
+                    <strong>Output:</strong> Synthetic sample \(G(z) \in \mathbb{R}^{d_x}\) matching the shape of real data.<br>
+                    <strong>Activations:</strong> ReLU/LeakyReLU internally, Tanh or Sigmoid at output.</p>
+                </div>
+                <div class="ti">
+                    <h4>Discriminator Network</h4>
+                    <p><strong>Input:</strong> Data sample \(x\) (either real or generated).<br>
+                    <strong>Architecture:</strong> Convolutional or fully connected layers. Progressively reduces spatial dimensions.<br>
+                    <strong>Output:</strong> Scalar probability \(D(x) \in [0, 1]\).<br>
+                    <strong>Activations:</strong> LeakyReLU internally, Sigmoid at output. Batch normalization used cautiously (not in D's first/last layers).</p>
+                </div>
+            </div>
+
+            <div class="ti" style="margin-bottom:1.2rem;">
+                <h4>Latent Space z</h4>
+                <p>The latent space is the compressed, continuous representation from which the Generator draws its creative material. <strong>Dimensionality</strong> typically ranges from 64 to 512. <strong>Interpolation</strong> between two latent vectors produces smooth transitions in generated output &mdash; walking through latent space reveals the learned data manifold. <strong>Disentanglement</strong> (e.g., in StyleGAN) allows individual latent dimensions to control specific attributes like pose, lighting, or expression.</p>
+            </div>
+
+            <div style="background:var(--terra-dim);border:1px solid var(--terra-dim2);border-radius:8px;padding:1.2rem;">
+                <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--terra);margin-bottom:0.6rem;font-weight:600;">Training Loop (Pseudocode)</div>
+                <div style="font-size:0.86rem;color:var(--text-dim);line-height:1.85;font-family:'JetBrains Mono',monospace;font-size:0.78rem;">
+                    <span class="kw">for</span> each training iteration:<br>
+                    &nbsp;&nbsp;<span class="cmt"># --- Train Discriminator ---</span><br>
+                    &nbsp;&nbsp;Sample real batch x ~ p_data<br>
+                    &nbsp;&nbsp;Sample noise z ~ p_z<br>
+                    &nbsp;&nbsp;fake = G(z)<br>
+                    &nbsp;&nbsp;L_D = -mean(log(D(x))) - mean(log(1 - D(fake)))<br>
+                    &nbsp;&nbsp;Update D to minimize L_D<br><br>
+                    &nbsp;&nbsp;<span class="cmt"># --- Train Generator ---</span><br>
+                    &nbsp;&nbsp;Sample noise z ~ p_z<br>
+                    &nbsp;&nbsp;fake = G(z)<br>
+                    &nbsp;&nbsp;L_G = -mean(log(D(fake)))<br>
+                    &nbsp;&nbsp;Update G to minimize L_G
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Key Concepts -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot"></div>
+            <h2>Key Concepts</h2>
+        </div>
+        <div class="card-b">
+            <div class="tg" style="margin-bottom:1rem;">
+                <div class="ti">
+                    <h4>Latent Space</h4>
+                    <p>A low-dimensional continuous vector space from which the Generator samples input noise. <strong>Smooth interpolation</strong> in this space yields meaningful transitions in output. Typical dimensionality: 100-512. The Generator learns to map this space onto the data manifold.</p>
+                </div>
+                <div class="ti">
+                    <h4>Mode Collapse</h4>
+                    <p>The Generator discovers a few outputs that consistently fool the Discriminator and <strong>stops exploring the full distribution</strong>. All outputs converge to a small set of modes. Mitigation: minibatch discrimination, unrolled GANs, feature matching, or Wasserstein loss.</p>
+                </div>
+            </div>
+            <div class="tg" style="margin-bottom:1rem;">
+                <div class="ti">
+                    <h4>Training Instability</h4>
+                    <p>GAN training is a <strong>saddle-point optimization problem</strong>, not a simple minimization. Gradients can vanish (D too strong), oscillate (D and G alternate dominance), or diverge entirely. Solutions: spectral normalization, two-timescale update rules (TTUR), careful learning rate scheduling.</p>
+                </div>
+                <div class="ti">
+                    <h4>Wasserstein Distance</h4>
+                    <p>Also called <strong>Earth Mover's Distance</strong>. Measures the minimum "work" to transform one distribution into another: \(W(p_r, p_g) = \inf_{\gamma \in \Pi} \mathbb{E}[\|x - y\|]\). Provides meaningful gradients even when distributions have non-overlapping support &mdash; unlike JS divergence.</p>
+                </div>
+            </div>
+            <div class="tg">
+                <div class="ti">
+                    <h4>Spectral Normalization</h4>
+                    <p>Constrains the <strong>Lipschitz constant</strong> of the Discriminator by normalizing each weight matrix by its largest singular value: \(\bar{W} = W / \sigma(W)\). Stabilizes training without heavy regularization. Applied per-layer, computationally cheap via power iteration.</p>
+                </div>
+                <div class="ti">
+                    <h4>Progressive Growing</h4>
+                    <p>Introduced in ProGAN: <strong>start training at low resolution</strong> (4x4) and progressively add layers to both G and D to reach higher resolutions (up to 1024x1024). Stabilizes training by allowing the networks to learn coarse structure first, then refine fine details.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Code Example 1 — DCGAN on MNIST -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Code Example 1: DCGAN on MNIST</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1rem;">
+                <p>A <strong>Deep Convolutional GAN</strong> using transposed convolutions in the Generator and strided convolutions in the Discriminator. Trained on MNIST handwritten digits (28x28 grayscale).</p>
+            </div>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">PyTorch &mdash; DCGAN</span>
+                    <button class="cb" onclick="cpCode('code1')">Copy</button>
+                </div>
+                <div class="cs"><pre id="code1"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+
+<span class="cmt"># ── Hyperparameters ──────────────────────────────────</span>
+latent_dim = <span class="num">100</span>
+batch_size = <span class="num">128</span>
+lr = <span class="num">0.0002</span>
+betas = (<span class="num">0.5</span>, <span class="num">0.999</span>)
+epochs = <span class="num">50</span>
+device = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">"cpu"</span>)
+
+<span class="cmt"># ── Data ─────────────────────────────────────────────</span>
+transform = transforms.Compose([
+    transforms.Resize(<span class="num">32</span>),
+    transforms.ToTensor(),
+    transforms.Normalize([<span class="num">0.5</span>], [<span class="num">0.5</span>])  <span class="cmt"># Scale to [-1, 1]</span>
+])
+dataset = datasets.MNIST(root=<span class="str">"./data"</span>, train=<span class="kw">True</span>, transform=transform, download=<span class="kw">True</span>)
+loader = DataLoader(dataset, batch_size=batch_size, shuffle=<span class="kw">True</span>, drop_last=<span class="kw">True</span>)
+
+
+<span class="kw">class</span> <span class="fn">Generator</span>(nn.Module):
+    <span class="str">"""Maps latent z (100,) → image (1, 32, 32) via transposed convolutions."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.net = nn.Sequential(
+            <span class="cmt"># z → (256, 4, 4)</span>
+            nn.ConvTranspose2d(latent_dim, <span class="num">256</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">0</span>, bias=<span class="kw">False</span>),
+            nn.BatchNorm2d(<span class="num">256</span>),
+            nn.ReLU(<span class="kw">True</span>),
+            <span class="cmt"># → (128, 8, 8)</span>
+            nn.ConvTranspose2d(<span class="num">256</span>, <span class="num">128</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.BatchNorm2d(<span class="num">128</span>),
+            nn.ReLU(<span class="kw">True</span>),
+            <span class="cmt"># → (64, 16, 16)</span>
+            nn.ConvTranspose2d(<span class="num">128</span>, <span class="num">64</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.BatchNorm2d(<span class="num">64</span>),
+            nn.ReLU(<span class="kw">True</span>),
+            <span class="cmt"># → (1, 32, 32)</span>
+            nn.ConvTranspose2d(<span class="num">64</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.Tanh()
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, z):
+        <span class="kw">return</span> self.net(z.view(-<span class="num">1</span>, latent_dim, <span class="num">1</span>, <span class="num">1</span>))
+
+
+<span class="kw">class</span> <span class="fn">Discriminator</span>(nn.Module):
+    <span class="str">"""Classifies image (1, 32, 32) → real/fake probability."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.net = nn.Sequential(
+            <span class="cmt"># (1, 32, 32) → (64, 16, 16)</span>
+            nn.Conv2d(<span class="num">1</span>, <span class="num">64</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            <span class="cmt"># → (128, 8, 8)</span>
+            nn.Conv2d(<span class="num">64</span>, <span class="num">128</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.BatchNorm2d(<span class="num">128</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            <span class="cmt"># → (256, 4, 4)</span>
+            nn.Conv2d(<span class="num">128</span>, <span class="num">256</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>, bias=<span class="kw">False</span>),
+            nn.BatchNorm2d(<span class="num">256</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            <span class="cmt"># → (1, 1, 1)</span>
+            nn.Conv2d(<span class="num">256</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">0</span>, bias=<span class="kw">False</span>),
+            nn.Sigmoid()
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.net(x).view(-<span class="num">1</span>)
+
+
+<span class="cmt"># ── Weight Initialization (DCGAN paper) ──────────────</span>
+<span class="kw">def</span> <span class="fn">weights_init</span>(m):
+    <span class="kw">if</span> isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
+        nn.init.normal_(m.weight, <span class="num">0.0</span>, <span class="num">0.02</span>)
+    <span class="kw">elif</span> isinstance(m, nn.BatchNorm2d):
+        nn.init.normal_(m.weight, <span class="num">1.0</span>, <span class="num">0.02</span>)
+        nn.init.zeros_(m.bias)
+
+
+<span class="cmt"># ── Initialize ───────────────────────────────────────</span>
+G = <span class="fn">Generator</span>().to(device)
+D = <span class="fn">Discriminator</span>().to(device)
+G.apply(weights_init)
+D.apply(weights_init)
+
+opt_G = optim.Adam(G.parameters(), lr=lr, betas=betas)
+opt_D = optim.Adam(D.parameters(), lr=lr, betas=betas)
+criterion = nn.BCELoss()
+
+<span class="cmt"># ── Training Loop ────────────────────────────────────</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> range(epochs):
+    <span class="kw">for</span> i, (real_imgs, _) <span class="kw">in</span> enumerate(loader):
+        real_imgs = real_imgs.to(device)
+        bs = real_imgs.size(<span class="num">0</span>)
+
+        real_labels = torch.ones(bs, device=device)
+        fake_labels = torch.zeros(bs, device=device)
+
+        <span class="cmt"># ── Train Discriminator ──────────────────────</span>
+        z = torch.randn(bs, latent_dim, device=device)
+        fake_imgs = G(z).detach()
+
+        loss_D_real = criterion(D(real_imgs), real_labels)
+        loss_D_fake = criterion(D(fake_imgs), fake_labels)
+        loss_D = loss_D_real + loss_D_fake
+
+        opt_D.zero_grad()
+        loss_D.backward()
+        opt_D.step()
+
+        <span class="cmt"># ── Train Generator ──────────────────────────</span>
+        z = torch.randn(bs, latent_dim, device=device)
+        fake_imgs = G(z)
+        loss_G = criterion(D(fake_imgs), real_labels)  <span class="cmt"># Fool D</span>
+
+        opt_G.zero_grad()
+        loss_G.backward()
+        opt_G.step()
+
+    print(<span class="str">f"Epoch [<span class="kw">{</span>epoch+1<span class="kw">}</span>/<span class="kw">{</span>epochs<span class="kw">}</span>]  D_loss: <span class="kw">{</span>loss_D.item():.4f<span class="kw">}</span>  G_loss: <span class="kw">{</span>loss_G.item():.4f<span class="kw">}</span>"</span>)</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: Code Example 2 — Conditional GAN -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Code Example 2: Conditional GAN (cGAN)</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1rem;">
+                <p>A <strong>Conditional GAN</strong> conditions both G and D on class labels, enabling controlled generation. Instead of random samples, you can request "generate a 7" or "generate a 3". The label is embedded and concatenated with the latent vector (for G) or with the image features (for D).</p>
+            </div>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">PyTorch &mdash; Conditional GAN</span>
+                    <button class="cb" onclick="cpCode('code2')">Copy</button>
+                </div>
+                <div class="cs"><pre id="code2"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+
+latent_dim = <span class="num">100</span>
+num_classes = <span class="num">10</span>
+img_shape = <span class="num">784</span>    <span class="cmt"># 28 * 28 flattened</span>
+embed_dim = <span class="num">50</span>
+batch_size = <span class="num">128</span>
+lr = <span class="num">0.0002</span>
+epochs = <span class="num">100</span>
+device = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">"cpu"</span>)
+
+
+<span class="kw">class</span> <span class="fn">ConditionalGenerator</span>(nn.Module):
+    <span class="str">"""Takes latent z + class label → generates image."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.label_embed = nn.Embedding(num_classes, embed_dim)
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim + embed_dim, <span class="num">256</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>),
+            nn.BatchNorm1d(<span class="num">256</span>),
+            nn.Linear(<span class="num">256</span>, <span class="num">512</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>),
+            nn.BatchNorm1d(<span class="num">512</span>),
+            nn.Linear(<span class="num">512</span>, <span class="num">1024</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>),
+            nn.BatchNorm1d(<span class="num">1024</span>),
+            nn.Linear(<span class="num">1024</span>, img_shape),
+            nn.Tanh()
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, z, labels):
+        label_emb = self.label_embed(labels)
+        x = torch.cat([z, label_emb], dim=<span class="num">1</span>)
+        <span class="kw">return</span> self.net(x)
+
+
+<span class="kw">class</span> <span class="fn">ConditionalDiscriminator</span>(nn.Module):
+    <span class="str">"""Takes image + class label → real/fake."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.label_embed = nn.Embedding(num_classes, embed_dim)
+        self.net = nn.Sequential(
+            nn.Linear(img_shape + embed_dim, <span class="num">512</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>),
+            nn.Dropout(<span class="num">0.3</span>),
+            nn.Linear(<span class="num">512</span>, <span class="num">256</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>),
+            nn.Dropout(<span class="num">0.3</span>),
+            nn.Linear(<span class="num">256</span>, <span class="num">1</span>),
+            nn.Sigmoid()
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, img, labels):
+        label_emb = self.label_embed(labels)
+        x = torch.cat([img, label_emb], dim=<span class="num">1</span>)
+        <span class="kw">return</span> self.net(x).squeeze()
+
+
+<span class="cmt"># ── Data ─────────────────────────────────────────────</span>
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize([<span class="num">0.5</span>], [<span class="num">0.5</span>])
+])
+dataset = datasets.MNIST(<span class="str">"./data"</span>, train=<span class="kw">True</span>, transform=transform, download=<span class="kw">True</span>)
+loader = DataLoader(dataset, batch_size=batch_size, shuffle=<span class="kw">True</span>, drop_last=<span class="kw">True</span>)
+
+<span class="cmt"># ── Initialize ───────────────────────────────────────</span>
+G = <span class="fn">ConditionalGenerator</span>().to(device)
+D = <span class="fn">ConditionalDiscriminator</span>().to(device)
+opt_G = optim.Adam(G.parameters(), lr=lr, betas=(<span class="num">0.5</span>, <span class="num">0.999</span>))
+opt_D = optim.Adam(D.parameters(), lr=lr, betas=(<span class="num">0.5</span>, <span class="num">0.999</span>))
+criterion = nn.BCELoss()
+
+<span class="cmt"># ── Training Loop ────────────────────────────────────</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> range(epochs):
+    <span class="kw">for</span> real_imgs, labels <span class="kw">in</span> loader:
+        bs = real_imgs.size(<span class="num">0</span>)
+        real_imgs = real_imgs.view(bs, -<span class="num">1</span>).to(device)
+        labels = labels.to(device)
+
+        real_t = torch.ones(bs, device=device)
+        fake_t = torch.zeros(bs, device=device)
+
+        <span class="cmt"># ── Discriminator ────────────────────────────</span>
+        z = torch.randn(bs, latent_dim, device=device)
+        fake_imgs = G(z, labels).detach()
+
+        loss_D = criterion(D(real_imgs, labels), real_t) \
+               + criterion(D(fake_imgs, labels), fake_t)
+
+        opt_D.zero_grad()
+        loss_D.backward()
+        opt_D.step()
+
+        <span class="cmt"># ── Generator ────────────────────────────────</span>
+        z = torch.randn(bs, latent_dim, device=device)
+        fake_imgs = G(z, labels)
+        loss_G = criterion(D(fake_imgs, labels), real_t)
+
+        opt_G.zero_grad()
+        loss_G.backward()
+        opt_G.step()
+
+    print(<span class="str">f"Epoch {epoch+1}/{epochs}  D: {loss_D.item():.4f}  G: {loss_G.item():.4f}"</span>)
+
+<span class="cmt"># ── Generate specific digits ─────────────────────────</span>
+<span class="kw">with</span> torch.no_grad():
+    z = torch.randn(<span class="num">10</span>, latent_dim, device=device)
+    labels = torch.arange(<span class="num">10</span>, device=device)  <span class="cmt"># One of each digit</span>
+    generated = G(z, labels).view(<span class="num">10</span>, <span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>)
+    print(<span class="str">f"Generated conditioned samples: {generated.shape}"</span>)</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 7: Code Example 3 — WGAN-GP -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot g"></div>
+            <h2>Code Example 3: WGAN-GP (Wasserstein GAN with Gradient Penalty)</h2>
+        </div>
+        <div class="card-b">
+            <div class="prose" style="margin-bottom:1rem;">
+                <p>The <strong>Wasserstein GAN</strong> replaces the JS divergence with the Earth Mover's Distance, yielding more stable training and a meaningful loss curve. The <strong>gradient penalty</strong> enforces the Lipschitz constraint on the Critic (no longer a "Discriminator" &mdash; outputs an unbounded score, not a probability). No sigmoid, no BCE loss, no batch norm in the Critic.</p>
+            </div>
+            <div class="cw">
+                <div class="ct">
+                    <span class="ln">PyTorch &mdash; WGAN-GP</span>
+                    <button class="cb" onclick="cpCode('code3')">Copy</button>
+                </div>
+                <div class="cs"><pre id="code3"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+<span class="kw">import</span> torch.autograd <span class="kw">as</span> autograd
+
+latent_dim = <span class="num">128</span>
+n_critic = <span class="num">5</span>         <span class="cmt"># Train critic 5x per generator step</span>
+lambda_gp = <span class="num">10</span>       <span class="cmt"># Gradient penalty coefficient</span>
+batch_size = <span class="num">64</span>
+lr = <span class="num">1e-4</span>
+epochs = <span class="num">100</span>
+device = torch.device(<span class="str">"cuda"</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="str">"cpu"</span>)
+
+
+<span class="kw">class</span> <span class="fn">Generator</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.net = nn.Sequential(
+            nn.ConvTranspose2d(latent_dim, <span class="num">256</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">0</span>),
+            nn.BatchNorm2d(<span class="num">256</span>), nn.ReLU(<span class="kw">True</span>),
+            nn.ConvTranspose2d(<span class="num">256</span>, <span class="num">128</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.BatchNorm2d(<span class="num">128</span>), nn.ReLU(<span class="kw">True</span>),
+            nn.ConvTranspose2d(<span class="num">128</span>, <span class="num">64</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.BatchNorm2d(<span class="num">64</span>), nn.ReLU(<span class="kw">True</span>),
+            nn.ConvTranspose2d(<span class="num">64</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.Tanh()
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, z):
+        <span class="kw">return</span> self.net(z.view(-<span class="num">1</span>, latent_dim, <span class="num">1</span>, <span class="num">1</span>))
+
+
+<span class="kw">class</span> <span class="fn">Critic</span>(nn.Module):
+    <span class="str">"""No sigmoid — outputs unbounded Wasserstein score.
+    No batch norm — use layer norm or nothing."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        <span class="kw">super</span>().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(<span class="num">1</span>, <span class="num">64</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            nn.Conv2d(<span class="num">64</span>, <span class="num">128</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.LayerNorm([<span class="num">128</span>, <span class="num">8</span>, <span class="num">8</span>]),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            nn.Conv2d(<span class="num">128</span>, <span class="num">256</span>, <span class="num">4</span>, <span class="num">2</span>, <span class="num">1</span>),
+            nn.LayerNorm([<span class="num">256</span>, <span class="num">4</span>, <span class="num">4</span>]),
+            nn.LeakyReLU(<span class="num">0.2</span>, inplace=<span class="kw">True</span>),
+            nn.Conv2d(<span class="num">256</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">0</span>)
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.net(x).view(-<span class="num">1</span>)
+
+
+<span class="kw">def</span> <span class="fn">gradient_penalty</span>(critic, real, fake, device):
+    <span class="str">"""Enforces 1-Lipschitz by penalizing gradient norm on interpolated samples."""</span>
+    alpha = torch.rand(real.size(<span class="num">0</span>), <span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>, device=device)
+    interpolated = (alpha * real + (<span class="num">1</span> - alpha) * fake).requires_grad_(<span class="kw">True</span>)
+
+    scores = critic(interpolated)
+    gradients = autograd.grad(
+        outputs=scores,
+        inputs=interpolated,
+        grad_outputs=torch.ones_like(scores),
+        create_graph=<span class="kw">True</span>,
+        retain_graph=<span class="kw">True</span>
+    )[<span class="num">0</span>]
+
+    gradients = gradients.view(gradients.size(<span class="num">0</span>), -<span class="num">1</span>)
+    gp = ((gradients.norm(<span class="num">2</span>, dim=<span class="num">1</span>) - <span class="num">1</span>) ** <span class="num">2</span>).mean()
+    <span class="kw">return</span> gp
+
+
+<span class="cmt"># ── Data ─────────────────────────────────────────────</span>
+transform = transforms.Compose([
+    transforms.Resize(<span class="num">32</span>),
+    transforms.ToTensor(),
+    transforms.Normalize([<span class="num">0.5</span>], [<span class="num">0.5</span>])
+])
+dataset = datasets.MNIST(<span class="str">"./data"</span>, train=<span class="kw">True</span>, transform=transform, download=<span class="kw">True</span>)
+loader = DataLoader(dataset, batch_size=batch_size, shuffle=<span class="kw">True</span>, drop_last=<span class="kw">True</span>)
+
+<span class="cmt"># ── Initialize ───────────────────────────────────────</span>
+G = <span class="fn">Generator</span>().to(device)
+C = <span class="fn">Critic</span>().to(device)
+opt_G = optim.Adam(G.parameters(), lr=lr, betas=(<span class="num">0.0</span>, <span class="num">0.9</span>))
+opt_C = optim.Adam(C.parameters(), lr=lr, betas=(<span class="num">0.0</span>, <span class="num">0.9</span>))
+
+<span class="cmt"># ── Training Loop ────────────────────────────────────</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> range(epochs):
+    <span class="kw">for</span> i, (real_imgs, _) <span class="kw">in</span> enumerate(loader):
+        real_imgs = real_imgs.to(device)
+        bs = real_imgs.size(<span class="num">0</span>)
+
+        <span class="cmt"># ── Train Critic (n_critic times) ────────────</span>
+        <span class="kw">for</span> _ <span class="kw">in</span> range(n_critic):
+            z = torch.randn(bs, latent_dim, device=device)
+            fake_imgs = G(z).detach()
+
+            <span class="cmt"># Wasserstein loss: maximize E[C(real)] - E[C(fake)]</span>
+            loss_C = C(fake_imgs).mean() - C(real_imgs).mean()
+            gp = gradient_penalty(C, real_imgs, fake_imgs, device)
+            loss_C_total = loss_C + lambda_gp * gp
+
+            opt_C.zero_grad()
+            loss_C_total.backward()
+            opt_C.step()
+
+        <span class="cmt"># ── Train Generator ──────────────────────────</span>
+        z = torch.randn(bs, latent_dim, device=device)
+        fake_imgs = G(z)
+        loss_G = -C(fake_imgs).mean()  <span class="cmt"># Maximize critic score on fakes</span>
+
+        opt_G.zero_grad()
+        loss_G.backward()
+        opt_G.step()
+
+    <span class="cmt"># Wasserstein distance estimate (negative critic loss)</span>
+    w_dist = -loss_C.item()
+    print(<span class="str">f"Epoch {epoch+1}/{epochs}  W_dist: {w_dist:.4f}  G_loss: {loss_G.item():.4f}"</span>)</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 8: GAN Variants -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot a"></div>
+            <h2>GAN Variants</h2>
+        </div>
+        <div class="card-b">
+            <div class="tg" style="margin-bottom:1rem;">
+                <div class="ti">
+                    <h4>DCGAN (2015)</h4>
+                    <p><strong>Deep Convolutional GAN.</strong> Replaced fully connected layers with strided convolutions in D and transposed convolutions in G. Established architectural guidelines: batch norm, LeakyReLU in D, ReLU in G, no pooling layers. First GAN to reliably generate coherent images at 64x64.</p>
+                </div>
+                <div class="ti">
+                    <h4>WGAN / WGAN-GP (2017)</h4>
+                    <p><strong>Wasserstein GAN.</strong> Replaced JS divergence with Earth Mover's Distance. Critic (not discriminator) outputs unbounded score. WGAN-GP adds gradient penalty for Lipschitz constraint instead of weight clipping. Result: <strong>stable training, meaningful loss curves</strong>, reduced mode collapse.</p>
+                </div>
+            </div>
+            <div class="tg" style="margin-bottom:1rem;">
+                <div class="ti">
+                    <h4>StyleGAN / StyleGAN2 (2018-2020)</h4>
+                    <p><strong>Style-based Generator.</strong> Mapping network transforms z into intermediate style space W. Adaptive instance normalization (AdaIN) injects style at each layer. Progressive growing from 4x4 to 1024x1024. <strong>State-of-the-art face generation.</strong> StyleGAN2 removes artifacts via weight demodulation.</p>
+                </div>
+                <div class="ti">
+                    <h4>CycleGAN (2017)</h4>
+                    <p><strong>Unpaired image-to-image translation.</strong> Two generators (G: A&rarr;B, F: B&rarr;A) with cycle consistency loss: F(G(a)) &asymp; a. No paired training data needed. Applications: horse&harr;zebra, summer&harr;winter, photo&harr;painting. <strong>Key innovation: cycle consistency loss.</strong></p>
+                </div>
+            </div>
+            <div class="tg">
+                <div class="ti">
+                    <h4>Pix2Pix (2016)</h4>
+                    <p><strong>Paired image-to-image translation.</strong> Conditional GAN with U-Net generator and PatchGAN discriminator. Requires aligned pairs (e.g., sketch&rarr;photo, segmentation&rarr;image). L1 reconstruction loss + adversarial loss. PatchGAN classifies NxN patches instead of whole image.</p>
+                </div>
+                <div class="ti">
+                    <h4>ProGAN (2017)</h4>
+                    <p><strong>Progressive Growing of GANs.</strong> Starts training at 4x4, progressively doubles resolution by adding layers with smooth fade-in. Generates up to 1024x1024 faces. <strong>Key insight:</strong> learning coarse structure first makes high-resolution synthesis tractable. Precursor to StyleGAN.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 9: When to Use / When to Avoid -->
+    <div class="card">
+        <div class="card-h">
+            <div class="dot r"></div>
+            <h2>When to Use / When to Avoid</h2>
+        </div>
+        <div class="card-b">
+            <div class="tk-g">
+                <div class="tk">
+                    <h4 class="u">When to Use GANs</h4>
+                    <p><strong>Photorealistic image synthesis</strong> &mdash; faces, rooms, objects, art</p>
+                    <p><strong>Image-to-image translation</strong> &mdash; sketch-to-photo, style transfer, colorization</p>
+                    <p><strong>Data augmentation</strong> &mdash; generating synthetic training samples for rare classes</p>
+                    <p><strong>Super-resolution</strong> &mdash; SRGAN upscales images with perceptual quality</p>
+                    <p><strong>Domain adaptation</strong> &mdash; transferring appearance between domains (sim-to-real)</p>
+                    <p><strong>Inpainting / editing</strong> &mdash; filling missing regions or modifying attributes</p>
+                </div>
+                <div class="tk">
+                    <h4 class="av">When to Avoid GANs</h4>
+                    <p><strong>Density estimation needed</strong> &mdash; GANs do not model explicit probabilities (use VAEs or normalizing flows)</p>
+                    <p><strong>Small datasets</strong> &mdash; GANs are extremely data-hungry; D will memorize with few samples</p>
+                    <p><strong>Exact reconstruction required</strong> &mdash; GANs are generative, not reconstructive (use autoencoders)</p>
+                    <p><strong>Stable, reproducible training needed</strong> &mdash; GAN training is inherently unstable and non-deterministic</p>
+                    <p><strong>Text generation</strong> &mdash; discrete tokens break gradient flow; transformers dominate here</p>
+                    <p><strong>Limited compute</strong> &mdash; high-resolution GANs require significant GPU memory and time</p>
+                </div>
+            </div>
+
+            <div class="an gd">
+                <h4>Strengths</h4>
+                <ul>
+                    <li><strong>Sample quality:</strong> Produces the sharpest, most photorealistic samples of any generative model family</li>
+                    <li><strong>Implicit density modeling:</strong> No restrictive assumptions about data distribution shape</li>
+                    <li><strong>Latent space control:</strong> Smooth interpolation, disentangled attributes (especially StyleGAN)</li>
+                    <li><strong>Versatility:</strong> Applicable to images, video, audio, 3D shapes, molecular design</li>
+                    <li><strong>No Markov chains:</strong> Single forward pass for generation (fast inference)</li>
+                </ul>
+            </div>
+
+            <div class="an bd">
+                <h4>Limitations</h4>
+                <ul>
+                    <li><strong>Mode collapse:</strong> Generator may only learn a subset of the data distribution</li>
+                    <li><strong>Training instability:</strong> Sensitive to hyperparameters, architecture choices, and learning rate ratios</li>
+                    <li><strong>No likelihood estimate:</strong> Cannot evaluate how probable a given sample is under the model</li>
+                    <li><strong>Evaluation difficulty:</strong> FID and IS are imperfect proxies; no single metric captures quality + diversity</li>
+                    <li><strong>Vanishing gradients:</strong> If D is too strong, G receives uninformative gradients and stops learning</li>
+                    <li><strong>Largely superseded for some tasks:</strong> Diffusion models now match or exceed GAN quality with more stable training</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<!-- Copy Script -->
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+
+</body></html>

@@ -1,0 +1,805 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>RNNs &amp; LSTMs — Deep Learning Platform</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script><style>
+:root{--bg:#F4F3EE;--surface:#FFFFFF;--surface2:#EEEDE8;--border:#D9D7CE;--text:#2D2B28;--text-dim:#6B6861;--terra:#C15F3C;--terra-light:#DA7756;--terra-dim:rgba(193,95,60,0.08);--terra-dim2:rgba(193,95,60,0.15);--green:#3A7D44;--green-dim:rgba(58,125,68,0.08);--green-bg:rgba(58,125,68,0.06);--red:#C0392B;--red-dim:rgba(192,57,43,0.08);--red-bg:rgba(192,57,43,0.06);--amber:#B8860B;--code-bg:#1B1D23;--code-surface:#24262E;--code-border:#33363F;--code-text:#D4D4D4;--radius:10px;--cloudy:#B1ADA1;}
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,243,238,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;}.topbar a{color:var(--terra);text-decoration:none;font-size:0.85rem;font-weight:500;}.topbar a:hover{color:var(--text);}.topbar .sep{color:var(--border);}.topbar .pt{color:var(--text-dim);font-size:0.85rem;}.algo-badge{margin-left:auto;background:var(--terra-dim);color:var(--terra);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.7rem;border-radius:20px;text-transform:uppercase;}
+.hero{padding:3.5rem 2rem 2rem;max-width:960px;margin:0 auto;}.hero h1{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.6rem;}.hero h1 span{color:var(--terra);}.hero .sub{color:var(--text-dim);font-size:1.05rem;max-width:700px;}
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.75rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}.card-h{padding:1.15rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;background:var(--surface2);}.card-h .dot{width:9px;height:9px;border-radius:50%;background:var(--terra);flex-shrink:0;}.card-h .dot.g{background:var(--green);}.card-h .dot.r{background:var(--red);}.card-h .dot.a{background:var(--amber);}.card-h h2{font-size:0.95rem;font-weight:600;}.card-b{padding:1.5rem;}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.ti{background:var(--surface2);border-radius:8px;padding:1.1rem 1.25rem;}.ti h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.5rem;font-weight:600;}.ti p{font-size:0.88rem;color:var(--text-dim);line-height:1.7;}.ti p strong{color:var(--text);}
+.cw{background:var(--code-bg);border-radius:8px;overflow:hidden;border:1px solid var(--code-border);}.ct{display:flex;align-items:center;padding:0.6rem 1rem;background:var(--code-surface);border-bottom:1px solid var(--code-border);}.ct .ln{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#8b8fa3;}.ct .cb{margin-left:auto;background:transparent;border:1px solid var(--code-border);color:#8b8fa3;font-size:0.73rem;padding:0.2rem 0.65rem;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}.ct .cb:hover{border-color:var(--terra-light);color:var(--terra-light);}.cs{max-height:520px;overflow:auto;padding:1rem 1.2rem;}.cs pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.65;color:var(--code-text);white-space:pre;margin:0;}
+.cs::-webkit-scrollbar{width:5px;height:5px;}.cs::-webkit-scrollbar-thumb{background:var(--code-border);border-radius:3px;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#546274;font-style:italic;}.num{color:#79c0ff;}
+.prose p{color:var(--text-dim);font-size:0.9rem;margin-bottom:0.7rem;line-height:1.75;}.prose p:last-child{margin-bottom:0;}.prose strong{color:var(--text);}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}.tk{background:var(--surface2);border-radius:8px;padding:1.1rem;}.tk h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;font-weight:600;}.tk h4.u{color:var(--green);}.tk h4.av{color:var(--red);}.tk p{font-size:0.86rem;color:var(--text-dim);line-height:1.7;margin-bottom:0.25rem;}
+.an{border-radius:8px;padding:1.2rem 1.35rem;margin-top:1.15rem;}.an.gd{background:var(--green-bg);border:1px solid rgba(58,125,68,0.15);}.an.bd{background:var(--red-bg);border:1px solid rgba(192,57,43,0.15);}.an h4{font-size:0.92rem;margin-bottom:0.5rem;}.an.gd h4{color:var(--green);}.an.bd h4{color:var(--red);}.an p,.an li{font-size:0.88rem;color:var(--text);line-height:1.75;}.an ul{margin-left:1.1rem;margin-top:0.3rem;}
+.tw{max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+.tw::-webkit-scrollbar{width:5px;}.tw::-webkit-scrollbar-thumb{background:var(--cloudy);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:0.83rem;}
+thead{position:sticky;top:0;z-index:2;}
+th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:0.55rem 0.9rem;border-bottom:1px solid var(--surface2);font-size:0.82rem;color:var(--text-dim);}
+tr:hover td{background:var(--terra-dim);color:var(--text);}
+.foot{max-width:960px;margin:0 auto 3rem;padding:1.5rem 2rem 0;text-align:center;color:var(--cloudy);font-size:0.78rem;border-top:1px solid var(--border);}
+@media(max-width:640px){.tg,.tk-g{grid-template-columns:1fr!important;}}
+</style></head><body>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<div class="topbar">
+    <a href="index.html">&larr; All Algorithms</a>
+    <span class="sep">/</span>
+    <span class="pt">Deep Learning</span>
+    <span class="sep">/</span>
+    <span class="pt">RNNs &amp; LSTMs</span>
+    <span class="algo-badge">Sequence &middot; DL2</span>
+</div>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+    <h1>RNNs &amp; <span>LSTMs</span></h1>
+    <p class="sub">Recurrent architectures that learn temporal dependencies in sequential data &mdash; from text and speech to time series and music.</p>
+    <p class="sub" style="margin-top:0.4rem;font-size:0.9rem;opacity:0.7">Vanilla RNN, LSTM, GRU &middot; Gate equations &middot; 3 full code examples &middot; MathJax notation</p>
+</div>
+
+<!-- ═══════════ CONTENT ═══════════ -->
+<div class="content">
+
+<!-- ────────── 1. MATHEMATICAL FOUNDATION ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot"></div><h2>Mathematical Foundation</h2></div>
+    <div class="card-b">
+
+        <div class="prose" style="margin-bottom:1.2rem;">
+            <p>Recurrent networks maintain a <strong>hidden state</strong> that is updated at each timestep, allowing them to model sequential dependencies. The three main variants &mdash; Vanilla RNN, LSTM, and GRU &mdash; differ in how they compute and propagate this state.</p>
+        </div>
+
+        <!-- Vanilla RNN -->
+        <div style="margin-bottom:1.4rem;">
+            <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin-bottom:0.6rem;">Vanilla RNN</div>
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:0.5rem;">
+                <div style="font-size:1.1rem;">\[h_t = \tanh(W_{hh} \cdot h_{t-1} + W_{xh} \cdot x_t + b_h)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;">Hidden state update: combines previous hidden state \(h_{t-1}\) with current input \(x_t\) through learned weight matrices, squashed by tanh to keep values in \([-1, 1]\).</p>
+            </div>
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);">
+                <div style="font-size:1.1rem;">\[\hat{y}_t = \text{softmax}(W_{hy} \cdot h_t + b_y)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;">Output at each timestep: linear projection of hidden state into output space, normalized via softmax for classification tasks.</p>
+            </div>
+        </div>
+
+        <!-- LSTM -->
+        <div style="margin-bottom:1.4rem;">
+            <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin-bottom:0.6rem;">LSTM (Long Short-Term Memory)</div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:0.5rem;">
+                <div style="font-size:1.05rem;">\[f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Forget gate:</strong> decides what fraction of the old cell state to retain. Sigmoid output in \([0, 1]\): 0 = forget entirely, 1 = keep everything.</p>
+            </div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:0.5rem;">
+                <div style="font-size:1.05rem;">\[i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)\]</div>
+                <div style="font-size:1.05rem;margin-top:0.3rem;">\[\tilde{C}_t = \tanh(W_C \cdot [h_{t-1}, x_t] + b_C)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Input gate:</strong> \(i_t\) controls how much of the candidate values \(\tilde{C}_t\) to write into cell state. The candidate is a tanh-squashed proposal of new information.</p>
+            </div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:0.5rem;">
+                <div style="font-size:1.05rem;">\[C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Cell state update:</strong> the core innovation. Old state is scaled by the forget gate, then new candidate information is added. The \(\odot\) operator is element-wise multiplication. This is the "highway" that lets gradients flow unimpeded across many timesteps.</p>
+            </div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);">
+                <div style="font-size:1.05rem;">\[o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)\]</div>
+                <div style="font-size:1.05rem;margin-top:0.3rem;">\[h_t = o_t \odot \tanh(C_t)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Output gate:</strong> filters which parts of the cell state to expose as the hidden state. Cell state is squashed through tanh then gated by the sigmoid output.</p>
+            </div>
+        </div>
+
+        <!-- GRU -->
+        <div>
+            <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin-bottom:0.6rem;">GRU (Gated Recurrent Unit)</div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:0.5rem;">
+                <div style="font-size:1.05rem;">\[z_t = \sigma(W_z \cdot [h_{t-1}, x_t] + b_z)\]</div>
+                <div style="font-size:1.05rem;margin-top:0.3rem;">\[r_t = \sigma(W_r \cdot [h_{t-1}, x_t] + b_r)\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Update gate</strong> \(z_t\) and <strong>Reset gate</strong> \(r_t\): the GRU merges forget and input gates into a single update gate, and uses a reset gate to control how much past hidden state bleeds into the candidate.</p>
+            </div>
+
+            <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);">
+                <div style="font-size:1.05rem;">\[\tilde{h}_t = \tanh(W_h \cdot [r_t \odot h_{t-1}, x_t] + b_h)\]</div>
+                <div style="font-size:1.05rem;margin-top:0.3rem;">\[h_t = (1 - z_t) \odot h_{t-1} + z_t \odot \tilde{h}_t\]</div>
+                <p style="margin-top:0.4rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;"><strong>Hidden state update:</strong> interpolates between old hidden state and candidate. No separate cell state &mdash; fewer parameters than LSTM, often similar performance.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── 2. VANISHING GRADIENT PROBLEM ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot r"></div><h2>The Vanishing Gradient Problem</h2></div>
+    <div class="card-b">
+        <div class="prose">
+            <p>In a vanilla RNN, gradients are propagated backwards through time (BPTT) by repeatedly multiplying by the recurrent weight matrix \(W_{hh}\). After \(T\) timesteps, the gradient includes a product of \(T\) Jacobian matrices:</p>
+        </div>
+
+        <div style="background:var(--surface);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);margin:0.8rem 0;">
+            <div style="font-size:1.05rem;">\[\frac{\partial L}{\partial h_0} = \frac{\partial L}{\partial h_T} \prod_{t=1}^{T} \frac{\partial h_t}{\partial h_{t-1}} = \frac{\partial L}{\partial h_T} \prod_{t=1}^{T} W_{hh}^T \cdot \text{diag}(\tanh'(h_t))\]</div>
+        </div>
+
+        <div class="prose">
+            <p>Since \(\tanh'(x) \in (0, 1]\), each multiplication shrinks the gradient. Over 50&ndash;100 timesteps, the gradient <strong>decays exponentially toward zero</strong>. The network cannot learn that a word at position 5 is critical for a prediction at position 95.</p>
+            <p>Conversely, if the spectral radius of \(W_{hh}\) exceeds 1, gradients <strong>explode</strong> toward infinity. Gradient clipping mitigates explosion, but does nothing for vanishing.</p>
+        </div>
+
+        <div class="tg" style="margin-top:1rem;">
+            <div class="ti">
+                <h4>Why Vanilla RNNs Fail</h4>
+                <p><strong>Repeated multiplication</strong> by values &lt; 1 causes exponential decay. After ~20 timesteps, gradients are effectively zero. The network has a "memory horizon" of roughly 10&ndash;20 steps &mdash; far too short for paragraphs, music, or financial series.</p>
+            </div>
+            <div class="ti">
+                <h4>How LSTM Solves It</h4>
+                <p>The <strong>cell state acts as a gradient highway</strong>. The update rule \(C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t\) is additive, not multiplicative. When the forget gate is near 1.0, gradients pass through unchanged across hundreds of timesteps &mdash; no decay.</p>
+            </div>
+        </div>
+
+        <div class="an bd" style="margin-top:1rem;">
+            <h4>The Core Intuition</h4>
+            <p>Think of it like a game of telephone. In a vanilla RNN, the message gets distorted at every step (multiplicative). In an LSTM, the message is written on a whiteboard (cell state) and only selectively erased or updated &mdash; it can persist indefinitely.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 3. ARCHITECTURE OVERVIEW ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Architecture Overview</h2></div>
+    <div class="card-b">
+
+        <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin-bottom:0.6rem;">RNN Unrolled Through Time</div>
+        <div class="cw">
+            <div class="cs"><pre>
+  <span class="cmt">Input sequence:     x_1         x_2         x_3         x_4        x_T</span>
+                      |           |           |           |           |
+                      v           v           v           v           v
+                 +---------+ +---------+ +---------+ +---------+ +---------+
+  <span class="cmt">Hidden</span>   h_0 ->|  <span class="fn">RNN</span>    |->|  <span class="fn">RNN</span>    |->|  <span class="fn">RNN</span>    |->|  <span class="fn">RNN</span>    |->|  <span class="fn">RNN</span>    |-> h_T
+  <span class="cmt">state</span>         |  <span class="fn">Cell</span>   | |  <span class="fn">Cell</span>   | |  <span class="fn">Cell</span>   | |  <span class="fn">Cell</span>   | |  <span class="fn">Cell</span>   |
+                 +---------+ +---------+ +---------+ +---------+ +---------+
+                      |           |           |           |           |
+                      v           v           v           v           v
+  <span class="cmt">Outputs:          y_1         y_2         y_3         y_4        y_T</span>
+
+  <span class="cmt">  * All cells share the SAME weights (W_hh, W_xh, W_hy)</span>
+  <span class="cmt">  * h_0 is typically initialized to zeros</span>
+  <span class="cmt">  * "Unrolling" = copying the cell T times for backprop</span></pre>
+            </div>
+        </div>
+
+        <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin:1.4rem 0 0.6rem;">LSTM Cell Internal Structure</div>
+        <div class="cw">
+            <div class="cs"><pre>
+                       <span class="cmt">Cell State (C_{t-1}) ---- Highway ----></span>
+                              |                                    |
+                     +--------+--------+                  +--------+--------+
+                     |                 |                  |                 |
+                     v                 v                  v                 v
+              +-------------+   +-------------+   +-------------+   +-------------+
+   <span class="fn">x_t</span> ----->| <span class="kw">Forget Gate</span> |   | <span class="kw">Input Gate</span>  |   |  <span class="str">Cell State</span>  |   | <span class="kw">Output Gate</span> |
+   <span class="fn">h_{t-1}</span> ->|  f_t = <span class="num">sig</span>  |   | i_t = <span class="num">sig</span>   |   |   <span class="str">Update</span>    |   |  o_t = <span class="num">sig</span>  |
+              +------+------+   +------+------+   +------+------+   +------+------+
+                     |                 |                  |                 |
+                     v                 v                  v                 v
+              <span class="cmt">  f_t * C_{t-1}   +   i_t * C~_t   =      C_t           o_t * tanh(C_t)</span>
+              <span class="cmt">  (what to forget)   (what to add)     (new cell)        = h_t (output)</span>
+
+  <span class="kw">Key:</span>  <span class="num">sig</span> = sigmoid(0..1)     <span class="str">tanh</span> = tanh(-1..1)     * = element-wise multiply
+
+  <span class="cmt">  Gate parameters:  W_f, W_i, W_C, W_o  (each has own weight matrix + bias)</span>
+  <span class="cmt">  Total params per LSTM layer = 4 * ((input_dim + hidden_dim) * hidden_dim + hidden_dim)</span></pre>
+            </div>
+        </div>
+
+        <div style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--terra);margin:1.4rem 0 0.6rem;">GRU Cell (Simplified LSTM)</div>
+        <div class="cw">
+            <div class="cs"><pre>
+   <span class="fn">x_t</span> -----+----------+-------------------------+
+   <span class="fn">h_{t-1}</span> -+----+     |                         |
+                |    |     |                         |
+                v    v     v                         v
+         +------------+ +------------+        +------------+
+         | <span class="kw">Update</span>     | | <span class="kw">Reset</span>      |        | <span class="str">Candidate</span>  |
+         | z_t = <span class="num">sig</span>  | | r_t = <span class="num">sig</span>  | -----> | h~_t=<span class="str">tanh</span>  |
+         +------+-----+ +------------+        +------+-----+
+                |                                     |
+                v                                     v
+         h_t = (<span class="num">1</span> - z_t) * h_{t-1}  +  z_t * h~_t
+
+  <span class="cmt">  * No separate cell state — only hidden state</span>
+  <span class="cmt">  * 2 gates instead of 3 — ~25% fewer parameters than LSTM</span>
+  <span class="cmt">  * Often matches LSTM performance on shorter sequences</span></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 4. KEY CONCEPTS GLOSSARY ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Key Concepts Glossary</h2></div>
+    <div class="card-b">
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Hidden State (h_t)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">The network's "working memory" at timestep t. Encodes a compressed representation of all inputs seen so far. In vanilla RNNs this is the only state; in LSTMs it is derived from the cell state via the output gate.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Cell State (C_t)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">LSTM-exclusive. A separate memory vector that runs as a "conveyor belt" through time. Information is added or removed only through gates, enabling long-range memory without gradient decay. This is the key innovation that solved the vanishing gradient problem.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Forget Gate (f_t)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Sigmoid layer that outputs values in [0,1] for each element of the cell state. Decides what information to discard. A value of 0 means "erase completely," 1 means "keep entirely." Initialized with a positive bias (~1.0) so the default behavior is to remember.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Input Gate (i_t)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Controls what new information is written to the cell state. Works in tandem with a tanh candidate layer: the gate scales how much of the candidate to add. This two-part mechanism prevents unbounded growth of cell values.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Output Gate (o_t)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Filters the cell state before exposing it as the hidden state. The cell may store information relevant to future timesteps that should not affect the current output. The output gate handles this selective exposure.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Sequence-to-Sequence (Seq2Seq)</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Architecture with an encoder RNN and decoder RNN. The encoder compresses an input sequence into a fixed context vector; the decoder generates an output sequence from it. Used in machine translation (e.g., English to French), text summarization, and chatbots.</span>
+        </div>
+        <div style="margin-bottom:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--surface2)">
+            <strong style="color:var(--terra)">Many-to-One</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Architecture where an entire input sequence is consumed and only the final hidden state is used for prediction. Classic use case: sentiment analysis (read full review, output positive/negative). The LSTM processes all tokens, then the last h_T feeds a dense classifier.</span>
+        </div>
+        <div style="padding:0.5rem 0;">
+            <strong style="color:var(--terra)">Bidirectional RNN/LSTM</strong><br>
+            <span style="color:var(--text-dim);font-size:0.9rem;line-height:1.5">Runs two separate RNN layers: one processing the sequence left-to-right, one right-to-left. Their hidden states are concatenated at each timestep, giving the model access to both past and future context. Essential for NER, POS tagging, and any task where the whole sequence is available at inference time.</span>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 5. CODE EXAMPLE 1: SENTIMENT ANALYSIS ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 1: LSTM for Sentiment Analysis</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>A <strong>many-to-one LSTM</strong> trained on the IMDB movie review dataset. The model reads 25,000 reviews (max 500 tokens each), processes them through an embedding layer and LSTM, then classifies sentiment as positive or negative via a single sigmoid output.</p>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin-bottom:1rem;border-left:3px solid var(--green)">
+            <div style="font-weight:700;font-size:0.85rem;color:var(--green);margin-bottom:0.3rem">Why this architecture works</div>
+            <div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Sentiment depends on the full context of a review. An LSTM can learn that "not bad" is positive despite containing "bad," because the hidden state carries the negation forward. The final hidden state encodes the aggregate sentiment of the entire sequence.</div>
+        </div>
+
+        <div class="cw">
+            <div class="ct"><span class="ln">Python &mdash; Keras / TensorFlow</span><button class="cb" onclick="cpCode('c1')">Copy</button></div>
+            <div class="cs"><pre id="c1"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> imdb
+<span class="kw">from</span> tensorflow.keras.preprocessing.sequence <span class="kw">import</span> pad_sequences
+<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> Sequential
+<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> Embedding, LSTM, Dense, Dropout
+<span class="kw">from</span> tensorflow.keras.callbacks <span class="kw">import</span> EarlyStopping
+
+<span class="cmt"># ── Hyperparameters ──────────────────────────────────</span>
+VOCAB_SIZE   = <span class="num">10000</span>   <span class="cmt"># top 10k most frequent words</span>
+MAX_LEN      = <span class="num">500</span>     <span class="cmt"># pad/truncate reviews to 500 tokens</span>
+EMBED_DIM    = <span class="num">128</span>     <span class="cmt"># embedding vector size</span>
+LSTM_UNITS   = <span class="num">64</span>      <span class="cmt"># LSTM hidden state dimension</span>
+DROPOUT_RATE = <span class="num">0.3</span>     <span class="cmt"># regularization</span>
+BATCH_SIZE   = <span class="num">64</span>
+EPOCHS       = <span class="num">10</span>
+
+<span class="cmt"># ── Load & preprocess IMDB ───────────────────────────</span>
+(X_train, y_train), (X_test, y_test) = imdb.<span class="fn">load_data</span>(
+    num_words=VOCAB_SIZE
+)
+
+<span class="cmt"># Pad sequences so all inputs have the same length</span>
+X_train = <span class="fn">pad_sequences</span>(X_train, maxlen=MAX_LEN, padding=<span class="str">'post'</span>, truncating=<span class="str">'post'</span>)
+X_test  = <span class="fn">pad_sequences</span>(X_test,  maxlen=MAX_LEN, padding=<span class="str">'post'</span>, truncating=<span class="str">'post'</span>)
+
+<span class="fn">print</span>(<span class="str">f"Training samples: <span class="kw">{</span>X_train.shape[<span class="num">0</span>]<span class="kw">}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Test samples:     <span class="kw">{</span>X_test.shape[<span class="num">0</span>]<span class="kw">}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Sequence length:  <span class="kw">{</span>MAX_LEN<span class="kw">}</span>"</span>)
+
+<span class="cmt"># ── Build Model ──────────────────────────────────────</span>
+model = <span class="fn">Sequential</span>([
+    <span class="cmt"># Learns dense vector for each word index</span>
+    <span class="fn">Embedding</span>(
+        input_dim=VOCAB_SIZE,
+        output_dim=EMBED_DIM,
+        input_length=MAX_LEN
+    ),
+
+    <span class="cmt"># LSTM reads the full sequence, returns only final h_T</span>
+    <span class="fn">LSTM</span>(
+        units=LSTM_UNITS,
+        return_sequences=<span class="kw">False</span>,   <span class="cmt"># many-to-one: only last state</span>
+        dropout=DROPOUT_RATE,       <span class="cmt"># dropout on inputs</span>
+        recurrent_dropout=<span class="num">0.2</span>      <span class="cmt"># dropout on recurrent state</span>
+    ),
+
+    <span class="fn">Dropout</span>(DROPOUT_RATE),
+
+    <span class="cmt"># Binary classification: positive (1) or negative (0)</span>
+    <span class="fn">Dense</span>(<span class="num">1</span>, activation=<span class="str">'sigmoid'</span>)
+])
+
+model.<span class="fn">compile</span>(
+    optimizer=<span class="str">'adam'</span>,
+    loss=<span class="str">'binary_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+model.<span class="fn">summary</span>()
+
+<span class="cmt"># ── Train ────────────────────────────────────────────</span>
+early_stop = <span class="fn">EarlyStopping</span>(
+    monitor=<span class="str">'val_loss'</span>,
+    patience=<span class="num">2</span>,
+    restore_best_weights=<span class="kw">True</span>
+)
+
+history = model.<span class="fn">fit</span>(
+    X_train, y_train,
+    epochs=EPOCHS,
+    batch_size=BATCH_SIZE,
+    validation_split=<span class="num">0.2</span>,
+    callbacks=[early_stop],
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># ── Evaluate ─────────────────────────────────────────</span>
+loss, accuracy = model.<span class="fn">evaluate</span>(X_test, y_test, verbose=<span class="num">0</span>)
+<span class="fn">print</span>(<span class="str">f"\nTest Accuracy: <span class="kw">{</span>accuracy:<span class="num">.4f</span><span class="kw">}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Test Loss:     <span class="kw">{</span>loss:<span class="num">.4f</span><span class="kw">}</span>"</span>)
+
+<span class="cmt"># ── Predict on a new review ──────────────────────────</span>
+word_index = imdb.<span class="fn">get_word_index</span>()
+
+<span class="kw">def</span> <span class="fn">predict_sentiment</span>(text):
+    tokens = [word_index.<span class="fn">get</span>(w, <span class="num">2</span>) <span class="kw">for</span> w <span class="kw">in</span> text.<span class="fn">lower</span>().<span class="fn">split</span>()]
+    tokens = [t <span class="kw">if</span> t &lt; VOCAB_SIZE <span class="kw">else</span> <span class="num">2</span> <span class="kw">for</span> t <span class="kw">in</span> tokens]
+    padded = <span class="fn">pad_sequences</span>([tokens], maxlen=MAX_LEN, padding=<span class="str">'post'</span>)
+    score  = model.<span class="fn">predict</span>(padded, verbose=<span class="num">0</span>)[<span class="num">0</span>][<span class="num">0</span>]
+    label  = <span class="str">"Positive"</span> <span class="kw">if</span> score &gt; <span class="num">0.5</span> <span class="kw">else</span> <span class="str">"Negative"</span>
+    <span class="kw">return</span> <span class="str">f"<span class="kw">{</span>label<span class="kw">}</span> (<span class="kw">{</span>score:<span class="num">.3f</span><span class="kw">}</span>)"</span>
+
+<span class="fn">print</span>(<span class="fn">predict_sentiment</span>(<span class="str">"This movie was absolutely fantastic and deeply moving"</span>))
+<span class="fn">print</span>(<span class="fn">predict_sentiment</span>(<span class="str">"Terrible waste of time with awful acting"</span>))</pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Expected Results</h4>
+            <ul>
+                <li><strong>Test accuracy:</strong> ~86-88% (competitive with CNNs for text classification)</li>
+                <li><strong>Training time:</strong> ~3 minutes per epoch on GPU, ~15 min on CPU</li>
+                <li><strong>Total parameters:</strong> ~1.36M (embedding: 1.28M, LSTM: 49K, dense: 65)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 6. CODE EXAMPLE 2: TIME SERIES ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 2: Time Series Prediction</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p>An LSTM trained to predict <strong>future temperature</strong> from historical daily readings. The model uses a sliding window of 60 days to predict the next day's temperature. This same pattern applies to stock prices, energy demand, sensor data, and any univariate or multivariate time series.</p>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin-bottom:1rem;border-left:3px solid var(--terra)">
+            <div style="font-weight:700;font-size:0.85rem;color:var(--terra);margin-bottom:0.3rem">Windowing strategy</div>
+            <div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">Time series prediction requires converting a flat sequence into (X, y) pairs using a sliding window. For a window of size 60: X = days [0..59], y = day [60]. The window slides by 1 each step, creating overlapping training samples. LSTM excels here because temperature today depends on patterns from weeks ago (seasonal lag).</div>
+        </div>
+
+        <div class="cw">
+            <div class="ct"><span class="ln">Python &mdash; Keras / TensorFlow</span><button class="cb" onclick="cpCode('c2')">Copy</button></div>
+            <div class="cs"><pre id="c2"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> MinMaxScaler
+<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> Sequential
+<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> LSTM, Dense, Dropout
+<span class="kw">from</span> tensorflow.keras.callbacks <span class="kw">import</span> EarlyStopping
+
+<span class="cmt"># ── Generate synthetic temperature data ──────────────</span>
+<span class="cmt"># (Replace with pd.read_csv('your_data.csv') for real data)</span>
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)
+days = <span class="num">1500</span>
+t = np.<span class="fn">arange</span>(days)
+<span class="cmt"># Seasonal pattern + trend + noise</span>
+temp = <span class="num">20</span> + <span class="num">10</span> * np.<span class="fn">sin</span>(<span class="num">2</span> * np.pi * t / <span class="num">365</span>) + <span class="num">0.005</span> * t + np.random.<span class="fn">normal</span>(<span class="num">0</span>, <span class="num">2</span>, days)
+
+<span class="cmt"># ── Normalize to [0, 1] ──────────────────────────────</span>
+scaler = <span class="fn">MinMaxScaler</span>()
+temp_scaled = scaler.<span class="fn">fit_transform</span>(temp.<span class="fn">reshape</span>(-<span class="num">1</span>, <span class="num">1</span>))
+
+<span class="cmt"># ── Create sliding windows ───────────────────────────</span>
+WINDOW = <span class="num">60</span>   <span class="cmt"># look back 60 days</span>
+
+<span class="kw">def</span> <span class="fn">create_sequences</span>(data, window):
+    X, y = [], []
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(data) - window):
+        X.<span class="fn">append</span>(data[i : i + window])
+        y.<span class="fn">append</span>(data[i + window])
+    <span class="kw">return</span> np.<span class="fn">array</span>(X), np.<span class="fn">array</span>(y)
+
+X, y = <span class="fn">create_sequences</span>(temp_scaled, WINDOW)
+
+<span class="cmt"># ── Train/test split (time series: NO shuffle) ───────</span>
+split = <span class="fn">int</span>(<span class="fn">len</span>(X) * <span class="num">0.8</span>)
+X_train, X_test = X[:split], X[split:]
+y_train, y_test = y[:split], y[split:]
+
+<span class="fn">print</span>(<span class="str">f"X_train shape: <span class="kw">{</span>X_train.shape<span class="kw">}</span>"</span>)  <span class="cmt"># (1152, 60, 1)</span>
+<span class="fn">print</span>(<span class="str">f"X_test  shape: <span class="kw">{</span>X_test.shape<span class="kw">}</span>"</span>)   <span class="cmt"># (288, 60, 1)</span>
+
+<span class="cmt"># ── Build stacked LSTM ───────────────────────────────</span>
+model = <span class="fn">Sequential</span>([
+    <span class="cmt"># First LSTM: return full sequence for stacking</span>
+    <span class="fn">LSTM</span>(<span class="num">50</span>, return_sequences=<span class="kw">True</span>, input_shape=(WINDOW, <span class="num">1</span>)),
+    <span class="fn">Dropout</span>(<span class="num">0.2</span>),
+
+    <span class="cmt"># Second LSTM: return only final state</span>
+    <span class="fn">LSTM</span>(<span class="num">50</span>, return_sequences=<span class="kw">False</span>),
+    <span class="fn">Dropout</span>(<span class="num">0.2</span>),
+
+    <span class="cmt"># Regression output: predict next day's temperature</span>
+    <span class="fn">Dense</span>(<span class="num">25</span>, activation=<span class="str">'relu'</span>),
+    <span class="fn">Dense</span>(<span class="num">1</span>)   <span class="cmt"># linear activation for regression</span>
+])
+
+model.<span class="fn">compile</span>(optimizer=<span class="str">'adam'</span>, loss=<span class="str">'mse'</span>, metrics=[<span class="str">'mae'</span>])
+
+<span class="cmt"># ── Train ────────────────────────────────────────────</span>
+early_stop = <span class="fn">EarlyStopping</span>(
+    monitor=<span class="str">'val_loss'</span>, patience=<span class="num">5</span>, restore_best_weights=<span class="kw">True</span>
+)
+
+history = model.<span class="fn">fit</span>(
+    X_train, y_train,
+    epochs=<span class="num">50</span>,
+    batch_size=<span class="num">32</span>,
+    validation_split=<span class="num">0.15</span>,
+    callbacks=[early_stop],
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># ── Predict & inverse transform ──────────────────────</span>
+predictions = model.<span class="fn">predict</span>(X_test)
+predictions = scaler.<span class="fn">inverse_transform</span>(predictions)
+actual       = scaler.<span class="fn">inverse_transform</span>(y_test)
+
+<span class="cmt"># ── Evaluate ─────────────────────────────────────────</span>
+mae = np.<span class="fn">mean</span>(np.<span class="fn">abs</span>(predictions - actual))
+rmse = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((predictions - actual) ** <span class="num">2</span>))
+<span class="fn">print</span>(<span class="str">f"MAE:  <span class="kw">{</span>mae:<span class="num">.2f</span><span class="kw">}</span>°C"</span>)
+<span class="fn">print</span>(<span class="str">f"RMSE: <span class="kw">{</span>rmse:<span class="num">.2f</span><span class="kw">}</span>°C"</span>)
+
+<span class="cmt"># ── Plot ─────────────────────────────────────────────</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">14</span>, <span class="num">5</span>))
+plt.<span class="fn">plot</span>(actual, label=<span class="str">'Actual Temperature'</span>, alpha=<span class="num">0.8</span>)
+plt.<span class="fn">plot</span>(predictions, label=<span class="str">'LSTM Prediction'</span>, alpha=<span class="num">0.8</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Day'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Temperature (°C)'</span>)
+plt.<span class="fn">title</span>(<span class="str">'LSTM Time Series Prediction'</span>)
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Expected Results</h4>
+            <ul>
+                <li><strong>MAE:</strong> ~1.5-2.5°C on synthetic data (real weather data is noisier)</li>
+                <li><strong>Key insight:</strong> Stacked LSTMs (2+ layers) capture hierarchical temporal features. Layer 1 learns short-term patterns, Layer 2 learns longer-term trends.</li>
+                <li><strong>Critical rule:</strong> Never shuffle time series data. Temporal order must be preserved in train/test split.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 7. CODE EXAMPLE 3: BIDIRECTIONAL LSTM FOR NER ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>Code Example 3: Bidirectional LSTM for NER</h2></div>
+    <div class="card-b">
+        <div class="prose" style="margin-bottom:1rem;">
+            <p><strong>Named Entity Recognition (NER)</strong> is a sequence-to-sequence labeling task: given a sentence, tag each token as a person, organization, location, or "other." A <strong>Bidirectional LSTM</strong> is ideal because the correct label for a word often depends on both preceding and following words &mdash; e.g., "Washington" could be a person or a location depending on context.</p>
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:1rem 1.15rem;margin-bottom:1rem;border-left:3px solid var(--amber)">
+            <div style="font-weight:700;font-size:0.85rem;color:var(--amber);margin-bottom:0.3rem">Why bidirectional?</div>
+            <div style="font-size:0.85rem;color:var(--text-dim);line-height:1.7">In "Apple released a new iPhone," a forward-only LSTM reading "Apple" doesn't yet know "released" follows. A backward LSTM already has "released" context. Concatenating both directions gives each timestep full sentence context &mdash; essential for disambiguation in NER.</div>
+        </div>
+
+        <div class="cw">
+            <div class="ct"><span class="ln">Python &mdash; Keras / TensorFlow</span><button class="cb" onclick="cpCode('c3')">Copy</button></div>
+            <div class="cs"><pre id="c3"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> Sequential
+<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> (
+    Embedding, Bidirectional, LSTM, Dense,
+    TimeDistributed, Dropout
+)
+<span class="kw">from</span> tensorflow.keras.preprocessing.sequence <span class="kw">import</span> pad_sequences
+<span class="kw">from</span> tensorflow.keras.utils <span class="kw">import</span> to_categorical
+
+<span class="cmt"># ── Example NER data (BIO tagging scheme) ────────────</span>
+<span class="cmt"># In production, load CoNLL-2003 or OntoNotes dataset</span>
+sentences = [
+    [(<span class="str">"John"</span>,   <span class="str">"B-PER"</span>), (<span class="str">"lives"</span>,  <span class="str">"O"</span>),     (<span class="str">"in"</span>,     <span class="str">"O"</span>),
+     (<span class="str">"London"</span>, <span class="str">"B-LOC"</span>), (<span class="str">"."</span>,      <span class="str">"O"</span>)],
+    [(<span class="str">"Apple"</span>,  <span class="str">"B-ORG"</span>), (<span class="str">"Inc"</span>,    <span class="str">"I-ORG"</span>), (<span class="str">"hired"</span>,  <span class="str">"O"</span>),
+     (<span class="str">"Sarah"</span>,  <span class="str">"B-PER"</span>), (<span class="str">"from"</span>,   <span class="str">"O"</span>),     (<span class="str">"Paris"</span>,  <span class="str">"B-LOC"</span>)],
+    [(<span class="str">"The"</span>,    <span class="str">"O"</span>),     (<span class="str">"UN"</span>,     <span class="str">"B-ORG"</span>), (<span class="str">"met"</span>,    <span class="str">"O"</span>),
+     (<span class="str">"in"</span>,     <span class="str">"O"</span>),     (<span class="str">"Geneva"</span>, <span class="str">"B-LOC"</span>), (<span class="str">"today"</span>,  <span class="str">"O"</span>)],
+]
+
+<span class="cmt"># ── Build vocabularies ───────────────────────────────</span>
+words = <span class="fn">sorted</span>(<span class="fn">set</span>(w <span class="kw">for</span> s <span class="kw">in</span> sentences <span class="kw">for</span> w, _ <span class="kw">in</span> s))
+tags  = <span class="fn">sorted</span>(<span class="fn">set</span>(t <span class="kw">for</span> s <span class="kw">in</span> sentences <span class="kw">for</span> _, t <span class="kw">in</span> s))
+
+word2idx = {w: i + <span class="num">2</span> <span class="kw">for</span> i, w <span class="kw">in</span> <span class="fn">enumerate</span>(words)}  <span class="cmt"># 0=PAD, 1=UNK</span>
+tag2idx  = {t: i <span class="kw">for</span> i, t <span class="kw">in</span> <span class="fn">enumerate</span>(tags)}
+
+VOCAB_SIZE = <span class="fn">len</span>(word2idx) + <span class="num">2</span>
+NUM_TAGS   = <span class="fn">len</span>(tag2idx)
+MAX_LEN    = <span class="num">50</span>
+
+<span class="fn">print</span>(<span class="str">f"Vocabulary: <span class="kw">{</span>VOCAB_SIZE<span class="kw">}</span> words, <span class="kw">{</span>NUM_TAGS<span class="kw">}</span> tags"</span>)
+<span class="fn">print</span>(<span class="str">f"Tags: <span class="kw">{</span>tag2idx<span class="kw">}</span>"</span>)
+
+<span class="cmt"># ── Encode sentences ─────────────────────────────────</span>
+X = [[word2idx.<span class="fn">get</span>(w, <span class="num">1</span>) <span class="kw">for</span> w, _ <span class="kw">in</span> s] <span class="kw">for</span> s <span class="kw">in</span> sentences]
+y = [[tag2idx[t]          <span class="kw">for</span> _, t <span class="kw">in</span> s] <span class="kw">for</span> s <span class="kw">in</span> sentences]
+
+X = <span class="fn">pad_sequences</span>(X, maxlen=MAX_LEN, padding=<span class="str">'post'</span>, value=<span class="num">0</span>)
+y = <span class="fn">pad_sequences</span>(y, maxlen=MAX_LEN, padding=<span class="str">'post'</span>, value=tag2idx[<span class="str">'O'</span>])
+y = np.<span class="fn">array</span>([<span class="fn">to_categorical</span>(seq, num_classes=NUM_TAGS) <span class="kw">for</span> seq <span class="kw">in</span> y])
+
+<span class="cmt"># ── Build BiLSTM Model ───────────────────────────────</span>
+model = <span class="fn">Sequential</span>([
+    <span class="cmt"># Word embeddings</span>
+    <span class="fn">Embedding</span>(
+        input_dim=VOCAB_SIZE,
+        output_dim=<span class="num">64</span>,
+        input_length=MAX_LEN,
+        mask_zero=<span class="kw">True</span>   <span class="cmt"># ignore padding in LSTM computation</span>
+    ),
+
+    <span class="cmt"># Bidirectional LSTM: reads forwards AND backwards</span>
+    <span class="cmt"># Output dim = 2 * 64 = 128 (concat of both directions)</span>
+    <span class="fn">Bidirectional</span>(
+        <span class="fn">LSTM</span>(<span class="num">64</span>, return_sequences=<span class="kw">True</span>, dropout=<span class="num">0.3</span>)
+    ),
+
+    <span class="fn">Dropout</span>(<span class="num">0.25</span>),
+
+    <span class="cmt"># Second BiLSTM layer for deeper features</span>
+    <span class="fn">Bidirectional</span>(
+        <span class="fn">LSTM</span>(<span class="num">32</span>, return_sequences=<span class="kw">True</span>, dropout=<span class="num">0.3</span>)
+    ),
+
+    <span class="cmt"># TimeDistributed: apply Dense to EACH timestep independently</span>
+    <span class="cmt"># Output shape: (batch, MAX_LEN, NUM_TAGS)</span>
+    <span class="fn">TimeDistributed</span>(
+        <span class="fn">Dense</span>(NUM_TAGS, activation=<span class="str">'softmax'</span>)
+    )
+])
+
+model.<span class="fn">compile</span>(
+    optimizer=<span class="str">'adam'</span>,
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+model.<span class="fn">summary</span>()
+
+<span class="cmt"># ── Train ────────────────────────────────────────────</span>
+model.<span class="fn">fit</span>(
+    X, y,
+    epochs=<span class="num">50</span>,
+    batch_size=<span class="num">2</span>,
+    validation_split=<span class="num">0.1</span>,
+    verbose=<span class="num">1</span>
+)
+
+<span class="cmt"># ── Predict on new sentence ──────────────────────────</span>
+idx2tag = {v: k <span class="kw">for</span> k, v <span class="kw">in</span> tag2idx.<span class="fn">items</span>()}
+
+<span class="kw">def</span> <span class="fn">predict_entities</span>(sentence_words):
+    encoded = [word2idx.<span class="fn">get</span>(w, <span class="num">1</span>) <span class="kw">for</span> w <span class="kw">in</span> sentence_words]
+    padded  = <span class="fn">pad_sequences</span>([encoded], maxlen=MAX_LEN, padding=<span class="str">'post'</span>)
+    preds   = model.<span class="fn">predict</span>(padded, verbose=<span class="num">0</span>)[<span class="num">0</span>]
+    tags    = [idx2tag[np.<span class="fn">argmax</span>(p)] <span class="kw">for</span> p <span class="kw">in</span> preds[:<span class="fn">len</span>(sentence_words)]]
+    <span class="kw">return</span> <span class="fn">list</span>(<span class="fn">zip</span>(sentence_words, tags))
+
+result = <span class="fn">predict_entities</span>([<span class="str">"John"</span>, <span class="str">"lives"</span>, <span class="str">"in"</span>, <span class="str">"London"</span>])
+<span class="kw">for</span> word, tag <span class="kw">in</span> result:
+    <span class="fn">print</span>(<span class="str">f"  <span class="kw">{</span>word:<span class="num">12s</span><span class="kw">}</span> -> <span class="kw">{</span>tag<span class="kw">}</span>"</span>)
+
+<span class="cmt"># Output:
+#   John         -> B-PER
+#   lives        -> O
+#   in           -> O
+#   London       -> B-LOC</span></pre>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>Architecture Highlights</h4>
+            <ul>
+                <li><strong>Bidirectional:</strong> concatenates forward and backward hidden states, doubling the feature dimension at each timestep</li>
+                <li><strong>TimeDistributed(Dense):</strong> applies the same classification layer to every position, producing a tag for every token</li>
+                <li><strong>mask_zero=True:</strong> tells the LSTM to skip padding tokens during computation (crucial for variable-length sequences)</li>
+                <li><strong>Production improvement:</strong> add a CRF layer on top (keras-crf) for globally optimal label sequences</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 8. VARIANTS COMPARISON ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot a"></div><h2>Variants Comparison</h2></div>
+    <div class="card-b">
+        <div class="tw">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Vanilla RNN</th>
+                        <th>LSTM</th>
+                        <th>GRU</th>
+                        <th>Bidirectional LSTM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Year Introduced</strong></td>
+                        <td>1986 (Rumelhart)</td>
+                        <td>1997 (Hochreiter &amp; Schmidhuber)</td>
+                        <td>2014 (Cho et al.)</td>
+                        <td>1997 (Schuster &amp; Paliwal)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gates</strong></td>
+                        <td>None</td>
+                        <td>3 (forget, input, output)</td>
+                        <td>2 (update, reset)</td>
+                        <td>3 per direction (6 total)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cell State</strong></td>
+                        <td>No</td>
+                        <td>Yes (separate highway)</td>
+                        <td>No (merged into hidden)</td>
+                        <td>Yes (per direction)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parameters (per layer, d=128)</strong></td>
+                        <td>~33K</td>
+                        <td>~132K</td>
+                        <td>~99K</td>
+                        <td>~264K</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Long-Range Memory</strong></td>
+                        <td>Poor (10-20 steps)</td>
+                        <td>Excellent (1000+ steps)</td>
+                        <td>Good (500+ steps)</td>
+                        <td>Excellent (both directions)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Speed</strong></td>
+                        <td>Fastest</td>
+                        <td>Slowest (most params)</td>
+                        <td>~25% faster than LSTM</td>
+                        <td>~2x slower than unidirectional</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vanishing Gradient</strong></td>
+                        <td>Severe</td>
+                        <td>Solved (cell state highway)</td>
+                        <td>Mostly solved</td>
+                        <td>Solved</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Very short sequences, toy tasks</td>
+                        <td>Long sequences, speech, translation</td>
+                        <td>Medium sequences, limited compute</td>
+                        <td>NER, POS tagging, any task with full sequence available</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Keras Layer</strong></td>
+                        <td><code>SimpleRNN()</code></td>
+                        <td><code>LSTM()</code></td>
+                        <td><code>GRU()</code></td>
+                        <td><code>Bidirectional(LSTM())</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Can Stream?</strong></td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>No (needs full sequence)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tg" style="margin-top:1.2rem;">
+            <div class="ti">
+                <h4>Parameter Count Formula</h4>
+                <p><strong>LSTM:</strong> 4 * [(input_dim + hidden_dim) * hidden_dim + hidden_dim]<br>
+                <strong>GRU:</strong> 3 * [(input_dim + hidden_dim) * hidden_dim + hidden_dim]<br>
+                <strong>Vanilla RNN:</strong> (input_dim + hidden_dim) * hidden_dim + hidden_dim<br>
+                The 4x / 3x multiplier comes from the number of gate weight matrices.</p>
+            </div>
+            <div class="ti">
+                <h4>When GRU Beats LSTM</h4>
+                <p><strong>Smaller datasets:</strong> GRU has fewer parameters, so it overfits less on small data. <strong>Shorter sequences:</strong> the GRU's simpler gating is sufficient. <strong>Real-time inference:</strong> 25% fewer operations per step. In practice, try both and pick whichever validates better on your task.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ────────── 9. WHEN TO USE / WHEN TO AVOID ────────── -->
+<div class="card">
+    <div class="card-h"><div class="dot g"></div><h2>When to Use / When to Avoid</h2></div>
+    <div class="card-b">
+        <div class="tk-g">
+            <div class="tk">
+                <h4 class="u">When to Use RNNs / LSTMs</h4>
+                <p><strong>Sequential data</strong> with temporal dependencies: text, speech, music, time series, sensor streams</p>
+                <p><strong>Variable-length inputs</strong> where CNNs would require fixed windows or wasteful padding</p>
+                <p><strong>Language modeling</strong> and text generation where token-by-token decoding is needed</p>
+                <p><strong>Real-time streaming</strong> applications where you process data one step at a time (unidirectional)</p>
+                <p><strong>Small-to-medium datasets</strong> where transformers would overfit due to massive parameter counts</p>
+                <p><strong>Edge deployment</strong> where model size matters: a 2-layer LSTM uses ~500K params vs. millions for a transformer</p>
+            </div>
+            <div class="tk">
+                <h4 class="av">When to Avoid</h4>
+                <p><strong>Very long sequences (>2000 tokens)</strong>: even LSTMs struggle; transformers with attention handle these better</p>
+                <p><strong>Large-scale NLP</strong> (2020+): pre-trained transformers (BERT, GPT) dominate in accuracy on most benchmarks</p>
+                <p><strong>Embarrassingly parallel tasks</strong>: RNNs are sequential by nature and cannot parallelize across timesteps during training</p>
+                <p><strong>Image classification</strong>: CNNs and Vision Transformers are vastly superior for spatial data</p>
+                <p><strong>Tabular data</strong>: gradient boosting (XGBoost, LightGBM) almost always outperforms RNNs on structured data</p>
+                <p><strong>When interpretability is critical</strong>: attention weights in transformers are more interpretable than LSTM hidden states</p>
+            </div>
+        </div>
+
+        <div class="an gd">
+            <h4>The Practical Reality (2024+)</h4>
+            <ul>
+                <li><strong>Transformers have largely replaced LSTMs</strong> in NLP tasks where compute is available and datasets are large</li>
+                <li><strong>LSTMs remain competitive</strong> in time series forecasting, on-device inference, and low-resource language tasks</li>
+                <li><strong>Hybrid architectures</strong> (LSTM + attention, or LSTM inside transformer blocks) are actively researched</li>
+                <li><strong>Understanding LSTMs is foundational</strong> &mdash; the gating mechanism directly inspired transformer attention, and the vanishing gradient problem frames all modern architecture decisions</li>
+            </ul>
+        </div>
+
+        <div class="an bd">
+            <h4>Common Pitfalls</h4>
+            <ul>
+                <li><strong>Shuffling time series data:</strong> destroys temporal structure. Always split chronologically.</li>
+                <li><strong>Forgetting to scale inputs:</strong> LSTMs are sensitive to input magnitude. Always normalize to [0,1] or standardize.</li>
+                <li><strong>Too many stacked layers:</strong> 2-3 LSTM layers is usually optimal. Beyond that, gradients degrade and training slows dramatically.</li>
+                <li><strong>Ignoring sequence length:</strong> padding to the length of the longest sample wastes computation. Use bucketing or masking.</li>
+                <li><strong>Using bidirectional for autoregressive tasks:</strong> you cannot look at future tokens when generating text one word at a time.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div><!-- end .content -->
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div class="foot">Part of Jace Sabr's Deep Learning Library &middot; <a href="index.html" style="color:var(--terra);text-decoration:none">Back to Portfolio</a></div>
+
+<!-- ═══════════ COPY SCRIPT ═══════════ -->
+<script>function cpCode(id){const t=document.getElementById(id);navigator.clipboard.writeText(t.textContent)}</script>
+
+</body></html>
