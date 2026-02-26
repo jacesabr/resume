@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Jace Sabr — AI & Robotics Consultant Portfolio",
   "scripts": {
-    "start": "serve -s . -l tcp://0.0.0.0:$PORT"
+    "start": "npx serve -s . -p $PORT"
   },
   "dependencies": {
-    "serve": "^14.2.0"
+    "serve": "^13.0.0"
   }
 }
