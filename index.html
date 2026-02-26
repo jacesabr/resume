@@ -6,343 +6,315 @@
 <title>Jace Sabr — AI & Robotics Consultant</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0b;--surface:#141416;--surface2:#1a1a1e;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);--text:#e4e4e7;--text-dim:#8b8b94;--text-muted:#56565e;--accent:#6366f1;--accent2:#818cf8;--teal:#2dd4bf;--amber:#f59e0b;--rose:#f43f5e;--radius:8px}
+:root{--bg:#1a1a1a;--surface:#2a2a2a;--border:rgba(255,255,255,0.08);--border-h:rgba(255,255,255,0.15);--text:#e8e4de;--text-dim:#a39e93;--text-muted:#6b6660;--clay:#da7756;--clay-dim:rgba(218,119,86,0.12);--sand:#e8c872;--sand-dim:rgba(232,200,114,0.12);--sage:#7dab8a;--sage-dim:rgba(125,171,138,0.12);--slate:#8a9bb5;--slate-dim:rgba(138,155,181,0.12);--radius:6px}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:13px}
 a{color:inherit;text-decoration:none}
 
-/* Nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,11,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-.logo{font-weight:700;font-size:13px;letter-spacing:-0.02em}.logo span{color:var(--accent)}
-.nav-links{display:flex;gap:1.5rem}.nav-links a{color:var(--text-dim);font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}.nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--accent);color:#fff;padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;transition:opacity 0.2s}.nav-cta:hover{opacity:0.85}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:44px;display:flex;align-items:center;justify-content:space-between;background:rgba(26,26,26,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-weight:700;font-size:13px}.logo span{color:var(--clay)}
+.nav-links{display:flex;gap:1.5rem}.nav-links a{color:var(--text-dim);font-size:11px;font-weight:500;transition:color 0.2s}.nav-links a:hover{color:var(--clay)}
+.nav-cta{background:var(--clay);color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;transition:opacity 0.2s}.nav-cta:hover{opacity:0.85}
 
-/* Layout */
-.wrap{max-width:1080px;margin:0 auto;padding:0 2rem}
-section{padding:3rem 0}
-.divider{height:1px;background:var(--border);margin:0 auto;max-width:1080px}
+.wrap{max-width:960px;margin:0 auto;padding:0 2rem}
+section{padding:2.5rem 0}
+hr{border:none;height:1px;background:var(--border)}
 
 /* Header */
-.header{padding:4.5rem 0 2rem;display:flex;justify-content:space-between;align-items:flex-start;gap:3rem;flex-wrap:wrap}
-.header-left{max-width:520px}
-.header-left h1{font-size:24px;font-weight:700;letter-spacing:-0.03em;line-height:1.3;margin-bottom:6px}
-.header-left h1 .hi{color:var(--accent)}
-.header-left .sub{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:16px}
-.header-actions{display:flex;gap:8px}
-.btn{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px}
-.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:0.85}
-.btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{border-color:var(--accent);color:var(--accent)}
-.header-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.hstat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px}
-.hstat .val{font-size:15px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}.hstat .lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+.header{padding-top:60px;padding-bottom:1.5rem}
+.header h1{font-size:20px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px}
+.header h1 span{color:var(--clay)}
+.header .sub{font-size:12.5px;color:var(--text-dim);max-width:600px;margin-bottom:12px}
+.header-row{display:flex;gap:6px;margin-bottom:16px}
+.btn{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:600;transition:all 0.2s}
+.btn-p{background:var(--clay);color:#fff}.btn-p:hover{opacity:0.85}
+.btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{color:var(--clay);border-color:var(--clay)}
+.stats-row{display:flex;gap:16px;flex-wrap:wrap}
+.stat{font-size:11px;color:var(--text-dim)}.stat b{color:var(--clay);font-family:'JetBrains Mono',monospace;font-size:12px}
 
-/* Section Headers */
-.sh{margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
-.sh-left .label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
-.sh-left h2{font-size:17px;font-weight:700;letter-spacing:-0.02em}.sh-left h2 .dim{color:var(--text-muted)}
-.sh-right{font-size:11px;color:var(--text-dim);max-width:380px;text-align:right}
+/* Section title */
+.st{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.st span{color:var(--text-muted);font-weight:400}
+.st-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:2px 6px;border-radius:3px;background:var(--clay-dim)}
 
-/* Morrigan Featured */
-.feat{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.feat-top{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border)}
-.feat-title{display:flex;align-items:center;gap:8px}
-.feat-title .icon{width:28px;height:28px;border-radius:6px;background:rgba(99,102,241,0.1);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
-.feat-title h3{font-size:13px;font-weight:700}.feat-title .sub{font-size:11px;color:var(--text-dim)}
-.feat-tags{display:flex;gap:4px;flex-wrap:wrap}
-.ftag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:0.02em}
-.feat-body{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
-.feat-col{padding:14px 16px;font-size:12px;color:var(--text-dim);line-height:1.7}
-.feat-col:first-child{border-right:1px solid var(--border)}
-.feat-col .fc-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.feat-col ul{list-style:none;display:flex;flex-direction:column;gap:3px}
-.feat-col li::before{content:"›";color:var(--accent);margin-right:6px;font-weight:700}
-.feat-bottom{display:grid;grid-template-columns:repeat(6,1fr)}
-.feat-stat{padding:8px 12px;text-align:center;border-right:1px solid var(--border);font-size:11px}
-.feat-stat:last-child{border-right:none}
-.feat-stat .v{font-weight:700;color:var(--text);font-size:11px}.feat-stat .l{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em}
+/* Morrigan */
+.morrigan{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.m-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.m-head h3{font-size:13px;font-weight:700}.m-head .sub{font-size:11px;color:var(--text-dim)}
+.m-link{font-size:10px;font-weight:600;color:var(--clay);transition:opacity 0.2s}.m-link:hover{opacity:0.7}
+.m-intent{padding:10px 14px;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text-dim);line-height:1.7;background:rgba(218,119,86,0.03)}
+.m-intent b{color:var(--text)}
+.m-body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
+.m-col{padding:10px 14px;font-size:11px;color:var(--text-dim);line-height:1.65}
+.m-col:first-child{border-right:1px solid var(--border)}
+.m-col .lbl{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clay);margin-bottom:4px}
+.m-col li{margin-bottom:2px}
+.m-col ul{list-style:none}.m-col li::before{content:"·";color:var(--clay);margin-right:5px;font-weight:700}
+.m-foot{display:grid;grid-template-columns:repeat(6,1fr)}
+.m-foot div{padding:6px 8px;text-align:center;border-right:1px solid var(--border);font-size:10px}
+.m-foot div:last-child{border-right:none}
+.m-foot .v{font-weight:700;color:var(--text)}.m-foot .l{color:var(--text-muted);font-size:8px;text-transform:uppercase;letter-spacing:0.04em}
 
-/* Cards Grid */
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
-.card:hover{border-color:var(--border-h)}
-.card h3{font-size:13px;font-weight:700;margin-bottom:4px}
-.card p{font-size:11.5px;color:var(--text-dim);line-height:1.65}
-.card .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.card .tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,0.08);color:var(--accent2)}
-.card .snippet{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.7;color:var(--text-dim)}
-.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:var(--teal)}.cm{color:var(--text-muted);font-style:italic}
+/* Grid */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.c{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;transition:border-color 0.2s}
+.c:hover{border-color:var(--border-h)}
+.c h3{font-size:12px;font-weight:700;margin-bottom:2px}.c p{font-size:11px;color:var(--text-dim);line-height:1.6}
+.c .tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.tag{font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px}
+.snippet{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:6px 8px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:var(--text-dim)}
+.kw{color:var(--sand)}.fn{color:var(--slate)}.str{color:var(--sage)}
 
-/* Education */
-.edu{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-.edu .year{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase}
-.edu h3{font-size:13px;font-weight:700;margin:2px 0}.edu .school{font-size:11.5px;color:var(--text-dim)}.edu .detail{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.6}
+/* Algo pills */
+.pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:5px;transition:border-color 0.2s}
+.pill:hover{border-color:var(--clay)}
+.pill .n{color:var(--clay);font-weight:700;font-size:9px;font-family:'JetBrains Mono',monospace;min-width:18px}
+.cats{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.cat{padding:2px 8px;border-radius:3px;font-size:9px;font-weight:600;border:1px solid var(--border);color:var(--text-dim)}
+.cat b{color:var(--clay);font-size:9px}
 
-/* Algo Grid */
-.algo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
-.algo-pill{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;transition:border-color 0.2s}
-.algo-pill:hover{border-color:var(--accent)}
-.algo-pill .num{color:var(--accent);font-weight:700;font-size:10px;font-family:'JetBrains Mono',monospace;min-width:20px}
-.algo-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.acat{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;gap:4px}
-.acat .c{background:rgba(99,102,241,0.15);color:var(--accent);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
-
-/* Projects */
-.proj{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s;display:block}
+/* Project cards */
+.proj{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;display:block;transition:border-color 0.2s}
 .proj:hover{border-color:var(--border-h)}
-.proj .pbadges{display:flex;gap:4px;margin-bottom:4px}
-.proj .pb{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px}
-.proj h3{font-size:12.5px;font-weight:700;margin-bottom:2px}.proj p{font-size:11px;color:var(--text-dim);line-height:1.6}
+.proj .badges{display:flex;gap:3px;margin-bottom:3px}
+.proj .badge{font-size:8px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:2px}
+.proj h3{font-size:12px;font-weight:700;margin-bottom:1px}.proj p{font-size:10.5px;color:var(--text-dim);line-height:1.6}
 
-/* Robotics */
-.robo{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
-.robo:hover{border-color:var(--border-h)}
-.robo h3{font-size:12.5px;font-weight:700;margin-bottom:3px}.robo p{font-size:11px;color:var(--text-dim);line-height:1.6}
-.robo .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
-.robo .tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+/* Contact */
+.contact{text-align:center;padding:2.5rem 0}
+.contact h2{font-size:15px;font-weight:700;margin-bottom:3px}.contact h2 span{color:var(--clay)}
+.contact>p{font-size:11px;color:var(--text-dim);margin-bottom:12px}
+.c-links{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.cl{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--border-h);color:var(--text-dim);transition:all 0.2s}
+.cl:hover{border-color:var(--clay);color:var(--clay)}
+.cl.p{background:var(--clay);color:#fff;border-color:var(--clay)}
+footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:10px}
 
-/* Footer */
-.contact{text-align:center;padding:3rem 0}
-.contact h2{font-size:17px;font-weight:700;margin-bottom:4px}.contact h2 .grad{color:var(--accent)}
-.contact>p{font-size:12px;color:var(--text-dim);margin-bottom:16px}
-.contact-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.clink{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid var(--border-h);color:var(--text-dim);transition:all 0.2s}
-.clink:hover{border-color:var(--accent);color:var(--accent)}
-.clink.pri{background:var(--accent);color:#fff;border-color:var(--accent)}.clink.pri:hover{opacity:0.85}
-footer{text-align:center;padding:1.5rem 2rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
-
-/* Responsive */
-@media(max-width:768px){.nav-links{display:none}.header{flex-direction:column}.header-stats{grid-template-columns:1fr 1fr}.grid-3,.grid-2,.feat-body{grid-template-columns:1fr}.feat-bottom{grid-template-columns:repeat(3,1fr)}.feat-col:first-child{border-right:none;border-bottom:1px solid var(--border)}}
-@media(max-width:480px){.header-stats{grid-template-columns:1fr}.feat-bottom{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.nav-links{display:none}.g3,.g2,.m-body{grid-template-columns:1fr}.m-foot{grid-template-columns:repeat(3,1fr)}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.stats-row{flex-direction:column;gap:4px}}
 </style>
 </head>
 <body>
 
 <nav>
-<div class="logo">Jace<span>.</span>AI</div>
-<div class="nav-links"><a href="#morrigan">Morrigan</a><a href="#services">Services</a><a href="#expertise">Expertise</a><a href="#ml">ML</a><a href="#dl">Deep Learning</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div>
-<a href="mailto:jace100233260@gmail.com" class="nav-cta">Get in Touch</a>
+<div class="logo">Jace<span>.</span></div>
+<div class="nav-links"><a href="#morrigan">Morrigan</a><a href="#services">Services</a><a href="#expertise">Expertise</a><a href="#ml">ML</a><a href="#dl">DL</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div>
+<a href="mailto:jace100233260@gmail.com" class="nav-cta">Contact</a>
 </nav>
 
 <div class="wrap">
 
-<!-- Header -->
-<div class="header" style="padding-top:64px">
-<div class="header-left">
-<h1><span class="hi">Jace Sabr</span> — AI & Robotics Consultant</h1>
-<p class="sub">I help governments, enterprises, and organizations harness AI and robotics to modernize operations, automate workflows, and build intelligent systems. Based in the GCC, working globally.</p>
-<div class="header-actions">
-<a href="mailto:jace100233260@gmail.com" class="btn btn-p">Let's Talk</a>
-<a href="#services" class="btn btn-s">What I Do ↓</a>
+<div class="header">
+<h1><span>Jace Sabr</span> — AI & Robotics Consultant</h1>
+<p class="sub">Helping organizations harness AI and robotics to modernize operations, automate workflows, and build intelligent systems. GCC-based, working globally.</p>
+<div class="header-row">
+<a href="mailto:jace100233260@gmail.com" class="btn btn-p">Get in Touch</a>
+<a href="#services" class="btn btn-s">Services ↓</a>
 </div>
-</div>
-<div class="header-stats">
-<div class="hstat"><div class="val">3+</div><div class="lbl">Years Building Software</div></div>
-<div class="hstat"><div class="val">26</div><div class="lbl">ML & DL Algorithms</div></div>
-<div class="hstat"><div class="val">MERN</div><div class="lbl">Full-Stack Development</div></div>
-<div class="hstat"><div class="val">IoT</div><div class="lbl">Robotics & Automation</div></div>
+<div class="stats-row">
+<div class="stat"><b>3+</b> years building software</div>
+<div class="stat"><b>26</b> ML & DL algorithms</div>
+<div class="stat"><b>MERN</b> full-stack</div>
+<div class="stat"><b>IoT</b> robotics & automation</div>
 </div>
 </div>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Morrigan -->
 <section id="morrigan">
-<div class="sh"><div class="sh-left"><div class="label">Flagship Project</div><h2>Morrigan <span class="dim">— Emotionally Intelligent AI</span></h2></div><a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="btn btn-s" style="font-size:11px">Open Live Demo →</a></div>
-<div class="feat">
-<div class="feat-top">
-<div class="feat-title">
-<div class="icon">🧠</div>
-<div><h3>Deep Personalization Engine</h3><div class="sub">Persistent memory · Inner thought pipeline · Trust progression · MERN + LLaMA + OpenRouter</div></div>
+<div class="st"><span class="st-label">Flagship</span> Morrigan <span>— Emotionally Intelligent AI Companion</span></div>
+<div class="morrigan">
+<div class="m-head">
+<div><h3>Unleashed AI</h3><div class="sub">Self-hosted, unrestricted AI chat platform · MERN + LLaMA 3 + OpenRouter</div></div>
+<a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="m-link">Live Demo →</a>
 </div>
-<div class="feat-tags">
-<span class="ftag" style="background:rgba(99,102,241,0.1);color:var(--accent2)">Emotional AI</span>
-<span class="ftag" style="background:rgba(45,212,191,0.1);color:var(--teal)">Memory System</span>
-<span class="ftag" style="background:rgba(244,63,94,0.1);color:var(--rose)">6-Phase Pipeline</span>
+<div class="m-intent">
+<b>What it is:</b> A deeply personalized AI companion named Morrigan — not a generic chatbot, but a character with her own personality, memories, and emotional depth. She remembers past conversations, forms opinions about you over time, progressively reveals vulnerability as trust builds, and generates inner thoughts that shape her responses. The goal: AI that feels like talking to a real person, not a tool.
 </div>
+<div class="m-body">
+<div class="m-col">
+<div class="lbl">How It Works</div>
+Every message triggers a 6-phase pipeline: detect emotional signals in user input → retrieve relevant memories via embedding similarity → generate 2-3 candidate inner thoughts → score each by relevance, timing, trust gate & novelty → weave the winning thought into her response → stream it back via SSE in real time.
 </div>
-<div class="feat-body">
-<div class="feat-col">
-<div class="fc-label">Architecture</div>
-A fully custom AI character with a 6-phase inner thought system — detects emotional signals, retrieves contextual memories, generates candidate thoughts, scores them, then weaves the best one into her response via real-time SSE streaming.
-</div>
-<div class="feat-col">
-<div class="fc-label">Key Systems</div>
+<div class="m-col">
+<div class="lbl">Core Systems</div>
 <ul>
-<li><strong>Persistent Memory</strong> — embedding retrieval, cosine similarity, temporal decay</li>
-<li><strong>Contradiction Detection</strong> — 5-category classifier (evolution, ambivalence, genuine, refinement)</li>
-<li><strong>Trust Progression</strong> — 7-level system gating vulnerability & self-disclosure</li>
-<li><strong>Self-Atom Framework</strong> — 40 depth-gated personality atoms across 4 tiers</li>
-<li><strong>Relationship Health</strong> — 5-signal model: engagement, voice consistency, at-risk detection</li>
+<li><b>Persistent Memory</b> — embeddings + cosine similarity + temporal decay</li>
+<li><b>Contradiction Detection</b> — 5-category classifier across conversations</li>
+<li><b>Trust Progression</b> — 7 levels gating vulnerability & disclosure</li>
+<li><b>Self-Atom Framework</b> — 40 personality atoms across 4 depth tiers</li>
+<li><b>Relationship Health</b> — 5-signal model for engagement tracking</li>
 </ul>
 </div>
 </div>
-<div class="feat-bottom">
-<div class="feat-stat"><div class="v">LLaMA 3</div><div class="l">Chat Model</div></div>
-<div class="feat-stat"><div class="v">OpenRouter</div><div class="l">API Gateway</div></div>
-<div class="feat-stat"><div class="v">MongoDB</div><div class="l">Storage</div></div>
-<div class="feat-stat"><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
-<div class="feat-stat"><div class="v">SSE</div><div class="l">Streaming</div></div>
-<div class="feat-stat"><div class="v">Railway</div><div class="l">Deployed</div></div>
+<div class="m-foot">
+<div><div class="v">LLaMA 3</div><div class="l">Model</div></div>
+<div><div class="v">OpenRouter</div><div class="l">Gateway</div></div>
+<div><div class="v">MongoDB</div><div class="l">Storage</div></div>
+<div><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
+<div><div class="v">SSE</div><div class="l">Streaming</div></div>
+<div><div class="v">Railway</div><div class="l">Deployed</div></div>
 </div>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Services -->
 <section id="services">
-<div class="sh"><div class="sh-left"><div class="label">Services</div><h2>What I <span class="dim">Offer</span></h2></div></div>
-<div class="grid-3">
-<div class="card"><h3>AI Strategy</h3><p>Roadmaps for AI adoption — identifying high-impact opportunities, readiness evaluation, and phased implementation aligned with organizational goals.</p></div>
-<div class="card"><h3>Robotics & IoT</h3><p>Smart system deployment — sensor networks, automated monitoring, and robotic solutions for agriculture, logistics, security, and smart cities.</p></div>
-<div class="card"><h3>Computer Vision</h3><p>Visual intelligence — quality inspection, surveillance analytics, traffic monitoring, and real-time video processing for industrial applications.</p></div>
-<div class="card"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning to support smarter organizational decisions.</p></div>
-<div class="card"><h3>AI Training</h3><p>Practical AI workshops, hands-on training, and curriculum design to build internal capabilities and prepare teams for AI-driven workflows.</p></div>
-<div class="card"><h3>NLP & Conversational AI</h3><p>Multilingual chatbots, document intelligence, sentiment analysis, and automated customer service for Arabic and English markets.</p></div>
+<div class="st">Services <span>— What I Offer</span></div>
+<div class="g3">
+<div class="c"><h3>AI Strategy</h3><p>Roadmaps for AI adoption — identifying opportunities, readiness evaluation, and phased implementation aligned with organizational goals.</p></div>
+<div class="c"><h3>Robotics & IoT</h3><p>Sensor networks, automated monitoring, and robotic solutions for agriculture, logistics, security, and smart city infrastructure.</p></div>
+<div class="c"><h3>Computer Vision</h3><p>Quality inspection, surveillance analytics, traffic monitoring, and real-time video processing for industrial applications.</p></div>
+<div class="c"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning.</p></div>
+<div class="c"><h3>AI Training</h3><p>Workshops, hands-on training, and curriculum design to build internal AI capabilities.</p></div>
+<div class="c"><h3>NLP & Chat AI</h3><p>Multilingual chatbots, document intelligence, sentiment analysis for Arabic & English markets.</p></div>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Education -->
 <section id="education">
-<div class="sh"><div class="sh-left"><div class="label">Credentials</div><h2>Education <span class="dim">& Training</span></h2></div></div>
-<div class="grid-2">
-<div class="edu"><div class="year">2025 — Present</div><h3>Advanced AI & Robotics Solutions</h3><div class="school">Itronix Solutions — 1 Year Intensive</div><div class="detail">AI/ML, deep learning, computer vision, NLP, and robotics with hands-on project delivery.</div></div>
-<div class="edu"><div class="year">2020</div><h3>Bachelor of Computer Science</h3><div class="school">University of British Columbia (UBC)</div><div class="detail">Algorithms, data structures, software engineering, systems design. Foundation for 3+ years of production development.</div></div>
+<div class="st">Education</div>
+<div class="g2">
+<div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2025 — Present</div><h3>Advanced AI & Robotics</h3><p>Itronix Solutions — 1yr intensive. AI/ML, deep learning, CV, NLP, robotics with hands-on delivery.</p></div>
+<div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2020</div><h3>BSc Computer Science</h3><p>University of British Columbia. Algorithms, data structures, software engineering, systems design.</p></div>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Expertise -->
 <section id="expertise">
-<div class="sh"><div class="sh-left"><div class="label">Technical Depth</div><h2>Areas of <span class="dim">Expertise</span></h2></div></div>
-<div class="grid-3">
-<div class="card">
-<h3>Deep Learning</h3><p>Neural architectures from MLPs to CNNs, RNNs, and transformers for pattern recognition, prediction, and generation.</p>
-<div class="snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">128</span>, activation=<span class="str">'relu'</span>),<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">10</span>, activation=<span class="str">'softmax'</span>)])</div>
-<div class="tags"><span class="tag">TensorFlow</span><span class="tag">PyTorch</span><span class="tag">Keras</span><span class="tag">CNNs</span></div>
+<div class="st">Expertise</div>
+<div class="g3">
+<div class="c">
+<h3>Deep Learning</h3><p>MLPs, CNNs, RNNs, transformers — pattern recognition, prediction, generation.</p>
+<div class="snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">128</span>, <span class="str">'relu'</span>),<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">10</span>, <span class="str">'softmax'</span>)])</div>
+<div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">TensorFlow</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">PyTorch</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Keras</span></div>
 </div>
-<div class="card">
-<h3>Computer Vision</h3><p>Real-time image processing, object detection, face recognition, and video analytics for industrial and safety applications.</p>
+<div class="c">
+<h3>Computer Vision</h3><p>Object detection, face recognition, video analytics for industrial & safety applications.</p>
 <div class="snippet"><span class="kw">import</span> cv2<br>cap = cv2.<span class="fn">VideoCapture</span>(<span class="str">0</span>)<br>faces = cascade.<span class="fn">detectMultiScale</span>(frame)</div>
-<div class="tags"><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">OpenCV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">YOLO</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">Face Detection</span></div>
+<div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">YOLO</span></div>
 </div>
-<div class="card">
-<h3>NLP</h3><p>Text intelligence, sentiment analysis, document understanding, and multilingual conversational AI.</p>
-<div class="snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br>clf = <span class="fn">pipeline</span>(<span class="str">'sentiment-analysis'</span>)<br>clf(<span class="str">"Transforming industries"</span>)</div>
-<div class="tags"><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">HuggingFace</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Transformers</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">NLTK</span></div>
+<div class="c">
+<h3>NLP</h3><p>Sentiment analysis, document understanding, multilingual conversational AI.</p>
+<div class="snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br>clf = <span class="fn">pipeline</span>(<span class="str">'sentiment'</span>)</div>
+<div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">HuggingFace</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">NLTK</span></div>
 </div>
-<div class="card">
-<h3>ML & Analytics</h3><p>18 algorithms implemented — regression, classification, clustering, evaluation, and ensemble methods with 360+ examples.</p>
-<div class="tags"><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">Scikit-learn</span><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">Pandas</span><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">XGBoost</span></div>
+<div class="c">
+<h3>ML & Analytics</h3><p>18 algorithms — regression, classification, clustering, evaluation. 360+ code examples.</p>
+<div class="tags"><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Scikit-learn</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Pandas</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">XGBoost</span></div>
 </div>
-<div class="card">
-<h3>Full-Stack Dev</h3><p>3+ years MERN stack — React, Node.js, MongoDB, Express. End-to-end solutions from API to UI.</p>
-<div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span><span class="tag">REST APIs</span></div>
+<div class="c">
+<h3>Full-Stack</h3><p>3+ years MERN — React, Node.js, MongoDB, Express. API to UI.</p>
+<div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">React</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Node.js</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">MongoDB</span></div>
 </div>
-<div class="card">
-<h3>IoT & Embedded</h3><p>Arduino, ESP8266, sensor networks, and hardware-software integration for smart environments and automation.</p>
-<div class="tags"><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Arduino</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">ESP8266</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Sensors</span></div>
+<div class="c">
+<h3>IoT & Embedded</h3><p>Arduino, ESP8266, sensor networks, hardware-software integration.</p>
+<div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Arduino</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">ESP8266</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Sensors</span></div>
 </div>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
-<!-- ML Algorithms -->
+<!-- ML -->
 <section id="ml">
-<div class="sh"><div class="sh-left"><div class="label">Algorithm Library</div><h2>18 ML Algorithms <span class="dim">Explored</span></h2></div><div class="sh-right">Each with 20 code examples, real datasets, LaTeX equations, and analysis.</div></div>
-<div class="algo-cats">
-<div class="acat">Regression <span class="c">6</span></div>
-<div class="acat">Classification <span class="c">6</span></div>
-<div class="acat">Clustering <span class="c">2</span></div>
-<div class="acat">Association <span class="c">1</span></div>
-<div class="acat">Evaluation <span class="c">3</span></div>
+<div class="st">18 ML Algorithms <span>— each with 20 examples, real datasets & LaTeX</span></div>
+<div class="cats">
+<div class="cat">Regression <b>6</b></div>
+<div class="cat">Classification <b>6</b></div>
+<div class="cat">Clustering <b>2</b></div>
+<div class="cat">Association <b>1</b></div>
+<div class="cat">Evaluation <b>3</b></div>
 </div>
-<div class="algo-grid">
-<a href="simple-linear-regression.html" class="algo-pill"><span class="num">01</span>Simple Linear Regression</a>
-<a href="multiple-linear-regression.html" class="algo-pill"><span class="num">02</span>Multiple Linear Regression</a>
-<a href="polynomial-regression.html" class="algo-pill"><span class="num">03</span>Polynomial Regression</a>
-<a href="support-vector-regression.html" class="algo-pill"><span class="num">04</span>Support Vector Regression</a>
-<a href="decision-tree-regression.html" class="algo-pill"><span class="num">05</span>Decision Tree Regression</a>
-<a href="random-forest-regression.html" class="algo-pill"><span class="num">06</span>Random Forest Regression</a>
-<a href="logistic-regression.html" class="algo-pill"><span class="num">07</span>Logistic Regression</a>
-<a href="k-nearest-neighbors.html" class="algo-pill"><span class="num">08</span>K-Nearest Neighbors</a>
-<a href="support-vector-machine.html" class="algo-pill"><span class="num">09</span>Support Vector Machine</a>
-<a href="naive-bayes.html" class="algo-pill"><span class="num">10</span>Naive Bayes</a>
-<a href="decision-tree-classification.html" class="algo-pill"><span class="num">11</span>Decision Tree Classification</a>
-<a href="random-forest-classification.html" class="algo-pill"><span class="num">12</span>Random Forest Classification</a>
-<a href="k-means-clustering.html" class="algo-pill"><span class="num">13</span>K-Means Clustering</a>
-<a href="hierarchical-clustering.html" class="algo-pill"><span class="num">14</span>Hierarchical Clustering</a>
-<a href="apriori.html" class="algo-pill"><span class="num">15</span>Apriori Algorithm</a>
-<a href="classification-metrics.html" class="algo-pill"><span class="num">16</span>Classification Metrics</a>
-<a href="k-fold-cross-validation.html" class="algo-pill"><span class="num">17</span>K-Fold Cross Validation</a>
-<a href="grid-search.html" class="algo-pill"><span class="num">18</span>Grid Search</a>
+<div class="pills">
+<a href="simple-linear-regression.html" class="pill"><span class="n">01</span>Simple Linear Regression</a>
+<a href="multiple-linear-regression.html" class="pill"><span class="n">02</span>Multiple Linear Regression</a>
+<a href="polynomial-regression.html" class="pill"><span class="n">03</span>Polynomial Regression</a>
+<a href="support-vector-regression.html" class="pill"><span class="n">04</span>Support Vector Regression</a>
+<a href="decision-tree-regression.html" class="pill"><span class="n">05</span>Decision Tree Regression</a>
+<a href="random-forest-regression.html" class="pill"><span class="n">06</span>Random Forest Regression</a>
+<a href="logistic-regression.html" class="pill"><span class="n">07</span>Logistic Regression</a>
+<a href="k-nearest-neighbors.html" class="pill"><span class="n">08</span>K-Nearest Neighbors</a>
+<a href="support-vector-machine.html" class="pill"><span class="n">09</span>Support Vector Machine</a>
+<a href="naive-bayes.html" class="pill"><span class="n">10</span>Naive Bayes</a>
+<a href="decision-tree-classification.html" class="pill"><span class="n">11</span>Decision Tree Classification</a>
+<a href="random-forest-classification.html" class="pill"><span class="n">12</span>Random Forest Classification</a>
+<a href="k-means-clustering.html" class="pill"><span class="n">13</span>K-Means Clustering</a>
+<a href="hierarchical-clustering.html" class="pill"><span class="n">14</span>Hierarchical Clustering</a>
+<a href="apriori.html" class="pill"><span class="n">15</span>Apriori Algorithm</a>
+<a href="classification-metrics.html" class="pill"><span class="n">16</span>Classification Metrics</a>
+<a href="k-fold-cross-validation.html" class="pill"><span class="n">17</span>K-Fold Cross Validation</a>
+<a href="grid-search.html" class="pill"><span class="n">18</span>Grid Search</a>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
-<!-- Deep Learning -->
+<!-- DL -->
 <section id="dl">
-<div class="sh"><div class="sh-left"><div class="label">Deep Learning</div><h2>8 DL Architectures <span class="dim">Built & Documented</span></h2></div><div class="sh-right">Theory, code implementations, and real-world applications.</div></div>
-<div class="algo-cats">
-<div class="acat">Vision <span class="c">2</span></div>
-<div class="acat">Sequence <span class="c">2</span></div>
-<div class="acat">Generative <span class="c">2</span></div>
-<div class="acat">Attention <span class="c">1</span></div>
-<div class="acat">RL <span class="c">1</span></div>
+<div class="st">8 DL Architectures <span>— theory, code & applications</span></div>
+<div class="cats">
+<div class="cat">Vision <b>2</b></div>
+<div class="cat">Sequence <b>2</b></div>
+<div class="cat">Generative <b>2</b></div>
+<div class="cat">Attention <b>1</b></div>
+<div class="cat">RL <b>1</b></div>
 </div>
-<div class="algo-grid">
-<a href="cnn.html" class="algo-pill" style="border-left:2px solid var(--accent)"><span class="num">DL1</span>Convolutional Neural Networks</a>
-<a href="rnn-lstm.html" class="algo-pill" style="border-left:2px solid #60a5fa"><span class="num" style="color:#60a5fa">DL2</span>RNNs & LSTMs</a>
-<a href="transformers.html" class="algo-pill" style="border-left:2px solid var(--teal)"><span class="num" style="color:var(--teal)">DL3</span>Transformers & Attention</a>
-<a href="gan.html" class="algo-pill" style="border-left:2px solid var(--rose)"><span class="num" style="color:var(--rose)">DL4</span>Generative Adversarial Networks</a>
-<a href="autoencoder.html" class="algo-pill" style="border-left:2px solid var(--amber)"><span class="num" style="color:var(--amber)">DL5</span>Autoencoders & VAEs</a>
-<a href="resnet.html" class="algo-pill" style="border-left:2px solid var(--accent)"><span class="num">DL6</span>ResNets & Skip Connections</a>
-<a href="reinforcement-learning.html" class="algo-pill" style="border-left:2px solid #60a5fa"><span class="num" style="color:#60a5fa">DL7</span>Reinforcement Learning</a>
-<a href="diffusion-models.html" class="algo-pill" style="border-left:2px solid var(--teal)"><span class="num" style="color:var(--teal)">DL8</span>Diffusion Models</a>
+<div class="pills">
+<a href="cnn.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL1</span>Convolutional Neural Networks</a>
+<a href="rnn-lstm.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL2</span>RNNs & LSTMs</a>
+<a href="transformers.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL3</span>Transformers & Attention</a>
+<a href="gan.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL4</span>Generative Adversarial Networks</a>
+<a href="autoencoder.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL5</span>Autoencoders & VAEs</a>
+<a href="resnet.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL6</span>ResNets & Skip Connections</a>
+<a href="reinforcement-learning.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL7</span>Reinforcement Learning</a>
+<a href="diffusion-models.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL8</span>Diffusion Models</a>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Projects -->
 <section id="projects">
-<div class="sh"><div class="sh-left"><div class="label">Applied Work</div><h2>Case <span class="dim">Studies</span></h2></div></div>
-<div class="grid-2">
-<a href="ny-session-prediction.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(245,158,11,0.1);color:var(--amber)">Trading</span><span class="pb" style="background:rgba(45,212,191,0.1);color:var(--teal)">ML Pipeline</span></div><h3>NY Session Price Direction</h3><p>Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, and backtesting.</p></a>
-<a href="credit-card-fraud.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(96,165,250,0.1);color:#60a5fa">Finance</span><span class="pb" style="background:rgba(99,102,241,0.1);color:var(--accent2)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p>Detecting 492 fraudulent transactions in 284,807 — extreme class imbalance, SMOTE, and the accuracy trap.</p></a>
-<a href="ad-targeting.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(45,212,191,0.1);color:var(--teal)">Advertising</span><span class="pb" style="background:rgba(244,63,94,0.1);color:var(--rose)">Deep Learning</span></div><h3>Ad Targeting & CTR Prediction</h3><p>Click-through rate at scale — LR baseline, LightGBM, Wide & Deep architecture, position bias, A/B testing.</p></a>
-<a href="video-recommendation.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(99,102,241,0.1);color:var(--accent2)">RecSys</span><span class="pb" style="background:rgba(96,165,250,0.1);color:#60a5fa">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p>Collaborative filtering, content-based cold start, Two-Tower model, and the filter bubble problem.</p></a>
+<div class="st">Case Studies</div>
+<div class="g2">
+<a href="ny-session-prediction.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Trading</span><span class="badge" style="background:var(--sage-dim);color:var(--sage)">ML</span></div><h3>NY Session Price Direction</h3><p>Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, backtesting.</p></a>
+<a href="credit-card-fraud.html" class="proj"><div class="badges"><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Finance</span><span class="badge" style="background:var(--clay-dim);color:var(--clay)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p>492 fraudulent in 284,807 transactions — extreme class imbalance, SMOTE, the accuracy trap.</p></a>
+<a href="ad-targeting.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sage-dim);color:var(--sage)">Ads</span><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Deep Learning</span></div><h3>Ad Targeting & CTR Prediction</h3><p>LR baseline, LightGBM, Wide & Deep architecture, position bias, A/B testing at scale.</p></a>
+<a href="video-recommendation.html" class="proj"><div class="badges"><span class="badge" style="background:var(--clay-dim);color:var(--clay)">RecSys</span><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p>Collaborative filtering, content-based cold start, Two-Tower model, filter bubble problem.</p></a>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Robotics -->
 <section id="robotics">
-<div class="sh"><div class="sh-left"><div class="label">Hardware + AI</div><h2>Robotics <span class="dim">& IoT</span></h2></div></div>
-<div class="grid-3">
-<div class="robo"><h3>Fire Detection System</h3><p>Real-time fire detection using flame and temperature sensors with ESP8266 — automated alerts and response triggers.</p><div class="tags"><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Arduino</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">ESP8266</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Sensors</span></div></div>
-<div class="robo"><h3>Smart Dog Feeder</h3><p>AI-powered feeder that identifies individual animals via computer vision and dispenses personalized portions.</p><div class="tags"><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">CV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">OpenCV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">IoT</span></div></div>
-<div class="robo"><h3>Counting System</h3><p>Infrared sensor array for counting people/objects with real-time data logging and pattern analysis.</p><div class="tags"><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Arduino</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">IR Sensors</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Logging</span></div></div>
+<div class="st">Robotics & IoT</div>
+<div class="g3">
+<div class="c"><h3>Fire Detection</h3><p>Flame & temperature sensors with ESP8266. Automated alerts and response triggers.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Arduino</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">ESP8266</span></div></div>
+<div class="c"><h3>Smart Dog Feeder</h3><p>CV-powered feeder — identifies animals, dispenses personalized portions.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">IoT</span></div></div>
+<div class="c"><h3>Counting System</h3><p>IR sensor array for people/object counting with real-time logging.</p><div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">Arduino</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">IR Sensors</span></div></div>
 </div>
 </section>
 
-<div class="divider"></div>
+<hr>
 
 <!-- Contact -->
 <section class="contact" id="contact">
-<h2>Let's Build Something <span class="grad">Intelligent</span></h2>
-<p>Whether you're exploring AI adoption or ready to implement — let's talk.</p>
-<div class="contact-links">
-<a href="mailto:jace100233260@gmail.com" class="clink pri">jace100233260@gmail.com</a>
-<a href="#" class="clink">LinkedIn →</a>
-<a href="#" class="clink">GitHub →</a>
+<h2>Let's Build Something <span>Intelligent</span></h2>
+<p>Exploring AI adoption or ready to implement — let's talk.</p>
+<div class="c-links">
+<a href="mailto:jace100233260@gmail.com" class="cl p">jace100233260@gmail.com</a>
+<a href="#" class="cl">LinkedIn →</a>
+<a href="#" class="cl">GitHub →</a>
 </div>
 </section>
 
