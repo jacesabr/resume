@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Jace Sabr — AI & Robotics Consultant Portfolio",
   "scripts": {
-    "start": "serve -s . -p $PORT"
+    "start": "serve -s . -l tcp://0.0.0.0:$PORT"
   },
   "dependencies": {
     "serve": "^14.2.0"
