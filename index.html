@@ -3,297 +3,351 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Jace Sabr — AI &amp; Robotics Consultant</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+<title>Jace Sabr — AI & Robotics Consultant</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--terra:#C15F3C;--terra-light:#DA7756;--terra-glow:rgba(193,95,60,0.08);--pampas:#F4F3EE;--cream:#FAF9F5;--cloudy:#B1ADA1;--teal:#00C4CC;--teal-deep:#00A8B0;--teal-glow:rgba(0,196,204,0.08);--blue:#3969E7;--blue-glow:rgba(57,105,231,0.08);--purple:#7D2AE7;--purple-glow:rgba(125,42,231,0.08);--amber:#F59E0B;--amber-glow:rgba(245,158,11,0.08);--bg:var(--cream);--surface:#FFFFFF;--surface2:var(--pampas);--border:rgba(0,0,0,0.07);--border-h:rgba(0,0,0,0.12);--text:#1A1A18;--text-dim:#6B6861;--text-light:#908D82;--radius:14px;--radius-lg:20px}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");background-size:128px}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.9rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,249,245,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-nav .logo{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em}nav .logo span{color:var(--terra)}
-nav .nav-links{display:flex;gap:2rem}nav .nav-links a{color:var(--text-dim);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.3s}nav .nav-links a:hover{color:var(--terra)}
-.nav-cta{background:var(--terra);color:#fff;padding:0.5rem 1.3rem;border-radius:30px;font-size:0.8rem;font-weight:600;text-decoration:none;transition:all 0.3s}.nav-cta:hover{background:var(--terra-light);transform:translateY(-1px);box-shadow:0 6px 20px rgba(193,95,60,0.25)}
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 2rem 4rem;max-width:1100px;margin:0 auto;position:relative}
-.hero::before{content:'';position:absolute;top:5%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(0,196,204,0.06) 0%,rgba(57,105,231,0.03) 40%,transparent 70%);border-radius:50%;pointer-events:none}
-.hero::after{content:'';position:absolute;bottom:10%;left:-15%;width:500px;height:500px;background:radial-gradient(circle,rgba(193,95,60,0.05) 0%,transparent 70%);border-radius:50%;pointer-events:none}
-.hero-label{display:inline-flex;align-items:center;gap:0.5rem;background:var(--terra-glow);border:1px solid rgba(193,95,60,0.12);padding:0.4rem 1rem;border-radius:30px;font-size:0.75rem;font-weight:600;color:var(--terra);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInUp 0.8s ease both}
-.hero-label .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,6.5vw,5rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;margin-bottom:0.6rem;animation:fadeInUp 0.8s ease 0.1s both}
-.hero h1 .accent{background:linear-gradient(135deg,var(--terra),var(--terra-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero h1 .accent2{background:linear-gradient(135deg,var(--teal-deep),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
-.hero .tagline{font-size:clamp(1.05rem,2.2vw,1.35rem);color:var(--text-dim);font-weight:400;max-width:620px;margin-bottom:2.5rem;line-height:1.7;animation:fadeInUp 0.8s ease 0.2s both}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeInUp 0.8s ease 0.3s both}
-.btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--terra);color:#fff;padding:0.85rem 2rem;border-radius:30px;font-size:0.9rem;font-weight:600;text-decoration:none;transition:all 0.3s}.btn-primary:hover{background:var(--terra-light);transform:translateY(-2px);box-shadow:0 12px 32px rgba(193,95,60,0.25)}
-.btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.85rem 2rem;border-radius:30px;font-size:0.9rem;font-weight:500;text-decoration:none;transition:all 0.3s;border:1px solid var(--border-h)}.btn-secondary:hover{border-color:var(--terra);color:var(--terra)}
-.hero-stats{display:flex;gap:3rem;margin-top:4rem;padding-top:2rem;border-top:1px solid var(--border);animation:fadeInUp 0.8s ease 0.4s both}
-.stat-item .stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--terra)}.stat-item .stat-label{font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;font-weight:500}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-section{max-width:1100px;margin:0 auto;padding:5rem 2rem}.section-header{margin-bottom:3rem}
-.section-header .label{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--terra);margin-bottom:0.75rem}
-.section-header h2{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4vw,2.8rem);font-weight:700;letter-spacing:-0.02em;line-height:1.15}
-.section-header h2 .dim{color:var(--cloudy)}.section-header p{color:var(--text-dim);font-size:0.95rem;max-width:600px;margin-top:0.75rem}
-.value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
-.value-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:all 0.4s ease;position:relative;overflow:hidden}
-.value-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.06)}
-.value-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.value-card:nth-child(1)::before{background:var(--terra)}.value-card:nth-child(2)::before{background:var(--teal)}.value-card:nth-child(3)::before{background:var(--blue)}.value-card:nth-child(4)::before{background:var(--purple)}.value-card:nth-child(5)::before{background:linear-gradient(90deg,var(--terra),var(--teal))}.value-card:nth-child(6)::before{background:linear-gradient(90deg,var(--blue),var(--purple))}
-.value-card .v-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.25rem}
-.value-card h3{font-size:1.05rem;font-weight:700;margin-bottom:0.5rem}.value-card p{font-size:0.85rem;color:var(--text-dim);line-height:1.65}
-.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.edu-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;position:relative;overflow:hidden;transition:all 0.4s ease}
-.edu-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.06)}
-.edu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--terra),var(--teal),var(--blue))}
-.edu-card .year{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--terra);margin-bottom:0.5rem}
-.edu-card h3{font-size:1.1rem;font-weight:700;margin-bottom:0.3rem}.edu-card .school{color:var(--text-dim);font-size:0.88rem}.edu-card .detail{color:var(--text-light);font-size:0.82rem;margin-top:0.75rem;line-height:1.6}
-.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-.domain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:all 0.4s ease;position:relative;overflow:hidden}
-.domain-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.06);border-color:var(--border-h)}
-.domain-card .icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.25rem}
-.domain-card h3{font-size:1.05rem;font-weight:700;margin-bottom:0.5rem}.domain-card .desc{color:var(--text-dim);font-size:0.85rem;line-height:1.6;margin-bottom:1.25rem}
-.tag-row{display:flex;flex-wrap:wrap;gap:0.4rem}.tag{padding:0.22rem 0.6rem;border-radius:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.03em}
-.code-snippet{background:var(--pampas);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1.1rem;margin-top:1rem;font-family:'Courier New',monospace;font-size:0.72rem;line-height:1.75;color:var(--text-dim);overflow-x:auto}
-.code-snippet .kw{color:var(--purple)}.code-snippet .fn{color:var(--blue)}.code-snippet .str{color:var(--teal-deep)}.code-snippet .cm{color:var(--cloudy);font-style:italic}
-.algo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem}
-.algo-pill{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.9rem;font-size:0.8rem;font-weight:500;color:var(--text);transition:all 0.3s;display:flex;align-items:center;gap:0.5rem}
-.algo-pill:hover{border-color:var(--terra);background:var(--surface2)}.algo-pill .num{color:var(--terra);font-weight:700;font-size:0.7rem;min-width:22px}
-.algo-categories{display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1.75rem}
-.algo-cat{padding:0.45rem 1.1rem;border-radius:30px;font-size:0.75rem;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:default;display:flex;align-items:center;gap:0.5rem}
-.algo-cat .count{background:var(--terra-glow);color:var(--terra);font-size:0.65rem;font-weight:700;padding:0.12rem 0.45rem;border-radius:20px}
-.project-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.4s ease;text-decoration:none;color:var(--text);display:block}
-.project-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.06);border-color:var(--border-h)}
-.project-thumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
-.project-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,var(--surface) 100%)}
-.project-body{padding:1.25rem 1.5rem 1.5rem}.project-body .badge-row{display:flex;gap:0.4rem;margin-bottom:0.6rem}
-.project-body .pbadge{font-size:0.65rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:20px}
-.project-body h3{font-size:1rem;font-weight:700;margin-bottom:0.35rem}.project-body .pdesc{font-size:0.8rem;color:var(--text-dim);line-height:1.6}
-.robo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
-.robo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.4s ease}
-.robo-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.06);border-color:var(--border-h)}
-.robo-thumb{height:180px;background:var(--pampas);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:0.8rem}
-.robo-thumb .play-icon{width:52px;height:52px;border-radius:50%;border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:1.1rem;transition:all 0.3s}
-.robo-card:hover .play-icon{background:var(--teal);color:#fff}
-.robo-body{padding:1.25rem 1.5rem}.robo-body h3{font-size:0.95rem;font-weight:700;margin-bottom:0.25rem}
-.robo-body .rdesc{font-size:0.8rem;color:var(--text-dim);line-height:1.6}
-.robo-body .rtags{display:flex;gap:0.35rem;margin-top:0.65rem;flex-wrap:wrap}
-.robo-body .rtag{font-size:0.65rem;font-weight:600;padding:0.18rem 0.5rem;border-radius:6px}
-.contact-section{text-align:center;padding:6rem 2rem;position:relative}
-.contact-section::before{content:'';position:absolute;top:-5%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(193,95,60,0.04) 0%,rgba(0,196,204,0.03) 40%,transparent 70%);pointer-events:none}
-.contact-section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem}
-.contact-section h2 .grad{background:linear-gradient(135deg,var(--terra),var(--teal-deep),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
-.contact-section>p{color:var(--text-dim);font-size:1rem;margin-bottom:2.5rem;max-width:550px;margin-left:auto;margin-right:auto}
-.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
-.contact-link{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 1.8rem;border-radius:30px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.3s;border:1px solid var(--border-h);color:var(--text)}
-.contact-link:hover{border-color:var(--terra);color:var(--terra);transform:translateY(-2px)}
-.contact-link.primary{background:var(--terra);color:#fff;border-color:var(--terra)}.contact-link.primary:hover{background:var(--terra-light);box-shadow:0 10px 28px rgba(193,95,60,0.25)}
-footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text-light);font-size:0.75rem;letter-spacing:0.04em}
-.featured-bottom-6{grid-template-columns:repeat(6,1fr)}
-.featured{max-width:1100px;margin:0 auto;padding:2rem 2rem 0}
-.featured-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:relative}
-.featured-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue),var(--teal))}
-.featured-top{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
-.featured-top .ft-left{display:flex;align-items:center;gap:0.75rem}
-.featured-top .ft-icon{width:40px;height:40px;border-radius:10px;background:var(--purple-glow);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-.featured-top h3{font-size:1rem;font-weight:700;margin:0}.featured-top .ft-sub{font-size:0.78rem;color:var(--text-dim)}
-.ft-tags{display:flex;gap:0.4rem;flex-wrap:wrap}
-.ft-tag{font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:20px;letter-spacing:0.04em}
-.ft-link{font-size:0.82rem;font-weight:600;color:var(--purple);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;transition:color 0.3s}.ft-link:hover{color:var(--blue)}
-.featured-embed{width:100%;height:520px;border:none;display:block;background:var(--pampas)}
-.featured-bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border)}
-.featured-stat{padding:1rem 1.5rem;text-align:center;border-right:1px solid var(--border)}
-.featured-stat:last-child{border-right:none}
-.fs-val{font-size:0.85rem;font-weight:700;color:var(--text)}.fs-label{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em}
-@media(max-width:768px){.featured-embed{height:360px}.featured-bottom{grid-template-columns:1fr 1fr}.featured-top{flex-direction:column;align-items:flex-start}}
-.section-divider{max-width:1100px;margin:0 auto;height:1px;background:var(--border)}
-@media(max-width:768px){nav .nav-links{display:none}.hero-stats{gap:1.5rem;flex-wrap:wrap}.edu-grid,.project-grid{grid-template-columns:1fr}.domain-grid{grid-template-columns:1fr}.value-grid{grid-template-columns:1fr}section{padding:3rem 1.25rem}.featured-bottom-6,.featured-bottom{grid-template-columns:repeat(3,1fr) !important}.featured-card div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}}
-@media(max-width:480px){.hero-stats{gap:1rem}.stat-item .stat-num{font-size:1.6rem}}
+:root{--bg:#0a0a0b;--surface:#141416;--surface2:#1a1a1e;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);--text:#e4e4e7;--text-dim:#8b8b94;--text-muted:#56565e;--accent:#6366f1;--accent2:#818cf8;--teal:#2dd4bf;--amber:#f59e0b;--rose:#f43f5e;--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:13px}
+a{color:inherit;text-decoration:none}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,11,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-weight:700;font-size:13px;letter-spacing:-0.02em}.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:1.5rem}.nav-links a{color:var(--text-dim);font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--accent);color:#fff;padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;transition:opacity 0.2s}.nav-cta:hover{opacity:0.85}
+
+/* Layout */
+.wrap{max-width:1080px;margin:0 auto;padding:0 2rem}
+section{padding:3rem 0}
+.divider{height:1px;background:var(--border);margin:0 auto;max-width:1080px}
+
+/* Header */
+.header{padding:4.5rem 0 2rem;display:flex;justify-content:space-between;align-items:flex-start;gap:3rem;flex-wrap:wrap}
+.header-left{max-width:520px}
+.header-left h1{font-size:24px;font-weight:700;letter-spacing:-0.03em;line-height:1.3;margin-bottom:6px}
+.header-left h1 .hi{color:var(--accent)}
+.header-left .sub{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:16px}
+.header-actions{display:flex;gap:8px}
+.btn{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:0.85}
+.btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+.header-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hstat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px}
+.hstat .val{font-size:15px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}.hstat .lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+
+/* Section Headers */
+.sh{margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+.sh-left .label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.sh-left h2{font-size:17px;font-weight:700;letter-spacing:-0.02em}.sh-left h2 .dim{color:var(--text-muted)}
+.sh-right{font-size:11px;color:var(--text-dim);max-width:380px;text-align:right}
+
+/* Morrigan Featured */
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.feat-top{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border)}
+.feat-title{display:flex;align-items:center;gap:8px}
+.feat-title .icon{width:28px;height:28px;border-radius:6px;background:rgba(99,102,241,0.1);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
+.feat-title h3{font-size:13px;font-weight:700}.feat-title .sub{font-size:11px;color:var(--text-dim)}
+.feat-tags{display:flex;gap:4px;flex-wrap:wrap}
+.ftag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:0.02em}
+.feat-body{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
+.feat-col{padding:14px 16px;font-size:12px;color:var(--text-dim);line-height:1.7}
+.feat-col:first-child{border-right:1px solid var(--border)}
+.feat-col .fc-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.feat-col ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.feat-col li::before{content:"›";color:var(--accent);margin-right:6px;font-weight:700}
+.feat-bottom{display:grid;grid-template-columns:repeat(6,1fr)}
+.feat-stat{padding:8px 12px;text-align:center;border-right:1px solid var(--border);font-size:11px}
+.feat-stat:last-child{border-right:none}
+.feat-stat .v{font-weight:700;color:var(--text);font-size:11px}.feat-stat .l{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em}
+
+/* Cards Grid */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
+.card:hover{border-color:var(--border-h)}
+.card h3{font-size:13px;font-weight:700;margin-bottom:4px}
+.card p{font-size:11.5px;color:var(--text-dim);line-height:1.65}
+.card .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.card .tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,0.08);color:var(--accent2)}
+.card .snippet{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.7;color:var(--text-dim)}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:var(--teal)}.cm{color:var(--text-muted);font-style:italic}
+
+/* Education */
+.edu{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.edu .year{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase}
+.edu h3{font-size:13px;font-weight:700;margin:2px 0}.edu .school{font-size:11.5px;color:var(--text-dim)}.edu .detail{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.6}
+
+/* Algo Grid */
+.algo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.algo-pill{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;transition:border-color 0.2s}
+.algo-pill:hover{border-color:var(--accent)}
+.algo-pill .num{color:var(--accent);font-weight:700;font-size:10px;font-family:'JetBrains Mono',monospace;min-width:20px}
+.algo-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.acat{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.acat .c{background:rgba(99,102,241,0.15);color:var(--accent);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
+
+/* Projects */
+.proj{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s;display:block}
+.proj:hover{border-color:var(--border-h)}
+.proj .pbadges{display:flex;gap:4px;margin-bottom:4px}
+.proj .pb{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+.proj h3{font-size:12.5px;font-weight:700;margin-bottom:2px}.proj p{font-size:11px;color:var(--text-dim);line-height:1.6}
+
+/* Robotics */
+.robo{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
+.robo:hover{border-color:var(--border-h)}
+.robo h3{font-size:12.5px;font-weight:700;margin-bottom:3px}.robo p{font-size:11px;color:var(--text-dim);line-height:1.6}
+.robo .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.robo .tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+
+/* Footer */
+.contact{text-align:center;padding:3rem 0}
+.contact h2{font-size:17px;font-weight:700;margin-bottom:4px}.contact h2 .grad{color:var(--accent)}
+.contact>p{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+.contact-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.clink{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid var(--border-h);color:var(--text-dim);transition:all 0.2s}
+.clink:hover{border-color:var(--accent);color:var(--accent)}
+.clink.pri{background:var(--accent);color:#fff;border-color:var(--accent)}.clink.pri:hover{opacity:0.85}
+footer{text-align:center;padding:1.5rem 2rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
+
+/* Responsive */
+@media(max-width:768px){.nav-links{display:none}.header{flex-direction:column}.header-stats{grid-template-columns:1fr 1fr}.grid-3,.grid-2,.feat-body{grid-template-columns:1fr}.feat-bottom{grid-template-columns:repeat(3,1fr)}.feat-col:first-child{border-right:none;border-bottom:1px solid var(--border)}}
+@media(max-width:480px){.header-stats{grid-template-columns:1fr}.feat-bottom{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
 <nav>
 <div class="logo">Jace<span>.</span>AI</div>
-<div class="nav-links"><a href="#flagship">Morrigan</a><a href="#services">Services</a><a href="#education">Credentials</a><a href="#expertise">Expertise</a><a href="#ml">ML Algorithms</a><a href="#deep-learning">Deep Learning</a><a href="#projects">Case Studies</a></div>
-<a href="mailto:jace100233260@gmail.com" class="nav-cta">Schedule a Call</a>
+<div class="nav-links"><a href="#morrigan">Morrigan</a><a href="#services">Services</a><a href="#expertise">Expertise</a><a href="#ml">ML</a><a href="#dl">Deep Learning</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div>
+<a href="mailto:jace100233260@gmail.com" class="nav-cta">Get in Touch</a>
 </nav>
 
-<div class="hero">
-<div class="hero-label"><span class="dot"></span> Open to Opportunities</div>
-<h1><span class="accent">Jace Sabr</span><br>AI &amp; Robotics<br><span class="accent2">Consultant</span></h1>
-<p class="tagline">Helping governments, enterprises, and forward-thinking organizations harness artificial intelligence and robotics to modernize operations, unlock new capabilities, and lead the next wave of innovation.</p>
-<div class="hero-actions">
-<a href="mailto:jace100233260@gmail.com" class="btn-primary">✉ Let's Discuss Your Vision</a>
-<a href="#services" class="btn-secondary">How I Can Help ↓</a>
+<div class="wrap">
+
+<!-- Header -->
+<div class="header" style="padding-top:64px">
+<div class="header-left">
+<h1><span class="hi">Jace Sabr</span> — AI & Robotics Consultant</h1>
+<p class="sub">I help governments, enterprises, and organizations harness AI and robotics to modernize operations, automate workflows, and build intelligent systems. Based in the GCC, working globally.</p>
+<div class="header-actions">
+<a href="mailto:jace100233260@gmail.com" class="btn btn-p">Let's Talk</a>
+<a href="#services" class="btn btn-s">What I Do ↓</a>
 </div>
-<div class="hero-stats">
-<div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">Strategy &amp; Implementation</div></div>
-<div class="stat-item"><div class="stat-num">IoT</div><div class="stat-label">Robotics &amp; Automation</div></div>
-<div class="stat-item"><div class="stat-num">ML</div><div class="stat-label">18 ML + 8 DL Algorithms</div></div>
-<div class="stat-item"><div class="stat-num">3+</div><div class="stat-label">Years Building Software</div></div>
+</div>
+<div class="header-stats">
+<div class="hstat"><div class="val">3+</div><div class="lbl">Years Building Software</div></div>
+<div class="hstat"><div class="val">26</div><div class="lbl">ML & DL Algorithms</div></div>
+<div class="hstat"><div class="val">MERN</div><div class="lbl">Full-Stack Development</div></div>
+<div class="hstat"><div class="val">IoT</div><div class="lbl">Robotics & Automation</div></div>
 </div>
 </div>
 
-<div class="featured" id="flagship">
-<div class="featured-card">
-<div class="featured-top">
-<div class="ft-left">
-<div class="ft-icon">🧠</div>
-<div><h3>Morrigan — Emotionally Intelligent AI Companion</h3><div class="ft-sub">Deep personalization engine with persistent memory, inner thought pipeline &amp; trust progression · MERN · LLaMA · OpenRouter</div></div>
-</div>
-<div class="ft-tags">
-<span class="ft-tag" style="background:var(--purple-glow);color:var(--purple)">Emotional AI</span>
-<span class="ft-tag" style="background:var(--blue-glow);color:var(--blue)">Memory System</span>
-<span class="ft-tag" style="background:var(--teal-glow);color:var(--teal-deep)">6-Phase Pipeline</span>
-<span class="ft-tag" style="background:var(--terra-glow);color:var(--terra)">Live Demo</span>
-</div>
-<a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="ft-link">Open Full App →</a>
-</div>
+<div class="divider"></div>
 
-<div style="padding:1.5rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;border-bottom:1px solid var(--border)">
-<div style="display:flex;flex-direction:column;gap:0.75rem">
-<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple)">Core Architecture</div>
-<div style="font-size:0.82rem;color:var(--text-dim);line-height:1.7">
-A fully custom AI character (<strong>Morrigan</strong>) with a 6-phase inner thought system that processes emotions, retrieves contextual memories, generates candidate thoughts, scores them for relevance and timing, then weaves the winning thought naturally into her response — all in real time via SSE streaming.
+<!-- Morrigan -->
+<section id="morrigan">
+<div class="sh"><div class="sh-left"><div class="label">Flagship Project</div><h2>Morrigan <span class="dim">— Emotionally Intelligent AI</span></h2></div><a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="btn btn-s" style="font-size:11px">Open Live Demo →</a></div>
+<div class="feat">
+<div class="feat-top">
+<div class="feat-title">
+<div class="icon">🧠</div>
+<div><h3>Deep Personalization Engine</h3><div class="sub">Persistent memory · Inner thought pipeline · Trust progression · MERN + LLaMA + OpenRouter</div></div>
+</div>
+<div class="feat-tags">
+<span class="ftag" style="background:rgba(99,102,241,0.1);color:var(--accent2)">Emotional AI</span>
+<span class="ftag" style="background:rgba(45,212,191,0.1);color:var(--teal)">Memory System</span>
+<span class="ftag" style="background:rgba(244,63,94,0.1);color:var(--rose)">6-Phase Pipeline</span>
 </div>
 </div>
-<div style="display:flex;flex-direction:column;gap:0.75rem">
-<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal-deep)">Key Systems</div>
-<div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.8rem;color:var(--text-dim)">
-<span>◈ <strong>Persistent Memory</strong> — embedding-based retrieval with cosine similarity, temporal decay &amp; importance weighting</span>
-<span>◈ <strong>Contradiction Detection</strong> — 5-category classifier (temporal evolution, ambivalence, genuine contradiction, refinement)</span>
-<span>◈ <strong>Trust Progression</strong> — 7-level system gating vulnerability depth &amp; self-disclosure</span>
-<span>◈ <strong>Self-Atom Framework</strong> — 40 depth-gated personality atoms across 4 tiers</span>
-<span>◈ <strong>Relationship Health</strong> — 5-signal model tracking engagement, voice consistency &amp; at-risk detection</span>
+<div class="feat-body">
+<div class="feat-col">
+<div class="fc-label">Architecture</div>
+A fully custom AI character with a 6-phase inner thought system — detects emotional signals, retrieves contextual memories, generates candidate thoughts, scores them, then weaves the best one into her response via real-time SSE streaming.
+</div>
+<div class="feat-col">
+<div class="fc-label">Key Systems</div>
+<ul>
+<li><strong>Persistent Memory</strong> — embedding retrieval, cosine similarity, temporal decay</li>
+<li><strong>Contradiction Detection</strong> — 5-category classifier (evolution, ambivalence, genuine, refinement)</li>
+<li><strong>Trust Progression</strong> — 7-level system gating vulnerability & self-disclosure</li>
+<li><strong>Self-Atom Framework</strong> — 40 depth-gated personality atoms across 4 tiers</li>
+<li><strong>Relationship Health</strong> — 5-signal model: engagement, voice consistency, at-risk detection</li>
+</ul>
 </div>
 </div>
+<div class="feat-bottom">
+<div class="feat-stat"><div class="v">LLaMA 3</div><div class="l">Chat Model</div></div>
+<div class="feat-stat"><div class="v">OpenRouter</div><div class="l">API Gateway</div></div>
+<div class="feat-stat"><div class="v">MongoDB</div><div class="l">Storage</div></div>
+<div class="feat-stat"><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
+<div class="feat-stat"><div class="v">SSE</div><div class="l">Streaming</div></div>
+<div class="feat-stat"><div class="v">Railway</div><div class="l">Deployed</div></div>
 </div>
+</div>
+</section>
 
-<div class="featured-bottom" style="grid-template-columns:repeat(6,1fr)">
-<div class="featured-stat"><div class="fs-val">LLaMA 3</div><div class="fs-label">Chat Model</div></div>
-<div class="featured-stat"><div class="fs-val">OpenRouter</div><div class="fs-label">API Gateway</div></div>
-<div class="featured-stat"><div class="fs-val">MongoDB</div><div class="fs-label">Persistent Store</div></div>
-<div class="featured-stat"><div class="fs-val">Embeddings</div><div class="fs-label">Memory Retrieval</div></div>
-<div class="featured-stat"><div class="fs-val">SSE Stream</div><div class="fs-label">Real-Time Chat</div></div>
-<div class="featured-stat"><div class="fs-val">Railway</div><div class="fs-label">Cloud Deployed</div></div>
-</div>
-</div>
-</div>
+<div class="divider"></div>
 
+<!-- Services -->
 <section id="services">
-<div class="section-header">
-<div class="label">What I Offer</div>
-<h2>Turning AI Potential <span class="dim">Into Real-World Impact</span></h2>
-<p>Whether you're a government modernizing public services or an enterprise looking to automate — I bridge the gap between AI's promise and practical results.</p>
-</div>
-<div class="value-grid">
-<div class="value-card"><div class="v-icon" style="background:var(--terra-glow);color:var(--terra);"></div><h3>AI Strategy for Government &amp; Enterprise</h3><p>Roadmap creation for organizations adopting AI — identifying high-impact opportunities, evaluating readiness, and building phased implementation plans aligned with national vision programs like Saudi Vision 2030.</p></div>
-<div class="value-card"><div class="v-icon" style="background:var(--teal-glow);color:var(--teal-deep);"></div><h3>Robotics &amp; IoT Integration</h3><p>Advising on smart system deployment — sensor networks, automated monitoring, and robotic solutions for agriculture, logistics, security, and smart city infrastructure across the GCC region and beyond.</p></div>
-<div class="value-card"><div class="v-icon" style="background:var(--blue-glow);color:var(--blue);"></div><h3>Computer Vision Solutions</h3><p>Implementing visual intelligence — quality inspection, surveillance analytics, traffic monitoring, and real-time video processing for industrial and public safety applications.</p></div>
-<div class="value-card"><div class="v-icon" style="background:var(--purple-glow);color:var(--purple);"></div><h3>Predictive Analytics &amp; Decision Support</h3><p>Turning raw data into foresight — ML-powered forecasting for finance, healthcare, supply chain, and resource planning to support smarter organizational decision-making.</p></div>
-<div class="value-card"><div class="v-icon" style="background:var(--terra-glow);color:var(--terra);"></div><h3>AI Training &amp; Workforce Development</h3><p>Empowering teams with practical AI knowledge — workshops, hands-on training, and curriculum design to build internal capabilities and prepare workforces for the AI-driven economy.</p></div>
-<div class="value-card"><div class="v-icon" style="background:var(--teal-glow);color:var(--teal-deep);"></div><h3>NLP &amp; Conversational AI</h3><p>Deploying language-aware systems — multilingual chatbots, document intelligence, sentiment analysis, and automated customer service for Arabic and English-speaking markets.</p></div>
+<div class="sh"><div class="sh-left"><div class="label">Services</div><h2>What I <span class="dim">Offer</span></h2></div></div>
+<div class="grid-3">
+<div class="card"><h3>AI Strategy</h3><p>Roadmaps for AI adoption — identifying high-impact opportunities, readiness evaluation, and phased implementation aligned with organizational goals.</p></div>
+<div class="card"><h3>Robotics & IoT</h3><p>Smart system deployment — sensor networks, automated monitoring, and robotic solutions for agriculture, logistics, security, and smart cities.</p></div>
+<div class="card"><h3>Computer Vision</h3><p>Visual intelligence — quality inspection, surveillance analytics, traffic monitoring, and real-time video processing for industrial applications.</p></div>
+<div class="card"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning to support smarter organizational decisions.</p></div>
+<div class="card"><h3>AI Training</h3><p>Practical AI workshops, hands-on training, and curriculum design to build internal capabilities and prepare teams for AI-driven workflows.</p></div>
+<div class="card"><h3>NLP & Conversational AI</h3><p>Multilingual chatbots, document intelligence, sentiment analysis, and automated customer service for Arabic and English markets.</p></div>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
+<!-- Education -->
 <section id="education">
-<div class="section-header"><div class="label">Credentials</div><h2>Education <span class="dim">&amp; Training</span></h2></div>
-<div class="edu-grid">
-<div class="edu-card"><div class="year">2025 — Present</div><h3>Advanced AI &amp; Robotics Solutions</h3><div class="school">Itronix Solutions — 1 Year Intensive Program</div><div class="detail">Deep training in AI/ML, deep learning, computer vision, NLP, and robotics implementation with hands-on project delivery and real-world deployment experience.</div></div>
-<div class="edu-card"><div class="year">2020</div><h3>Bachelor of Computer Science</h3><div class="school">University of British Columbia (UBC)</div><div class="detail">Foundational CS education — algorithms, data structures, software engineering, and systems design. Springboard for 3+ years of production full-stack development.</div></div>
+<div class="sh"><div class="sh-left"><div class="label">Credentials</div><h2>Education <span class="dim">& Training</span></h2></div></div>
+<div class="grid-2">
+<div class="edu"><div class="year">2025 — Present</div><h3>Advanced AI & Robotics Solutions</h3><div class="school">Itronix Solutions — 1 Year Intensive</div><div class="detail">AI/ML, deep learning, computer vision, NLP, and robotics with hands-on project delivery.</div></div>
+<div class="edu"><div class="year">2020</div><h3>Bachelor of Computer Science</h3><div class="school">University of British Columbia (UBC)</div><div class="detail">Algorithms, data structures, software engineering, systems design. Foundation for 3+ years of production development.</div></div>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
+<!-- Expertise -->
 <section id="expertise">
-<div class="section-header"><div class="label">Technical Depth</div><h2>Areas of <span class="dim">Expertise</span></h2><p>The technical foundation behind every recommendation — deep, hands-on experience across the AI and software stack.</p></div>
-<div class="domain-grid">
-<div class="domain-card"><div class="icon" style="background:var(--purple-glow);color:var(--purple);"></div><h3>Deep Learning</h3><div class="desc">Neural network architectures for pattern recognition, prediction, and automation — from MLPs to CNNs, RNNs, and transformer models.</div>
-<div class="code-snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br><br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;tf.keras.layers.<span class="fn">Dense</span>(<span class="str">128</span>, activation=<span class="str">'relu'</span>),<br>&nbsp;&nbsp;tf.keras.layers.<span class="fn">Dense</span>(<span class="str">10</span>, activation=<span class="str">'softmax'</span>)<br>])</div>
-<div class="tag-row" style="margin-top:1rem"><span class="tag" style="background:var(--purple-glow);color:var(--purple)">TensorFlow</span><span class="tag" style="background:var(--purple-glow);color:var(--purple)">Keras</span><span class="tag" style="background:var(--purple-glow);color:var(--purple)">PyTorch</span><span class="tag" style="background:var(--purple-glow);color:var(--purple)">CNNs</span><span class="tag" style="background:var(--purple-glow);color:var(--purple)">Transformers</span></div></div>
-
-<div class="domain-card"><div class="icon" style="background:var(--teal-glow);color:var(--teal-deep);"></div><h3>Computer Vision</h3><div class="desc">Real-time image processing, object detection, face recognition, and video analytics for industrial and public safety applications.</div>
-<div class="code-snippet"><span class="kw">import</span> cv2<br><br>cap = cv2.<span class="fn">VideoCapture</span>(<span class="str">0</span>)<br>faces = cascade.<span class="fn">detectMultiScale</span>(frame, <span class="str">1.3</span>, <span class="str">5</span>)</div>
-<div class="tag-row" style="margin-top:1rem"><span class="tag" style="background:var(--teal-glow);color:var(--teal-deep)">OpenCV</span><span class="tag" style="background:var(--teal-glow);color:var(--teal-deep)">YOLO</span><span class="tag" style="background:var(--teal-glow);color:var(--teal-deep)">Face Detection</span><span class="tag" style="background:var(--teal-glow);color:var(--teal-deep)">Object Tracking</span></div></div>
-
-<div class="domain-card"><div class="icon" style="background:var(--blue-glow);color:var(--blue);"></div><h3>Natural Language Processing</h3><div class="desc">Text intelligence, sentiment analysis, document understanding, and multilingual conversational AI for Arabic and English markets.</div>
-<div class="code-snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br><br>classifier = <span class="fn">pipeline</span>(<span class="str">'sentiment-analysis'</span>)<br>result = <span class="fn">classifier</span>(<span class="str">"Transforming industries"</span>)</div>
-<div class="tag-row" style="margin-top:1rem"><span class="tag" style="background:var(--blue-glow);color:var(--blue)">Transformers</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">HuggingFace</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">NLTK</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">Multilingual</span></div></div>
-
-<div class="domain-card"><div class="icon" style="background:var(--terra-glow);color:var(--terra);"></div><h3>Machine Learning &amp; Analytics</h3><div class="desc">18 algorithms implemented with 360+ examples — regression, classification, clustering, evaluation, and ensemble methods.</div>
-<div class="tag-row"><span class="tag" style="background:var(--terra-glow);color:var(--terra)">Scikit-learn</span><span class="tag" style="background:var(--terra-glow);color:var(--terra)">Pandas</span><span class="tag" style="background:var(--terra-glow);color:var(--terra)">NumPy</span><span class="tag" style="background:var(--terra-glow);color:var(--terra)">XGBoost</span><span class="tag" style="background:var(--terra-glow);color:var(--terra)">Feature Engineering</span></div></div>
-
-<div class="domain-card"><div class="icon" style="background:var(--blue-glow);color:var(--blue);">⚡</div><h3>Full-Stack Development</h3><div class="desc">3+ years building production MERN stack applications serving 10,000+ users — the engineering backbone to deliver end-to-end solutions.</div>
-<div class="tag-row"><span class="tag" style="background:var(--blue-glow);color:var(--blue)">React</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">Node.js</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">MongoDB</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">Express</span><span class="tag" style="background:var(--blue-glow);color:var(--blue)">REST APIs</span></div></div>
-
-<div class="domain-card"><div class="icon" style="background:var(--amber-glow);color:var(--amber);"></div><h3>IoT &amp; Embedded Systems</h3><div class="desc">Arduino, ESP8266, sensor networks, and hardware-software integration for smart environments, monitoring, and automation systems.</div>
-<div class="tag-row"><span class="tag" style="background:var(--amber-glow);color:var(--amber)">Arduino</span><span class="tag" style="background:var(--amber-glow);color:var(--amber)">ESP8266</span><span class="tag" style="background:var(--amber-glow);color:var(--amber)">Sensors</span><span class="tag" style="background:var(--amber-glow);color:var(--amber)">Automation</span></div></div>
+<div class="sh"><div class="sh-left"><div class="label">Technical Depth</div><h2>Areas of <span class="dim">Expertise</span></h2></div></div>
+<div class="grid-3">
+<div class="card">
+<h3>Deep Learning</h3><p>Neural architectures from MLPs to CNNs, RNNs, and transformers for pattern recognition, prediction, and generation.</p>
+<div class="snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">128</span>, activation=<span class="str">'relu'</span>),<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">10</span>, activation=<span class="str">'softmax'</span>)])</div>
+<div class="tags"><span class="tag">TensorFlow</span><span class="tag">PyTorch</span><span class="tag">Keras</span><span class="tag">CNNs</span></div>
+</div>
+<div class="card">
+<h3>Computer Vision</h3><p>Real-time image processing, object detection, face recognition, and video analytics for industrial and safety applications.</p>
+<div class="snippet"><span class="kw">import</span> cv2<br>cap = cv2.<span class="fn">VideoCapture</span>(<span class="str">0</span>)<br>faces = cascade.<span class="fn">detectMultiScale</span>(frame)</div>
+<div class="tags"><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">OpenCV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">YOLO</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">Face Detection</span></div>
+</div>
+<div class="card">
+<h3>NLP</h3><p>Text intelligence, sentiment analysis, document understanding, and multilingual conversational AI.</p>
+<div class="snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br>clf = <span class="fn">pipeline</span>(<span class="str">'sentiment-analysis'</span>)<br>clf(<span class="str">"Transforming industries"</span>)</div>
+<div class="tags"><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">HuggingFace</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Transformers</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">NLTK</span></div>
+</div>
+<div class="card">
+<h3>ML & Analytics</h3><p>18 algorithms implemented — regression, classification, clustering, evaluation, and ensemble methods with 360+ examples.</p>
+<div class="tags"><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">Scikit-learn</span><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">Pandas</span><span class="tag" style="background:rgba(245,158,11,0.08);color:var(--amber)">XGBoost</span></div>
+</div>
+<div class="card">
+<h3>Full-Stack Dev</h3><p>3+ years MERN stack — React, Node.js, MongoDB, Express. End-to-end solutions from API to UI.</p>
+<div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span><span class="tag">REST APIs</span></div>
+</div>
+<div class="card">
+<h3>IoT & Embedded</h3><p>Arduino, ESP8266, sensor networks, and hardware-software integration for smart environments and automation.</p>
+<div class="tags"><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Arduino</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">ESP8266</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Sensors</span></div>
+</div>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
+<!-- ML Algorithms -->
 <section id="ml">
-<div class="section-header"><div class="label">Algorithm Library</div><h2>18 ML Algorithms <span class="dim">Explored in Depth</span></h2><p>Each algorithm built with 20 code examples, real datasets, LaTeX equations, and clear analysis of strengths and limitations.</p></div>
-<div class="algo-categories"><div class="algo-cat">Regression <span class="count">6</span></div><div class="algo-cat">Classification <span class="count">6</span></div><div class="algo-cat">Clustering <span class="count">2</span></div><div class="algo-cat">Association <span class="count">1</span></div><div class="algo-cat">Evaluation <span class="count">3</span></div></div>
+<div class="sh"><div class="sh-left"><div class="label">Algorithm Library</div><h2>18 ML Algorithms <span class="dim">Explored</span></h2></div><div class="sh-right">Each with 20 code examples, real datasets, LaTeX equations, and analysis.</div></div>
+<div class="algo-cats">
+<div class="acat">Regression <span class="c">6</span></div>
+<div class="acat">Classification <span class="c">6</span></div>
+<div class="acat">Clustering <span class="c">2</span></div>
+<div class="acat">Association <span class="c">1</span></div>
+<div class="acat">Evaluation <span class="c">3</span></div>
+</div>
 <div class="algo-grid">
-<a href="simple-linear-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">01</span> Simple Linear Regression</a><a href="multiple-linear-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">02</span> Multiple Linear Regression</a><a href="polynomial-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">03</span> Polynomial Regression</a><a href="support-vector-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">04</span> Support Vector Regression</a><a href="decision-tree-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">05</span> Decision Tree Regression</a><a href="random-forest-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">06</span> Random Forest Regression</a><a href="logistic-regression.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">07</span> Logistic Regression</a><a href="k-nearest-neighbors.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">08</span> K-Nearest Neighbors</a><a href="support-vector-machine.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">09</span> Support Vector Machine</a><a href="naive-bayes.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">10</span> Naive Bayes</a><a href="decision-tree-classification.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">11</span> Decision Tree Classification</a><a href="random-forest-classification.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">12</span> Random Forest Classification</a><a href="k-means-clustering.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">13</span> K-Means Clustering</a><a href="hierarchical-clustering.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">14</span> Hierarchical Clustering</a><a href="apriori.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">15</span> Apriori Algorithm</a><a href="classification-metrics.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">16</span> Classification Metrics</a><a href="k-fold-cross-validation.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">17</span> K-Fold Cross Validation</a><a href="grid-search.html" class="algo-pill" style="text-decoration:none;color:var(--text)"><span class="num">18</span> Grid Search</a>
+<a href="simple-linear-regression.html" class="algo-pill"><span class="num">01</span>Simple Linear Regression</a>
+<a href="multiple-linear-regression.html" class="algo-pill"><span class="num">02</span>Multiple Linear Regression</a>
+<a href="polynomial-regression.html" class="algo-pill"><span class="num">03</span>Polynomial Regression</a>
+<a href="support-vector-regression.html" class="algo-pill"><span class="num">04</span>Support Vector Regression</a>
+<a href="decision-tree-regression.html" class="algo-pill"><span class="num">05</span>Decision Tree Regression</a>
+<a href="random-forest-regression.html" class="algo-pill"><span class="num">06</span>Random Forest Regression</a>
+<a href="logistic-regression.html" class="algo-pill"><span class="num">07</span>Logistic Regression</a>
+<a href="k-nearest-neighbors.html" class="algo-pill"><span class="num">08</span>K-Nearest Neighbors</a>
+<a href="support-vector-machine.html" class="algo-pill"><span class="num">09</span>Support Vector Machine</a>
+<a href="naive-bayes.html" class="algo-pill"><span class="num">10</span>Naive Bayes</a>
+<a href="decision-tree-classification.html" class="algo-pill"><span class="num">11</span>Decision Tree Classification</a>
+<a href="random-forest-classification.html" class="algo-pill"><span class="num">12</span>Random Forest Classification</a>
+<a href="k-means-clustering.html" class="algo-pill"><span class="num">13</span>K-Means Clustering</a>
+<a href="hierarchical-clustering.html" class="algo-pill"><span class="num">14</span>Hierarchical Clustering</a>
+<a href="apriori.html" class="algo-pill"><span class="num">15</span>Apriori Algorithm</a>
+<a href="classification-metrics.html" class="algo-pill"><span class="num">16</span>Classification Metrics</a>
+<a href="k-fold-cross-validation.html" class="algo-pill"><span class="num">17</span>K-Fold Cross Validation</a>
+<a href="grid-search.html" class="algo-pill"><span class="num">18</span>Grid Search</a>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
-<section id="deep-learning">
-<div class="section-header"><div class="label">Deep Learning</div><h2>8 Major DL Architectures <span class="dim">Built &amp; Documented</span></h2><p>The neural network architectures powering modern AI — each explored with theory, code implementations, real-world applications, and architectural diagrams.</p></div>
-<div class="algo-categories"><div class="algo-cat">Vision <span class="count">2</span></div><div class="algo-cat">Sequence <span class="count">2</span></div><div class="algo-cat">Generative <span class="count">2</span></div><div class="algo-cat">Attention <span class="count">1</span></div><div class="algo-cat">RL <span class="count">1</span></div></div>
+<!-- Deep Learning -->
+<section id="dl">
+<div class="sh"><div class="sh-left"><div class="label">Deep Learning</div><h2>8 DL Architectures <span class="dim">Built & Documented</span></h2></div><div class="sh-right">Theory, code implementations, and real-world applications.</div></div>
+<div class="algo-cats">
+<div class="acat">Vision <span class="c">2</span></div>
+<div class="acat">Sequence <span class="c">2</span></div>
+<div class="acat">Generative <span class="c">2</span></div>
+<div class="acat">Attention <span class="c">1</span></div>
+<div class="acat">RL <span class="c">1</span></div>
+</div>
 <div class="algo-grid">
-<a href="cnn.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--purple);border-left:3px solid var(--purple)"><span class="num" style="color:var(--purple)">DL1</span> Convolutional Neural Networks</a>
-<a href="rnn-lstm.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--blue);border-left:3px solid var(--blue)"><span class="num" style="color:var(--blue)">DL2</span> RNNs &amp; LSTMs</a>
-<a href="transformers.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--teal);border-left:3px solid var(--teal)"><span class="num" style="color:var(--teal)">DL3</span> Transformers &amp; Attention</a>
-<a href="gan.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--terra);border-left:3px solid var(--terra)"><span class="num" style="color:var(--terra)">DL4</span> Generative Adversarial Networks</a>
-<a href="autoencoder.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--amber);border-left:3px solid var(--amber)"><span class="num" style="color:var(--amber)">DL5</span> Autoencoders &amp; VAEs</a>
-<a href="resnet.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--purple);border-left:3px solid var(--purple)"><span class="num" style="color:var(--purple)">DL6</span> ResNets &amp; Skip Connections</a>
-<a href="reinforcement-learning.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--blue);border-left:3px solid var(--blue)"><span class="num" style="color:var(--blue)">DL7</span> Reinforcement Learning (DQN/PPO)</a>
-<a href="diffusion-models.html" class="algo-pill" style="text-decoration:none;color:var(--text);border-color:var(--teal);border-left:3px solid var(--teal)"><span class="num" style="color:var(--teal)">DL8</span> Diffusion Models</a>
+<a href="cnn.html" class="algo-pill" style="border-left:2px solid var(--accent)"><span class="num">DL1</span>Convolutional Neural Networks</a>
+<a href="rnn-lstm.html" class="algo-pill" style="border-left:2px solid #60a5fa"><span class="num" style="color:#60a5fa">DL2</span>RNNs & LSTMs</a>
+<a href="transformers.html" class="algo-pill" style="border-left:2px solid var(--teal)"><span class="num" style="color:var(--teal)">DL3</span>Transformers & Attention</a>
+<a href="gan.html" class="algo-pill" style="border-left:2px solid var(--rose)"><span class="num" style="color:var(--rose)">DL4</span>Generative Adversarial Networks</a>
+<a href="autoencoder.html" class="algo-pill" style="border-left:2px solid var(--amber)"><span class="num" style="color:var(--amber)">DL5</span>Autoencoders & VAEs</a>
+<a href="resnet.html" class="algo-pill" style="border-left:2px solid var(--accent)"><span class="num">DL6</span>ResNets & Skip Connections</a>
+<a href="reinforcement-learning.html" class="algo-pill" style="border-left:2px solid #60a5fa"><span class="num" style="color:#60a5fa">DL7</span>Reinforcement Learning</a>
+<a href="diffusion-models.html" class="algo-pill" style="border-left:2px solid var(--teal)"><span class="num" style="color:var(--teal)">DL8</span>Diffusion Models</a>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
+<!-- Projects -->
 <section id="projects">
-<div class="section-header"><div class="label">Applied Work</div><h2>Project <span class="dim">Case Studies</span></h2><p>End-to-end implementations demonstrating real problem-solving — from data to deployed solutions.</p></div>
-<div class="project-grid">
-<a href="#" class="project-card"><div class="project-thumb" style="background:linear-gradient(135deg,var(--pampas),rgba(0,196,204,0.08))"></div><div class="project-body"><div class="badge-row"><span class="pbadge" style="background:var(--terra-glow);color:var(--terra)">Trading</span><span class="pbadge" style="background:var(--teal-glow);color:var(--teal-deep)">ML Pipeline</span></div><h3>NY Session Price Direction</h3><p class="pdesc">Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, and backtesting.</p></div></a>
-<a href="#" class="project-card"><div class="project-thumb" style="background:linear-gradient(135deg,var(--pampas),rgba(125,42,231,0.06))"></div><div class="project-body"><div class="badge-row"><span class="pbadge" style="background:var(--blue-glow);color:var(--blue)">Finance</span><span class="pbadge" style="background:var(--purple-glow);color:var(--purple)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p class="pdesc">Detecting 492 fraudulent transactions in 284,807 — extreme class imbalance, SMOTE, and the accuracy trap.</p></div></a>
-<a href="#" class="project-card"><div class="project-thumb" style="background:linear-gradient(135deg,var(--pampas),rgba(57,105,231,0.06))"></div><div class="project-body"><div class="badge-row"><span class="pbadge" style="background:var(--teal-glow);color:var(--teal-deep)">Advertising</span><span class="pbadge" style="background:var(--terra-glow);color:var(--terra)">Deep Learning</span></div><h3>Ad Targeting &amp; CTR Prediction</h3><p class="pdesc">Click-through rate at scale — LR baseline, LightGBM, Wide &amp; Deep architecture, position bias, A/B testing.</p></div></a>
-<a href="#" class="project-card"><div class="project-thumb" style="background:linear-gradient(135deg,var(--pampas),rgba(193,95,60,0.06))"></div><div class="project-body"><div class="badge-row"><span class="pbadge" style="background:var(--purple-glow);color:var(--purple)">Recommendation</span><span class="pbadge" style="background:var(--blue-glow);color:var(--blue)">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p class="pdesc">Two-stage system — collaborative filtering, content-based cold start, Two-Tower model, and the filter bubble problem.</p></div></a>
+<div class="sh"><div class="sh-left"><div class="label">Applied Work</div><h2>Case <span class="dim">Studies</span></h2></div></div>
+<div class="grid-2">
+<a href="ny-session-prediction.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(245,158,11,0.1);color:var(--amber)">Trading</span><span class="pb" style="background:rgba(45,212,191,0.1);color:var(--teal)">ML Pipeline</span></div><h3>NY Session Price Direction</h3><p>Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, and backtesting.</p></a>
+<a href="credit-card-fraud.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(96,165,250,0.1);color:#60a5fa">Finance</span><span class="pb" style="background:rgba(99,102,241,0.1);color:var(--accent2)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p>Detecting 492 fraudulent transactions in 284,807 — extreme class imbalance, SMOTE, and the accuracy trap.</p></a>
+<a href="ad-targeting.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(45,212,191,0.1);color:var(--teal)">Advertising</span><span class="pb" style="background:rgba(244,63,94,0.1);color:var(--rose)">Deep Learning</span></div><h3>Ad Targeting & CTR Prediction</h3><p>Click-through rate at scale — LR baseline, LightGBM, Wide & Deep architecture, position bias, A/B testing.</p></a>
+<a href="video-recommendation.html" class="proj"><div class="pbadges"><span class="pb" style="background:rgba(99,102,241,0.1);color:var(--accent2)">RecSys</span><span class="pb" style="background:rgba(96,165,250,0.1);color:#60a5fa">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p>Collaborative filtering, content-based cold start, Two-Tower model, and the filter bubble problem.</p></a>
 </div>
 </section>
 
-<div class="section-divider"></div>
+<div class="divider"></div>
 
+<!-- Robotics -->
 <section id="robotics">
-<div class="section-header"><div class="label">Hardware + AI</div><h2>Robotics &amp; IoT <span class="dim">Implementations</span></h2><p>Concept builds combining AI with physical systems — demonstrating what's possible when intelligence meets hardware.</p></div>
-<div class="robo-grid">
-<div class="robo-card"><div class="robo-thumb"><div class="play-icon">▶</div>Video Coming Soon</div><div class="robo-body"><h3>Fire Detection System</h3><div class="rdesc">Real-time fire detection using flame and temperature sensors with ESP8266 — automated alerts and response triggers.</div><div class="rtags"><span class="rtag" style="background:var(--terra-glow);color:var(--terra)">Arduino</span><span class="rtag" style="background:var(--terra-glow);color:var(--terra)">ESP8266</span><span class="rtag" style="background:var(--terra-glow);color:var(--terra)">Sensors</span></div></div></div>
-<div class="robo-card"><div class="robo-thumb"><div class="play-icon">▶</div>Video Coming Soon</div><div class="robo-body"><h3>Smart Dog Feeder with Recognition</h3><div class="rdesc">AI-powered automatic feeder that identifies individual animals using computer vision and dispenses personalized portions.</div><div class="rtags"><span class="rtag" style="background:var(--teal-glow);color:var(--teal-deep)">Computer Vision</span><span class="rtag" style="background:var(--teal-glow);color:var(--teal-deep)">OpenCV</span><span class="rtag" style="background:var(--teal-glow);color:var(--teal-deep)">IoT</span></div></div></div>
-<div class="robo-card"><div class="robo-thumb"><div class="play-icon">▶</div>Video Coming Soon</div><div class="robo-body"><h3>Sensor-Based Counting System</h3><div class="rdesc">Infrared sensor array for counting people/objects with real-time data logging and pattern analysis.</div><div class="rtags"><span class="rtag" style="background:var(--blue-glow);color:var(--blue)">Arduino</span><span class="rtag" style="background:var(--blue-glow);color:var(--blue)">IR Sensors</span><span class="rtag" style="background:var(--blue-glow);color:var(--blue)">Data Logging</span></div></div></div>
+<div class="sh"><div class="sh-left"><div class="label">Hardware + AI</div><h2>Robotics <span class="dim">& IoT</span></h2></div></div>
+<div class="grid-3">
+<div class="robo"><h3>Fire Detection System</h3><p>Real-time fire detection using flame and temperature sensors with ESP8266 — automated alerts and response triggers.</p><div class="tags"><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Arduino</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">ESP8266</span><span class="tag" style="background:rgba(244,63,94,0.08);color:var(--rose)">Sensors</span></div></div>
+<div class="robo"><h3>Smart Dog Feeder</h3><p>AI-powered feeder that identifies individual animals via computer vision and dispenses personalized portions.</p><div class="tags"><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">CV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">OpenCV</span><span class="tag" style="background:rgba(45,212,191,0.08);color:var(--teal)">IoT</span></div></div>
+<div class="robo"><h3>Counting System</h3><p>Infrared sensor array for counting people/objects with real-time data logging and pattern analysis.</p><div class="tags"><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Arduino</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">IR Sensors</span><span class="tag" style="background:rgba(96,165,250,0.08);color:#60a5fa">Logging</span></div></div>
 </div>
 </section>
 
-<section class="contact-section" id="contact">
-<h2>Ready to Bring AI <span class="grad">Into Your Organization?</span></h2>
-<p>Whether you're exploring what's possible or ready to implement — let's talk about how AI and robotics can transform your operations.</p>
+<div class="divider"></div>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+<h2>Let's Build Something <span class="grad">Intelligent</span></h2>
+<p>Whether you're exploring AI adoption or ready to implement — let's talk.</p>
 <div class="contact-links">
-<a href="mailto:jace100233260@gmail.com" class="contact-link primary">✉ jace100233260@gmail.com</a>
-<a href="#" class="contact-link">LinkedIn →</a>
-<a href="#" class="contact-link">GitHub →</a>
+<a href="mailto:jace100233260@gmail.com" class="clink pri">jace100233260@gmail.com</a>
+<a href="#" class="clink">LinkedIn →</a>
+<a href="#" class="clink">GitHub →</a>
 </div>
 </section>
 
-<footer>© 2026 Jace Sabr · AI &amp; Robotics Consultant · Advising &amp; Implementing Solutions for the Future</footer>
+</div>
+
+<footer>© 2026 Jace Sabr · AI & Robotics Consultant</footer>
 </body>
 </html>
