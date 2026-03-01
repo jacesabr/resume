@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Building With LLMs — Jace Sabr</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f0e8;--surface:#ffffff;--border:rgba(120,100,80,0.12);--border-h:rgba(120,100,80,0.22);--text:#2c2520;--text-dim:#6b6058;--text-muted:#9a8e82;--clay:#c2694a;--clay-dim:rgba(194,105,74,0.1);--sand:#b8943e;--sand-dim:rgba(184,148,62,0.1);--sage:#5e9a6f;--sage-dim:rgba(94,154,111,0.1);--slate:#6882a3;--slate-dim:rgba(104,130,163,0.1);--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:14.5px}
+a{color:inherit;text-decoration:none}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:50px;display:flex;align-items:center;justify-content:space-between;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-weight:700;font-size:14px}.logo span{color:var(--clay)}
+.nav-links{display:flex;gap:1.5rem}.nav-links a{color:var(--text-dim);font-size:12px;font-weight:500;transition:color 0.2s}.nav-links a:hover{color:var(--clay)}
+.nav-back{background:var(--clay);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;transition:opacity 0.2s}.nav-back:hover{opacity:0.85}
+
+.wrap{max-width:900px;margin:0 auto;padding:0 2.5rem}
+section{padding:3rem 0}
+hr{border:none;height:1px;background:var(--border)}
+
+.st{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.st-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:3px 8px;border-radius:4px;background:var(--clay-dim)}
+.st span{color:var(--text-muted);font-weight:400}
+
+/* Hero */
+.hero{padding-top:90px;padding-bottom:3rem;text-align:center}
+.hero .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--clay);margin-bottom:12px}
+.hero h1{font-family:'Crimson Pro',serif;font-size:48px;font-weight:600;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;max-width:700px;margin-left:auto;margin-right:auto}
+.hero h1 em{color:var(--clay);font-style:italic}
+.hero .sub{font-size:15px;color:var(--text-dim);max-width:580px;margin:0 auto 28px;line-height:1.7}
+.hero-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{padding:8px 22px;border-radius:6px;font-size:13px;font-weight:600;transition:all 0.2s}
+.btn-p{background:var(--clay);color:#fff}.btn-p:hover{opacity:0.85}
+.btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{color:var(--clay);border-color:var(--clay)}
+
+/* Book meta */
+.book-meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+.bm{text-align:center}.bm .v{font-size:18px;font-weight:700;color:var(--clay);font-family:'JetBrains Mono',monospace}.bm .l{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-top:2px}
+
+/* Chapter list */
+.chapters{}
+.part{margin-bottom:2rem}
+.part-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:4px 10px;border-radius:4px;background:var(--clay-dim);display:inline-block;margin-bottom:12px}
+.ch{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:16px;transition:all 0.2s;box-shadow:0 1px 4px rgba(80,60,40,0.04)}
+.ch:hover{border-color:var(--border-h);box-shadow:0 3px 12px rgba(80,60,40,0.08)}
+.ch-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--clay);min-width:40px;padding-top:2px}
+.ch-body{flex:1}
+.ch-body h3{font-size:14px;font-weight:700;margin-bottom:3px}
+.ch-body p{font-size:13px;color:var(--text-dim);line-height:1.6}
+.ch-body .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:11px;padding-top:2px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot-done{background:var(--sage)}.dot-progress{background:var(--sand)}.dot-planned{background:var(--border-h)}
+.status-done{color:var(--sage)}.status-progress{color:var(--sand)}.status-planned{color:var(--text-muted)}
+
+/* About */
+.about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:0 2px 12px rgba(80,60,40,0.06)}
+.about-card .quote{font-family:'Crimson Pro',serif;font-size:18px;font-style:italic;color:var(--text-dim);line-height:1.65;margin-bottom:16px;border-left:2px solid var(--clay);padding-left:16px}
+.about-card p{font-size:13.5px;color:var(--text-dim);line-height:1.75;margin-bottom:10px}
+.about-card p:last-child{margin-bottom:0}
+
+/* Research basis */
+.refs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ref{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
+.ref .rname{font-size:13px;font-weight:600;margin-bottom:2px}
+.ref .rdesc{font-size:12px;color:var(--text-dim)}
+
+/* Notify */
+.notify{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;text-align:center;box-shadow:0 2px 12px rgba(80,60,40,0.06)}
+.notify h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.notify p{font-size:13px;color:var(--text-dim);margin-bottom:14px}
+.notify-form{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.notify-form input{padding:8px 14px;border-radius:6px;border:1px solid var(--border-h);background:var(--bg);font-size:13px;color:var(--text);outline:none;min-width:240px}
+.notify-form input:focus{border-color:var(--clay)}
+.notify-form button{padding:8px 20px;background:var(--clay);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.2s}.notify-form button:hover{opacity:0.85}
+
+footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
+
+@media(max-width:768px){.nav-links{display:none}.hero h1{font-size:32px}.refs{grid-template-columns:1fr}.ch{flex-direction:column;gap:8px}.book-meta{gap:14px}}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">Jace<span>.</span></div>
+<div class="nav-links">
+  <a href="#about">About</a>
+  <a href="#chapters">Chapters</a>
+  <a href="#research">Research</a>
+</div>
+<a href="../index.html" class="nav-back">← Portfolio</a>
+</nav>
+
+<div class="wrap">
+
+<div class="hero">
+  <div class="eyebrow">In Progress — 2026</div>
+  <h1>Building With <em>Large Language Models</em></h1>
+  <p class="sub">A practitioner's guide to designing, deploying, and governing LLM systems — written by someone who built one from scratch, grounded in 100+ research papers.</p>
+  <div class="hero-btns">
+    <a href="mailto:jace100233260@gmail.com?subject=LLM Book — Early Access" class="btn btn-p">Request Early Access</a>
+    <a href="#chapters" class="btn btn-s">View Chapters ↓</a>
+  </div>
+  <div class="book-meta">
+    <div class="bm"><div class="v">12</div><div class="l">Chapters</div></div>
+    <div class="bm"><div class="v">100+</div><div class="l">Research Papers</div></div>
+    <div class="bm"><div class="v">3,200+</div><div class="l">Lines of LLM Code</div></div>
+    <div class="bm"><div class="v">6</div><div class="l">Deployment Guides</div></div>
+    <div class="bm"><div class="v">Gov/Enterprise</div><div class="l">Focus</div></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- About -->
+<section id="about">
+<div class="st"><span class="st-label">The Book</span> What This Is</div>
+<div class="about-card">
+  <div class="quote">"Most LLM books teach you to call an API. This one teaches you what happens after — memory, trust, emotion, safety, and why it matters for the organizations deploying these systems."</div>
+  <p>This book grew out of building Unleashed AI — a production LLM system with persistent memory, multi-phase inner thought pipelines, trust-gated disclosure, real-time emotion modeling, crisis detection, and relationship health monitoring. Every chapter is grounded in that real implementation, cross-referenced against the research literature that informed it.</p>
+  <p>The target reader is a technical decision-maker: engineers who will build the system, architects who will design it, and government or enterprise leaders who need to understand what they are commissioning and why each design choice has consequences for their users and their organization.</p>
+  <p>The book covers LLM fundamentals through to advanced deployment concerns — alignment, hallucination, memory architecture, emotion-aware prompting, safety systems, governance frameworks, and what responsible AI adoption actually looks like inside an organization or agency.</p>
+</div>
+</section>
+
+<hr>
+
+<!-- Chapters -->
+<section id="chapters">
+<div class="st">Chapters <span>— 12 modules, fundamentals to governance</span></div>
+
+<div class="part">
+  <span class="part-label">Part I — Foundations</span>
+
+  <div class="ch">
+    <div class="ch-num">01</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
+      <h3>What Is a Large Language Model?</h3>
+      <p>How LLMs are trained, what they actually do, and what they cannot do. Dispelling the myths organizations believe before deployment. The probability-over-tokens view. Why "intelligence" is the wrong word.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Transformers</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Pre-training</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Tokenization</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">02</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
+      <h3>The Transformer Architecture</h3>
+      <p>Attention mechanisms, positional encoding, feed-forward layers, and the decoder stack. How the model "reads" and "writes." Why context windows matter and how they are changing. Illustrated with annotated diagrams.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Self-Attention</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Multi-head</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Context Window</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">03</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
+      <h3>Embeddings & Semantic Retrieval</h3>
+      <p>How meaning becomes vectors. Cosine similarity, semantic search, and embedding-based memory. Building retrieval systems that find what matters — not just what matches. Temporal decay and importance weighting.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Embeddings</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Cosine Similarity</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">RAG</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="part">
+  <span class="part-label">Part II — Building Systems</span>
+
+  <div class="ch">
+    <div class="ch-num">04</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
+      <h3>Prompt Engineering That Actually Works</h3>
+      <p>Beyond "be helpful." System prompt architecture for production systems — 13-layer prompt design, trust-gated behavioral instructions, somatic priming, attribution guards, anti-sycophancy directives. What to include and why.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Prompt Design</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Chain-of-Thought</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Instruction Tuning</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">05</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
+      <h3>Memory Architecture</h3>
+      <p>Why stateless LLMs are a dead end for enterprise. Atom-based memory with embeddings. Contradiction detection and resolution. Ebbinghaus forgetting curves applied to AI memory. Molecule synthesis — clustering related memories into thematic summaries. Cross-encoder re-ranking.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Persistent Memory</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Contradiction Detection</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Ebbinghaus</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">06</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
+      <h3>Fine-Tuning & Supervised Training</h3>
+      <p>When fine-tuning is necessary vs. prompt engineering. SFT dataset construction, formatting, quality control. Training LLaMA 3 on domain-specific behavior. Evaluation metrics beyond perplexity. The dual-model comparison approach.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">SFT</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">LoRA</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">GGUF</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">vLLM</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">07</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
+      <h3>Emotion-Aware & Human-Centered LLMs</h3>
+      <p>Theory of Mind in AI systems. Damasio's Somatic Marker Hypothesis applied to LLM response priming. LIWC-22 linguistic depth signals. Crisis detection and safe haven modes. GoEmotions goal state inference. Why simulating emotional intelligence is not deception — it is design.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Theory of Mind</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Emotion AI</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">LIWC-22</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">GoEmotions</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="part">
+  <span class="part-label">Part III — Safety, Alignment & Governance</span>
+
+  <div class="ch">
+    <div class="ch-num">08</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
+      <h3>Hallucination — Causes, Detection & Mitigation</h3>
+      <p>Why LLMs confabulate with confidence. Attribution errors in production systems. Retrieval-augmented grounding strategies. EmoGuard and lightweight harm-pattern detection. When to trust the model and when to verify.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Hallucination</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Attribution Guards</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Grounding</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">09</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
+      <h3>LLM Safety Systems</h3>
+      <p>Content moderation at the system layer. Crisis detection pipelines. Anti-sycophancy mechanisms. Spiral context detection. The compassion illusion and its risks. Designing systems that do not make mental health worse.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Safety</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Moderation</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Crisis Detection</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">10</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
+      <h3>AI Governance for Organizations & Agencies</h3>
+      <p>What governments and enterprises need to decide before deployment. Bias audits, transparency requirements, accountability frameworks. EU AI Act and global regulatory landscape. Procurement red flags. The questions your AI vendor cannot answer.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Governance</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">EU AI Act</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Procurement</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Policy</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="part">
+  <span class="part-label">Part IV — Deployment & Strategy</span>
+
+  <div class="ch">
+    <div class="ch-num">11</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
+      <h3>Deploying LLMs in Production</h3>
+      <p>Self-hosted vs. API-based. Modal, RunPod, Vast.ai, Ollama — real cost/performance tradeoffs. SSE streaming architecture. Fallback chains. Latency vs. quality. Monitoring, observability, and when things go wrong.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">RunPod</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Modal</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">vLLM</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">SSE</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch">
+    <div class="ch-num">12</div>
+    <div class="ch-body">
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
+      <h3>AI Strategy for Decision-Makers</h3>
+      <p>How to evaluate an AI initiative. Organizational readiness, phased adoption, and the hidden costs of AI. Building internal capability vs. outsourcing. The 10 questions every government or enterprise leader should ask before signing a contract.</p>
+      <div class="tags">
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Strategy</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">ROI</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Readiness</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Adoption</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr>
+
+<!-- Research Basis -->
+<section id="research">
+<div class="st">Research Basis <span>— built on peer-reviewed literature</span></div>
+<div class="refs">
+  <div class="ref"><div class="rname">GoEmotions (P1 Liu et al.)</div><div class="rdesc">Emotion classification + goal state inference in conversational AI</div></div>
+  <div class="ref"><div class="rname">MIRROR Framework (P2 Kim)</div><div class="rdesc">Functional Theory of Mind + self-reflection state architecture</div></div>
+  <div class="ref"><div class="rname">Conway Self-Memory System (P13)</div><div class="rdesc">Episodic memory structure, life chapters, autobiographical retrieval</div></div>
+  <div class="ref"><div class="rname">Damasio Somatic Markers (P14)</div><div class="rdesc">Body-referenced emotional priming before LLM response generation</div></div>
+  <div class="ref"><div class="rname">Aron Fast Friends (P56)</div><div class="rdesc">Graduated self-disclosure and trust-gated vulnerability</div></div>
+  <div class="ref"><div class="rname">Attachment Theory (P62/P63)</div><div class="rdesc">Safe haven mode, crisis detection, attachment style heuristics</div></div>
+  <div class="ref"><div class="rname">XiaoIce Drive-vs-Listen (P70)</div><div class="rdesc">Proactive messaging architecture and conversation initiative</div></div>
+  <div class="ref"><div class="rname">LIWC-22 Pennebaker (P69)</div><div class="rdesc">Function-word analysis for authenticity and emotional tone signals</div></div>
+  <div class="ref"><div class="rname">Ebbinghaus Forgetting Curve (P31)</div><div class="rdesc">Memory stability, retrieval reinforcement, decay-based pruning</div></div>
+  <div class="ref"><div class="rname">Grassini Compassion Illusion (P80)</div><div class="rdesc">Mitigating performed understanding — epistemic humility in AI</div></div>
+  <div class="ref"><div class="rname">Shinn ReAct (P5, NeurIPS 2023)</div><div class="rdesc">Thought reservoir architecture and agentic reasoning</div></div>
+  <div class="ref"><div class="rname">K.M. Weiland Ghost/Wound</div><div class="rdesc">Narrative character architecture applied to AI persona design</div></div>
+</div>
+</section>
+
+<hr>
+
+<!-- Notify -->
+<section>
+<div class="notify">
+  <h3>Get Notified When It Ships</h3>
+  <p>Chapters are released as they are completed. Leave your email to receive early access and chapter previews.</p>
+  <div class="notify-form">
+    <input type="email" placeholder="your@email.com" />
+    <button onclick="this.textContent='Added ✓';this.style.background='var(--sage)'">Notify Me</button>
+  </div>
+</div>
+</section>
+
+</div>
+
+<footer>
+  © 2026 Jace Sabr · <em>Building With Large Language Models</em> — Work in Progress
+  &nbsp;·&nbsp; <a href="../index.html" style="color:var(--clay)">← Back to Portfolio</a>
+</footer>
+</body>
+</html>

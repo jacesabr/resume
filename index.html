@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Jace Sabr — AI & Robotics Consultant</title>
+<title>Jace Sabr — AI Consultant</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f5f0e8;--surface:#ffffff;--border:rgba(120,100,80,0.12);--border-h:rgba(120,100,80,0.22);--text:#2c2520;--text-dim:#6b6058;--text-muted:#9a8e82;--clay:#c2694a;--clay-dim:rgba(194,105,74,0.1);--sand:#b8943e;--sand-dim:rgba(184,148,62,0.1);--sage:#5e9a6f;--sage-dim:rgba(94,154,111,0.1);--slate:#6882a3;--slate-dim:rgba(104,130,163,0.1);--radius:8px}
@@ -24,8 +24,8 @@ hr{border:none;height:1px;background:var(--border)}
 .header{padding-top:68px;padding-bottom:2rem}
 .header h1{font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px}
 .header h1 span{color:var(--clay)}
-.header .sub{font-size:14.5px;color:var(--text-dim);max-width:640px;margin-bottom:16px}
-.header-row{display:flex;gap:8px;margin-bottom:18px}
+.header .sub{font-size:14.5px;color:var(--text-dim);max-width:680px;margin-bottom:16px}
+.header-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
 .btn{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:600;transition:all 0.2s}
 .btn-p{background:var(--clay);color:#fff}.btn-p:hover{opacity:0.85}
 .btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{color:var(--clay);border-color:var(--clay)}
@@ -37,7 +37,7 @@ hr{border:none;height:1px;background:var(--border)}
 .st span{color:var(--text-muted);font-weight:400}
 .st-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:3px 8px;border-radius:4px;background:var(--clay-dim)}
 
-/* Morrigan */
+/* Morrigan card */
 .morrigan{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(80,60,40,0.06)}
 .m-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .m-head h3{font-size:15px;font-weight:700}.m-head .sub{font-size:12.5px;color:var(--text-dim)}
@@ -50,10 +50,18 @@ hr{border:none;height:1px;background:var(--border)}
 .m-col .lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clay);margin-bottom:6px}
 .m-col li{margin-bottom:3px}
 .m-col ul{list-style:none}.m-col li::before{content:"·";color:var(--clay);margin-right:6px;font-weight:700}
-.m-foot{display:grid;grid-template-columns:repeat(6,1fr)}
-.m-foot div{padding:10px 10px;text-align:center;border-right:1px solid var(--border);font-size:12px}
+.m-foot{display:grid;grid-template-columns:repeat(7,1fr)}
+.m-foot div{padding:10px 8px;text-align:center;border-right:1px solid var(--border);font-size:11px}
 .m-foot div:last-child{border-right:none}
-.m-foot .v{font-weight:700;color:var(--text);font-size:12px}.m-foot .l{color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:0.04em}
+.m-foot .v{font-weight:700;color:var(--text);font-size:11.5px}.m-foot .l{color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:0.04em}
+
+/* Book banner */
+.book-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 1px 4px rgba(80,60,40,0.04)}
+.book-banner .b-left{}
+.book-banner .eyebrow{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sand);margin-bottom:4px}
+.book-banner h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.book-banner p{font-size:13px;color:var(--text-dim)}
+.book-banner .b-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
 
 /* Grid */
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -65,6 +73,15 @@ hr{border:none;height:1px;background:var(--border)}
 .tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px}
 .snippet{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;color:var(--text-dim)}
 .kw{color:var(--sand)}.fn{color:var(--slate)}.str{color:var(--sage)}
+
+/* Consulting highlight card */
+.consult-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:0 1px 4px rgba(80,60,40,0.04)}
+.consult-card .eyebrow{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);margin-bottom:6px}
+.consult-card h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.consult-card p{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:10px}
+.consult-card ul{list-style:none;font-size:13px;color:var(--text-dim)}
+.consult-card li{margin-bottom:4px;padding-left:14px;position:relative}
+.consult-card li::before{content:"→";color:var(--clay);position:absolute;left:0;font-size:11px;top:2px}
 
 /* Algo pills */
 .pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
@@ -82,6 +99,11 @@ hr{border:none;height:1px;background:var(--border)}
 .proj .badge{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:3px}
 .proj h3{font-size:14px;font-weight:700;margin-bottom:2px}.proj p{font-size:12.5px;color:var(--text-dim);line-height:1.65}
 
+/* Sectors */
+.sectors{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;margin-top:14px}
+.sector{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px}
+.sector-dot{width:7px;height:7px;border-radius:50%;background:var(--clay);flex-shrink:0}
+
 /* Contact */
 .contact{text-align:center;padding:3rem 0}
 .contact h2{font-size:18px;font-weight:700;margin-bottom:4px}.contact h2 span{color:var(--clay)}
@@ -92,71 +114,167 @@ hr{border:none;height:1px;background:var(--border)}
 .cl.p{background:var(--clay);color:#fff;border-color:var(--clay)}
 footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
 
-@media(max-width:768px){.nav-links{display:none}.g3,.g2,.m-body{grid-template-columns:1fr}.m-foot{grid-template-columns:repeat(3,1fr)}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.stats-row{flex-direction:column;gap:4px}}
+@media(max-width:768px){.nav-links{display:none}.g3,.g2,.m-body{grid-template-columns:1fr}.m-foot{grid-template-columns:repeat(4,1fr)}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.stats-row{flex-direction:column;gap:4px}.book-banner{flex-direction:column}.sectors{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
 <nav>
 <div class="logo">Jace<span>.</span></div>
-<div class="nav-links"><a href="#morrigan">Morrigan</a><a href="#services">Services</a><a href="#expertise">Expertise</a><a href="#ml">ML</a><a href="#dl">DL</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div>
+<div class="nav-links">
+  <a href="#consulting">Consulting</a>
+  <a href="#morrigan">Morrigan</a>
+  <a href="#book">Book</a>
+  <a href="#expertise">Expertise</a>
+  <a href="#ml">ML</a>
+  <a href="#projects">Projects</a>
+  <a href="#contact">Contact</a>
+</div>
 <a href="mailto:jace100233260@gmail.com" class="nav-cta">Contact</a>
 </nav>
 
 <div class="wrap">
 
+<!-- Header -->
 <div class="header">
-<h1><span>Jace Sabr</span> — AI & Robotics Consultant</h1>
-<p class="sub">Helping organizations harness AI and robotics to modernize operations, automate workflows, and build intelligent systems. GCC-based, working globally.</p>
+<h1><span>Jace Sabr</span> — AI Consultant & Author</h1>
+<p class="sub">I advise governments, enterprises, and agencies on the strategic implementation and responsible deployment of AI systems — with hands-on technical depth from designing production LLMs end-to-end. GCC-based, working globally.</p>
 <div class="header-row">
-<a href="mailto:jace100233260@gmail.com" class="btn btn-p">Get in Touch</a>
-<a href="#services" class="btn btn-s">Services ↓</a>
+  <a href="mailto:jace100233260@gmail.com" class="btn btn-p">Engage as Consultant</a>
+  <a href="book/index.html" class="btn btn-s">LLM Book →</a>
+  <a href="#morrigan" class="btn btn-s">Flagship Project ↓</a>
 </div>
 <div class="stats-row">
-<div class="stat"><b>3+</b> years building software</div>
-<div class="stat"><b>26</b> ML & DL algorithms</div>
-<div class="stat"><b>MERN</b> full-stack</div>
-<div class="stat"><b>IoT</b> robotics & automation</div>
+  <div class="stat"><b>100+</b> research papers applied</div>
+  <div class="stat"><b>99+</b> self-atom AI persona layers</div>
+  <div class="stat"><b>6</b> LLM system phases built</div>
+  <div class="stat"><b>13</b> prompt engineering layers</div>
+  <div class="stat"><b>MERN</b> full-stack delivery</div>
 </div>
 </div>
 
 <hr>
 
+<!-- Consulting -->
+<section id="consulting">
+<div class="st"><span class="st-label">Primary Focus</span> AI Advisory & Implementation</div>
+<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px;margin-bottom:10px">
+<div class="consult-card">
+  <div class="eyebrow">What I Do</div>
+  <h3>End-to-End AI Consulting</h3>
+  <p>I work with organizations that need someone who can both write the strategy memo and build the system — not choose between them. From feasibility assessment through production deployment and staff enablement.</p>
+  <ul>
+    <li>AI readiness audits and capability gap analysis</li>
+    <li>LLM selection, fine-tuning, and deployment architecture</li>
+    <li>AI governance frameworks and policy development</li>
+    <li>Staff training and internal capability building</li>
+    <li>Vendor evaluation and procurement advisory</li>
+    <li>Responsible AI checklists and ethics review</li>
+  </ul>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="c" style="border-left:2px solid var(--clay)">
+  <h3>Governments & Agencies</h3>
+  <p style="font-size:12.5px">Digital transformation, citizen-facing AI, public sector procurement guidance, policy alignment with EU AI Act and regional frameworks. I help agencies ask the right questions before signing contracts.</p>
+</div>
+<div class="c" style="border-left:2px solid var(--slate)">
+  <h3>Enterprises</h3>
+  <p style="font-size:12.5px">LLM integration into operations, customer-facing AI, workflow automation, internal knowledge systems. Strategy through to working prototype.</p>
+</div>
+<div class="c" style="border-left:2px solid var(--sage)">
+  <h3>Startups & Scale-ups</h3>
+  <p style="font-size:12.5px">AI product architecture, model selection (build vs. buy), deployment infrastructure, cost optimization, and investor-ready technical narratives.</p>
+</div>
+</div>
+</div>
+<div class="sectors">
+  <div class="sector"><span class="sector-dot"></span>Healthcare & Public Health</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--slate)"></span>Defence & Security</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sage)"></span>Finance & Banking</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sand)"></span>Education</div>
+  <div class="sector"><span class="sector-dot"></span>Smart Cities & IoT</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--slate)"></span>Legal & Compliance</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sage)"></span>Agriculture</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sand)"></span>Media & Publishing</div>
+</div>
+</section>
+
+<hr>
+
 <!-- Morrigan -->
 <section id="morrigan">
-<div class="st"><span class="st-label">Flagship</span> Morrigan <span>— Emotionally Intelligent AI Companion</span></div>
+<div class="st"><span class="st-label">Flagship</span> Morrigan <span>— Production LLM System with 6-Phase Inner Thought Pipeline</span></div>
 <div class="morrigan">
-<div class="m-head">
-<div><h3>Unleashed AI</h3><div class="sub">Self-hosted, unrestricted AI chat platform · MERN + LLaMA 3 + OpenRouter</div></div>
-<a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="m-link">Live Demo →</a>
+  <div class="m-head">
+    <div><h3>Unleashed AI</h3><div class="sub">Self-hosted LLM platform · MERN + LLaMA 3 (fine-tuned) + Venice AI · 3,200+ lines server · 100+ research papers</div></div>
+    <a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="m-link">Live Demo →</a>
+  </div>
+  <div class="m-intent">
+    <b>What it demonstrates:</b> A full-stack production LLM system built from scratch — not an API wrapper, but a complete cognitive architecture. Persistent memory with Ebbinghaus forgetting curves, contradiction detection with 5-category classifier, trust-gated disclosure across 7 relationship levels, somatic emotional priming (Damasio), crisis detection with safe-haven override, functional Theory of Mind, attachment style heuristics, LIWC-22 linguistic depth signals, anti-sycophancy systems, and a fine-tuned LLaMA 3 model trained on domain-specific behavioral data. Every design decision is backed by peer-reviewed research in cognitive science, HCI, and affective computing.
+  </div>
+  <div class="m-body">
+    <div class="m-col">
+      <div class="lbl">6-Phase Inner Thought Pipeline</div>
+      <ul>
+        <li><b>Phase 1</b> — Emotional signal detection + disclosure depth classification</li>
+        <li><b>Phase 2</b> — Self-atom retrieval (99+ atoms, 4 depth tiers, SPT gating)</li>
+        <li><b>Phase 3</b> — Embedding-based memory + cosine similarity + temporal decay</li>
+        <li><b>Phase 4</b> — 2-3 candidate thoughts scored by relevance, trust, novelty</li>
+        <li><b>Phase 5</b> — Continuation signals: loose threads, prospective notes, callbacks</li>
+        <li><b>Phase 6</b> — Relationship health: 5-signal model, at-risk detection, monthly audits</li>
+      </ul>
+    </div>
+    <div class="m-col">
+      <div class="lbl">Research-Backed Systems Built</div>
+      <ul>
+        <li><b>Memory</b> — atom-based + molecule synthesis + Ebbinghaus stability</li>
+        <li><b>Contradiction</b> — 5-category classifier (temporal/ambivalence/genuine)</li>
+        <li><b>Trust Progression</b> — 7 levels gating vulnerability + disclosure</li>
+        <li><b>Crisis Detection</b> — 2-layer keyword + heuristic, safe-haven override</li>
+        <li><b>Somatic Priming</b> — gut-feeling LLM call before main response [Damasio P14]</li>
+        <li><b>Theory of Mind</b> — trajectory-aware user modeling [MIRROR P2]</li>
+        <li><b>Anti-Sycophancy</b> — spiral context detection + friction injection</li>
+        <li><b>Dynamic Milestones</b> — LLM-based reflective relationship events</li>
+        <li><b>Proactive Messages</b> — trust-gated self-initiated with retreat logic</li>
+        <li><b>Fine-tuned LLaMA 3</b> — JaceSabr/morrigan-sft-v1, BF16 21.8GB</li>
+      </ul>
+    </div>
+  </div>
+  <div class="m-foot">
+    <div><div class="v">LLaMA 3 SFT</div><div class="l">Fine-tuned</div></div>
+    <div><div class="v">Venice AI</div><div class="l">Gateway</div></div>
+    <div><div class="v">MongoDB</div><div class="l">Storage</div></div>
+    <div><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
+    <div><div class="v">SSE Stream</div><div class="l">Real-time</div></div>
+    <div><div class="v">Railway</div><div class="l">Deployed</div></div>
+    <div><div class="v">100+ Papers</div><div class="l">Research</div></div>
+  </div>
 </div>
-<div class="m-intent">
-<b>What it is:</b> A deeply personalized AI companion named Morrigan — not a generic chatbot, but a character with her own personality, memories, and emotional depth. She remembers past conversations, forms opinions about you over time, progressively reveals vulnerability as trust builds, and generates inner thoughts that shape her responses. The goal: AI that feels like talking to a real person, not a tool.
-</div>
-<div class="m-body">
-<div class="m-col">
-<div class="lbl">How It Works</div>
-Every message triggers a 6-phase pipeline: detect emotional signals in user input → retrieve relevant memories via embedding similarity → generate 2-3 candidate inner thoughts → score each by relevance, timing, trust gate & novelty → weave the winning thought into her response → stream it back via SSE in real time.
-</div>
-<div class="m-col">
-<div class="lbl">Core Systems</div>
-<ul>
-<li><b>Persistent Memory</b> — embeddings + cosine similarity + temporal decay</li>
-<li><b>Contradiction Detection</b> — 5-category classifier across conversations</li>
-<li><b>Trust Progression</b> — 7 levels gating vulnerability & disclosure</li>
-<li><b>Self-Atom Framework</b> — 40 personality atoms across 4 depth tiers</li>
-<li><b>Relationship Health</b> — 5-signal model for engagement tracking</li>
-</ul>
-</div>
-</div>
-<div class="m-foot">
-<div><div class="v">LLaMA 3</div><div class="l">Model</div></div>
-<div><div class="v">OpenRouter</div><div class="l">Gateway</div></div>
-<div><div class="v">MongoDB</div><div class="l">Storage</div></div>
-<div><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
-<div><div class="v">SSE</div><div class="l">Streaming</div></div>
-<div><div class="v">Railway</div><div class="l">Deployed</div></div>
-</div>
+</section>
+
+<hr>
+
+<!-- Book -->
+<section id="book">
+<div class="st"><span class="st-label">In Progress</span> LLM Book <span>— Building With Large Language Models</span></div>
+<div class="book-banner">
+  <div class="b-left">
+    <div class="eyebrow">Book — 2026</div>
+    <h3>Building With Large Language Models</h3>
+    <p>A practitioner's guide to designing, deploying, and governing LLM systems — written by someone who built one from scratch. 12 chapters from transformer fundamentals to AI governance for governments and enterprises. Grounded in 100+ research papers.</p>
+    <div class="b-tags">
+      <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Memory Architecture</span>
+      <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Emotion-Aware AI</span>
+      <span class="tag" style="background:var(--sage-dim);color:var(--sage)">AI Governance</span>
+      <span class="tag" style="background:var(--sand-dim);color:var(--sand)">LLM Safety</span>
+      <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Fine-tuning</span>
+      <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Deployment</span>
+    </div>
+  </div>
+  <div style="flex-shrink:0">
+    <a href="book/index.html" class="btn btn-p" style="display:block;text-align:center;white-space:nowrap">View Chapters →</a>
+    <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:6px">7 of 12 chapters in progress</div>
+  </div>
 </div>
 </section>
 
@@ -166,12 +284,12 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="services">
 <div class="st">Services <span>— What I Offer</span></div>
 <div class="g3">
-<div class="c"><h3>AI Strategy</h3><p>Roadmaps for AI adoption — identifying opportunities, readiness evaluation, and phased implementation aligned with organizational goals.</p></div>
-<div class="c"><h3>Robotics & IoT</h3><p>Sensor networks, automated monitoring, and robotic solutions for agriculture, logistics, security, and smart city infrastructure.</p></div>
-<div class="c"><h3>Computer Vision</h3><p>Quality inspection, surveillance analytics, traffic monitoring, and real-time video processing for industrial applications.</p></div>
-<div class="c"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning.</p></div>
-<div class="c"><h3>AI Training</h3><p>Workshops, hands-on training, and curriculum design to build internal AI capabilities.</p></div>
-<div class="c"><h3>NLP & Chat AI</h3><p>Multilingual chatbots, document intelligence, sentiment analysis for Arabic & English markets.</p></div>
+  <div class="c"><h3>AI Strategy & Governance</h3><p>Readiness assessments, phased AI adoption roadmaps, governance frameworks aligned with EU AI Act and GCC regulations. From policy to practice.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Policy</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Governance</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Roadmap</span></div></div>
+  <div class="c"><h3>LLM Implementation</h3><p>End-to-end: model selection, fine-tuning, prompt engineering, memory architecture, deployment infrastructure, monitoring. Production-ready systems.</p><div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">LLaMA 3</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">Fine-tuning</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">RAG</span></div></div>
+  <div class="c"><h3>AI Procurement Advisory</h3><p>Vendor evaluation, due diligence, contract red flags, RFP writing, and technical validation for government and enterprise AI procurement.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Procurement</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Due Diligence</span></div></div>
+  <div class="c"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning with explainable outputs for decision-makers.</p><div class="tags"><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Forecasting</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">XGBoost</span></div></div>
+  <div class="c"><h3>AI Training & Enablement</h3><p>Workshops for executives, technical staff, and policy teams. Curriculum design to build in-house AI capability — not dependency.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Workshops</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Curriculum</span></div></div>
+  <div class="c"><h3>Computer Vision & IoT</h3><p>Object detection, surveillance analytics, smart city infrastructure, sensor networks, and embedded AI for real-world environments.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">YOLO</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">IoT</span></div></div>
 </div>
 </section>
 
@@ -181,8 +299,8 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="education">
 <div class="st">Education</div>
 <div class="g2">
-<div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2025 — Present</div><h3>Advanced AI & Robotics</h3><p>Itronix Solutions — 1yr intensive. AI/ML, deep learning, CV, NLP, robotics with hands-on delivery.</p></div>
-<div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2020</div><h3>BSc Computer Science</h3><p>University of British Columbia. Algorithms, data structures, software engineering, systems design.</p></div>
+  <div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2025 — Present</div><h3>Advanced AI & Robotics</h3><p>Itronix Solutions — 1yr intensive. AI/ML, deep learning, CV, NLP, robotics with hands-on delivery and real project work.</p></div>
+  <div class="c"><div style="font-size:9px;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:0.06em">2020</div><h3>BSc Computer Science</h3><p>University of British Columbia. Algorithms, data structures, software engineering, systems design.</p></div>
 </div>
 </section>
 
@@ -192,33 +310,34 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="expertise">
 <div class="st">Expertise</div>
 <div class="g3">
-<div class="c">
-<h3>Deep Learning</h3><p>MLPs, CNNs, RNNs, transformers — pattern recognition, prediction, generation.</p>
-<div class="snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">128</span>, <span class="str">'relu'</span>),<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">10</span>, <span class="str">'softmax'</span>)])</div>
-<div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">TensorFlow</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">PyTorch</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Keras</span></div>
-</div>
-<div class="c">
-<h3>Computer Vision</h3><p>Object detection, face recognition, video analytics for industrial & safety applications.</p>
-<div class="snippet"><span class="kw">import</span> cv2<br>cap = cv2.<span class="fn">VideoCapture</span>(<span class="str">0</span>)<br>faces = cascade.<span class="fn">detectMultiScale</span>(frame)</div>
-<div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">YOLO</span></div>
-</div>
-<div class="c">
-<h3>NLP</h3><p>Sentiment analysis, document understanding, multilingual conversational AI.</p>
-<div class="snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br>clf = <span class="fn">pipeline</span>(<span class="str">'sentiment'</span>)</div>
-<div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">HuggingFace</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">NLTK</span></div>
-</div>
-<div class="c">
-<h3>ML & Analytics</h3><p>18 algorithms — regression, classification, clustering, evaluation. 360+ code examples.</p>
-<div class="tags"><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Scikit-learn</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Pandas</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">XGBoost</span></div>
-</div>
-<div class="c">
-<h3>Full-Stack</h3><p>3+ years MERN — React, Node.js, MongoDB, Express. API to UI.</p>
-<div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">React</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Node.js</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">MongoDB</span></div>
-</div>
-<div class="c">
-<h3>IoT & Embedded</h3><p>Arduino, ESP8266, sensor networks, hardware-software integration.</p>
-<div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Arduino</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">ESP8266</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Sensors</span></div>
-</div>
+  <div class="c">
+    <h3>LLM Systems</h3><p>End-to-end architecture: fine-tuning, prompt engineering, memory, retrieval, safety, deployment. 3,200+ lines of production LLM backend code.</p>
+    <div class="snippet"><span class="kw">const</span> thought = <span class="kw">await</span> <span class="fn">evaluateAndSelect</span>(<br>&nbsp;&nbsp;candidates, trust, reservoir<br>);</div>
+    <div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">LLaMA 3</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">vLLM</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">RAG</span></div>
+  </div>
+  <div class="c">
+    <h3>Deep Learning</h3><p>MLPs, CNNs, RNNs, transformers — pattern recognition, prediction, generation. Applied to real datasets and industrial problems.</p>
+    <div class="snippet"><span class="kw">import</span> tensorflow <span class="kw">as</span> tf<br>model = tf.keras.<span class="fn">Sequential</span>([<br>&nbsp;&nbsp;layers.<span class="fn">Dense</span>(<span class="str">128</span>, <span class="str">'relu'</span>)])</div>
+    <div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">TensorFlow</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">PyTorch</span></div>
+  </div>
+  <div class="c">
+    <h3>Computer Vision</h3><p>Object detection, face recognition, video analytics, real-time processing for industrial, security, and smart city applications.</p>
+    <div class="snippet"><span class="kw">import</span> cv2<br>faces = cascade.<span class="fn">detectMultiScale</span>(frame)<br>model.<span class="fn">predict</span>(roi)</div>
+    <div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">YOLO</span></div>
+  </div>
+  <div class="c">
+    <h3>NLP</h3><p>Sentiment analysis, document intelligence, multilingual conversational AI, LIWC-22 linguistic signals, GoEmotions classification.</p>
+    <div class="snippet"><span class="kw">from</span> transformers <span class="kw">import</span> pipeline<br>clf = <span class="fn">pipeline</span>(<span class="str">'sentiment'</span>)</div>
+    <div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">HuggingFace</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">NLTK</span></div>
+  </div>
+  <div class="c">
+    <h3>Full-Stack</h3><p>3+ years MERN — React, Node.js, MongoDB, Express. REST APIs, SSE streaming, JWT auth, Railway deployment.</p>
+    <div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">React</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Node.js</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">MongoDB</span></div>
+  </div>
+  <div class="c">
+    <h3>IoT & Embedded</h3><p>Arduino, ESP8266, sensor networks, hardware-software integration for automation, agriculture, and smart infrastructure.</p>
+    <div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Arduino</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">ESP8266</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Sensors</span></div>
+  </div>
 </div>
 </section>
 
@@ -228,31 +347,31 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="ml">
 <div class="st">18 ML Algorithms <span>— each with 20 examples, real datasets & LaTeX</span></div>
 <div class="cats">
-<div class="cat">Regression <b>6</b></div>
-<div class="cat">Classification <b>6</b></div>
-<div class="cat">Clustering <b>2</b></div>
-<div class="cat">Association <b>1</b></div>
-<div class="cat">Evaluation <b>3</b></div>
+  <div class="cat">Regression <b>6</b></div>
+  <div class="cat">Classification <b>6</b></div>
+  <div class="cat">Clustering <b>2</b></div>
+  <div class="cat">Association <b>1</b></div>
+  <div class="cat">Evaluation <b>3</b></div>
 </div>
 <div class="pills">
-<a href="simple-linear-regression.html" class="pill"><span class="n">01</span>Simple Linear Regression</a>
-<a href="multiple-linear-regression.html" class="pill"><span class="n">02</span>Multiple Linear Regression</a>
-<a href="polynomial-regression.html" class="pill"><span class="n">03</span>Polynomial Regression</a>
-<a href="support-vector-regression.html" class="pill"><span class="n">04</span>Support Vector Regression</a>
-<a href="decision-tree-regression.html" class="pill"><span class="n">05</span>Decision Tree Regression</a>
-<a href="random-forest-regression.html" class="pill"><span class="n">06</span>Random Forest Regression</a>
-<a href="logistic-regression.html" class="pill"><span class="n">07</span>Logistic Regression</a>
-<a href="k-nearest-neighbors.html" class="pill"><span class="n">08</span>K-Nearest Neighbors</a>
-<a href="support-vector-machine.html" class="pill"><span class="n">09</span>Support Vector Machine</a>
-<a href="naive-bayes.html" class="pill"><span class="n">10</span>Naive Bayes</a>
-<a href="decision-tree-classification.html" class="pill"><span class="n">11</span>Decision Tree Classification</a>
-<a href="random-forest-classification.html" class="pill"><span class="n">12</span>Random Forest Classification</a>
-<a href="k-means-clustering.html" class="pill"><span class="n">13</span>K-Means Clustering</a>
-<a href="hierarchical-clustering.html" class="pill"><span class="n">14</span>Hierarchical Clustering</a>
-<a href="apriori.html" class="pill"><span class="n">15</span>Apriori Algorithm</a>
-<a href="classification-metrics.html" class="pill"><span class="n">16</span>Classification Metrics</a>
-<a href="k-fold-cross-validation.html" class="pill"><span class="n">17</span>K-Fold Cross Validation</a>
-<a href="grid-search.html" class="pill"><span class="n">18</span>Grid Search</a>
+  <a href="simple-linear-regression.html" class="pill"><span class="n">01</span>Simple Linear Regression</a>
+  <a href="multiple-linear-regression.html" class="pill"><span class="n">02</span>Multiple Linear Regression</a>
+  <a href="polynomial-regression.html" class="pill"><span class="n">03</span>Polynomial Regression</a>
+  <a href="support-vector-regression.html" class="pill"><span class="n">04</span>Support Vector Regression</a>
+  <a href="decision-tree-regression.html" class="pill"><span class="n">05</span>Decision Tree Regression</a>
+  <a href="random-forest-regression.html" class="pill"><span class="n">06</span>Random Forest Regression</a>
+  <a href="logistic-regression.html" class="pill"><span class="n">07</span>Logistic Regression</a>
+  <a href="k-nearest-neighbors.html" class="pill"><span class="n">08</span>K-Nearest Neighbors</a>
+  <a href="support-vector-machine.html" class="pill"><span class="n">09</span>Support Vector Machine</a>
+  <a href="naive-bayes.html" class="pill"><span class="n">10</span>Naive Bayes</a>
+  <a href="decision-tree-classification.html" class="pill"><span class="n">11</span>Decision Tree Classification</a>
+  <a href="random-forest-classification.html" class="pill"><span class="n">12</span>Random Forest Classification</a>
+  <a href="k-means-clustering.html" class="pill"><span class="n">13</span>K-Means Clustering</a>
+  <a href="hierarchical-clustering.html" class="pill"><span class="n">14</span>Hierarchical Clustering</a>
+  <a href="apriori.html" class="pill"><span class="n">15</span>Apriori Algorithm</a>
+  <a href="classification-metrics.html" class="pill"><span class="n">16</span>Classification Metrics</a>
+  <a href="k-fold-cross-validation.html" class="pill"><span class="n">17</span>K-Fold Cross Validation</a>
+  <a href="grid-search.html" class="pill"><span class="n">18</span>Grid Search</a>
 </div>
 </section>
 
@@ -262,21 +381,21 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="dl">
 <div class="st">8 DL Architectures <span>— theory, code & applications</span></div>
 <div class="cats">
-<div class="cat">Vision <b>2</b></div>
-<div class="cat">Sequence <b>2</b></div>
-<div class="cat">Generative <b>2</b></div>
-<div class="cat">Attention <b>1</b></div>
-<div class="cat">RL <b>1</b></div>
+  <div class="cat">Vision <b>2</b></div>
+  <div class="cat">Sequence <b>2</b></div>
+  <div class="cat">Generative <b>2</b></div>
+  <div class="cat">Attention <b>1</b></div>
+  <div class="cat">RL <b>1</b></div>
 </div>
 <div class="pills">
-<a href="cnn.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL1</span>Convolutional Neural Networks</a>
-<a href="rnn-lstm.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL2</span>RNNs & LSTMs</a>
-<a href="transformers.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL3</span>Transformers & Attention</a>
-<a href="gan.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL4</span>Generative Adversarial Networks</a>
-<a href="autoencoder.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL5</span>Autoencoders & VAEs</a>
-<a href="resnet.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL6</span>ResNets & Skip Connections</a>
-<a href="reinforcement-learning.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL7</span>Reinforcement Learning</a>
-<a href="diffusion-models.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL8</span>Diffusion Models</a>
+  <a href="cnn.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL1</span>Convolutional Neural Networks</a>
+  <a href="rnn-lstm.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL2</span>RNNs & LSTMs</a>
+  <a href="transformers.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL3</span>Transformers & Attention</a>
+  <a href="gan.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL4</span>Generative Adversarial Networks</a>
+  <a href="autoencoder.html" class="pill" style="border-left:2px solid var(--clay)"><span class="n">DL5</span>Autoencoders & VAEs</a>
+  <a href="resnet.html" class="pill" style="border-left:2px solid var(--slate)"><span class="n" style="color:var(--slate)">DL6</span>ResNets & Skip Connections</a>
+  <a href="reinforcement-learning.html" class="pill" style="border-left:2px solid var(--sage)"><span class="n" style="color:var(--sage)">DL7</span>Reinforcement Learning</a>
+  <a href="diffusion-models.html" class="pill" style="border-left:2px solid var(--sand)"><span class="n" style="color:var(--sand)">DL8</span>Diffusion Models</a>
 </div>
 </section>
 
@@ -286,10 +405,10 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="projects">
 <div class="st">Case Studies</div>
 <div class="g2">
-<a href="ny-session-prediction.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Trading</span><span class="badge" style="background:var(--sage-dim);color:var(--sage)">ML</span></div><h3>NY Session Price Direction</h3><p>Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, backtesting.</p></a>
-<a href="credit-card-fraud.html" class="proj"><div class="badges"><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Finance</span><span class="badge" style="background:var(--clay-dim);color:var(--clay)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p>492 fraudulent in 284,807 transactions — extreme class imbalance, SMOTE, the accuracy trap.</p></a>
-<a href="ad-targeting.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sage-dim);color:var(--sage)">Ads</span><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Deep Learning</span></div><h3>Ad Targeting & CTR Prediction</h3><p>LR baseline, LightGBM, Wide & Deep architecture, position bias, A/B testing at scale.</p></a>
-<a href="video-recommendation.html" class="proj"><div class="badges"><span class="badge" style="background:var(--clay-dim);color:var(--clay)">RecSys</span><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p>Collaborative filtering, content-based cold start, Two-Tower model, filter bubble problem.</p></a>
+  <a href="ny-session-prediction.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Trading</span><span class="badge" style="background:var(--sage-dim);color:var(--sage)">ML</span></div><h3>NY Session Price Direction</h3><p>Binary prediction using pre-market features — feature engineering, model comparison, cross-validation, backtesting.</p></a>
+  <a href="credit-card-fraud.html" class="proj"><div class="badges"><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Finance</span><span class="badge" style="background:var(--clay-dim);color:var(--clay)">Classification</span></div><h3>Credit Card Fraud Detection</h3><p>492 fraudulent in 284,807 transactions — extreme class imbalance, SMOTE, the accuracy trap.</p></a>
+  <a href="ad-targeting.html" class="proj"><div class="badges"><span class="badge" style="background:var(--sage-dim);color:var(--sage)">Ads</span><span class="badge" style="background:var(--sand-dim);color:var(--sand)">Deep Learning</span></div><h3>Ad Targeting & CTR Prediction</h3><p>LR baseline, LightGBM, Wide & Deep architecture, position bias, A/B testing at scale.</p></a>
+  <a href="video-recommendation.html" class="proj"><div class="badges"><span class="badge" style="background:var(--clay-dim);color:var(--clay)">RecSys</span><span class="badge" style="background:var(--slate-dim);color:var(--slate)">Two-Stage</span></div><h3>Video Recommendation Engine</h3><p>Collaborative filtering, content-based cold start, Two-Tower model, filter bubble problem.</p></a>
 </div>
 </section>
 
@@ -299,9 +418,9 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 <section id="robotics">
 <div class="st">Robotics & IoT</div>
 <div class="g3">
-<div class="c"><h3>Fire Detection</h3><p>Flame & temperature sensors with ESP8266. Automated alerts and response triggers.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Arduino</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">ESP8266</span></div></div>
-<div class="c"><h3>Smart Dog Feeder</h3><p>CV-powered feeder — identifies animals, dispenses personalized portions.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">IoT</span></div></div>
-<div class="c"><h3>Counting System</h3><p>IR sensor array for people/object counting with real-time logging.</p><div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">Arduino</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">IR Sensors</span></div></div>
+  <div class="c"><h3>Fire Detection</h3><p>Flame & temperature sensors with ESP8266. Automated alerts and response triggers.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Arduino</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">ESP8266</span></div></div>
+  <div class="c"><h3>Smart Dog Feeder</h3><p>CV-powered feeder — identifies animals, dispenses personalized portions via computer vision.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">OpenCV</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">IoT</span></div></div>
+  <div class="c"><h3>Counting System</h3><p>IR sensor array for people/object counting with real-time logging and reporting.</p><div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">Arduino</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">IR Sensors</span></div></div>
 </div>
 </section>
 
@@ -309,17 +428,18 @@ Every message triggers a 6-phase pipeline: detect emotional signals in user inpu
 
 <!-- Contact -->
 <section class="contact" id="contact">
-<h2>Let's Build Something <span>Intelligent</span></h2>
-<p>Exploring AI adoption or ready to implement — let's talk.</p>
+<h2>Let's Work <span>Together</span></h2>
+<p>Governments, enterprises, and agencies exploring AI adoption — or already mid-implementation and needing a technical second opinion. Let's talk.</p>
 <div class="c-links">
-<a href="mailto:jace100233260@gmail.com" class="cl p">jace100233260@gmail.com</a>
-<a href="#" class="cl">LinkedIn →</a>
-<a href="#" class="cl">GitHub →</a>
+  <a href="mailto:jace100233260@gmail.com" class="cl p">jace100233260@gmail.com</a>
+  <a href="book/index.html" class="cl">LLM Book →</a>
+  <a href="#" class="cl">LinkedIn →</a>
+  <a href="#" class="cl">GitHub →</a>
 </div>
 </section>
 
 </div>
 
-<footer>© 2026 Jace Sabr · AI & Robotics Consultant</footer>
+<footer>© 2026 Jace Sabr · AI Consultant & Author · GCC-based, working globally</footer>
 </body>
 </html>
