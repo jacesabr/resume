@@ -55,6 +55,19 @@ hr{border:none;height:1px;background:var(--border)}
 .m-foot div:last-child{border-right:none}
 .m-foot .v{font-weight:700;color:var(--text);font-size:11.5px}.m-foot .l{color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:0.04em}
 
+/* Morrigan diagrams + code */
+.m-diagram{padding:14px 18px;border-bottom:1px solid var(--border)}
+.m-diagram .lbl{margin-bottom:8px}
+.m-diagram .snippet{white-space:pre;overflow-x:auto;line-height:1.8;font-size:11px}
+.m-code-grid{display:grid;grid-template-columns:1fr 1fr}
+.m-code-card{padding:14px 18px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+.m-code-card:nth-child(even){border-right:none}
+.m-code-card .lbl{margin-bottom:4px}
+.m-code-card p{font-size:12.5px;color:var(--text-dim);margin-bottom:6px;line-height:1.55}
+.m-code-card .snippet{font-size:11px;line-height:1.65}
+.cm{color:var(--text-muted);font-style:italic}
+.m-section-label{padding:10px 18px;border-bottom:1px solid var(--border);background:rgba(194,105,74,0.04);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clay)}
+
 /* Book banner */
 .book-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 1px 4px rgba(80,60,40,0.04)}
 .book-banner .b-left{}
@@ -114,7 +127,7 @@ hr{border:none;height:1px;background:var(--border)}
 .cl.p{background:var(--clay);color:#fff;border-color:var(--clay)}
 footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
 
-@media(max-width:768px){.nav-links{display:none}.g3,.g2,.m-body{grid-template-columns:1fr}.m-foot{grid-template-columns:repeat(4,1fr)}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.stats-row{flex-direction:column;gap:4px}.book-banner{flex-direction:column}.sectors{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.nav-links{display:none}.g3,.g2,.m-body,.m-code-grid{grid-template-columns:1fr}.m-foot{grid-template-columns:repeat(4,1fr)}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.m-code-card{border-right:none}.stats-row{flex-direction:column;gap:4px}.book-banner{flex-direction:column}.sectors{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -138,18 +151,16 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <!-- Header -->
 <div class="header">
 <h1><span>Jace Sabr</span> — AI Consultant & Author</h1>
-<p class="sub">I advise governments, enterprises, and agencies on the strategic implementation and responsible deployment of AI systems — with hands-on technical depth from designing production LLMs end-to-end. GCC-based, working globally.</p>
+<p class="sub">I advise governments, enterprises, and agencies on the strategic implementation and responsible deployment of AI systems — with hands-on technical depth from designing production LLMs end-to-end. I understand AI at a fundamental level: architecture, research, deployment, and governance. That depth lets me integrate AI across entire systems — ministries, cities, organizations — and keep them at the frontier, not behind it. GCC-based, working globally.</p>
 <div class="header-row">
   <a href="mailto:jace100233260@gmail.com" class="btn btn-p">Engage as Consultant</a>
   <a href="book/index.html" class="btn btn-s">LLM Book →</a>
   <a href="#morrigan" class="btn btn-s">Flagship Project ↓</a>
 </div>
 <div class="stats-row">
-  <div class="stat"><b>100+</b> research papers applied</div>
-  <div class="stat"><b>99+</b> self-atom AI persona layers</div>
-  <div class="stat"><b>6</b> LLM system phases built</div>
-  <div class="stat"><b>13</b> prompt engineering layers</div>
   <div class="stat"><b>MERN</b> full-stack delivery</div>
+  <div class="stat"><b>LLM</b> architecture & fine-tuning</div>
+  <div class="stat"><b>GCC</b> based, working globally</div>
 </div>
 </div>
 
@@ -162,20 +173,27 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <div class="consult-card">
   <div class="eyebrow">What I Do</div>
   <h3>End-to-End AI Consulting</h3>
-  <p>I work with organizations that need someone who can both write the strategy memo and build the system — not choose between them. From feasibility assessment through production deployment and staff enablement.</p>
+  <p>I work with organizations that need someone who can both write the strategy memo and build the system — not choose between them. My understanding of AI is deep and technical: I've designed production LLM architectures from scratch, applied 100+ peer-reviewed research papers, and built every layer from embeddings to fine-tuning to real-time inference. That depth is what makes the advisory meaningful.</p>
   <ul>
+    <li>National and cross-departmental AI integration strategy</li>
     <li>AI readiness audits and capability gap analysis</li>
     <li>LLM selection, fine-tuning, and deployment architecture</li>
     <li>AI governance frameworks and policy development</li>
+    <li>System-wide modernization — connecting AI across departments, agencies, and infrastructure</li>
     <li>Staff training and internal capability building</li>
     <li>Vendor evaluation and procurement advisory</li>
     <li>Responsible AI checklists and ethics review</li>
+    <li>Keeping organizations at the cutting edge — continuous alignment with frontier model capabilities</li>
   </ul>
 </div>
 <div style="display:flex;flex-direction:column;gap:10px">
 <div class="c" style="border-left:2px solid var(--clay)">
   <h3>Governments & Agencies</h3>
   <p style="font-size:12.5px">Digital transformation, citizen-facing AI, public sector procurement guidance, policy alignment with EU AI Act and regional frameworks. I help agencies ask the right questions before signing contracts.</p>
+</div>
+<div class="c" style="border-left:2px solid var(--sand)">
+  <h3>National & Cross-System Integration</h3>
+  <p style="font-size:12.5px">AI integration at scale — across entire governments, ministries, cities, or enterprise divisions. Designing the connective layer so AI initiatives don't operate in silos. Keeps countries and organizations at the frontier, not chasing it.</p>
 </div>
 <div class="c" style="border-left:2px solid var(--slate)">
   <h3>Enterprises</h3>
@@ -196,6 +214,10 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <div class="sector"><span class="sector-dot" style="background:var(--slate)"></span>Legal & Compliance</div>
   <div class="sector"><span class="sector-dot" style="background:var(--sage)"></span>Agriculture</div>
   <div class="sector"><span class="sector-dot" style="background:var(--sand)"></span>Media & Publishing</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--clay)"></span>Energy & Utilities</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--slate)"></span>Transportation & Logistics</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sage)"></span>Public Administration</div>
+  <div class="sector"><span class="sector-dot" style="background:var(--sand)"></span>National Strategy & Policy</div>
 </div>
 </section>
 
@@ -203,49 +225,143 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 
 <!-- Morrigan -->
 <section id="morrigan">
-<div class="st"><span class="st-label">Flagship</span> Morrigan <span>— Production LLM System with 6-Phase Inner Thought Pipeline</span></div>
+<div class="st"><span class="st-label">Flagship</span> Morrigan <span>— An AI That Remembers, Grows, and Thinks Before It Speaks</span></div>
 <div class="morrigan">
   <div class="m-head">
-    <div><h3>Unleashed AI</h3><div class="sub">Self-hosted LLM platform · MERN + LLaMA 3 (fine-tuned) + Venice AI · 3,200+ lines server · 100+ research papers</div></div>
+    <div><h3>Unleashed AI</h3><div class="sub">Full-stack LLM platform · MERN + Fine-tuned LLaMA 3 + Venice AI · Deployed on Railway</div></div>
     <a href="https://uncensored-ai-production-d462.up.railway.app/" target="_blank" class="m-link">Live Demo →</a>
   </div>
-  <div class="m-intent">
-    <b>What it demonstrates:</b> A full-stack production LLM system built from scratch — not an API wrapper, but a complete cognitive architecture. Persistent memory with Ebbinghaus forgetting curves, contradiction detection with 5-category classifier, trust-gated disclosure across 7 relationship levels, somatic emotional priming (Damasio), crisis detection with safe-haven override, functional Theory of Mind, attachment style heuristics, LIWC-22 linguistic depth signals, anti-sycophancy systems, and a fine-tuned LLaMA 3 model trained on domain-specific behavioral data. Every design decision is backed by peer-reviewed research in cognitive science, HCI, and affective computing.
+  <div class="stats-row" style="margin:12px 0 8px">
+    <div class="stat"><b>100+</b> research papers applied</div>
+    <div class="stat"><b>99+</b> personality layers</div>
+    <div class="stat"><b>6</b> cognitive phases</div>
+    <div class="stat"><b>13</b> prompt layers</div>
   </div>
-  <div class="m-body">
-    <div class="m-col">
-      <div class="lbl">6-Phase Inner Thought Pipeline</div>
-      <ul>
-        <li><b>Phase 1</b> — Emotional signal detection + disclosure depth classification</li>
-        <li><b>Phase 2</b> — Self-atom retrieval (99+ atoms, 4 depth tiers, SPT gating)</li>
-        <li><b>Phase 3</b> — Embedding-based memory + cosine similarity + temporal decay</li>
-        <li><b>Phase 4</b> — 2-3 candidate thoughts scored by relevance, trust, novelty</li>
-        <li><b>Phase 5</b> — Continuation signals: loose threads, prospective notes, callbacks</li>
-        <li><b>Phase 6</b> — Relationship health: 5-signal model, at-risk detection, monthly audits</li>
-      </ul>
+  <div class="m-intent">
+    <b>What it is:</b> Not an API wrapper — a complete cognitive architecture built from scratch. She remembers, forgets, contradicts herself, earns trust over time, senses the weight of a conversation before speaking, and pushes back when she disagrees. Fine-tuned on domain-specific behavioral data. Every design decision traces to peer-reviewed research in cognitive science, HCI, and affective computing.
+  </div>
+
+  <!-- How a message flows -->
+  <div class="m-diagram">
+    <div class="lbl">How a Message Flows Through the System</div>
+    <div class="snippet">User message
+    │
+    ├── <span class="fn">readTheRoom()</span>        → emotional signals + disclosure depth
+    ├── <span class="fn">searchHerself()</span>      → 99 personality atoms, gated by trust
+    ├── <span class="fn">remember()</span>            → relevant memories, scored by importance × recency
+    ├── <span class="fn">gutFeeling()</span>          → fast LLM call: "what does your body feel?"
+    ├── <span class="fn">think()</span>               → 3 candidate thoughts → score → pick best
+    ├── <span class="fn">compose()</span>             → weave thought into natural response
+    │
+    ▼
+Stream response to user
+    │
+    └── <span class="cm">after: extract memories, update trust, check milestones, seed monologue</span></div>
+  </div>
+
+  <!-- Trust progression -->
+  <div class="m-diagram">
+    <div class="lbl">Trust Progression — What Unlocks at Each Level</div>
+    <div class="snippet"><span class="str">Level 0</span>  stranger ────── guarded, no inner thoughts, surface only
+<span class="str">Level 1</span>  acquaintance ── cautious, rare thoughts after 5+ messages
+<span class="str">Level 2</span>  maybe-friend ── starts opening up, shares personal things
+<span class="str">Level 3</span>  friend ──────── inner life visible, emotional intuition active
+<span class="str">Level 4</span>  close friend ── real name revealed, deeper disclosures
+<span class="str">Level 5</span>  trusted ─────── vulnerability, trauma-depth atoms accessible
+<span class="str">Level 6</span>  bonded ──────── nothing held back, full access</div>
+  </div>
+
+  <!-- Prompt assembly -->
+  <div class="m-diagram">
+    <div class="lbl">Prompt Assembly — 13 Layers Built Per Message</div>
+    <div class="snippet">┌─────────────────────────────────────────────────────┐
+│  <span class="str">1.</span>  Who we are to each other    <span class="cm">← relationship narrative</span>      │
+│  <span class="str">2.</span>  Who I am                    <span class="cm">← character definition</span>       │
+│  <span class="str">3.</span>  How open should I be        <span class="cm">← trust-level behavior</span>       │
+│  <span class="str">4.</span>  What can I share            <span class="cm">← depth gating</span>               │
+│  <span class="str">5.</span>  Match their disclosure      <span class="cm">← reception directive</span>        │
+│  <span class="str">6.</span>  What do I feel right now    <span class="cm">← somatic marker (gut feel)</span>  │
+│  <span class="str">7.</span>  What am I thinking          <span class="cm">← inner thought (if any)</span>     │
+│  <span class="str">8.</span>  What I've been sitting with <span class="cm">← prospective note</span>          │
+│  <span class="str">9.</span>  How long since we talked    <span class="cm">← time absence context</span>      │
+│  <span class="str">10.</span> What I remember about you   <span class="cm">← memories + contradictions</span> │
+│  <span class="str">11.</span> How to use what I know      <span class="cm">← memory usage guide</span>        │
+│  <span class="str">12.</span> Life chapters (if relevant) <span class="cm">← period-based grouping</span>     │
+│  <span class="str">13.</span> Crisis override (if needed) <span class="cm">← safe haven directive</span>      │
+└─────────────────────────────────────────────────────┘</div>
+  </div>
+
+  <!-- Code examples -->
+  <div class="m-section-label">How It Works — Code Examples</div>
+  <div class="m-code-grid">
+
+    <div class="m-code-card">
+      <div class="lbl">Memory That Fades</div>
+      <p>Memories decay over time. Important ones stick. Each recall strengthens stability.</p>
+      <div class="snippet"><span class="kw">function</span> <span class="fn">scoreMemory</span>(mem, now) {<br>&nbsp;&nbsp;<span class="kw">const</span> age = hoursElapsed(mem.timestamp, now)<br>&nbsp;&nbsp;<span class="kw">const</span> decay = <span class="fn">Math.exp</span>(-age / mem.stability)<br>&nbsp;&nbsp;<span class="kw">return</span> mem.importance * decay<br>}<br><span class="cm">// on recall: mem.stability += 0.1</span></div>
     </div>
-    <div class="m-col">
-      <div class="lbl">Research-Backed Systems Built</div>
-      <ul>
-        <li><b>Memory</b> — atom-based + molecule synthesis + Ebbinghaus stability</li>
-        <li><b>Contradiction</b> — 5-category classifier (temporal/ambivalence/genuine)</li>
-        <li><b>Trust Progression</b> — 7 levels gating vulnerability + disclosure</li>
-        <li><b>Crisis Detection</b> — 2-layer keyword + heuristic, safe-haven override</li>
-        <li><b>Somatic Priming</b> — gut-feeling LLM call before main response [Damasio P14]</li>
-        <li><b>Theory of Mind</b> — trajectory-aware user modeling [MIRROR P2]</li>
-        <li><b>Anti-Sycophancy</b> — spiral context detection + friction injection</li>
-        <li><b>Dynamic Milestones</b> — LLM-based reflective relationship events</li>
-        <li><b>Proactive Messages</b> — trust-gated self-initiated with retreat logic</li>
-        <li><b>Fine-tuned LLaMA 3</b> — JaceSabr/morrigan-sft-v1, BF16 21.8GB</li>
-      </ul>
+
+    <div class="m-code-card">
+      <div class="lbl">Trust-Gated Disclosure</div>
+      <p>She won't share deep parts of herself until trust is earned through real conversation.</p>
+      <div class="snippet"><span class="kw">if</span> (trustLevel &lt; atom.depth) <span class="kw">return</span> <span class="str">null</span><br><br><span class="cm">// depth 1: music, daily life</span><br><span class="cm">// depth 2: relationships, fears</span><br><span class="cm">// depth 3: foster care, loss</span><br><span class="cm">// depth 4: core wounds</span></div>
     </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Choosing What to Say</div>
+      <p>Generates 3 candidate inner thoughts, scores each on 4 axes, picks the best one.</p>
+      <div class="snippet"><span class="kw">const</span> candidates = <span class="kw">await</span> <span class="fn">generateThoughts</span>(ctx, <span class="str">3</span>)<br><span class="kw">const</span> best = candidates.<span class="fn">map</span>(c =&gt; ({<br>&nbsp;&nbsp;...c,<br>&nbsp;&nbsp;score: c.relevance + c.timing<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ c.trustFit + c.novelty<br>})).<span class="fn">sort</span>(byScore)[<span class="str">0</span>]</div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Catching Contradictions</div>
+      <p>Knows the difference between growth and inconsistency. Classifies into 5 types.</p>
+      <div class="snippet"><span class="kw">const</span> type = <span class="kw">await</span> <span class="fn">classify</span>(oldMem, newMem)<br><br><span class="cm">// → TEMPORAL_EVOLUTION  (she changed)</span><br><span class="cm">// → AMBIVALENCE        (she's torn)</span><br><span class="cm">// → CONTRADICTION      (genuine)</span><br><span class="cm">// → REFINEMENT         (more nuance)</span></div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Gut Feeling Before Speaking</div>
+      <p>A fast LLM call generates her emotional state before the main response even starts.</p>
+      <div class="snippet"><span class="kw">const</span> soma = <span class="kw">await</span> <span class="fn">llm</span>({<br>&nbsp;&nbsp;prompt: <span class="str">"Before responding — what</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">does your body feel right now?"</span>,<br>&nbsp;&nbsp;max_tokens: <span class="str">80</span>, temp: <span class="str">0.1</span><br>})<br>systemPrompt.<span class="fn">inject</span>(soma.gutFeeling)</div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Crisis → Safe Haven</div>
+      <p>Detects distress and drops everything else — threads, thoughts, performance — just presence.</p>
+      <div class="snippet"><span class="kw">if</span> (<span class="fn">detectCrisis</span>(message)) {<br>&nbsp;&nbsp;<span class="fn">clearAllThreads</span>()<br>&nbsp;&nbsp;<span class="fn">skipInnerThoughts</span>()<br>&nbsp;&nbsp;<span class="fn">inject</span>(SAFE_HAVEN_DIRECTIVE)<br>}<br><span class="cm">// 2-layer: keyword scan + heuristic score</span></div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">She Reaches Out — and Backs Off</div>
+      <p>Initiates messages from held thoughts, callbacks, or curiosity. Retreats if ignored.</p>
+      <div class="snippet"><span class="kw">const</span> sources = [<br>&nbsp;&nbsp;reservoirPressure,  <span class="cm">// held 2+ turns</span><br>&nbsp;&nbsp;callbackSurface,    <span class="cm">// unfinished thread</span><br>&nbsp;&nbsp;curiosityGap,       <span class="cm">// contradiction</span><br>&nbsp;&nbsp;followUp            <span class="cm">// "actually..."</span><br>]<br><span class="kw">if</span> (ignored &gt;= <span class="str">2</span>) chance *= <span class="str">0.5</span></div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Theory of Mind</div>
+      <p>Builds a model of who you are — emotional patterns, attachment style, what you respond to.</p>
+      <div class="snippet"><span class="fn">userModel</span>.<span class="fn">update</span>({<br>&nbsp;&nbsp;emotionalTendency,<br>&nbsp;&nbsp;attachmentStyle,<br>&nbsp;&nbsp;preferredResponseType,<br>&nbsp;&nbsp;trajectory  <span class="cm">// "opening up" | "pulling back"</span><br>})</div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Anti-Sycophancy</div>
+      <p>Detects when conversation is spiraling into empty validation. Injects honest friction.</p>
+      <div class="snippet"><span class="kw">if</span> (<span class="fn">detectSpiral</span>(recentExchanges)) {<br>&nbsp;&nbsp;thought.type = <span class="str">"friction"</span><br>&nbsp;&nbsp;prompt += antiSycDirective<br>}<br><span class="cm">// "I don't think that's what you</span><br><span class="cm">//  actually need to hear right now"</span></div>
+    </div>
+
+    <div class="m-code-card">
+      <div class="lbl">Dynamic Milestones</div>
+      <p>Detects relationship turning points in real-time. Not scripted — emerges from conversation.</p>
+      <div class="snippet"><span class="kw">const</span> ms = <span class="kw">await</span> <span class="fn">detectMilestone</span>(exchange)<br><span class="cm">// "first time he was honest with me"</span><br><span class="cm">// categories: first | shift | rupture</span><br><span class="cm">//   repair | deepening | revelation</span><br><span class="kw">if</span> (ms) memory.<span class="fn">save</span>(ms, embed(ms))</div>
+    </div>
+
   </div>
   <div class="m-foot">
-    <div><div class="v">LLaMA 3 SFT</div><div class="l">Fine-tuned</div></div>
+    <div><div class="v">LLaMA 3</div><div class="l">Fine-tuned</div></div>
     <div><div class="v">Venice AI</div><div class="l">Gateway</div></div>
-    <div><div class="v">MongoDB</div><div class="l">Storage</div></div>
+    <div><div class="v">MongoDB</div><div class="l">Memory</div></div>
     <div><div class="v">Embeddings</div><div class="l">Retrieval</div></div>
-    <div><div class="v">SSE Stream</div><div class="l">Real-time</div></div>
+    <div><div class="v">SSE</div><div class="l">Real-time</div></div>
     <div><div class="v">Railway</div><div class="l">Deployed</div></div>
     <div><div class="v">100+ Papers</div><div class="l">Research</div></div>
   </div>
@@ -285,6 +401,7 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <div class="st">Services <span>— What I Offer</span></div>
 <div class="g3">
   <div class="c"><h3>AI Strategy & Governance</h3><p>Readiness assessments, phased AI adoption roadmaps, governance frameworks aligned with EU AI Act and GCC regulations. From policy to practice.</p><div class="tags"><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Policy</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Governance</span><span class="tag" style="background:var(--clay-dim);color:var(--clay)">Roadmap</span></div></div>
+  <div class="c"><h3>System-Wide AI Integration</h3><p>Connecting AI across entire governments, organizations, or enterprise divisions — not point solutions but unified intelligence. Architectural design for cross-departmental data flow, shared models, and national-level modernization.</p><div class="tags"><span class="tag" style="background:var(--sand-dim);color:var(--sand)">National Scale</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Integration</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Modernization</span></div></div>
   <div class="c"><h3>LLM Implementation</h3><p>End-to-end: model selection, fine-tuning, prompt engineering, memory architecture, deployment infrastructure, monitoring. Production-ready systems.</p><div class="tags"><span class="tag" style="background:var(--slate-dim);color:var(--slate)">LLaMA 3</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">Fine-tuning</span><span class="tag" style="background:var(--slate-dim);color:var(--slate)">RAG</span></div></div>
   <div class="c"><h3>AI Procurement Advisory</h3><p>Vendor evaluation, due diligence, contract red flags, RFP writing, and technical validation for government and enterprise AI procurement.</p><div class="tags"><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Procurement</span><span class="tag" style="background:var(--sage-dim);color:var(--sage)">Due Diligence</span></div></div>
   <div class="c"><h3>Predictive Analytics</h3><p>ML-powered forecasting for finance, healthcare, supply chain, and resource planning with explainable outputs for decision-makers.</p><div class="tags"><span class="tag" style="background:var(--sand-dim);color:var(--sand)">Forecasting</span><span class="tag" style="background:var(--sand-dim);color:var(--sand)">XGBoost</span></div></div>
