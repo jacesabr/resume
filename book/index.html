@@ -105,11 +105,11 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
     <a href="#chapters" class="btn btn-s">View Chapters ↓</a>
   </div>
   <div class="book-meta">
-    <div class="bm"><div class="v">12</div><div class="l">Chapters</div></div>
+    <div class="bm"><div class="v">7</div><div class="l">Chapters</div></div>
     <div class="bm"><div class="v">100+</div><div class="l">Research Papers</div></div>
-    <div class="bm"><div class="v">3,200+</div><div class="l">Lines of LLM Code</div></div>
-    <div class="bm"><div class="v">6</div><div class="l">Deployment Guides</div></div>
-    <div class="bm"><div class="v">Gov/Enterprise</div><div class="l">Focus</div></div>
+    <div class="bm"><div class="v">5,000+</div><div class="l">Lines of Annotated Code</div></div>
+    <div class="bm"><div class="v">50+</div><div class="l">Runnable Cells</div></div>
+    <div class="bm"><div class="v">From Scratch</div><div class="l">Build a GPT</div></div>
   </div>
 </div>
 
@@ -119,10 +119,10 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <section id="about">
 <div class="st"><span class="st-label">The Book</span> What This Is</div>
 <div class="about-card">
-  <div class="quote">"Most LLM books teach you to call an API. This one teaches you what happens after — memory, trust, emotion, safety, and why it matters for the organizations deploying these systems."</div>
-  <p>This book grew out of building Unleashed AI — a production LLM system with persistent memory, multi-phase inner thought pipelines, trust-gated disclosure, real-time emotion modeling, crisis detection, and relationship health monitoring. Every chapter is grounded in that real implementation, cross-referenced against the research literature that informed it.</p>
-  <p>The target reader is a technical decision-maker: engineers who will build the system, architects who will design it, and government or enterprise leaders who need to understand what they are commissioning and why each design choice has consequences for their users and their organization.</p>
-  <p>The book covers LLM fundamentals through to advanced deployment concerns — alignment, hallucination, memory architecture, emotion-aware prompting, safety systems, governance frameworks, and what responsible AI adoption actually looks like inside an organization or agency.</p>
+  <div class="quote">"Most LLM books teach you to call an API. This one teaches you to build one from scratch — tokenizer to fine-tuned assistant, every line annotated, every design decision traced to the paper that justified it."</div>
+  <p>This book is a practitioner's guide to understanding and building large language models — from the mathematics of next-token prediction through pre-training, deployment, and fine-tuning. Each chapter explains one layer of the stack deeply, with annotated code the reader can run in their browser and links to every primary source.</p>
+  <p>The target reader is someone technical enough to read Python, curious enough to want the real math, but not necessarily a researcher. A senior developer, a data scientist pivoting to LLMs, or a technically-minded builder who wants to go beyond the API.</p>
+  <p>By the end of this book you will have built a working GPT model from an empty file — tokenizer, attention mechanism, transformer architecture, pre-training loop, and two different fine-tuning strategies — understanding every line of code and every design trade-off along the way.</p>
 </div>
 </section>
 
@@ -130,7 +130,7 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 
 <!-- Chapters -->
 <section id="chapters">
-<div class="st">Chapters <span>— 12 modules, fundamentals to governance</span></div>
+<div class="st">Chapters <span>— 7 chapters, tokenizer to fine-tuned assistant</span></div>
 
 <div class="part">
   <span class="part-label">Part I — Foundations</span>
@@ -139,58 +139,60 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
     <div class="ch-num">01</div>
     <div class="ch-body">
       <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
-      <h3>What Is a Large Language Model?</h3>
-      <p>How LLMs are trained, what they actually do, and what they cannot do. Dispelling the myths organizations believe before deployment. The probability-over-tokens view. Why "intelligence" is the wrong word.</p>
+      <h3>Understanding Large Language Models</h3>
+      <p>Next-token prediction, tokenisation, embeddings, the transformer architecture, self-attention, pre-training at scale, BERT vs GPT, RLHF/LoRA, scale and emergence, MoE, quantization, and the 2025 open-source landscape.</p>
       <div class="tags">
         <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Transformers</span>
         <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Pre-training</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Tokenization</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Scale</span>
       </div>
     </div>
   </a>
 
-  <div class="ch">
+  <a href="chapter2.html" class="ch">
     <div class="ch-num">02</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
-      <h3>The Transformer Architecture</h3>
-      <p>Attention mechanisms, positional encoding, feed-forward layers, and the decoder stack. How the model "reads" and "writes." Why context windows matter and how they are changing. Illustrated with annotated diagrams.</p>
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
+      <h3>Working with Text Data</h3>
+      <p>Tokenisers in depth — BPE, SentencePiece, tiktoken. Building a BPE tokenizer from scratch. Token IDs, special tokens, sliding-window data sampling. Token embeddings and positional encoding. The full input pipeline from raw text to embedding tensor.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Self-Attention</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Multi-head</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Context Window</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">BPE</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Tokenization</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Embeddings</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">DataLoader</span>
       </div>
     </div>
-  </div>
+  </a>
 
-  <div class="ch">
+  <a href="chapter3.html" class="ch">
     <div class="ch-num">03</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
-      <h3>Embeddings & Semantic Retrieval</h3>
-      <p>How meaning becomes vectors. Cosine similarity, semantic search, and embedding-based memory. Building retrieval systems that find what matters — not just what matches. Temporal decay and importance weighting.</p>
+      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
+      <h3>The Transformer Architecture</h3>
+      <p>Residual stream, token &amp; positional embeddings, layer normalisation, Q/K/V projections, scaled dot-product attention, multi-head attention, causal mask, Flash Attention, feedforward sublayer, induction heads, and the generation loop.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Embeddings</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Cosine Similarity</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">RAG</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Self-Attention</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Multi-Head</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Flash Attention</span>
       </div>
     </div>
-  </div>
+  </a>
 </div>
 
 <div class="part">
-  <span class="part-label">Part II — Building Systems</span>
+  <span class="part-label">Part II — Building the Model</span>
 
   <div class="ch">
     <div class="ch-num">04</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
-      <h3>Prompt Engineering That Actually Works</h3>
-      <p>Beyond "be helpful." System prompt architecture for production systems — 13-layer prompt design, trust-gated behavioral instructions, somatic priming, attribution guards, anti-sycophancy directives. What to include and why.</p>
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
+      <h3>Implementing a GPT Model</h3>
+      <p>Full decoder-only transformer from scratch. Layer normalisation, GELU activation, shortcut connections, stacked transformer blocks, the GPT-2 architecture, weight tying, parameter counting, and greedy text generation.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Prompt Design</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Chain-of-Thought</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Instruction Tuning</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">GPT-2</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">GELU</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Residual</span>
+        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">124M Params</span>
       </div>
     </div>
   </div>
@@ -198,28 +200,31 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <div class="ch">
     <div class="ch-num">05</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete</span></div>
-      <h3>Memory Architecture</h3>
-      <p>Why stateless LLMs are a dead end for enterprise. Atom-based memory with embeddings. Contradiction detection and resolution. Ebbinghaus forgetting curves applied to AI memory. Molecule synthesis — clustering related memories into thematic summaries. Cross-encoder re-ranking.</p>
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
+      <h3>Pretraining on Unlabeled Data</h3>
+      <p>The training loop from scratch. Cross-entropy loss, gradient clipping, learning rate scheduling with cosine warmup, mixed precision (BF16), evaluation on validation loss, temperature scaling, top-k sampling, and loading real pretrained weights.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Persistent Memory</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Contradiction Detection</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Ebbinghaus</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Training Loop</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Cosine LR</span>
+        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Top-k Sampling</span>
       </div>
     </div>
   </div>
+</div>
+
+<div class="part">
+  <span class="part-label">Part III — Fine-Tuning</span>
 
   <div class="ch">
     <div class="ch-num">06</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
-      <h3>Fine-Tuning & Supervised Training</h3>
-      <p>When fine-tuning is necessary vs. prompt engineering. SFT dataset construction, formatting, quality control. Training LLaMA 3 on domain-specific behavior. Evaluation metrics beyond perplexity. The dual-model comparison approach.</p>
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
+      <h3>Fine-Tuning for Classification</h3>
+      <p>Adding a classification head to a pretrained GPT. Freezing layers, training on downstream datasets, evaluation metrics (F1, ROC-AUC), overfitting detection, early stopping, and building a spam classifier from scratch.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">SFT</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">LoRA</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">GGUF</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">vLLM</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Classification</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Transfer Learning</span>
+        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">F1 / ROC-AUC</span>
       </div>
     </div>
   </div>
@@ -227,95 +232,14 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <div class="ch">
     <div class="ch-num">07</div>
     <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
-      <h3>Emotion-Aware & Human-Centered LLMs</h3>
-      <p>Theory of Mind in AI systems. Damasio's Somatic Marker Hypothesis applied to LLM response priming. LIWC-22 linguistic depth signals. Crisis detection and safe haven modes. GoEmotions goal state inference. Why simulating emotional intelligence is not deception — it is design.</p>
+      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
+      <h3>Fine-Tuning to Follow Instructions</h3>
+      <p>Supervised fine-tuning (SFT) dataset formats — Alpaca, ShareGPT, ChatML. Training with masked loss. DPO alignment. Evaluation with benchmarks. Deploying a local instruction-following assistant.</p>
       <div class="tags">
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Theory of Mind</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Emotion AI</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">LIWC-22</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">GoEmotions</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="part">
-  <span class="part-label">Part III — Safety, Alignment & Governance</span>
-
-  <div class="ch">
-    <div class="ch-num">08</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-progress"></span><span class="status-progress">In Progress</span></div>
-      <h3>Hallucination — Causes, Detection & Mitigation</h3>
-      <p>Why LLMs confabulate with confidence. Attribution errors in production systems. Retrieval-augmented grounding strategies. EmoGuard and lightweight harm-pattern detection. When to trust the model and when to verify.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Hallucination</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Attribution Guards</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Grounding</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="ch">
-    <div class="ch-num">09</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
-      <h3>LLM Safety Systems</h3>
-      <p>Content moderation at the system layer. Crisis detection pipelines. Anti-sycophancy mechanisms. Spiral context detection. The compassion illusion and its risks. Designing systems that do not make mental health worse.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Safety</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Moderation</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Crisis Detection</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="ch">
-    <div class="ch-num">10</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
-      <h3>AI Governance for Organizations & Agencies</h3>
-      <p>What governments and enterprises need to decide before deployment. Bias audits, transparency requirements, accountability frameworks. EU AI Act and global regulatory landscape. Procurement red flags. The questions your AI vendor cannot answer.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Governance</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">EU AI Act</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Procurement</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Policy</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="part">
-  <span class="part-label">Part IV — Deployment & Strategy</span>
-
-  <div class="ch">
-    <div class="ch-num">11</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
-      <h3>Deploying LLMs in Production</h3>
-      <p>Self-hosted vs. API-based. Modal, RunPod, Vast.ai, Ollama — real cost/performance tradeoffs. SSE streaming architecture. Fallback chains. Latency vs. quality. Monitoring, observability, and when things go wrong.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">RunPod</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Modal</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">vLLM</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">SSE</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="ch">
-    <div class="ch-num">12</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Planned</span></div>
-      <h3>AI Strategy for Decision-Makers</h3>
-      <p>How to evaluate an AI initiative. Organizational readiness, phased adoption, and the hidden costs of AI. Building internal capability vs. outsourcing. The 10 questions every government or enterprise leader should ask before signing a contract.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Strategy</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">ROI</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Readiness</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Adoption</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">SFT</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Alpaca</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">DPO</span>
+        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Instruction Tuning</span>
       </div>
     </div>
   </div>
@@ -328,18 +252,18 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <section id="research">
 <div class="st">Research Basis <span>— built on peer-reviewed literature</span></div>
 <div class="refs">
-  <div class="ref"><div class="rname">GoEmotions (P1 Liu et al.)</div><div class="rdesc">Emotion classification + goal state inference in conversational AI</div></div>
-  <div class="ref"><div class="rname">MIRROR Framework (P2 Kim)</div><div class="rdesc">Functional Theory of Mind + self-reflection state architecture</div></div>
-  <div class="ref"><div class="rname">Conway Self-Memory System (P13)</div><div class="rdesc">Episodic memory structure, life chapters, autobiographical retrieval</div></div>
-  <div class="ref"><div class="rname">Damasio Somatic Markers (P14)</div><div class="rdesc">Body-referenced emotional priming before LLM response generation</div></div>
-  <div class="ref"><div class="rname">Aron Fast Friends (P56)</div><div class="rdesc">Graduated self-disclosure and trust-gated vulnerability</div></div>
-  <div class="ref"><div class="rname">Attachment Theory (P62/P63)</div><div class="rdesc">Safe haven mode, crisis detection, attachment style heuristics</div></div>
-  <div class="ref"><div class="rname">XiaoIce Drive-vs-Listen (P70)</div><div class="rdesc">Proactive messaging architecture and conversation initiative</div></div>
-  <div class="ref"><div class="rname">LIWC-22 Pennebaker (P69)</div><div class="rdesc">Function-word analysis for authenticity and emotional tone signals</div></div>
-  <div class="ref"><div class="rname">Ebbinghaus Forgetting Curve (P31)</div><div class="rdesc">Memory stability, retrieval reinforcement, decay-based pruning</div></div>
-  <div class="ref"><div class="rname">Grassini Compassion Illusion (P80)</div><div class="rdesc">Mitigating performed understanding — epistemic humility in AI</div></div>
-  <div class="ref"><div class="rname">Shinn ReAct (P5, NeurIPS 2023)</div><div class="rdesc">Thought reservoir architecture and agentic reasoning</div></div>
-  <div class="ref"><div class="rname">K.M. Weiland Ghost/Wound</div><div class="rdesc">Narrative character architecture applied to AI persona design</div></div>
+  <div class="ref"><div class="rname">Vaswani et al. 2017</div><div class="rdesc">Attention Is All You Need — the original transformer architecture</div></div>
+  <div class="ref"><div class="rname">Radford et al. 2018–2019</div><div class="rdesc">GPT and GPT-2 — generative pre-training and unsupervised multitask learning</div></div>
+  <div class="ref"><div class="rname">Kaplan et al. 2020</div><div class="rdesc">Scaling Laws for Neural Language Models — parameter/data/compute relationships</div></div>
+  <div class="ref"><div class="rname">Hoffmann et al. 2022</div><div class="rdesc">Chinchilla — compute-optimal training (tokens should scale with parameters)</div></div>
+  <div class="ref"><div class="rname">Dao et al. 2022</div><div class="rdesc">FlashAttention — IO-aware exact attention with tiling</div></div>
+  <div class="ref"><div class="rname">Sennrich et al. 2016</div><div class="rdesc">BPE for NMT — byte pair encoding applied to subword tokenization</div></div>
+  <div class="ref"><div class="rname">Hu et al. 2021</div><div class="rdesc">LoRA — low-rank adaptation of large language models</div></div>
+  <div class="ref"><div class="rname">Ouyang et al. 2022</div><div class="rdesc">InstructGPT — training language models to follow instructions with RLHF</div></div>
+  <div class="ref"><div class="rname">Rafailov et al. 2023</div><div class="rdesc">DPO — direct preference optimization without reinforcement learning</div></div>
+  <div class="ref"><div class="rname">Raschka 2025</div><div class="rdesc">Build a Large Language Model (From Scratch) — primary reference text</div></div>
+  <div class="ref"><div class="rname">Karpathy (nanoGPT)</div><div class="rdesc">Minimal GPT-2 reimplementation — the gold standard for learning by building</div></div>
+  <div class="ref"><div class="rname">Elhage et al. 2021 (Anthropic)</div><div class="rdesc">A Mathematical Framework for Transformer Circuits — residual stream formalism</div></div>
 </div>
 </section>
 

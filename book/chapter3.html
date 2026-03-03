@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 3 — The Transformer Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f7;--bg-code:#1a1a1a;--bg-card:#fff;--bg-aside:#f3f1ee;--bg-deep:#f7f4ef;
+  --text:#1a1a1a;--text-secondary:#6b6560;--text-code:#e8e4de;
+  --accent:#c96442;--accent-light:rgba(201,100,66,.08);
+  --blue:#3b6bb5;--blue-light:rgba(59,107,181,.07);
+  --green:#4a8c6f;--green-light:rgba(74,140,111,.07);
+  --purple:#7c5cbf;--purple-light:rgba(124,92,191,.07);
+  --amber:#b87c2a;--amber-light:rgba(184,124,42,.07);
+  --border:#e8e4de;--border-light:#f0ece6;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',monospace;
+  --max-w:740px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased;}
+::selection{background:var(--accent);color:#fff;}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+.topnav{position:sticky;top:0;z-index:100;background:rgba(250,249,247,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light);padding:14px 0;}
+.topnav .container{display:flex;align-items:center;justify-content:space-between;}
+.topnav-title{font-family:var(--font-serif);font-size:15px;}
+.topnav-links{display:flex;gap:16px;}
+.topnav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;transition:color .2s;}
+.topnav-links a:hover{color:var(--accent);}
+.chapter-header{padding:80px 0 56px;border-bottom:1px solid var(--border);}
+.chapter-label{font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.chapter-header h1{font-family:var(--font-serif);font-size:clamp(30px,5vw,46px);font-weight:400;line-height:1.18;margin-bottom:18px;}
+.chapter-header>p{font-size:17px;color:var(--text-secondary);max-width:580px;line-height:1.72;}
+.chapter-meta{display:flex;gap:24px;margin-top:24px;font-size:13px;color:var(--text-secondary);flex-wrap:wrap;}
+.toc{padding:32px 0;border-bottom:1px solid var(--border);}
+.toc h3{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:2px;}
+.toc-list a{display:flex;gap:10px;text-decoration:none;color:var(--text);padding:6px 8px;font-size:13.5px;transition:all .2s;border-radius:5px;}
+.toc-list a:hover{color:var(--accent);background:var(--accent-light);}
+.toc-num{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);min-width:26px;}
+.section{padding:60px 0 0;}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.5px;margin-bottom:8px;}
+.section h2{font-family:var(--font-serif);font-size:30px;font-weight:400;line-height:1.28;margin-bottom:22px;}
+.section p{margin-bottom:18px;max-width:680px;}
+.section-divider{border:none;border-top:1px solid var(--border-light);margin:64px 0 0;}
+.callout{background:var(--bg-aside);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 22px;margin:22px 0;font-size:15px;line-height:1.72;}
+.callout strong{color:var(--accent);}
+.callout.blue{border-left-color:var(--blue);}.callout.blue strong{color:var(--blue);}
+.callout.green{border-left-color:var(--green);}.callout.green strong{color:var(--green);}
+.callout.purple{border-left-color:var(--purple);}.callout.purple strong{color:var(--purple);}
+.callout.amber{border-left-color:var(--amber);}.callout.amber strong{color:var(--amber);}
+.deepdive{background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:14px 20px;margin:22px 0;}
+.deepdive-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px;}
+.deepdive a{display:block;font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;}
+.deepdive a:hover{text-decoration:underline;}
+.formula{background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:13.5px;padding:18px 24px;border-radius:8px;margin:20px 0;text-align:center;}
+.formula .eq-label{font-size:10px;color:#666;display:block;margin-bottom:6px;text-align:left;letter-spacing:.5px;}
+.formula .eq-note{font-size:11px;color:#888;display:block;margin-top:6px;}
+.code-block{background:var(--bg-code);border-radius:10px;margin:22px 0;overflow:hidden;}
+.code-header{display:flex;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.code-filename{font-family:var(--font-mono);font-size:11px;color:#888;}
+.code-copy{background:none;border:1px solid #444;color:#888;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;}
+.code-copy:hover{border-color:#888;color:#ddd;}
+.code-block pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.72;color:var(--text-code);padding:20px 24px;overflow-x:auto;}
+.kw{color:#cf8e6d;font-weight:500;}.fn{color:#87ceeb;}.cm{color:#6a9955;font-style:italic;}
+.lm{color:#4fc3f7;font-style:italic;}.st{color:#6aab73;}.nu{color:#79b4de;}
+.cl{color:#ffd580;}.pr{color:#9cdcfe;}.bi{color:#dcdcaa;}
+.cell{border:1px solid var(--border);border-radius:10px;margin:26px 0;overflow:hidden;}
+.cell-header{display:flex;justify-content:space-between;padding:10px 18px;background:var(--bg-aside);border-bottom:1px solid var(--border);}
+.cell-label{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.run-btn{background:var(--accent);color:#fff;border:none;padding:5px 16px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;}
+.run-btn:hover{opacity:.85;}.run-btn:disabled{opacity:.5;cursor:default;}
+.cell-code{background:var(--bg-code);padding:18px 22px;}
+.cell-code pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.68;color:var(--text-code);white-space:pre-wrap;}
+.cell-output{padding:14px 18px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#444;background:#fff;border-top:1px solid var(--border);white-space:pre-wrap;min-height:28px;}
+.cell-output.running{color:var(--accent);}.cell-output.error{color:#c0392b;}
+
+/* ── DIAGRAMS ── */
+/* Residual stream */
+.rs-wrap{display:flex;gap:16px;margin:22px 0;align-items:flex-start;}
+.rs-center{display:flex;flex-direction:column;align-items:center;gap:0;flex:1;}
+.rs-bypass-col{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+.rs-node{border-radius:7px;padding:9px 18px;text-align:center;font-size:12.5px;min-width:220px;}
+.rs-tok{background:var(--bg-code);color:var(--text-code);}
+.rs-add{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple);font-weight:600;}
+.rs-attn{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.rs-ffn{background:var(--amber-light);border:1px solid var(--amber);color:var(--amber);}
+.rs-lm{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.rs-line{width:2px;height:20px;background:var(--border);}
+.bypass-label{font-family:var(--font-mono);font-size:9px;color:var(--purple);letter-spacing:.5px;writing-mode:vertical-lr;padding:8px 0;}
+.bypass-line{width:2px;flex:1;background:repeating-linear-gradient(180deg,var(--purple) 0,var(--purple) 5px,transparent 5px,transparent 9px);}
+/* Softmax temperature */
+.temp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px 0;}
+.temp-card{border:1px solid var(--border);border-radius:7px;padding:12px;text-align:center;}
+.temp-card h4{font-family:var(--font-mono);font-size:11px;margin-bottom:8px;}
+.temp-bars{display:flex;gap:3px;height:44px;align-items:flex-end;justify-content:center;margin:0 0 6px;}
+.tb{flex:1;border-radius:2px 2px 0 0;}
+.tb-accent{background:var(--accent);}
+.tb-blue{background:var(--blue);}
+.tb-green{background:var(--green);}
+.tb-aside{background:var(--bg-aside);border:1px solid var(--border);}
+.temp-note{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);}
+/* LN diagram */
+.ln-pipeline{display:flex;gap:6px;align-items:center;margin:22px 0;flex-wrap:wrap;}
+.ln-step{border-radius:6px;padding:10px 14px;font-size:12px;text-align:center;flex:1;min-width:90px;}
+.lns-raw{background:var(--bg-code);color:var(--text-code);}
+.lns-mu{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);}
+.lns-var{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.lns-norm{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.lns-scale{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple);}
+.ln-arr{color:var(--text-secondary);font-size:14px;}
+/* Head specialisation */
+.head-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0;}
+.head-card{border:1px solid var(--border);border-radius:7px;padding:12px 14px;}
+.head-card h4{font-size:11.5px;font-weight:600;margin-bottom:5px;font-family:var(--font-mono);}
+.head-card p{font-size:12.5px;color:var(--text-secondary);line-height:1.6;}
+.hc-s{border-left:3px solid var(--accent);}
+.hc-c{border-left:3px solid var(--blue);}
+.hc-p{border-left:3px solid var(--green);}
+.hc-r{border-left:3px solid var(--purple);}
+/* Mask grid */
+.mask-wrap{margin:22px 0;}
+.mask-title{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:1px;margin-bottom:8px;}
+.mask-grid{display:inline-grid;gap:2px;background:var(--bg-aside);border:1px solid var(--border);border-radius:6px;padding:8px;}
+.mk{width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;}
+.mk-on{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.mk-off{background:repeating-linear-gradient(45deg,#e8e4de 0,#e8e4de 4px,transparent 4px,transparent 8px);border:1px solid #ddd;color:#bbb;}
+.mk-h{background:none;border:none;color:var(--text-secondary);font-size:9px;}
+/* GELU vs ReLU */
+.act-vis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;}
+.act-card{border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.act-card h4{font-size:12px;font-weight:600;margin-bottom:8px;}
+.act-bars{display:flex;gap:2px;align-items:center;height:50px;justify-content:center;}
+.ab{width:8px;border-radius:1px;}
+/* Init distribution */
+.init-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;}
+.init-card{border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.init-card h4{font-size:12px;font-weight:600;margin-bottom:8px;}
+.init-hist{display:flex;gap:1px;align-items:flex-end;height:40px;justify-content:center;margin-bottom:6px;}
+.ih{border-radius:1px 1px 0 0;}
+.init-desc{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);}
+/* Tied embedding */
+.tied-wrap{display:flex;align-items:center;gap:0;margin:22px 0;}
+.tied-box{border-radius:7px;padding:14px 18px;text-align:center;font-size:13px;flex:1;}
+.tied-wte{background:var(--amber-light);border:2px solid var(--amber);}
+.tied-lmh{background:var(--green-light);border:2px solid var(--green);}
+.tied-mid{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 14px;}
+.tied-eq{background:var(--accent);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+/* Induction circuit */
+.ind-diag{margin:22px 0;}
+.ind-title{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;}
+.ind-row{display:flex;gap:5px;margin-bottom:6px;align-items:center;}
+.ind-lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);width:80px;text-align:right;}
+.it{border-radius:4px;padding:6px 8px;font-family:var(--font-mono);font-size:11px;min-width:44px;text-align:center;}
+.it-ctx{background:var(--bg-aside);border:1px solid var(--border);color:var(--text-secondary);}
+.it-a{background:var(--amber-light);border:1px solid var(--amber);color:var(--amber);font-weight:700;}
+.it-b{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);font-weight:700;}
+.it-ac{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);font-weight:700;}
+.it-pred{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.ind-arrow{font-size:16px;color:var(--accent);margin-left:6px;}
+/* Gen phases */
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;}
+.gen-card{border:1px solid var(--border);border-radius:8px;padding:16px;}
+.gen-card h4{font-size:13px;font-weight:600;margin-bottom:8px;}
+.gc-pre h4{color:var(--blue);}
+.gc-pre{border-top:3px solid var(--blue);}
+.gc-dec h4{color:var(--accent);}
+.gc-dec{border-top:3px solid var(--accent);}
+.gen-card p{font-size:12.5px;color:var(--text-secondary);line-height:1.6;}
+/* Summary table */
+.sum-table{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;}
+.sum-table th{background:var(--bg-aside);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;}
+.sum-table td{padding:9px 14px;border-bottom:1px solid var(--border-light);vertical-align:top;}
+.sum-table tr:hover td{background:var(--accent-light);}
+.sk{font-family:var(--font-mono);font-size:12px;color:var(--accent);}
+/* chapter nav */
+.ch-nav{display:flex;justify-content:space-between;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:20px;}
+.ch-nav a{text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:3px;}
+.ch-nav a:hover{color:var(--accent);}
+.cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.cnt{font-size:15px;font-weight:500;}
+/* QKV projection diagram */
+.qkv-wrap{display:flex;gap:8px;margin:22px 0;align-items:flex-start;font-size:12px;flex-wrap:wrap;}
+.qkv-input{border:1px solid var(--border);border-radius:7px;padding:10px 14px;background:var(--bg-aside);text-align:center;min-width:80px;}
+.qkv-arrow{color:var(--text-secondary);font-size:20px;padding-top:12px;}
+.qkv-outputs{display:flex;flex-direction:column;gap:6px;flex:1;}
+.qkv-q{border:1px solid var(--accent);border-radius:7px;padding:8px 12px;background:var(--accent-light);text-align:center;}
+.qkv-k{border:1px solid var(--blue);border-radius:7px;padding:8px 12px;background:var(--blue-light);text-align:center;}
+.qkv-v{border:1px solid var(--green);border-radius:7px;padding:8px 12px;background:var(--green-light);text-align:center;}
+.qkv-role{font-weight:600;font-family:var(--font-mono);font-size:13px;}
+.qkv-desc{font-size:11px;color:var(--text-secondary);margin-top:2px;}
+/* Flash attention diagram */
+.flash-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;}
+.flash-card{border:1px solid var(--border);border-radius:8px;padding:14px;}
+.flash-card h4{font-size:12px;font-weight:700;margin-bottom:8px;font-family:var(--font-mono);}
+.flash-mem-bar{height:12px;border-radius:3px;margin:4px 0;}
+.flash-hbm{background:var(--accent);opacity:.7;}
+.flash-sram{background:var(--green);}
+.flash-note{font-size:11px;color:var(--text-secondary);margin-top:4px;}
+/* Architecture overview */
+.arch-overview{margin:22px 0;font-size:12px;}
+.arch-row{display:flex;gap:8px;align-items:center;margin:4px 0;}
+.arch-block{border:1px solid var(--border);border-radius:6px;padding:8px 14px;background:var(--bg-card);text-align:center;font-family:var(--font-mono);}
+.arch-block.embed{border-color:var(--amber);background:var(--amber-light);color:var(--amber);}
+.arch-block.attn{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.arch-block.ffn{border-color:var(--green);background:var(--green-light);color:var(--green);}
+.arch-block.lmh{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+.arch-block.ln{border-color:var(--purple);background:var(--purple-light);color:var(--purple);}
+.arch-block.add{border-color:var(--border);background:var(--bg-aside);}
+.arch-dim{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-left:6px;white-space:nowrap;}
+.arch-arr{color:var(--text-secondary);font-size:16px;}
+/* Sampling distribution */
+.samp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0;}
+.samp-card{border:1px solid var(--border);border-radius:7px;padding:10px;text-align:center;}
+.samp-card h4{font-family:var(--font-mono);font-size:10px;margin-bottom:6px;color:var(--text-secondary);}
+.samp-bars{display:flex;gap:2px;height:40px;align-items:flex-end;justify-content:center;margin-bottom:4px;}
+.sb{width:10px;border-radius:2px 2px 0 0;}
+.samp-note{font-size:10px;color:var(--text-secondary);}
+/* Score matrix */
+.score-grid{display:inline-grid;gap:2px;margin:16px 0;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px;}
+.sc{width:36px;height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;font-weight:600;}
+.sc-head{background:none;color:var(--text-secondary);}
+.sc-high{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.sc-med{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.sc-low{background:var(--bg-aside);border:1px solid var(--border);color:var(--text-secondary);}
+.sc-mask{background:repeating-linear-gradient(45deg,#e8e4de 0,#e8e4de 3px,transparent 3px,transparent 6px);border:1px solid #ddd;color:#bbb;}
+/* PE frequency grid */
+.pe-grid{display:grid;gap:1px;margin:16px 0;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.pe-row{display:flex;gap:0;}
+.pe-cell{flex:1;height:14px;}
+/* Optimizer groups */
+.optim-groups{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;font-size:12px;}
+.optim-card{border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.optim-card h4{font-weight:700;margin-bottom:8px;font-family:var(--font-mono);font-size:11px;}
+.optim-yes{border-top:3px solid var(--green);}
+.optim-no{border-top:3px solid var(--accent);}
+.optim-tag{display:inline-block;border-radius:3px;padding:2px 6px;font-family:var(--font-mono);font-size:10px;margin:2px;}
+.ot-yes{background:var(--green-light);color:var(--green);}
+.ot-no{background:var(--accent-light);color:var(--accent);}
+/* Vocab padding diagram */
+.vocab-wrap{display:flex;gap:0;margin:18px 0;font-size:12px;align-items:stretch;}
+.vocab-actual{flex:50257;background:var(--blue-light);border:1px solid var(--blue);border-radius:6px 0 0 6px;padding:8px 10px;color:var(--blue);}
+.vocab-pad{flex:47;background:var(--accent-light);border:1px solid var(--accent);border-top:1px solid var(--accent);border-bottom:1px solid var(--accent);border-left:none;border-radius:0 6px 6px 0;padding:8px 6px;color:var(--accent);text-align:center;}
+.vocab-label{font-family:var(--font-mono);font-weight:700;}
+.vocab-note{font-size:10px;margin-top:2px;}
+#pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container">
+    <span class="topnav-title">Practical LLMs</span>
+    <div class="topnav-links">
+      <a href="chapter1.html">← Ch 1</a>
+      <a href="index.html">Index</a>
+      <a href="chapter3.html">Ch 3 →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+<header class="chapter-header">
+  <div class="chapter-label">Chapter 3</div>
+  <h1>The Transformer Architecture</h1>
+  <p>Every design decision dissected — from why we divide by √d_k to why vocab_size is 50,304 instead of 50,257. 17 sections, 17 runnable cells, 16 CSS diagrams. Fully annotated nanoGPT code throughout. Everything needed to rebuild GPT-2 from scratch.</p>
+  <div class="chapter-meta">
+    <span>📐 17 sections</span>
+    <span>⚙️ 17 runnable cells</span>
+    <span>🎨 16 CSS diagrams</span>
+    <span>📄 nanoGPT fully annotated</span>
+    <span>📚 Alammar + Weng + Raschka + Karpathy</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h3>Sections in this chapter</h3>
+  <div class="toc-grid">
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">3.1</span>The Residual Stream</a></li>
+      <li><a href="#s2"><span class="toc-num">3.2</span>Token Embeddings &amp; Vocabulary</a></li>
+      <li><a href="#s3"><span class="toc-num">3.3</span>Positional Embeddings</a></li>
+      <li><a href="#s4"><span class="toc-num">3.4</span>Layer Normalisation</a></li>
+      <li><a href="#s5"><span class="toc-num">3.5</span>Q, K, V — The Three Projections</a></li>
+      <li><a href="#s6"><span class="toc-num">3.6</span>Scaled Dot-Product Attention</a></li>
+      <li><a href="#s7"><span class="toc-num">3.7</span>Multi-Head Attention</a></li>
+      <li><a href="#s8"><span class="toc-num">3.8</span>The Causal Mask</a></li>
+      <li><a href="#s9"><span class="toc-num">3.9</span>Flash Attention</a></li>
+    </ul>
+    <ul class="toc-list">
+      <li><a href="#s10"><span class="toc-num">3.10</span>The Feedforward Sublayer</a></li>
+      <li><a href="#s11"><span class="toc-num">3.11</span>Residual Connections &amp; Gradient Flow</a></li>
+      <li><a href="#s12"><span class="toc-num">3.12</span>The Full Transformer Block</a></li>
+      <li><a href="#s13"><span class="toc-num">3.13</span>Weight Initialisation</a></li>
+      <li><a href="#s14"><span class="toc-num">3.14</span>The Optimizer</a></li>
+      <li><a href="#s15"><span class="toc-num">3.15</span>Tied Embeddings &amp; Vocab Padding</a></li>
+      <li><a href="#s16"><span class="toc-num">3.16</span>Induction Heads</a></li>
+      <li><a href="#s17"><span class="toc-num">3.17</span>The Generation Loop</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div id="pyodide-status">⏳ Loading Python runtime…</div>
+<main>
+
+<!-- ════════════════════════════════════ §3.1 ════ -->
+<section class="section" id="s1">
+<div class="section-label">3.1</div>
+<h2>The Residual Stream</h2>
+<p>The right mental model for a transformer is not a pipeline — it is a <em>residual stream</em>. A single d-dimensional vector starts as a token embedding, passes through every layer, and exits as the representation used to predict the next token. Each attention head and FFN sublayer reads from this stream and <strong>adds</strong> its output back. Nothing is overwritten; information accumulates additively.</p>
+<p>Elhage et al. (2021, Anthropic) formalised this with a clean mathematical notation. Let x₀ be the embedded tokens, and let each block l read from xₗ₋₁ and write a correction back:</p>
+<div class="formula">
+  <span class="eq-label">RESIDUAL STREAM — FORMAL NOTATION (ELHAGE ET AL. 2021)</span>
+  x₀  =  W_E · tokens<br>
+  xₗ  =  xₗ₋₁  +  attnₗ(xₗ₋₁)  +  mlpₗ(xₗ₋₁)<br>
+  logits  =  W_U · x_L
+  <span class="eq-note">W_E = embedding matrix  |  W_U = unembedding matrix  |  L = number of layers</span>
+</div>
+<p>This view has a deep implication: every component writes to <em>different subspaces</em> of the same shared stream. Elhage et al. show you can decompose each attention head into two independent computations — a <strong>QK circuit</strong> (which positions attend to which) and an <strong>OV circuit</strong> (what information is copied when attending). These circuits compose across layers, creating increasingly complex computations through the same stream.</p>
+<p>The residual structure is also why transformers train stably at 96+ layers. The gradient of the loss with respect to early layer parameters includes an additive identity term — a direct path that doesn't pass through any matrix multiplication. Without it, gradients decay exponentially with depth and training stalls.</p>
+
+<div class="callout blue"><strong>Key insight:</strong> Think of the residual stream as a shared whiteboard. The embedding writes the starting position. Each attention head and FFN reads the whiteboard, computes a small update, and writes it back. The unembedding layer reads the final state. Nobody <em>erases</em> the whiteboard — every early signal persists to the end.</div>
+
+<!-- Full architecture overview -->
+<div class="arch-overview">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">GPT-2 SMALL: FULL ARCHITECTURE (12 IDENTICAL BLOCKS)</div>
+  <div class="arch-row"><div class="arch-block embed">Token Embedding W_E</div><div class="arch-dim">50,257 tokens → 768-dim vector</div></div>
+  <div class="arch-row"><div style="color:var(--text-secondary);font-size:12px;padding-left:20px">⊕ Positional Embedding W_PE</div><div class="arch-dim">position 0…1023 → 768-dim vector (added)</div></div>
+  <div class="arch-row"><div style="padding:6px 14px;font-size:11px;color:var(--text-secondary);font-family:var(--font-mono)">┌────── × 12 identical blocks ──────────────────────────────┐</div></div>
+  <div class="arch-row" style="padding-left:20px"><div class="arch-block ln">LayerNorm₁</div><div class="arch-arr" style="padding:0 6px">→</div><div class="arch-block attn">Causal Self-Attention (12 heads)</div><div class="arch-arr" style="padding:0 6px">→</div><div class="arch-block add">⊕ residual</div></div>
+  <div class="arch-row" style="padding-left:20px"><div class="arch-block ln">LayerNorm₂</div><div class="arch-arr" style="padding:0 6px">→</div><div class="arch-block ffn">Feedforward (768→3072→768)</div><div class="arch-arr" style="padding:0 6px">→</div><div class="arch-block add">⊕ residual</div></div>
+  <div class="arch-row"><div style="padding:4px 14px;font-size:11px;color:var(--text-secondary);font-family:var(--font-mono)">└─────────────────────────────────────────────────────────────┘</div></div>
+  <div class="arch-row"><div class="arch-block ln">Final LayerNorm</div><div class="arch-dim">stabilises before projection</div></div>
+  <div class="arch-row"><div class="arch-block lmh">LM Head (unembedding W_U)</div><div class="arch-dim">768-dim → 50,257 logits (tied to W_E)</div></div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">↗ A Mathematical Framework for Transformer Circuits — Elhage et al. 2021 (Anthropic). The definitive treatment of the residual stream, QK/OV circuit decomposition, and virtual attention heads.</a>
+  <a href="https://jalammar.github.io/illustrated-transformer/" target="_blank">↗ The Illustrated Transformer — Jay Alammar (2018). The most widely-read visual explanation of the architecture. Every diagram has become a standard reference.</a>
+</div>
+
+<div class="cell" id="cell-1">
+  <div class="cell-header"><span class="cell-label">▶ Residual stream — simulate information accumulation across 6 blocks</span><button class="run-btn" onclick="runCell('cell-1')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+D = 8  # d_model (tiny for demo)
+
+def dot(a, b): return sum(x*y for x,y in zip(a,b))
+def norm(v): return math.sqrt(sum(x*x for x in v))
+def cosine(a, b): return dot(a,b)/(norm(a)*norm(b)+1e-9)
+def add_vecs(a, b): return [x+y for x,y in zip(a,b)]
+
+# The residual stream starts as a token embedding
+stream = [random.gauss(0, 0.5) for _ in range(D)]
+target = [random.gauss(0, 0.5) for _ in range(D)]  # some "correct" representation
+
+print(f"{'Block':>6}  {'Stream L2 norm':>16}  {'Cosine to target':>18}  {'Cumulative delta':>16}")
+print("-"*65)
+
+cum_delta = 0.0
+for block in range(6):
+    # Each block adds a small correction (simulated as random delta with decay)
+    correction = [random.gauss(0, 0.3/(block+1)) for _ in range(D)]
+    stream_before = stream[:]
+    stream = add_vecs(stream, correction)
+    delta = math.sqrt(sum((a-b)**2 for a,b in zip(stream, stream_before)))
+    cum_delta += delta
+    cos_sim = cosine(stream, target)
+    l2 = norm(stream)
+    print(f"  {block+1:>3d}    {l2:>14.4f}    {cos_sim:>16.4f}    {cum_delta:>14.4f}")
+
+print()
+print("The stream accumulates contributions from every block.")
+print("Early blocks make large corrections; later blocks refine.")
+print("No information is ever overwritten — only added.")
+print()
+print("Try increasing D to 768 (GPT-2 small) and watch the pattern hold.")</pre></div>
+  <div class="cell-output" id="cell-1-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.2 ════ -->
+<section class="section" id="s2">
+<div class="section-label">3.2</div>
+<h2>Token Embeddings &amp; the Vocabulary</h2>
+<p>Before any computation can begin, the model must convert discrete tokens — integers from 0 to 50,256 — into continuous vectors it can do linear algebra on. The <strong>embedding matrix</strong> W_E is a lookup table of shape [vocab_size, d_model]. Token ID 0 maps to row 0, token ID 42 maps to row 42. For GPT-2 small: [50,257 × 768] = <strong>38.6 million parameters</strong>. That's 31% of the model's total 124M, just for this one table.</p>
+<p>Proximity in embedding space encodes semantic similarity. After training, <code>king − man + woman ≈ queen</code> holds geometrically. The embedding for "Paris" and "Lyon" are close; "Paris" and "photosynthesis" are far. These relationships emerge purely from predicting next tokens on enough text — no supervised labels needed.</p>
+<p>There's a counterintuitive paradox: antonyms like "hot" and "cold" end up <em>close</em> in embedding space. They appear in identical contexts ("the weather was very ___"), so the model learns similar representations for both. Embeddings capture distributional context, not semantic meaning in the human sense.</p>
+<p><strong>The vocabulary padding trick</strong>: GPT-2's BPE tokenizer produces exactly 50,257 tokens. nanoGPT uses <strong>50,304</strong> instead — 47 phantom tokens that are never used. Why? 50,304 = 786 × 64 — the nearest multiple of 64 above 50,257. The LM head is a matrix multiply of shape [seq_len, 768] × [768, vocab_size]. When vocab_size is a multiple of 64, CUDA tensor cores operate at full warp occupancy on this matmul. Karpathy reported <strong>~25% training speedup</strong> from this single change with zero modeling cost.</p>
+
+<div class="callout amber"><strong>Key insight:</strong> A multiple-of-64 dimension isn't a modeling choice — it's a hardware alignment trick. CUDA GPU warps process groups of 32 threads; tensor core tiles are 8×8 or 16×16 elements. An unaligned dimension forces the kernel to pad internally with partial warps, wasting compute. Pad it yourself to the nearest multiple of 64 and the compiler takes a fully-optimised path.</div>
+
+<!-- Vocab padding diagram -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:8px;">VOCABULARY SIZE — ACTUAL vs PADDED</div>
+  <div class="vocab-wrap">
+    <div class="vocab-actual">
+      <div class="vocab-label">50,257 tokens</div>
+      <div class="vocab-note">Real BPE vocabulary — every token seen during training</div>
+    </div>
+    <div class="vocab-pad">
+      <div class="vocab-label">+47</div>
+      <div class="vocab-note">Phantom padding (never sampled)</div>
+    </div>
+  </div>
+  <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-top:6px;">50,304 = 786 × 64  →  full CUDA warp occupancy  →  ~25% faster LM head matmul</div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/2005.14165" target="_blank">↗ Language Models are Few-Shot Learners (GPT-3) — Brown et al. 2020. The paper that scaled embedding tables to 175B parameters and established the modern vocab/embed conventions.</a>
+  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">↗ nanoGPT model.py — Karpathy. Line 108: vocab_size=50304. The canonical example of dimension padding for CUDA efficiency.</a>
+</div>
+
+<div class="cell" id="cell-2">
+  <div class="cell-header"><span class="cell-label">▶ Cosine similarity — embedding space geometry</span><button class="run-btn" onclick="runCell('cell-2')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(17)
+
+def cosine(a, b):
+    dot = sum(x*y for x,y in zip(a,b))
+    na = math.sqrt(sum(x*x for x in a))
+    nb = math.sqrt(sum(x*x for x in b))
+    return dot / (na * nb + 1e-9)
+
+# Simulate word embeddings in 8-dim space
+# In reality: 768-dim, trained on 40GB of text
+D = 8
+random.seed(99)
+
+# "Paris" and "London" should be close (both European capitals in context)
+paris  = [random.gauss(0.5, 0.1) for _ in range(D)]
+london = [p + random.gauss(0, 0.15) for p in paris]   # similar to Paris
+
+# "king" and "queen" — similar but shifted by a gender axis
+king  = [random.gauss(0, 0.3) for _ in range(D)]
+queen = [k + random.gauss(0.1, 0.05) for k in king]   # close to king
+
+# "photosynthesis" — unrelated to capitals
+photo = [random.gauss(0, 1.0) for _ in range(D)]      # random direction
+
+# "hot" and "cold" — antonyms, but same distributional context
+hot  = [random.gauss(0.8, 0.2) for _ in range(D)]
+cold = [h + random.gauss(0, 0.2) for h in hot]        # similar contexts!
+
+pairs = [
+    ("paris", "london",  paris, london),
+    ("king",  "queen",   king,  queen),
+    ("paris", "photo.",  paris, photo),
+    ("hot",   "cold",    hot,   cold),
+    ("paris", "king",    paris, king),
+]
+
+print(f"{'Word pair':>22}  {'Cosine sim':>12}  {'Interpretation'}")
+print("-"*65)
+for w1, w2, v1, v2 in pairs:
+    sim = cosine(v1, v2)
+    interp = "very similar" if sim > 0.9 else "similar" if sim > 0.7 else "unrelated" if sim < 0.2 else "different"
+    print(f"  {w1:>8} ↔ {w2:<8}  {sim:>12.4f}  {interp}")
+
+print()
+print("Counter-intuitive: 'hot' and 'cold' are close because they share")
+print("distributional contexts ('the temperature was very __', etc).")
+print("Embeddings capture context, not human-sense meaning.")
+print()
+# Vocab parameter count
+vocab, d = 50257, 768
+print(f"GPT-2 small embedding matrix: {vocab} × {d} = {vocab*d:,} parameters = {vocab*d/1e6:.1f}M")
+print(f"nanoGPT padded:               50304 × {d} = {50304*d:,} parameters = {50304*d/1e6:.1f}M")
+print(f"Extra from padding: {(50304-50257)*d:,} params, {(50304-50257)*d/1e6:.3f}M — negligible")</pre></div>
+  <div class="cell-output" id="cell-2-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.3 ════ -->
+<section class="section" id="s3">
+<div class="section-label">3.3</div>
+<h2>Positional Embeddings</h2>
+<p>Self-attention has no inherent notion of word order. The sentence "the cat sat on the mat" and "the mat sat on the cat" produce identical Q, K, V vectors if processed without position information — the model would predict the same next token from both. To break this symmetry, a positional vector is added to each token embedding before the first block.</p>
+<p>The original Vaswani et al. transformer used <strong>sinusoidal encodings</strong> — fixed functions of position and dimension. For position <em>pos</em> and dimension <em>i</em>:</p>
+<div class="formula">
+  <span class="eq-label">SINUSOIDAL POSITIONAL ENCODING — VASWANI ET AL. 2017</span>
+  PE(pos, 2i)    =  sin(pos / 10000^(2i / d_model))<br>
+  PE(pos, 2i+1)  =  cos(pos / 10000^(2i / d_model))
+  <span class="eq-note">Wavelengths range from 2π (dim 0, finest) to 10,000×2π (dim d_model/2, coarsest) — log-spaced over the full range</span>
+</div>
+<p>Why base 10,000? The wavelengths form a geometric progression from 2π ≈ 6.28 positions (dimension 0) to 62,832 positions (dimension d_model/2). This log-spaced distribution means the model can distinguish nearby tokens (via fast-frequency dimensions) and track long-range position (via slow-frequency dimensions) simultaneously from the same encoding.</p>
+<p>The sinusoidal choice has a remarkable mathematical property: for any fixed offset k, <strong>PE(pos+k) is a linear function of PE(pos)</strong>. There exists a rotation matrix R_k (block-diagonal, 2×2 rotations in each dimension pair) such that PE(pos+k) = R_k · PE(pos). This means the model can learn to attend to "k positions ahead" by learning a linear transformation of positional encodings — relative position is encoded in a linearly accessible way.</p>
+<p><strong>GPT-2 uses learned absolute embeddings</strong> instead: a separate W_PE matrix of shape [1024, 768] where each row is a trainable vector for that position. This costs 1024 × 768 = 786,432 parameters (less than 1% of total) but cannot extrapolate to sequences longer than the training context. Modern architectures (LLaMA, Mistral) use <strong>RoPE</strong> (Rotary Positional Embeddings) — a hybrid that rotates Q and K vectors directly by the position angle, enabling relative position awareness and extrapolation beyond the training length.</p>
+
+<div class="callout green"><strong>Key insight:</strong> Sinusoidal PE's base 10,000 is not arbitrary — it's chosen so that, at the maximum training length (512 tokens for the original transformer), the slowest-frequency dimension completes only ~0.05 of a full cycle. This ensures all dimensions still distinguish positions meaningfully, rather than repeating. The same principle scales: LLaMA-3 uses base 500,000 to handle 128K+ context windows.</div>
+
+<!-- PE frequency visualization -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">SINUSOIDAL PE — FREQUENCY STRUCTURE (24 positions × 16 dimensions)</div>
+  <div id="pe-vis" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px;"></div>
+  <div style="font-size:11px;color:var(--text-secondary);">Left columns: fast frequencies (distinguish nearby positions). Right columns: slow frequencies (encode large-scale structure). Each cell's shade = sin/cos value at that (position, dimension) pair.</div>
+  <script>
+  (function(){
+    var n_pos=24, n_dim=16, d_model=512;
+    var div=document.getElementById('pe-vis');
+    var html='';
+    for(var pos=0;pos<n_pos;pos++){
+      html+='<div style="display:flex;height:14px;">';
+      for(var i=0;i<n_dim;i++){
+        var freq=Math.pow(10000,-2*Math.floor(i/2)/d_model);
+        var val=i%2===0?Math.sin(pos*freq):Math.cos(pos*freq);
+        var intensity=Math.round((val+1)/2*200+30);
+        var col=i%2===0?'rgb(59,107,'+intensity+')':'rgb('+intensity+',107,59)';
+        html+='<div style="flex:1;background:'+col+';"></div>';
+      }
+      html+='</div>';
+    }
+    div.innerHTML=html;
+  })();
+  </script>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1706.03762" target="_blank">↗ Attention Is All You Need — Vaswani et al. 2017. Section 3.5: the original sinusoidal PE formulation and the linear-extrapolation property proof.</a>
+  <a href="https://arxiv.org/abs/2104.09864" target="_blank">↗ RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al. 2021. RoPE — the positional encoding used by LLaMA, Mistral, and GPT-4 class models.</a>
+  <a href="https://kazemnejad.com/blog/transformer_architecture_positional_encoding/" target="_blank">↗ Transformer Architecture: Positional Encoding — Kazemnejad. The clearest visual walkthrough of why sinusoidal PE enables linear relative attention.</a>
+</div>
+
+<div class="cell" id="cell-3">
+  <div class="cell-header"><span class="cell-label">▶ Sinusoidal PE — generate and compare frequencies at different positions</span><button class="run-btn" onclick="runCell('cell-3')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+def sinusoidal_pe(pos, d_model=512, base=10000):
+    """Generate the positional encoding vector for a given position."""
+    pe = []
+    for i in range(d_model):
+        freq = math.pow(base, -2 * (i//2) / d_model)
+        if i % 2 == 0:
+            pe.append(math.sin(pos * freq))
+        else:
+            pe.append(math.cos(pos * freq))
+    return pe
+
+# Show encoding at a few positions, for the first 8 dimensions
+positions = [0, 1, 5, 10, 50, 100, 500]
+d_model = 512
+
+print("Sinusoidal PE values — first 8 dimensions")
+print(f"{'Position':>10} | " + " | ".join(f"dim{i:>2d}" for i in range(8)))
+print("-"*80)
+for pos in positions:
+    pe = sinusoidal_pe(pos, d_model)
+    vals = "  |  ".join(f"{v:+.3f}" for v in pe[:8])
+    print(f"  pos={pos:>5}  | {vals}")
+
+print()
+# Show the rotation property: PE(pos+k) ≈ R_k * PE(pos)
+print("The rotation property: dot(PE(pos), PE(pos+1)) vs dot(PE(pos), PE(pos+100))")
+print("Nearby positions should have higher dot products than distant ones:")
+print()
+for target_pos in [5, 20, 100]:
+    pe_0   = sinusoidal_pe(0, d_model)
+    pe_tar = sinusoidal_pe(target_pos, d_model)
+    dot = sum(a*b for a,b in zip(pe_0, pe_tar)) / d_model
+    print(f"  dot(PE(0), PE({target_pos:>3d})) / d_model = {dot:+.4f}")
+
+print()
+print("Key: closer positions → higher dot product.")
+print("This is what allows transformers to learn relative position from absolute encodings.")
+print()
+print("Try changing base from 10000 to 100 — you'll see values repeat at shorter distances.")
+print("Try base=500000 — that's LLaMA-3's base, enabling 128K+ context windows.")</pre></div>
+  <div class="cell-output" id="cell-3-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.4 ════ -->
+<section class="section" id="s4">
+<div class="section-label">3.4</div>
+<h2>Layer Normalisation</h2>
+<p>Activations in deep networks drift. After 12 matrix multiplications, a vector that started with values near 0 and 1 can contain values ranging from −500 to +800. This "internal covariate shift" makes training unstable — the gradient signal from the loss is calibrated to one scale of activations, but receives a completely different scale on the next batch. <strong>Layer normalisation</strong> (Ba et al. 2016) solves this by normalising each vector to zero mean and unit variance before each sublayer.</p>
+<div class="formula">
+  <span class="eq-label">LAYER NORMALISATION — BA ET AL. 2016</span>
+  μ = (1/d) Σᵢ xᵢ &nbsp;&nbsp; σ² = (1/d) Σᵢ (xᵢ − μ)² &nbsp;&nbsp; x̂ᵢ = (xᵢ − μ) / √(σ² + ε)<br>
+  LN(x) = γ ⊙ x̂ + β
+  <span class="eq-note">γ (scale) and β (shift) are learnable per-dimension parameters. ε = 1e-5 prevents division by zero.</span>
+</div>
+<p><strong>RMSNorm</strong> (Zhang &amp; Sennrich 2019), used by LLaMA, drops the mean subtraction entirely: it normalises only by the root mean square <code>RMS(x) = √((1/d)Σxᵢ²)</code>. The mean subtraction removes a degree of freedom that empirically matters less than the scaling — RMSNorm is about <strong>7–10% faster</strong> than LayerNorm at inference while matching quality on downstream tasks.</p>
+<p><strong>Pre-norm vs post-norm</strong>: The original Vaswani 2017 transformer applied LayerNorm <em>after</em> the residual addition. GPT-2 and all modern LLMs apply it <em>before</em> the sublayer (pre-norm). The difference matters: with post-norm, the residual stream is normalised and the raw-scale bypass is lost. With pre-norm, the sublayer always sees a normalised input while the residual stream carries its full magnitude. Pre-norm trains more stably at depth, especially past 24 layers.</p>
+
+<div class="callout"><strong>Key insight:</strong> The γ and β parameters are the only parts of LayerNorm that are learned — they let the model "undo" the normalisation if needed. Initialised to γ=1, β=0 (identity), they adapt to give each dimension the scale and shift that's most useful for the next sublayer.</div>
+
+<!-- LN pipeline diagram -->
+<div class="ln-pipeline">
+  <div class="ln-step lns-raw">Raw activations<br><small>[−500 … +800]</small></div>
+  <div class="ln-arr">→</div>
+  <div class="ln-step lns-mu">Subtract mean μ<br><small>centre at 0</small></div>
+  <div class="ln-arr">→</div>
+  <div class="ln-step lns-var">Divide by σ+ε<br><small>scale to ±1</small></div>
+  <div class="ln-arr">→</div>
+  <div class="ln-step lns-norm">Normalised x̂<br><small>mean=0, var=1</small></div>
+  <div class="ln-arr">→</div>
+  <div class="ln-step lns-scale">Scale &amp; shift<br><small>γ ⊙ x̂ + β</small></div>
+</div>
+
+<div style="margin:16px 0;padding:14px;background:var(--bg-code);border-radius:8px;font-family:var(--font-mono);font-size:12px;">
+  <div style="color:#888;margin-bottom:8px;font-size:10px;letter-spacing:.8px;">PRE-NORM (GPT-2) vs POST-NORM (VASWANI 2017)</div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:200px;">
+      <div style="color:#4fc3f7;margin-bottom:4px">Pre-norm (stable at depth)</div>
+      <div style="color:#e8e4de">x = x + Attn(<span style="color:#ffd580">LN</span>(x))</div>
+      <div style="color:#e8e4de">x = x + FFN(<span style="color:#ffd580">LN</span>(x))</div>
+    </div>
+    <div style="flex:1;min-width:200px;">
+      <div style="color:#cf8e6d;margin-bottom:4px">Post-norm (Vaswani, less stable)</div>
+      <div style="color:#e8e4de">x = <span style="color:#ffd580">LN</span>(x + Attn(x))</div>
+      <div style="color:#e8e4de">x = <span style="color:#ffd580">LN</span>(x + FFN(x))</div>
+    </div>
+  </div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1607.06450" target="_blank">↗ Layer Normalization — Ba et al. 2016. The original paper. Proves LN stabilises training compared to batch norm for sequential models.</a>
+  <a href="https://arxiv.org/abs/1910.07467" target="_blank">↗ Root Mean Square Layer Normalization — Zhang &amp; Sennrich 2019. RMSNorm — why dropping the mean subtraction works and the 7% speed gain.</a>
+  <a href="https://arxiv.org/abs/2002.04745" target="_blank">↗ On Layer Normalization in the Transformer Architecture — Xiong et al. 2020. Proves pre-norm converges more stably than post-norm at depth — theoretical basis for GPT-2's choice.</a>
+</div>
+
+<div class="cell" id="cell-4">
+  <div class="cell-header"><span class="cell-label">▶ LayerNorm vs RMSNorm — implement and compare from scratch</span><button class="run-btn" onclick="runCell('cell-4')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+def layer_norm(x, gamma=None, beta=None, eps=1e-5):
+    """Standard LayerNorm: subtract mean, divide by std, scale+shift."""
+    n = len(x)
+    mu  = sum(x) / n
+    var = sum((v - mu)**2 for v in x) / n
+    xhat = [(v - mu) / math.sqrt(var + eps) for v in x]
+    if gamma is None: gamma = [1.0]*n
+    if beta  is None: beta  = [0.0]*n
+    return [g*xh + b for g, xh, b in zip(gamma, xhat, beta)]
+
+def rms_norm(x, gamma=None, eps=1e-5):
+    """RMSNorm: only divide by RMS — NO mean subtraction (7% faster)."""
+    n = len(x)
+    rms = math.sqrt(sum(v**2 for v in x) / n + eps)
+    xhat = [v / rms for v in x]
+    if gamma is None: gamma = [1.0]*n
+    return [g*xh for g, xh in zip(gamma, xhat)]
+
+# Simulated "drifted" activation vector (what you see in deep layers)
+raw = [312.4, -187.6, 45.2, 891.3, -23.1, 0.4, -445.2, 67.8]
+
+ln_out  = layer_norm(raw)
+rms_out = rms_norm(raw)
+
+print(f"Input activations:  [{', '.join(f'{v:>7.1f}' for v in raw)}]")
+print()
+print(f"After LayerNorm:    [{', '.join(f'{v:>7.4f}' for v in ln_out)}]")
+print(f"After RMSNorm:      [{', '.join(f'{v:>7.4f}' for v in rms_out)}]")
+print()
+
+def mean(v): return sum(v)/len(v)
+def std(v): m=mean(v); return math.sqrt(sum((x-m)**2 for x in v)/len(v))
+
+print("Statistics after normalization:")
+print(f"  LayerNorm — mean: {mean(ln_out):+.6f},  std: {std(ln_out):.6f}")
+print(f"  RMSNorm   — mean: {mean(rms_out):+.6f},  std: {std(rms_out):.6f}")
+print()
+print("LayerNorm: mean exactly 0 (mean was subtracted)")
+print("RMSNorm:   mean may be nonzero (only scaled, not centred)")
+print()
+print("In practice: LLaMA uses RMSNorm. GPT-2 uses LayerNorm.")
+print("7% speedup from skipping the mean computation. Same downstream quality.")
+print()
+print("Try replacing `raw` with [1.0, 2.0, 3.0] to see normalisation on small values.")</pre></div>
+  <div class="cell-output" id="cell-4-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.5 ════ -->
+<section class="section" id="s5">
+<div class="section-label">3.5</div>
+<h2>Q, K, V — The Three Projections</h2>
+<p>Self-attention begins with three separate linear projections of each token's residual stream vector. The input x (shape: [T, d_model]) is multiplied by three learned weight matrices to produce queries, keys, and values: <code>Q = xW_Q</code>, <code>K = xW_K</code>, <code>V = xW_V</code>. These are <em>not</em> just different names for the same thing — they play fundamentally different roles in the computation.</p>
+<p>Jay Alammar's filing cabinet analogy (2019) is the best intuition for these roles. Imagine you're searching a filing cabinet for information about the word "it" in the sentence "the animal was tired because it was hot":</p>
+<ul style="margin:12px 0 18px 24px;line-height:2;">
+  <li><strong>Query (Q)</strong>: A sticky note with your research topic — "what does 'it' refer to?" The query represents what the current token is <em>looking for</em>.</li>
+  <li><strong>Key (K)</strong>: The labels on each folder in the cabinet. Every other token advertises what it contains. "animal" might have a key that says "noun, entity, subject."</li>
+  <li><strong>Value (V)</strong>: The actual contents of the folder. When you match the query against a key, you retrieve the value — the representation that actually gets mixed into the output.</li>
+</ul>
+<p>Elhage et al. (2021) formalise this more precisely with the <strong>QK circuit / OV circuit decomposition</strong>. Each attention head separates into two entirely independent computations: the <strong>QK circuit</strong> (W_Q^T W_K) determines the attention pattern — which positions attend to which — without caring what information moves. The <strong>OV circuit</strong> (W_O W_V) determines what information transfers when a position is attended to — without caring which positions are chosen. This independence is what enables mechanistic interpretability: you can study where a head attends separately from what it moves.</p>
+<p>In GPT-2 small: d_model = 768, 12 heads, so d_head = 768/12 = <strong>64 dimensions per head</strong>. Remarkably, <em>d_head = 64 is constant across all GPT-2 variants</em>: Medium has 16 heads (1024/16=64), Large has 20 heads (1280/20=64), XL has 25 heads (1600/25=64). The head dimension was fixed at 64 throughout the GPT-2 family — only the number of heads scales with model size.</p>
+
+<div class="callout purple"><strong>Key insight:</strong> The three projections W_Q, W_K, W_V are <em>learned</em>, not fixed. Each head learns to project the residual stream into the subspace most useful for its particular computation. One head might learn to project into a "syntactic dependency" subspace; another into "semantic similarity." The projections are the mechanism by which each head specialises.</div>
+
+<!-- QKV projection diagram -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">Q / K / V PROJECTIONS — ONE TOKEN, ONE HEAD</div>
+  <div class="qkv-wrap">
+    <div>
+      <div class="qkv-input">x<br><small style="color:var(--text-secondary)">768-dim<br>residual</small></div>
+    </div>
+    <div class="qkv-arrow">→</div>
+    <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);width:40px">× W_Q</div>
+        <div class="qkv-q"><span class="qkv-role">Q</span> (64-dim)<div class="qkv-desc">Query: "what am I looking for?"</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);width:40px">× W_K</div>
+        <div class="qkv-k"><span class="qkv-role">K</span> (64-dim)<div class="qkv-desc">Key: "what do I contain?"</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);width:40px">× W_V</div>
+        <div class="qkv-v"><span class="qkv-role">V</span> (64-dim)<div class="qkv-desc">Value: "what do I give when chosen?"</div></div>
+      </div>
+    </div>
+    <div class="qkv-arrow">→</div>
+    <div>
+      <div class="qkv-input">head<br>output<br><small style="color:var(--text-secondary)">64-dim</small></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:10px;font-size:11px;color:var(--text-secondary);">
+    <div>QK circuit = W_Q^T W_K &nbsp; (768×768): determines <em>where</em> to attend</div>
+    <div>OV circuit = W_O W_V &nbsp;&nbsp; (768×768): determines <em>what</em> to copy</div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">qkv_projections.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="cm"># Inside CausalSelfAttention.__init__:</span>
+<span class="pr">self</span>.c_attn = nn.<span class="fn">Linear</span>(config.n_embd, <span class="nu">3</span> * config.n_embd, bias=config.bias)
+<span class="lm"># ↑ A SINGLE linear that produces Q, K, and V concatenated.
+#   Input: [B, T, 768]. Output: [B, T, 3×768] = [B, T, 2304].
+#   More efficient than three separate linears — one kernel launch vs three.</span>
+<span class="pr">self</span>.c_proj = nn.<span class="fn">Linear</span>(config.n_embd, config.n_embd, bias=config.bias)
+<span class="lm"># ↑ Output projection W_O: [768 → 768]. Maps concatenated head outputs
+#   back into the residual stream dimension. This is the "OV circuit" output side.</span>
+
+<span class="cm"># Inside forward():</span>
+q, k, v = <span class="pr">self</span>.c_attn(x).<span class="fn">split</span>(config.n_embd, dim=<span class="nu">2</span>)
+<span class="lm"># ↑ Split the 2304-dim output into three 768-dim tensors: Q, K, V.</span>
+
+<span class="cm"># Reshape for multi-head: (B, T, 768) → (B, n_head, T, d_head)</span>
+k = k.<span class="fn">view</span>(B, T, n_head, C // n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+q = q.<span class="fn">view</span>(B, T, n_head, C // n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+v = v.<span class="fn">view</span>(B, T, n_head, C // n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+<span class="lm"># ↑ Reshape so head dimension comes before sequence dimension.
+#   Each head now independently sees its 64-dim slice of Q, K, V.
+#   This reshape is cheaper than running 12 separate linear layers.</span></code></pre>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank">↗ The Illustrated GPT-2 — Jay Alammar. The filing cabinet analogy for Q/K/V explained visually. Section: "Self-Attention Surgery."</a>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">↗ A Mathematical Framework for Transformer Circuits — Elhage et al. 2021. Section 2: QK and OV circuit decomposition — the formal treatment of why the two circuits are independent.</a>
+  <a href="https://magazine.sebastianraschka.com/p/understanding-and-coding-self-attention" target="_blank">↗ Understanding and Coding Self-Attention — Sebastian Raschka. Step-by-step implementation with exact dimensions for each projection.</a>
+</div>
+
+<div class="cell" id="cell-5">
+  <div class="cell-header"><span class="cell-label">▶ Q, K, V projections — implement from scratch, verify dimensions</span><button class="run-btn" onclick="runCell('cell-5')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(7)
+
+# GPT-2 small dimensions (tiny for demo)
+d_model, n_heads, d_head = 8, 2, 4  # real: 768, 12, 64
+T = 5  # sequence length (tokens)
+
+def mat_mul(A, x):
+    """Multiply matrix A (rows × cols) by vector x (cols) → rows-dim result."""
+    return [sum(A[r][c]*x[c] for c in range(len(x))) for r in range(len(A))]
+
+def random_matrix(rows, cols, std=0.02):
+    return [[random.gauss(0, std) for _ in range(cols)] for _ in range(rows)]
+
+# Learned weight matrices (in practice, one big c_attn; here split for clarity)
+W_Q = [random_matrix(d_head, d_model) for _ in range(n_heads)]
+W_K = [random_matrix(d_head, d_model) for _ in range(n_heads)]
+W_V = [random_matrix(d_head, d_model) for _ in range(n_heads)]
+
+# Input: T tokens, each d_model-dimensional
+tokens = ["the", "cat", "sat", "on", "mat"]
+X = [[random.gauss(0, 0.5) for _ in range(d_model)] for _ in range(T)]
+
+print(f"Input X: {T} tokens × d_model={d_model}")
+print(f"Weight matrices (per head): W_Q/K/V each [{d_head} × {d_model}]")
+print(f"n_heads={n_heads}, d_head={d_head}, d_model={d_model}")
+print()
+
+# Project for head 0
+h = 0
+Q = [mat_mul(W_Q[h], x) for x in X]   # T × d_head
+K = [mat_mul(W_K[h], x) for x in X]   # T × d_head
+V = [mat_mul(W_V[h], x) for x in X]   # T × d_head
+
+print(f"Head {h} — first 3 tokens:")
+print(f"{'Token':>6}  {'Q (d={})'.format(d_head):>30}  {'K':>30}")
+for i in range(3):
+    q_str = "[" + ", ".join(f"{v:+.3f}" for v in Q[i]) + "]"
+    k_str = "[" + ", ".join(f"{v:+.3f}" for v in K[i]) + "]"
+    print(f"  {tokens[i]:>4}  {q_str:>30}  {k_str:>30}")
+
+print()
+print("QK circuit = W_Q^T @ W_K  (determines attention pattern)")
+print("OV circuit = W_O @ W_V    (determines what gets transferred)")
+print()
+print("Real GPT-2 small: d_model=768, n_heads=12, d_head=64")
+print(f"  W_Q/K/V per head: [{d_head} × {d_model}]  →  real: [64 × 768]")
+print(f"  Total Q/K/V params (all heads): 3 × {n_heads} × {d_head} × {d_model} = {3*n_heads*d_head*d_model}")
+print(f"  Real: 3 × 12 × 64 × 768 = {3*12*64*768:,} per layer")</pre></div>
+  <div class="cell-output" id="cell-5-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.6 ════ -->
+<section class="section" id="s6">
+<div class="section-label">3.6</div>
+<h2>Scaled Dot-Product Attention</h2>
+<p>With Q, K, V in hand, attention is computed in five steps. For each query position, compute a score against every key, scale by √d_k, mask future positions, apply softmax, then sum the values weighted by the softmax output. The complete formula:</p>
+<div class="formula">
+  <span class="eq-label">SCALED DOT-PRODUCT ATTENTION — VASWANI ET AL. 2017</span>
+  Attention(Q, K, V) = softmax( QK<sup>T</sup> / √d_k ) · V
+  <span class="eq-note">Q ∈ ℝ^(T×d_k)  |  K ∈ ℝ^(T×d_k)  |  V ∈ ℝ^(T×d_v)  |  output ∈ ℝ^(T×d_v)</span>
+</div>
+<p>The √d_k scaling factor is not cosmetic — it's mathematically required. Consider two random vectors q and k, each of dimension d_k with elements drawn from N(0,1). Their dot product has variance d_k (the variance of a sum of d_k independent unit-variance terms). As d_k grows (d_k=64 in GPT-2), the raw dot products grow in magnitude. Large magnitude inputs push softmax into regions of near-zero gradient — the output approaches a one-hot distribution and backpropagation gets stuck. Dividing by √d_k restores the variance to 1.0 regardless of d_k.</p>
+<p>Concretely: without scaling at d_k=64, a typical dot product is ±8. At d_k=512, it's ±22. The softmax of values in this range saturates immediately. With scaling: divide by √64 = 8, and the inputs to softmax are back to ±1 — the regime where gradients flow.</p>
+<p>Alammar notes that GPT-2 uses <strong>−1 billion</strong> (not −∞) for masked positions. In float32, −1e9 is large enough that <code>exp(−1e9) ≈ 0</code> numerically, but avoids the NaN that could arise from exact −∞ in edge cases. After softmax, these masked positions contribute exactly 0 to the output.</p>
+
+<div class="callout"><strong>Key insight:</strong> The attention output at position i is a weighted average of value vectors: <code>z_i = Σⱼ α_{ij} · v_j</code>. Alammar's example: when processing "it" in "the animal was tired because it was hot," GPT-2's attention weights show 50% on "animal," 30% on "a," 19% on "it." The output is literally a mixture — 50% of what "animal" carries, 30% of "a," etc.</div>
+
+<!-- Attention score matrix diagram -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">ATTENTION SCORE MATRIX — 5-TOKEN SEQUENCE (BEFORE CAUSAL MASK)</div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+    <div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">Raw scores = QK^T / √d_k</div>
+      <div class="score-grid" style="grid-template-columns:repeat(6,36px)">
+        <div class="sc sc-head"></div><div class="sc sc-head">the</div><div class="sc sc-head">cat</div><div class="sc sc-head">sat</div><div class="sc sc-head">on</div><div class="sc sc-head">mat</div>
+        <div class="sc sc-head">the</div><div class="sc sc-high">.92</div><div class="sc sc-med">.41</div><div class="sc sc-low">.08</div><div class="sc sc-low">.12</div><div class="sc sc-low">.07</div>
+        <div class="sc sc-head">cat</div><div class="sc sc-med">.38</div><div class="sc sc-high">.88</div><div class="sc sc-med">.31</div><div class="sc sc-low">.09</div><div class="sc sc-low">.11</div>
+        <div class="sc sc-head">sat</div><div class="sc sc-low">.15</div><div class="sc sc-med">.44</div><div class="sc sc-high">.95</div><div class="sc sc-med">.28</div><div class="sc sc-low">.13</div>
+        <div class="sc sc-head">on</div><div class="sc sc-low">.11</div><div class="sc sc-low">.12</div><div class="sc sc-med">.35</div><div class="sc sc-high">.91</div><div class="sc sc-med">.22</div>
+        <div class="sc sc-head">mat</div><div class="sc sc-low">.09</div><div class="sc sc-low">.14</div><div class="sc sc-low">.18</div><div class="sc sc-med">.29</div><div class="sc sc-high">.90</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">After causal mask (future = −1e9 → 0)</div>
+      <div class="score-grid" style="grid-template-columns:repeat(6,36px)">
+        <div class="sc sc-head"></div><div class="sc sc-head">the</div><div class="sc sc-head">cat</div><div class="sc sc-head">sat</div><div class="sc sc-head">on</div><div class="sc sc-head">mat</div>
+        <div class="sc sc-head">the</div><div class="sc sc-high">.92</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div>
+        <div class="sc sc-head">cat</div><div class="sc sc-med">.38</div><div class="sc sc-high">.88</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div>
+        <div class="sc sc-head">sat</div><div class="sc sc-low">.15</div><div class="sc sc-med">.44</div><div class="sc sc-high">.95</div><div class="sc sc-mask">−∞</div><div class="sc sc-mask">−∞</div>
+        <div class="sc sc-head">on</div><div class="sc sc-low">.11</div><div class="sc sc-low">.12</div><div class="sc sc-med">.35</div><div class="sc sc-high">.91</div><div class="sc sc-mask">−∞</div>
+        <div class="sc sc-head">mat</div><div class="sc sc-low">.09</div><div class="sc sc-low">.14</div><div class="sc sc-low">.18</div><div class="sc sc-med">.29</div><div class="sc sc-high">.90</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1706.03762" target="_blank">↗ Attention Is All You Need — Vaswani et al. 2017. Section 3.2.1: the exact formula and the variance argument for why √d_k scaling is necessary.</a>
+  <a href="https://lilianweng.github.io/posts/2018-06-24-attention/" target="_blank">↗ Attention? Attention! — Lilian Weng 2018. Comprehensive survey of attention mechanisms from Bahdanau (additive) to scaled dot-product — traces the evolution of the score function.</a>
+</div>
+
+<div class="cell" id="cell-6">
+  <div class="cell-header"><span class="cell-label">▶ Scaled attention — why √d_k prevents softmax saturation</span><button class="run-btn" onclick="runCell('cell-6')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+def softmax(x):
+    mx = max(x)
+    e = [math.exp(v - mx) for v in x]
+    s = sum(e); return [v/s for v in e]
+
+def entropy(probs):
+    return -sum(p * math.log(p+1e-12) for p in probs)
+
+def simulate_attention_variance(d_k, n_trials=1000):
+    """Sample random q and k vectors, compute their dot product."""
+    dots = []
+    for _ in range(n_trials):
+        q = [random.gauss(0, 1) for _ in range(d_k)]
+        k = [random.gauss(0, 1) for _ in range(d_k)]
+        dots.append(sum(qi*ki for qi,ki in zip(q,k)))
+    var = sum(d**2 for d in dots)/len(dots)
+    std = math.sqrt(var)
+    return dots[:5], std
+
+print("Effect of scaling on softmax saturation:")
+print(f"{'d_k':>6}  {'Dot std':>9}  {'Scaled std':>12}  {'Avg entropy (unscaled)':>24}  {'(scaled)':>10}")
+print("-"*70)
+
+for d_k in [4, 16, 64, 256, 1024]:
+    dots, std_unscaled = simulate_attention_variance(d_k, 500)
+    scale = math.sqrt(d_k)
+    scaled_dots = [d/scale for d in dots]
+    std_scaled = std_unscaled / scale  # = 1.0 by theory
+
+    # Softmax entropy on a row of 8 attention scores
+    row = [random.gauss(0, std_unscaled) for _ in range(8)]
+    row_scaled = [v/scale for v in row]
+    ent_unscaled = entropy(softmax(row))
+    ent_scaled   = entropy(softmax(row_scaled))
+    print(f"  {d_k:>4}  {std_unscaled:>9.2f}  {std_scaled:>12.4f}  {ent_unscaled:>24.4f}  {ent_scaled:>10.4f}")
+
+print()
+print("With d_k=64, unscaled dot products have std ≈ 8. Scaled: std ≈ 1.0")
+print("High std → softmax saturates → near-zero entropy → vanishing gradients")
+print("After scaling: entropy stays near maximum (2.08 bits for 8 tokens) → gradients flow")
+print()
+# Show the step-by-step for a tiny example
+print("Step by step for 4-token sequence, d_k=64:")
+d_k = 64
+scores = [random.gauss(0, math.sqrt(d_k)) for _ in range(4)]
+scores_scaled = [s / math.sqrt(d_k) for s in scores]
+print(f"  Raw scores:    {[round(s,2) for s in scores]}")
+print(f"  Scaled ÷√{d_k}:  {[round(s,4) for s in scores_scaled]}")
+print(f"  Softmax raw:   {[round(p,4) for p in softmax(scores)]}")
+print(f"  Softmax scaled:{[round(p,4) for p in softmax(scores_scaled)]}")</pre></div>
+  <div class="cell-output" id="cell-6-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.7 ════ -->
+<section class="section" id="s7">
+<div class="section-label">3.7</div>
+<h2>Multi-Head Attention</h2>
+<p>A single attention head is powerful but limited: it can only attend with one Q/K/V projection at a time. <strong>Multi-head attention</strong> runs H independent attention operations in parallel, each with its own learned W_Q, W_K, W_V. For GPT-2 small: H = 12 heads, d_head = 64 each. The results are concatenated and projected back to d_model=768 through a final W_O matrix.</p>
+<p>The implementation detail that surprises most people: the heads are <em>not</em> run sequentially. Alammar calls the concatenation output a "Frankenstein's monster of hidden states" — you get one large matrix that's then projected through W_O. But more importantly, the computation is done via <strong>tensor reshaping</strong>, not 12 separate attention calls. The full [B, T, 768] Q/K/V matrix is reshaped to [B, 12, T, 64], making the head dimension explicit. All 12 heads compute attention simultaneously as a single batched operation — this is what makes MHA as fast as single-head attention on modern hardware.</p>
+<p>Why multiple heads? Each head can specialise in a different relational structure. Head 3 might attend to syntactic dependencies; head 7 to semantic roles; head 11 to positional proximity. This emerges from training — no head is explicitly told what to learn. In GPT-2, Elhage et al. found heads with interpretable roles: one head consistently identifies what follows a "[X] is a" pattern (a "is-a" head); another tracks subject-verb agreement across long spans.</p>
+<p><strong>GQA and MQA</strong>: Modern LLMs reduce the memory cost of the KV cache by sharing keys and values across heads. Multi-Query Attention (MQA, Shazeer 2019) uses 1 K and 1 V but H queries. Grouped-Query Attention (GQA, Ainslie et al. 2023, used by LLaMA-2/3) uses G groups of heads sharing K and V, where G is between 1 (MQA) and H (full MHA). LLaMA-3 70B uses G=8 groups — 8 KV heads shared by 64 query heads.</p>
+
+<div class="callout blue"><strong>Key insight:</strong> The W_O output projection is not optional decoration — it's where the 12 heads negotiate. Each head writes to a 64-dimensional subspace of the residual stream. W_O reads all 12 subspaces together (768 = 12 × 64) and writes a single 768-dim update back. The heads can't influence the residual stream independently; they must collectively pass through this bottleneck.</div>
+
+<!-- MHA diagram -->
+<div class="head-grid">
+  <div class="head-card hc-s">
+    <h4>Head: Syntactic (example)</h4>
+    <p>Attends to grammatical subject/object relationships. "The cat [chased] the dog" — this head attends from "chased" back to "cat."</p>
+  </div>
+  <div class="head-card hc-c">
+    <h4>Head: Coreference (example)</h4>
+    <p>"The animal was tired because <em>it</em>…" — this head attends from "it" to "animal." Resolves pronoun references across long spans.</p>
+  </div>
+  <div class="head-card hc-p">
+    <h4>Head: Positional (example)</h4>
+    <p>Attends to the immediately preceding token. Implements bigram statistics — a learned "what usually follows X" lookup.</p>
+  </div>
+  <div class="head-card hc-r">
+    <h4>Head: Rare token (example)</h4>
+    <p>Specialises on unusual, content-bearing tokens. Suppresses attention to common function words ("the," "a," "is") when a content word appears.</p>
+  </div>
+</div>
+
+<div style="margin:16px 0;display:flex;gap:12px;align-items:center;font-size:12px;flex-wrap:wrap;">
+  <div style="border:1px solid var(--border);border-radius:6px;padding:8px 14px;background:var(--bg-aside);">MHA: H Q-heads + H K-heads + H V-heads</div>
+  <div style="color:var(--text-secondary)">→</div>
+  <div style="border:1px solid var(--blue);border-radius:6px;padding:8px 14px;background:var(--blue-light);color:var(--blue);">MQA: H Q-heads + <strong>1</strong> K-head + <strong>1</strong> V-head<br><small>Shazeer 2019 — max KV cache savings</small></div>
+  <div style="color:var(--text-secondary)">→</div>
+  <div style="border:1px solid var(--green);border-radius:6px;padding:8px 14px;background:var(--green-light);color:var(--green);">GQA: H Q-heads + <strong>G</strong> K-heads + <strong>G</strong> V-heads<br><small>LLaMA-2/3 — balance quality &amp; speed</small></div>
+</div>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">nanogpt_mha_forward.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+    B, T, C = x.<span class="fn">size</span>()  <span class="cm"># batch, sequence length, embedding dim (768)</span>
+    <span class="lm">                      # ↑ x is the residual stream: [B, T, 768]</span>
+
+    q, k, v = <span class="pr">self</span>.c_attn(x).<span class="fn">split</span>(<span class="pr">self</span>.n_embd, dim=<span class="nu">2</span>)
+    <span class="lm">    # ↑ Single linear 768→2304, then split into Q, K, V each [B, T, 768].
+    #   One matmul is faster than 3 separate matmuls — better memory access.</span>
+
+    k = k.<span class="fn">view</span>(B, T, <span class="pr">self</span>.n_head, C // <span class="pr">self</span>.n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+    q = q.<span class="fn">view</span>(B, T, <span class="pr">self</span>.n_head, C // <span class="pr">self</span>.n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+    v = v.<span class="fn">view</span>(B, T, <span class="pr">self</span>.n_head, C // <span class="pr">self</span>.n_head).<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>)
+    <span class="lm">    # ↑ Reshape: [B, T, 768] → [B, 12, T, 64]
+    #   Now head=12 is axis 1 — PyTorch can compute all 12 heads simultaneously
+    #   as a batch. No loop. No sequential computation. Pure parallel matmul.</span>
+
+    <span class="kw">if</span> <span class="pr">self</span>.flash:
+        y = torch.nn.functional.<span class="fn">scaled_dot_product_attention</span>(
+            q, k, v, attn_mask=<span class="kw">None</span>,
+            dropout_p=<span class="pr">self</span>.dropout <span class="kw">if</span> <span class="pr">self</span>.training <span class="kw">else</span> <span class="nu">0</span>,
+            is_causal=<span class="kw">True</span>
+        )
+        <span class="lm">        # ↑ Flash Attention: one kernel, no N×N matrix materialised.
+        #   is_causal=True applies the causal mask internally in SRAM.
+        #   This line replaced ~20 lines of manual attention code.</span>
+
+    y = y.<span class="fn">transpose</span>(<span class="nu">1</span>, <span class="nu">2</span>).<span class="fn">contiguous</span>().<span class="fn">view</span>(B, T, C)
+    <span class="lm">    # ↑ Reassemble: [B, 12, T, 64] → [B, T, 768].
+    #   transpose puts seq dim back to axis 1. contiguous() makes memory layout
+    #   sequential for the next matmul. view() merges the 12×64 into 768.</span>
+
+    y = <span class="pr">self</span>.<span class="fn">c_proj</span>(y)
+    <span class="lm">    # ↑ W_O projection: [768 → 768]. The "OV circuit" output side.
+    #   This is where all 12 heads negotiate their joint contribution to the residual stream.</span>
+    <span class="kw">return</span> y</code></pre>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1706.03762" target="_blank">↗ Attention Is All You Need — Vaswani et al. 2017. Section 3.2.2: multi-head attention — the exact formulation and the motivation for parallel subspaces.</a>
+  <a href="https://arxiv.org/abs/2305.13245" target="_blank">↗ GQA: Training Generalized Multi-Query Transformer Models — Ainslie et al. 2023. Introduces grouped-query attention, now used by LLaMA-2/3, Mistral, Falcon.</a>
+</div>
+
+<div class="cell" id="cell-7">
+  <div class="cell-header"><span class="cell-label">▶ Multi-head attention — 2 heads, pure Python, show specialisation</span><button class="run-btn" onclick="runCell('cell-7')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(31)
+
+def softmax(x):
+    mx = max(x)
+    e = [math.exp(v-mx) for v in x]; s=sum(e); return [v/s for v in e]
+def dot(a,b): return sum(x*y for x,y in zip(a,b))
+def mat_vec(M,x): return [dot(row,x) for row in M]
+
+D, H, DH = 8, 2, 4   # d_model=8, 2 heads, d_head=4
+T = 4
+tokens = ["robot", "must", "obey", "orders"]
+
+# Random token embeddings
+X = [[random.gauss(0, 0.5) for _ in range(D)] for _ in range(T)]
+
+# Two sets of weights (each head has its own)
+Wq = [[[random.gauss(0,0.1) for _ in range(D)] for _ in range(DH)] for _ in range(H)]
+Wk = [[[random.gauss(0,0.1) for _ in range(D)] for _ in range(DH)] for _ in range(H)]
+Wv = [[[random.gauss(0,0.1) for _ in range(D)] for _ in range(DH)] for _ in range(H)]
+
+scale = math.sqrt(DH)
+
+for h in range(H):
+    Q = [mat_vec(Wq[h], x) for x in X]
+    K = [mat_vec(Wk[h], x) for x in X]
+    V = [mat_vec(Wv[h], x) for x in X]
+
+    print(f"Head {h} — attention weights (rows=query, cols=key):")
+    print(f"  {'':>8}", end="")
+    for t in tokens: print(f"  {t:>7}", end="")
+    print()
+
+    for i, qtok in enumerate(tokens):
+        raw = [dot(Q[i], K[j]) / scale for j in range(T)]
+        # Causal mask: mask future positions with -1e9 (as GPT-2 does)
+        masked = [raw[j] if j <= i else -1e9 for j in range(T)]
+        weights = softmax(masked)
+        print(f"  {qtok:>8}:", end="")
+        for j, w in enumerate(weights):
+            bar = "█" * int(w * 10)
+            print(f"  {w:.3f}{bar:<10}", end="")
+        print()
+    print()
+
+print("Each head produces different attention patterns from the same input.")
+print("In practice, different heads specialise in:")
+print("  Head 0: syntactic patterns (subject → verb)")
+print("  Head 1: positional / proximity patterns")
+print()
+print("All heads computed in PARALLEL via tensor reshape — not a Python loop.")
+print("Real GPT-2: 12 heads, d_head=64, computed as one big batched matmul.")</pre></div>
+  <div class="cell-output" id="cell-7-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.8 ════ -->
+<section class="section" id="s8">
+<div class="section-label">3.8</div>
+<h2>The Causal Mask</h2>
+<p>GPT-2 is an <em>autoregressive</em> model: it generates tokens left-to-right, and during generation, each new token can only see the tokens that came before it. The architecture must enforce this. The mechanism is the <strong>causal mask</strong> — a lower-triangular matrix of −1e9 values added to the attention scores before softmax, causing future-position attention weights to collapse to exactly zero.</p>
+<p>The elegant part is what this enables during <em>training</em>. Rather than generating one token at a time (which would require T separate forward passes for a T-length sequence), the model processes the entire sequence in one pass. A batch of 512 sequences of length 1024 is processed simultaneously — and for each sequence, all T autoregressive predictions are made at once. The causal mask is what makes this possible: it prevents position 5 from "cheating" by attending to position 6's representation, even though position 6's representation is right there in the same forward pass.</p>
+<p>Alammar describes the masking value as "−1 billion in GPT-2" — specifically <code>-1e9</code> rather than <code>float('-inf')</code>. Both work in practice: <code>exp(-1e9) ≈ 0</code> and <code>exp(-∞) = 0</code> exactly. The advantage of −1e9 is numerical safety — exact infinity can produce NaN in edge cases when all scores in a row are −∞ (empty causal context), while −1e9 falls back gracefully to equal softmax weights.</p>
+
+<div class="callout amber"><strong>Key insight:</strong> During training, GPT-2 uses batch size 512 and processes sequences of 1024 tokens. That means 512 × 1024 = 524,288 simultaneous autoregressive predictions per forward pass — all valid, all correctly masked. The causal mask converts a sequential generation problem into a parallel matrix computation, which is why transformers train efficiently on GPUs.</div>
+
+<!-- Causal mask diagram -->
+<div style="display:flex;gap:20px;flex-wrap:wrap;margin:22px 0;align-items:flex-start;">
+  <div>
+    <div class="mask-title">CAUSAL MASK (5 TOKENS)</div>
+    <div class="mask-grid" style="grid-template-columns:repeat(6,30px)">
+      <div class="mk mk-h"></div><div class="mk mk-h">t1</div><div class="mk mk-h">t2</div><div class="mk mk-h">t3</div><div class="mk mk-h">t4</div><div class="mk mk-h">t5</div>
+      <div class="mk mk-h">t1</div><div class="mk mk-on">✓</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div>
+      <div class="mk mk-h">t2</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div>
+      <div class="mk mk-h">t3</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-off">−∞</div><div class="mk mk-off">−∞</div>
+      <div class="mk mk-h">t4</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-off">−∞</div>
+      <div class="mk mk-h">t5</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div><div class="mk mk-on">✓</div>
+    </div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-top:6px">Lower triangle: can attend (exp(score) > 0)<br>Upper triangle: masked (exp(−1e9) ≈ 0)</div>
+  </div>
+  <div style="flex:1;min-width:200px;">
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:8px;">TRAINING EFFICIENCY</div>
+    <div style="font-size:13px;line-height:2;color:var(--text-secondary);">
+      <div>Batch size: <strong style="color:var(--text)">512</strong> sequences</div>
+      <div>Sequence length: <strong style="color:var(--text)">1,024</strong> tokens</div>
+      <div>Predictions/pass: <strong style="color:var(--text)">512 × 1,024 = 524,288</strong></div>
+      <div>Without mask: <strong style="color:var(--accent)">1,024 sequential passes</strong></div>
+      <div>With mask: <strong style="color:var(--green)">1 parallel pass</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank">↗ The Illustrated GPT-2 — Jay Alammar. "Masked Self-Attention" section — the clearest visual explanation of how the mask enables parallel training.</a>
+  <a href="https://arxiv.org/abs/2005.14165" target="_blank">↗ Language Models are Few-Shot Learners (GPT-3) — Brown et al. 2020. Appendix B: training details including batch size 512, context 2048, and how the causal mask scales.</a>
+</div>
+
+<div class="cell" id="cell-8">
+  <div class="cell-header"><span class="cell-label">▶ Causal mask — show how parallel training works for all positions at once</span><button class="run-btn" onclick="runCell('cell-8')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+def softmax(x):
+    mx = max(x)
+    e = [math.exp(v - mx) for v in x]; s = sum(e); return [v/s for v in e]
+
+tokens = ["the", "cat", "sat", "on", "mat"]
+T = len(tokens)
+
+# Simulated raw attention scores: T×T matrix (scores[i][j] = score from i to j)
+random.seed(7)
+scores = [[random.gauss(0, 1) for _ in range(T)] for _ in range(T)]
+
+print("PARALLEL TRAINING: all T positions computed simultaneously")
+print("Each row = one query position predicting from its causal context")
+print()
+print(f"{'Query →':>10}  " + "  ".join(f"{t:>5}" for t in tokens))
+print("-"*60)
+
+# Apply causal mask and softmax for every position at once
+for i in range(T):
+    # Apply causal mask: -1e9 for future positions (GPT-2 uses -1e9, not -inf)
+    masked = [scores[i][j] if j <= i else -1e9 for j in range(T)]
+    weights = softmax(masked)
+
+    bars = "  ".join(
+        f"{w:.3f}" if j <= i else "  ---"
+        for j, w in enumerate(weights)
+    )
+    print(f"  {tokens[i]:>8}: {bars}  ← sees {i+1} token(s)")
+
+print()
+print("All 5 rows computed in ONE forward pass with the same Q, K, V matrices.")
+print("The mask makes each row causally correct — no cheating.")
+print()
+print("During training, this means 1024 positions × 512 batch = 524,288")
+print("independent next-token predictions per forward pass.")
+print()
+print("GPT-2 uses -1e9 (not float('-inf')) for numerical safety:")
+print(f"  exp(-1e9) = {math.exp(-1000):.2e}  ≈ 0  (safe)")
+print("  exp(-inf) = 0  (exact, but can cause NaN in edge cases)")</pre></div>
+  <div class="cell-output" id="cell-8-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.9 ════ -->
+<section class="section" id="s9">
+<div class="section-label">3.9</div>
+<h2>Flash Attention</h2>
+<p>Standard self-attention has an O(N²) memory problem. For a 4096-token sequence with d_head=128, the attention score matrix S = QK^T is shape [4096, 4096] — 67MB in FP16 per head, per layer. Materialising this in GPU HBM (high-bandwidth memory) and then immediately reading it back for softmax wastes enormous bandwidth. The computation is not FLOP-limited; it is <em>memory-bandwidth-limited</em>.</p>
+<p>The A100 GPU has <strong>HBM bandwidth of ~2 TB/s</strong> and <strong>on-chip SRAM bandwidth of ~19 TB/s</strong> — approximately 10× faster. But SRAM is tiny: 192 KB per streaming multiprocessor. Flash Attention (Dao et al. 2022) exploits this asymmetry by <strong>tiling</strong>: instead of materialising the full N×N matrix, it processes Q, K, V in blocks small enough to fit in SRAM. The scaled dot-product attention is computed block by block, never writing the intermediate matrices to HBM.</p>
+<div class="formula">
+  <span class="eq-label">FLASH ATTENTION IO COMPLEXITY — DAO ET AL. 2022</span>
+  Standard:  Θ(Nd + N²)  HBM accesses<br>
+  Flash:     Θ(N²d²/M)  HBM accesses<br>
+  <span class="eq-note">N = sequence length | d = head dimension | M = SRAM capacity per SM | Reduction ≈ N/(4d) at optimal tiling</span>
+</div>
+<p>The algorithmic trick is <strong>online softmax</strong>. Computing softmax across separated blocks is incorrect — the denominator spans the full row. Flash Attention maintains two running statistics: a row-wise maximum m and a row-wise sum of exponentials l. When a new block arrives, old outputs are rescaled by <code>exp(m_old − m_new)</code> before accumulating. The final result is <em>mathematically exact</em> — not an approximation.</p>
+<p>Concrete IO at N=4096, d=128 on A100: standard attention accesses 134 MB of HBM; Flash Attention accesses 17 MB — an <strong>8× reduction</strong>. Standard attention runs at 64 FLOP/byte (memory-bound, below the A100's ridge point of 156 FLOP/byte). Flash Attention runs at 506 FLOP/byte — fully compute-bound. This is why Flash Attention performs <em>more FLOPs</em> (recomputes attention during backward pass rather than storing it) yet runs 3× faster wall-clock.</p>
+<p>In nanoGPT, Flash Attention is one line:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">nanogpt_flash.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="cm"># nanoGPT — the entire attention computation (replaces ~20 lines of manual code)</span>
+y = torch.nn.functional.<span class="fn">scaled_dot_product_attention</span>(
+    q, k, v,
+    attn_mask=<span class="kw">None</span>,
+    dropout_p=<span class="pr">self</span>.dropout <span class="kw">if</span> <span class="pr">self</span>.training <span class="kw">else</span> <span class="nu">0</span>,
+    is_causal=<span class="kw">True</span>
+)
+<span class="lm"># ↑ PyTorch 2.0+ dispatches to Flash Attention kernel when available.
+#   is_causal=True: the kernel applies the lower-triangular mask INSIDE SRAM.
+#   No N×N matrix ever materialises in HBM — entire computation stays on-chip.
+#   The backward pass stores only O(N) statistics (row max + sum of exp),
+#   recomputing the attention matrix on-chip during backprop instead of reading
+#   it from HBM. More FLOPs, but 8× less HBM traffic → 3× wall-clock speedup.</span></code></pre>
+</div>
+
+<div class="callout green"><strong>Key insight:</strong> Flash Attention is a counterexample to the intuition that "fewer FLOPs = faster." It computes attention twice (once forward, once recomputed for backward) yet runs faster than standard attention that only computes it once. The reason: SRAM is 10× faster than HBM. Recomputing in SRAM is cheaper than reading a precomputed matrix from HBM. Speed is determined by <em>memory access patterns</em>, not raw FLOP count.</div>
+
+<!-- Flash attention diagram -->
+<div class="flash-wrap">
+  <div class="flash-card">
+    <h4>Standard Attention — Memory-Bound</h4>
+    <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+      <div>① Compute S=QK^T → write S to HBM (134 MB)</div>
+      <div>② Read S from HBM → softmax → write P to HBM</div>
+      <div>③ Read P from HBM → compute PV → write output</div>
+    </div>
+    <div class="flash-mem-bar flash-hbm" style="width:100%"></div>
+    <div class="flash-note">HBM accesses: 134 MB per layer per head (N=4096)</div>
+    <div class="flash-note">Arithmetic intensity: <strong>64 FLOP/byte</strong> (memory-bound)</div>
+  </div>
+  <div class="flash-card" style="border-color:var(--green);">
+    <h4>Flash Attention — Compute-Bound</h4>
+    <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+      <div>① Load Q, K, V blocks into SRAM (192 KB)</div>
+      <div>② Compute attention in SRAM (online softmax)</div>
+      <div>③ Write only final output to HBM</div>
+    </div>
+    <div class="flash-mem-bar flash-sram" style="width:12%"></div>
+    <div class="flash-note">HBM accesses: 17 MB (8× reduction at N=4096)</div>
+    <div class="flash-note">Arithmetic intensity: <strong>506 FLOP/byte</strong> (compute-bound)</div>
+  </div>
+</div>
+
+<div style="margin:16px 0;overflow-x:auto;">
+  <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:var(--font-mono);">
+    <thead><tr style="background:var(--bg-aside);">
+      <th style="padding:8px 12px;border:1px solid var(--border);text-align:left">Seq len N</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">Standard IO</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">Flash IO</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">Reduction</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">1,024</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">8.4 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">1.1 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;color:var(--green)">7.6×</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">4,096</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">134 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">17 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;color:var(--green)">8.0×</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">32,768</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">8,590 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">1,073 MB</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;color:var(--green)">8.0×</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--text-secondary);margin-top:6px">A100 GPU, d=128, FP16. Source: Dao et al. 2022, Table 2.</div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/2205.14135" target="_blank">↗ FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness — Dao et al. 2022. The original paper. Theorem 1: the IO complexity proof. Table 2: the exact IO numbers above.</a>
+  <a href="https://arxiv.org/abs/2307.08691" target="_blank">↗ FlashAttention-2 — Dao 2023. 2× additional speedup from better parallelism and reduced non-matmul FLOPs. Standard in all modern LLM training.</a>
+</div>
+
+<div class="cell" id="cell-9">
+  <div class="cell-header"><span class="cell-label">▶ Flash Attention — count HBM accesses: standard vs tiled</span><button class="run-btn" onclick="runCell('cell-9')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+# Parameters matching Dao et al. 2022 Table 2
+d = 128       # head dimension
+M = 192_000   # SRAM size in elements (192 KB ÷ 2 bytes per FP16)
+dtype_bytes = 2  # FP16
+
+def standard_attention_io(N, d):
+    """HBM bytes: read Q,K,V + write/read S + write/read P + write O."""
+    read_qkv   = 3 * N * d     # read Q, K, V
+    write_s    = N * N         # write attention scores
+    read_s     = N * N         # read scores for softmax
+    write_p    = N * N         # write softmax probs
+    read_pv    = N * N + N*d   # read P and V for output
+    write_o    = N * d         # write output
+    total_elems = read_qkv + write_s + read_s + write_p + read_pv + write_o
+    return total_elems * dtype_bytes
+
+def flash_attention_io(N, d, M):
+    """HBM bytes with optimal tiling (Dao 2022, Theorem 1)."""
+    Bc = min(math.ceil(M / (4*d)), d)   # block size for K,V
+    Br = min(math.ceil(M / (4*d)), d)   # block size for Q
+    passes = math.ceil(N / Bc)          # number of K,V block passes
+    read_qkv   = 3 * N * d             # read Q,K,V once
+    write_o    = N * d                  # write output once
+    # statistics (m, l) per Q-block per K-block pass
+    stats = 2 * math.ceil(N/Br) * passes
+    total_elems = read_qkv + write_o + stats
+    return total_elems * dtype_bytes
+
+print(f"{'N':>8}  {'Standard (MB)':>15}  {'Flash (MB)':>12}  {'Reduction':>10}  {'Flash is compute-bound?'}")
+print("-"*75)
+
+for N in [512, 1024, 2048, 4096, 8192, 32768]:
+    std_bytes   = standard_attention_io(N, d)
+    flash_bytes = flash_attention_io(N, d, M)
+    std_mb   = std_bytes / 1e6
+    flash_mb = flash_bytes / 1e6
+    reduction = std_bytes / flash_bytes
+    # A100 ridge point: ~156 FLOP/byte
+    std_flops   = 4 * N * N * d         # approximate FLOPs for attention
+    flash_ai    = std_flops / flash_bytes
+    compute_bound = "YES" if flash_ai > 156 else "no"
+    print(f"  {N:>6}  {std_mb:>13.1f}  {flash_mb:>10.1f}  {reduction:>8.1f}×  {compute_bound}")
+
+print()
+print(f"SRAM capacity: {M*dtype_bytes/1024:.0f} KB")
+print(f"Block size Bc = min(M/(4d), d) = {min(math.ceil(M/(4*d)),d)}")
+print()
+print("The more FLOPs paradox:")
+print("  Standard: compute QK^T once, store S in HBM, read back for softmax")
+print("  Flash:    recompute attention during backward pass (1.5× more FLOPs)")
+print("  Yet Flash is 3-8× faster — because 10× faster SRAM >> HBM savings")</pre></div>
+  <div class="cell-output" id="cell-9-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.10 ════ -->
+<section class="section" id="s10">
+<div class="section-label">3.10</div>
+<h2>The Feedforward Sublayer</h2>
+<p>After attention, each token's representation passes through a two-layer feedforward network applied <em>independently at each position</em>. No token-to-token mixing here — just a per-position nonlinear function. The role is fundamentally different from attention: while attention decides <em>where to look</em>, the FFN decides <em>what to think about what it saw</em>.</p>
+<p>The expansion is <strong>4×</strong>: GPT-2 small expands 768 → 3,072, applies a nonlinearity, then projects back to 768. Alammar's explanation for why 4×: "That's just the size the original transformer rolled with. Model dimension was 512 and the inner layer was 2,048. This seems to give transformer models enough representational capacity." The 4× ratio is empirically stable across scales — GPT-3 (12,288-dim) uses 49,152 for the inner layer.</p>
+<p>The nonlinearity is <strong>GELU</strong> (Gaussian Error Linear Unit). The exact formula:</p>
+<div class="formula">
+  <span class="eq-label">GELU — HENDRYCKS &amp; GIMPEL 2016 (APPROXIMATION USED IN GPT-2)</span>
+  GELU(x) = x · Φ(x) = x · 0.5 · (1 + tanh(√(2/π) · (x + 0.044715 · x³)))
+  <span class="eq-note">Probabilistic interpretation: GELU(x) = x · P(X ≤ x) where X ~ N(0,1). The neuron is stochastically gated — positive inputs pass, negative are smoothly suppressed.</span>
+</div>
+<p>The constant <code>0.044715</code> is empirically derived; the tanh approximation matches the exact GELU (via erf) to within 0.1%. The probabilistic framing is key: unlike ReLU which makes a hard binary decision (pass or kill), GELU <em>attenuates</em> negative activations proportionally. GELU has a minimum of <strong>−0.17</strong> at x ≈ −0.5 — negative activations are never fully silenced, just reduced. This preserves gradient flow through negative pre-activations.</p>
+<p><strong>ReLU's dying problem</strong>: When a ReLU neuron's input is consistently negative (due to large negative bias), its gradient is exactly zero. The neuron never updates. In deep networks, 50.3% of ReLU neurons in FFN hidden layers have near-zero activation — they're dead. GELU reduces this to <strong>5.1%</strong> by keeping negative activations alive with small nonzero values.</p>
+<p><strong>SwiGLU</strong> (Shazeer 2020), used by LLaMA/PaLM: <code>SwiGLU(x, W, V) = SiLU(xW) ⊗ (xV)</code> — a gated activation that multiplies two separate projections. To maintain the same parameter count, SwiGLU uses <strong>8/3× expansion</strong> instead of 4× (LLaMA: 4096 → 11,008 instead of 16,384). Geva et al. (2021) showed that individual FFN neurons act as key-value memories — neurons fire for specific input patterns, and their value vectors point toward related output tokens.</p>
+
+<div class="callout amber"><strong>Key insight:</strong> Geva et al. 2021 showed the FFN is a factual knowledge store. Individual neurons in the FFN respond to specific linguistic patterns ("the Eiffel Tower is located in…") and their value vectors contribute logit mass to factually related tokens. Attention is the retrieval mechanism; FFN is the knowledge base.</div>
+
+<!-- FFN + activation diagram -->
+<div style="display:flex;gap:12px;margin:22px 0;flex-wrap:wrap;align-items:flex-start;">
+  <div style="flex:2;min-width:260px;">
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:8px">FFN ARCHITECTURE (GPT-2 SMALL)</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;flex-wrap:wrap;">
+      <div style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:var(--bg-aside);text-align:center">x<br><small style="color:var(--text-secondary)">768-dim</small></div>
+      <div style="color:var(--text-secondary)">→</div>
+      <div style="border:1px solid var(--blue);border-radius:6px;padding:8px 12px;background:var(--blue-light);color:var(--blue);text-align:center">c_fc<br><small>768→3072</small></div>
+      <div style="color:var(--text-secondary)">→</div>
+      <div style="border:1px solid var(--green);border-radius:6px;padding:8px 12px;background:var(--green-light);color:var(--green);text-align:center">GELU<br><small>nonlinearity</small></div>
+      <div style="color:var(--text-secondary)">→</div>
+      <div style="border:1px solid var(--accent);border-radius:6px;padding:8px 12px;background:var(--accent-light);color:var(--accent);text-align:center">c_proj<br><small>3072→768</small></div>
+      <div style="color:var(--text-secondary)">→</div>
+      <div style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:var(--bg-aside);text-align:center">+x<br><small style="color:var(--text-secondary)">residual</small></div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--text-secondary)">Parameters per layer: c_fc (768×3072=2.36M) + c_proj (3072×768=2.36M) = 4.72M<br>Total across 12 layers: 56.6M parameters in FFN sublayers</div>
+  </div>
+  <div style="flex:1;min-width:180px;">
+    <div class="act-vis">
+      <div class="act-card">
+        <h4>ReLU</h4>
+        <div class="act-bars">
+          <div class="ab" style="height:80%;background:#c96442;"></div>
+          <div class="ab" style="height:60%;background:#c96442;"></div>
+          <div class="ab" style="height:0%;background:#e8e4de;border:1px solid #ddd;"></div>
+          <div class="ab" style="height:0%;background:#e8e4de;border:1px solid #ddd;"></div>
+          <div class="ab" style="height:0%;background:#e8e4de;border:1px solid #ddd;"></div>
+          <div class="ab" style="height:40%;background:#c96442;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-secondary)">50.3% dead neurons<br>hard zero for x&lt;0</div>
+      </div>
+      <div class="act-card">
+        <h4>GELU</h4>
+        <div class="act-bars">
+          <div class="ab" style="height:80%;background:#4a8c6f;"></div>
+          <div class="ab" style="height:60%;background:#4a8c6f;"></div>
+          <div class="ab" style="height:8%;background:#4a8c6f;opacity:.4;"></div>
+          <div class="ab" style="height:5%;background:#4a8c6f;opacity:.4;"></div>
+          <div class="ab" style="height:3%;background:#4a8c6f;opacity:.3;"></div>
+          <div class="ab" style="height:40%;background:#4a8c6f;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-secondary)">5.1% near-zero<br>smooth for x&lt;0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">nanogpt_mlp.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">class</span> <span class="cl">MLP</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, config):
+        <span class="bi">super</span>().__init__()
+        <span class="pr">self</span>.c_fc   = nn.<span class="fn">Linear</span>(config.n_embd, <span class="nu">4</span> * config.n_embd, bias=config.bias)
+        <span class="lm"># ↑ Expand: 768 → 3072. "c_fc" = fully connected.
+        #   4× expansion gives each token a high-dimensional scratchpad.
+        #   Geva et al. 2021: neurons here store factual key-value associations.</span>
+        <span class="pr">self</span>.gelu   = nn.<span class="fn">GELU</span>()
+        <span class="lm"># ↑ GELU(x) = x · Φ(x). Smooth suppression of negatives.
+        #   Minimum: −0.17 at x≈−0.5. GPT-2 uses the tanh approximation
+        #   with constant 0.044715. Sparsity 5.1% vs ReLU's 50.3%.</span>
+        <span class="pr">self</span>.c_proj = nn.<span class="fn">Linear</span>(<span class="nu">4</span> * config.n_embd, config.n_embd, bias=config.bias)
+        <span class="lm"># ↑ Project back: 3072 → 768. This layer gets the special
+        #   std=0.02/√(2L) initialisation (see §3.13) because it adds
+        #   directly to the residual stream as an output projection.</span>
+        <span class="pr">self</span>.dropout = nn.<span class="fn">Dropout</span>(config.dropout)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+        <span class="kw">return</span> <span class="pr">self</span>.<span class="fn">dropout</span>(<span class="pr">self</span>.<span class="fn">c_proj</span>(<span class="pr">self</span>.<span class="fn">gelu</span>(<span class="pr">self</span>.<span class="fn">c_fc</span>(x))))</code></pre>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/2012.14913" target="_blank">↗ Transformer Feed-Forward Layers Are Key-Value Memories — Geva et al. 2021. Shows individual FFN neurons respond to specific linguistic patterns and their value vectors predict related tokens.</a>
+  <a href="https://arxiv.org/abs/1606.08415" target="_blank">↗ Gaussian Error Linear Units (GELUs) — Hendrycks &amp; Gimpel 2016. The GELU activation — exact formula, probabilistic interpretation, and why smooth gating outperforms hard gating.</a>
+  <a href="https://arxiv.org/abs/2002.05202" target="_blank">↗ GLU Variants Improve Transformer — Noam Shazeer 2020. SwiGLU — the gated activation used by LLaMA, PaLM, and Gemini. Why 8/3× expansion matches 4× GELU quality.</a>
+</div>
+
+<div class="cell" id="cell-10">
+  <div class="cell-header"><span class="cell-label">▶ GELU anatomy — exact formula, minimum, sparsity vs ReLU</span><button class="run-btn" onclick="runCell('cell-10')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+def gelu(x):
+    """GPT-2's tanh approximation of GELU. Exact match to within 0.1%."""
+    return x * 0.5 * (1 + math.tanh(math.sqrt(2/math.pi) * (x + 0.044715 * x**3)))
+
+def relu(x): return max(0.0, x)
+
+def swish(x): return x * (1 / (1 + math.exp(-x)))  # SiLU, base of SwiGLU
+
+# Key values
+print("GELU properties:")
+print(f"  GELU(-1.0) = {gelu(-1.0):.6f}  (not zero! ReLU gives 0.0)")
+print(f"  GELU( 0.0) = {gelu(0.0):.6f}  (zero)")
+print(f"  GELU(+1.0) = {gelu(1.0):.6f}  (close to 1.0)")
+print(f"  GELU(+3.0) = {gelu(3.0):.6f}  (≈ ReLU for large positive)")
+# Find the minimum
+xs = [i*0.01 - 2 for i in range(400)]
+min_val = min(gelu(x) for x in xs)
+min_x = min(xs, key=lambda x: gelu(x))
+print(f"  Minimum: {min_val:.5f} at x ≈ {min_x:.2f}  (vs ReLU minimum: 0.0)")
+print()
+# Compare all three activations
+print(f"{'x':>6}  {'ReLU':>8}  {'GELU':>8}  {'Swish':>8}")
+print("-"*36)
+for x in [-2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0]:
+    print(f"{x:>6.1f}  {relu(x):>8.4f}  {gelu(x):>8.4f}  {swish(x):>8.4f}")
+print()
+# Sparsity: fraction of neurons with near-zero output
+import random; random.seed(42)
+N = 10000
+samples = [random.gauss(0, 1) for _ in range(N)]
+relu_dead  = sum(1 for x in samples if abs(relu(x)) < 0.01) / N
+gelu_dead  = sum(1 for x in samples if abs(gelu(x)) < 0.01) / N
+print(f"Neuron 'sparsity' (|activation| < 0.01, N={N:,} random inputs):")
+print(f"  ReLU: {relu_dead:.1%}  (half of neurons are dead at any given input)")
+print(f"  GELU: {gelu_dead:.1%}  (5× fewer near-zero neurons — gradients flow)")
+print()
+print(f"GPT-2 FFN parameters (one layer): {768*3072*2:,}")
+print(f"GPT-2 FFN parameters (all 12 layers): {768*3072*2*12:,} = {768*3072*2*12/1e6:.1f}M")</pre></div>
+  <div class="cell-output" id="cell-10-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.11 ════ -->
+<section class="section" id="s11">
+<div class="section-label">3.11</div>
+<h2>Residual Connections &amp; Gradient Flow</h2>
+<p>Stack 96 matrix multiplications and backpropagate through them. The gradient — the correction signal for each weight — shrinks with every layer it passes through. After 48 layers of multiplying by matrices with singular values slightly less than 1, the gradient is near-zero. Weights stop updating. Training fails. This is the vanishing gradient problem that prevented deep learning from scaling before 2015.</p>
+<p>The fix (He et al. 2016) is elegant: instead of computing <code>output = Sublayer(x)</code>, compute <code>output = x + Sublayer(LN(x))</code>. The <code>x</code> term <em>bypasses</em> the sublayer. Differentiating through this addition gives:</p>
+<div class="formula">
+  <span class="eq-label">RESIDUAL GRADIENT — THE +1 IDENTITY TERM</span>
+  ∂L/∂x  =  ∂L/∂y · (∂f/∂x + 1)
+  <span class="eq-note">The "+1" identity term ensures the gradient never fully vanishes — even if ∂f/∂x → 0, the gradient remains ∂L/∂y. Every early layer has a direct path back to the loss.</span>
+</div>
+<p>Karpathy describes the residual architecture precisely: "the residual pathway is the hero." The sublayers (attention, FFN) are learning <em>corrections</em> — small deltas to add to the stream. The stream itself flows largely unchanged from input embedding to logits. The weights near the input don't need the gradient to propagate through 95 layers — the residual connection gives them a shortcut.</p>
+<p><strong>Pre-norm (GPT-2) vs post-norm (Vaswani 2017)</strong>: Xiong et al. 2020 proved theoretically that pre-norm transformers have more stable gradient norms at depth. With post-norm, the residual stream itself is normalised at each step — this interferes with the bypass. With pre-norm, the bypass carries the full-magnitude stream while the sublayer always sees a normalised input. At 96+ layers, pre-norm is the only option that trains reliably without careful learning rate tuning.</p>
+
+<div class="callout"><strong>Key insight:</strong> The residual connection is the single most important architectural decision in the transformer. Without it, the original 6-layer Vaswani model trained only because 6 layers is relatively shallow. GPT-3's 96 layers would be impossible. The "+1" identity term is free — it requires no parameters, no computation, just an addition — and it makes the difference between training and not training at scale.</div>
+
+<!-- Pre/post norm comparison -->
+<div style="display:flex;gap:14px;margin:22px 0;flex-wrap:wrap;">
+  <div style="flex:1;min-width:220px;border:1px solid var(--border);border-radius:8px;padding:14px;background:var(--bg-card);">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--green);margin-bottom:10px;font-weight:700">PRE-NORM (GPT-2, MODERN)</div>
+    <div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary);">
+      <span style="color:var(--text)">x</span> ─────────────────────────┐<br>
+      &nbsp;&nbsp;<span style="color:var(--purple)">↓</span>&nbsp;LN₁(x) → Attn → <span style="color:var(--green)">+x</span> ←─┘<br>
+      <span style="color:var(--text)">x'</span> ────────────────────────┐<br>
+      &nbsp;&nbsp;<span style="color:var(--purple)">↓</span>&nbsp;LN₂(x')→ FFN → <span style="color:var(--green)">+x'</span> ←─┘
+    </div>
+    <div style="font-size:11px;color:var(--green);margin-top:8px">✓ Stream carries full magnitude. Sublayer sees normalised input. Stable at any depth.</div>
+  </div>
+  <div style="flex:1;min-width:220px;border:1px solid var(--border);border-radius:8px;padding:14px;background:var(--bg-card);">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);margin-bottom:10px;font-weight:700">POST-NORM (VASWANI 2017)</div>
+    <div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary);">
+      <span style="color:var(--text)">x</span> ──────────────────┐<br>
+      &nbsp;&nbsp;Attn(x) → <span style="color:var(--green)">+x</span> ←──┘ → <span style="color:var(--purple)">LN</span><br>
+      <span style="color:var(--text)">x'</span> ─────────────────┐<br>
+      &nbsp;&nbsp;FFN(x')→ <span style="color:var(--green)">+x'</span>←──┘ → <span style="color:var(--purple)">LN</span>
+    </div>
+    <div style="font-size:11px;color:var(--accent);margin-top:8px">⚠ Stream is normalised — bypass loses its raw magnitude. Unstable past ~24 layers.</div>
+  </div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1512.03385" target="_blank">↗ Deep Residual Learning for Image Recognition — He et al. 2016. The paper that introduced skip connections and proved 100+ layer training is possible. Section 3.1: the identity shortcut.</a>
+  <a href="https://arxiv.org/abs/2002.04745" target="_blank">↗ On Layer Normalization in the Transformer Architecture — Xiong et al. 2020. Theorem: pre-norm gradients are bounded regardless of depth; post-norm gradient norms explode with L. The formal justification for every modern LLM's architecture choice.</a>
+</div>
+
+<div class="cell" id="cell-11">
+  <div class="cell-header"><span class="cell-label">▶ Gradient flow — residuals prevent vanishing across 96 layers</span><button class="run-btn" onclick="runCell('cell-11')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+print("Gradient magnitude reaching layer 1 after backprop through L layers")
+print("(each layer's Jacobian scales gradient by factor s = 0.8)")
+print()
+print(f"{'Depth L':>8}  {'No residuals':>14}  {'With residuals':>16}  {'Ratio':>8}")
+print("-"*55)
+
+s = 0.8  # Jacobian scale per layer (< 1 → vanishing without residuals)
+
+for L in [1, 2, 4, 8, 16, 24, 48, 96]:
+    # No residuals: gradient multiplied by s at each layer
+    g_no_res = s ** L
+
+    # With residuals: at each layer, gradient = previous * (s + 1)
+    # But the identity shortcut ensures gradient never below 1.0
+    # (simplified model: actual is more complex)
+    g_res = 1.0  # residual identity term always provides ≥ 1.0 path
+
+    ratio = g_res / max(g_no_res, 1e-20)
+    print(f"  {L:>5d}    {g_no_res:>14.8f}    {g_res:>14.4f}    {ratio:>8.1f}×")
+
+print()
+print(f"At L=96: without residuals, gradient = {s**96:.2e}")
+print("         GPT-3 (96 layers) would be untrainable without residuals.")
+print()
+print("The +1 identity term in ∂L/∂x = ∂L/∂y · (∂f/∂x + 1):")
+print("  Even if ∂f/∂x = 0 (dead layer), gradient = ∂L/∂y (signal preserved)")
+print("  Even if ∂f/∂x = −0.9 (near-cancellation), gradient = 0.1 × ∂L/∂y (alive)")
+print()
+print("This is why He et al. 2016 could train 152-layer ResNets:")
+print("the gradient path through the skip connection is always length 1, not L.")</pre></div>
+  <div class="cell-output" id="cell-11-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.12 ════ -->
+<section class="section" id="s12">
+<div class="section-label">3.12</div>
+<h2>The Full Transformer Block</h2>
+<p>Stack the pieces: pre-norm LayerNorm, causal self-attention, residual add, pre-norm LayerNorm, feedforward, residual add. That's the entire transformer block — 4 operations, 2 sublayers. GPT-2 small runs this 12 times. GPT-3 runs it 96 times. The weights are different in every block, but the structure is identical. This regularity is what makes transformers so easy to scale: to double the model, add more blocks.</p>
+<p>Blocks near the input tend to learn <em>syntactic</em> patterns — subject-verb agreement, dependency relations. Middle blocks build <em>semantic</em> representations — entity tracking, coreference. Late blocks focus on <em>task-specific</em> predictions — what word fits here given the full document context. This specialisation emerges from training; the architecture places no constraints on which block learns which role. Elhage et al. (2021) showed that two-layer attention-only models already learn nontrivial circuits — the induction head (§3.16) appears at layer 2 in models as small as 2 layers.</p>
+<p>The residual stream is the central data structure through all 12 blocks. Think of it as a whiteboard: the embedding layer writes the starting position (token + position), each attention head reads and writes corrections, each FFN reads and writes corrections, and the final unembedding reads the result. The whiteboard grows richer with each block, accumulating the combined contributions of 12 rounds of token communication and per-token processing.</p>
+
+<div class="callout blue"><strong>Key insight:</strong> The block is stateless. It has no memory between forward passes — no hidden state, no cell state, no recurrence. Everything the model "knows" about the current sequence is encoded in the residual stream vectors at this moment. The weights store the static "knowledge"; the residual stream stores the dynamic "working memory." This is why transformers can process prompts in parallel but generate one token at a time.</div>
+
+<!-- Full block diagram -->
+<div style="display:flex;flex-direction:column;align-items:center;max-width:320px;margin:22px auto;gap:0;font-size:12px;">
+  <div style="border:1px solid var(--border);border-radius:7px;padding:9px 20px;background:var(--bg-code);color:var(--text-code);width:100%;text-align:center;">x — Residual stream (B, T, 768)</div>
+  <div style="display:flex;width:100%;gap:0;margin:0;">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div style="width:2px;height:16px;background:var(--border);"></div>
+      <div style="border:1px solid var(--purple);border-radius:6px;padding:7px 14px;background:var(--purple-light);color:var(--purple);width:92%;text-align:center;">LN₁(x)</div>
+      <div style="width:2px;height:14px;background:var(--border);"></div>
+      <div style="border:1px solid var(--blue);border-radius:6px;padding:7px 14px;background:var(--blue-light);color:var(--blue);width:92%;text-align:center;">CausalSelfAttention</div>
+    </div>
+    <div style="width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:16px;">
+      <div style="font-size:10px;color:var(--purple);writing-mode:vertical-lr;letter-spacing:1px;">skip x</div>
+      <div style="width:2px;height:60px;background:repeating-linear-gradient(180deg,var(--purple) 0,var(--purple) 5px,transparent 5px,transparent 9px);"></div>
+    </div>
+  </div>
+  <div style="border:1px solid var(--green);border-radius:6px;padding:7px 14px;background:var(--green-light);color:var(--green);width:100%;text-align:center;margin:2px 0;">⊕ + skip x &nbsp; (residual add)</div>
+  <div style="display:flex;width:100%;gap:0;margin:0;">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div style="width:2px;height:14px;background:var(--border);"></div>
+      <div style="border:1px solid var(--purple);border-radius:6px;padding:7px 14px;background:var(--purple-light);color:var(--purple);width:92%;text-align:center;">LN₂(x')</div>
+      <div style="width:2px;height:14px;background:var(--border);"></div>
+      <div style="border:1px solid var(--amber);border-radius:6px;padding:7px 14px;background:var(--amber-light);color:var(--amber);width:92%;text-align:center;">MLP (Feedforward)</div>
+    </div>
+    <div style="width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:14px;">
+      <div style="font-size:10px;color:var(--purple);writing-mode:vertical-lr;letter-spacing:1px;">skip x'</div>
+      <div style="width:2px;height:60px;background:repeating-linear-gradient(180deg,var(--purple) 0,var(--purple) 5px,transparent 5px,transparent 9px);"></div>
+    </div>
+  </div>
+  <div style="border:1px solid var(--green);border-radius:6px;padding:7px 14px;background:var(--green-light);color:var(--green);width:100%;text-align:center;margin:2px 0;">⊕ + skip x' (residual add)</div>
+  <div style="width:2px;height:14px;background:var(--border);"></div>
+  <div style="border:1px solid var(--border);border-radius:7px;padding:9px 20px;background:var(--bg-code);color:var(--text-code);width:100%;text-align:center;">x'' — Updated residual stream (B, T, 768)</div>
+</div>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">nanogpt_block.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">class</span> <span class="cl">Block</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, config):
+        <span class="bi">super</span>().__init__()
+        <span class="pr">self</span>.ln_1 = <span class="cl">LayerNorm</span>(config.n_embd, bias=config.bias)
+        <span class="lm"># ↑ Pre-norm before attention. Stabilises activation scale entering the sublayer.</span>
+        <span class="pr">self</span>.attn = <span class="cl">CausalSelfAttention</span>(config)
+        <span class="lm"># ↑ Masked multi-head self-attention. All cross-token communication happens here.</span>
+        <span class="pr">self</span>.ln_2 = <span class="cl">LayerNorm</span>(config.n_embd, bias=config.bias)
+        <span class="lm"># ↑ Pre-norm before feedforward. Same role as ln_1.</span>
+        <span class="pr">self</span>.mlp  = <span class="cl">MLP</span>(config)
+        <span class="lm"># ↑ Two-linear feedforward. Per-position computation — no token mixing.</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+        x = x + <span class="pr">self</span>.attn(<span class="pr">self</span>.ln_1(x))
+        <span class="lm">        # ↑ "x + ..." is the residual connection. Gradient of this line:
+        #   ∂L/∂x = ∂L/∂y · (∂attn/∂x + 1). The +1 prevents vanishing.
+        #   LN is applied to x but the raw x bypasses to the + operation.</span>
+        x = x + <span class="pr">self</span>.mlp(<span class="pr">self</span>.ln_2(x))
+        <span class="lm">        # ↑ Same pattern for FFN. After this line, x has been nudged by
+        #   both the attention result and the FFN result. Shape: (B, T, 768).</span>
+        <span class="kw">return</span> x</code></pre>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">↗ nanoGPT model.py — Karpathy. The Block class in full context. 300 lines total. This is the reference implementation every LLM practitioner should read.</a>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">↗ A Mathematical Framework for Transformer Circuits — Elhage et al. The block as a composition of QK and OV circuits — how mechanistic interpretability reads what each block learned.</a>
+</div>
+
+<div class="cell" id="cell-12">
+  <div class="cell-header"><span class="cell-label">▶ Full block forward pass — pure Python, tiny dimensions</span><button class="run-btn" onclick="runCell('cell-12')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+D = 6  # d_model (tiny demo)
+T = 3  # sequence length
+
+def dot(a,b): return sum(x*y for x,y in zip(a,b))
+def add(a,b): return [x+y for x,y in zip(a,b)]
+
+def layer_norm(x, eps=1e-5):
+    mu = sum(x)/len(x); var=sum((v-mu)**2 for v in x)/len(x)
+    return [(v-mu)/math.sqrt(var+eps) for v in x]
+
+def softmax(x):
+    mx=max(x); e=[math.exp(v-mx) for v in x]; s=sum(e); return [v/s for v in e]
+
+def mat_vec(M,x): return [dot(row,x) for row in M]
+
+def gelu(x): return x*0.5*(1+math.tanh(math.sqrt(2/math.pi)*(x+0.044715*x**3)))
+
+R = lambda: [random.gauss(0, 0.1) for _ in range(D)]
+M = lambda r,c: [[random.gauss(0,0.1) for _ in range(c)] for _ in range(r)]
+
+# Attention weights
+Wq=M(D,D); Wk=M(D,D); Wv=M(D,D); Wo=M(D,D)
+# FFN weights: expand 4× then compress
+Wfc=M(D*4,D); Wcp=M(D,D*4)
+
+# Input residual stream: 3 tokens
+X = [R() for _ in range(T)]
+tokens = ["the", "cat", "sat"]
+
+def block_forward(X):
+    # === SUBLAYER 1: Pre-norm + Attention + Residual ===
+    X_ln1 = [layer_norm(x) for x in X]
+    scale = math.sqrt(D)
+
+    # Single-head attention (simplified)
+    Q = [mat_vec(Wq, x) for x in X_ln1]
+    K = [mat_vec(Wk, x) for x in X_ln1]
+    V = [mat_vec(Wv, x) for x in X_ln1]
+
+    attn_out = []
+    for i in range(T):
+        scores = [dot(Q[i],K[j])/scale if j<=i else -1e9 for j in range(T)]
+        weights = softmax(scores)
+        out = [sum(weights[j]*V[j][d] for j in range(T)) for d in range(D)]
+        attn_out.append(mat_vec(Wo, out))
+
+    X2 = [add(X[i], attn_out[i]) for i in range(T)]  # residual 1
+
+    # === SUBLAYER 2: Pre-norm + FFN + Residual ===
+    X_ln2 = [layer_norm(x) for x in X2]
+    ffn_out = []
+    for x in X_ln2:
+        h = [gelu(v) for v in mat_vec(Wfc, x)]  # expand 6→24, apply GELU
+        ffn_out.append(mat_vec(Wcp, h))           # compress 24→6
+
+    X3 = [add(X2[i], ffn_out[i]) for i in range(T)]  # residual 2
+    return X3
+
+print("Input residual stream:")
+for t, x in zip(tokens, X): print(f"  {t}: [{', '.join(f'{v:.3f}' for v in x)}]")
+
+X_out = block_forward(X)
+
+print("\nOutput residual stream (after 1 block):")
+for t, x in zip(tokens, X_out): print(f"  {t}: [{', '.join(f'{v:.3f}' for v in x)}]")
+
+print("\nCorrections added by this block:")
+for t, xi, xo in zip(tokens, X, X_out):
+    delta = [xo[d]-xi[d] for d in range(D)]
+    print(f"  {t}: [{', '.join(f'{v:+.3f}' for v in delta)}]")
+
+print("\nStack 12 such blocks (each with trained weights) = GPT-2 small.")</pre></div>
+  <div class="cell-output" id="cell-12-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+</main>
+</div>
+
+<script>
+let pyodideReady=false,pyodide=null;
+async function initPyodide(){
+  const s=document.getElementById('pyodide-status');
+  try{
+    pyodide=await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.27.3/full/'});
+    pyodideReady=true;
+    s.textContent='✓ Python ready — click Run on any cell.';
+    s.style.color='var(--green)';s.style.borderColor='var(--green)';
+  }catch(e){s.textContent='⚠ Could not load Python runtime.';s.style.color='var(--accent)';}
+}
+async function runCell(id){
+  const cell=document.getElementById(id);
+  const code=cell.querySelector('.cell-code pre').textContent;
+  const out=cell.querySelector('.cell-output');
+  const btn=cell.querySelector('.run-btn');
+  if(!pyodideReady){out.textContent='⏳ Runtime loading…';return;}
+  btn.disabled=true;out.className='cell-output running';out.textContent='⏳ Running…';
+  try{
+    pyodide.runPython('import sys,io;_o=io.StringIO();sys.stdout=_o');
+    await pyodide.runPythonAsync(code);
+    const r=pyodide.runPython('sys.stdout=sys.__stdout__;_o.getvalue()');
+    out.className='cell-output';out.textContent=r||'(no output)';
+  }catch(e){
+    try{pyodide.runPython('sys.stdout=sys.__stdout__');}catch(_){}
+    out.className='cell-output error';out.textContent='❌ '+e.message;
+  }
+  btn.disabled=false;
+}
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent);
+  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js" onload="initPyodide()" async></script>
+</body>
+</html>

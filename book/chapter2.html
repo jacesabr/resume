@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 — Working with Text Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f7;--bg-code:#1a1a1a;--bg-card:#fff;--bg-aside:#f3f1ee;--bg-deep:#f7f4ef;
+  --text:#1a1a1a;--text-secondary:#6b6560;--text-code:#e8e4de;
+  --accent:#c96442;--accent-light:rgba(201,100,66,.08);
+  --blue:#3b6bb5;--blue-light:rgba(59,107,181,.07);
+  --green:#4a8c6f;--green-light:rgba(74,140,111,.07);
+  --purple:#7c5cbf;--purple-light:rgba(124,92,191,.07);
+  --amber:#b87c2a;--amber-light:rgba(184,124,42,.07);
+  --border:#e8e4de;--border-light:#f0ece6;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',monospace;
+  --max-w:740px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased;}
+::selection{background:var(--accent);color:#fff;}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+.topnav{position:sticky;top:0;z-index:100;background:rgba(250,249,247,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light);padding:14px 0;}
+.topnav .container{display:flex;align-items:center;justify-content:space-between;}
+.topnav-title{font-family:var(--font-serif);font-size:15px;}
+.topnav-links{display:flex;gap:16px;}
+.topnav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;transition:color .2s;}
+.topnav-links a:hover{color:var(--accent);}
+.chapter-header{padding:80px 0 56px;border-bottom:1px solid var(--border);}
+.chapter-label{font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.chapter-header h1{font-family:var(--font-serif);font-size:clamp(30px,5vw,46px);font-weight:400;line-height:1.18;margin-bottom:18px;}
+.chapter-header>p{font-size:17px;color:var(--text-secondary);max-width:580px;line-height:1.72;}
+.chapter-meta{display:flex;gap:24px;margin-top:24px;font-size:13px;color:var(--text-secondary);flex-wrap:wrap;}
+.toc{padding:32px 0;border-bottom:1px solid var(--border);}
+.toc h3{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:2px;}
+.toc-list a{display:flex;gap:10px;text-decoration:none;color:var(--text);padding:6px 8px;font-size:13.5px;transition:all .2s;border-radius:5px;}
+.toc-list a:hover{color:var(--accent);background:var(--accent-light);}
+.toc-num{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);min-width:26px;}
+.section{padding:60px 0 0;}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.5px;margin-bottom:8px;}
+.section h2{font-family:var(--font-serif);font-size:30px;font-weight:400;line-height:1.28;margin-bottom:22px;}
+.section p{margin-bottom:18px;max-width:680px;}
+.section-divider{border:none;border-top:1px solid var(--border-light);margin:64px 0 0;}
+.callout{background:var(--bg-aside);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 22px;margin:22px 0;font-size:15px;line-height:1.72;}
+.callout strong{color:var(--accent);}
+.callout.blue{border-left-color:var(--blue);}.callout.blue strong{color:var(--blue);}
+.callout.green{border-left-color:var(--green);}.callout.green strong{color:var(--green);}
+.callout.purple{border-left-color:var(--purple);}.callout.purple strong{color:var(--purple);}
+.callout.amber{border-left-color:var(--amber);}.callout.amber strong{color:var(--amber);}
+.deepdive{background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:14px 20px;margin:22px 0;}
+.deepdive-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px;}
+.deepdive a{display:block;font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;}
+.deepdive a:hover{text-decoration:underline;}
+.formula{background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:13.5px;padding:18px 24px;border-radius:8px;margin:20px 0;text-align:center;}
+.formula .eq-label{font-size:10px;color:#666;display:block;margin-bottom:6px;text-align:left;letter-spacing:.5px;}
+.formula .eq-note{font-size:11px;color:#888;display:block;margin-top:6px;}
+.code-block{background:var(--bg-code);border-radius:10px;margin:22px 0;overflow:hidden;}
+.code-header{display:flex;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.code-filename{font-family:var(--font-mono);font-size:11px;color:#888;}
+.code-copy{background:none;border:1px solid #444;color:#888;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;}
+.code-copy:hover{border-color:#888;color:#ddd;}
+.code-block pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.72;color:var(--text-code);padding:20px 24px;overflow-x:auto;}
+.kw{color:#cf8e6d;font-weight:500;}.fn{color:#87ceeb;}.cm{color:#6a9955;font-style:italic;}
+.lm{color:#4fc3f7;font-style:italic;}.st{color:#6aab73;}.nu{color:#79b4de;}
+.cl{color:#ffd580;}.pr{color:#9cdcfe;}.bi{color:#dcdcaa;}
+.cell{border:1px solid var(--border);border-radius:10px;margin:26px 0;overflow:hidden;}
+.cell-header{display:flex;justify-content:space-between;padding:10px 18px;background:var(--bg-aside);border-bottom:1px solid var(--border);}
+.cell-label{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.run-btn{background:var(--accent);color:#fff;border:none;padding:5px 16px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;}
+.run-btn:hover{opacity:.85;}.run-btn:disabled{opacity:.5;cursor:default;}
+.cell-code{background:var(--bg-code);padding:18px 22px;}
+.cell-code pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.68;color:var(--text-code);white-space:pre-wrap;}
+.cell-output{padding:14px 18px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#444;background:#fff;border-top:1px solid var(--border);white-space:pre-wrap;min-height:28px;}
+.cell-output.running{color:var(--accent);}.cell-output.error{color:#c0392b;}
+
+/* ── DIAGRAMS ── */
+
+/* Tokenization strategy comparison */
+.tok-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0;}
+.tok-card{border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12.5px;}
+.tok-card h4{font-family:var(--font-mono);font-size:11px;font-weight:700;margin-bottom:8px;}
+.tc-char h4{color:var(--accent);}
+.tc-word h4{color:var(--blue);}
+.tc-sub h4{color:var(--green);}
+.tok-tokens{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0;}
+.tt{border-radius:3px;padding:2px 6px;font-family:var(--font-mono);font-size:10px;}
+.tt-c{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);}
+.tt-w{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.tt-s{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.tok-stat{font-size:11px;color:var(--text-secondary);margin-top:6px;line-height:1.5;}
+
+/* BPE merge step visualizer */
+.bpe-steps{margin:22px 0;}
+.bpe-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;padding:11px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);}
+.bpe-iter{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);min-width:52px;padding-top:2px;}
+.bpe-content{flex:1;}
+.bpe-action{font-size:12.5px;margin-bottom:6px;}
+.bpe-tokens{display:flex;flex-wrap:wrap;gap:3px;}
+.bt{border-radius:3px;padding:2px 8px;font-family:var(--font-mono);font-size:11px;border:1px solid var(--border);background:var(--bg-aside);}
+.bt-new{background:var(--green-light);border-color:var(--green);color:var(--green);font-weight:700;}
+.bt-sep{color:var(--text-secondary);font-size:9px;padding:0 3px;align-self:center;}
+
+/* Tokenization pipeline */
+.pipe-wrap{display:flex;align-items:center;gap:5px;margin:22px 0;flex-wrap:wrap;}
+.pipe-step{border-radius:7px;padding:10px 14px;font-size:12px;text-align:center;flex:1;min-width:88px;}
+.ps-raw{background:var(--bg-code);color:var(--text-code);}
+.ps-clean{background:var(--amber-light);border:1px solid var(--amber);color:var(--amber);}
+.ps-tok{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.ps-ids{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple);}
+.ps-emb{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.pipe-arr{color:var(--text-secondary);font-size:16px;flex-shrink:0;}
+
+/* Data pipeline / sliding window */
+.slide-wrap{margin:22px 0;}
+.slide-title{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:1px;margin-bottom:8px;}
+.slide-row{display:flex;gap:3px;margin-bottom:6px;align-items:center;}
+.slide-lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);width:30px;}
+.stok{border-radius:3px;padding:4px 7px;font-family:var(--font-mono);font-size:11px;border:1px solid var(--border);background:var(--bg-card);}
+.stok.w1{background:var(--blue-light);border-color:var(--blue);color:var(--blue);}
+.stok.w2{background:var(--green-light);border-color:var(--green);color:var(--green);}
+.stok.w3{background:var(--amber-light);border-color:var(--amber);color:var(--amber);}
+.stok.wd{background:var(--bg-card);border-color:var(--border);color:var(--text-secondary);}
+
+/* Batch grid */
+.batch-wrap{margin:22px 0;}
+.batch-title{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:1px;margin-bottom:8px;}
+.batch-row{display:flex;gap:2px;margin-bottom:2px;align-items:center;}
+.batch-lbl{font-family:var(--font-mono);font-size:9px;color:var(--text-secondary);width:26px;}
+.bc{width:24px;height:22px;border-radius:2px;background:var(--blue-light);border:1px solid var(--blue);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;color:var(--blue);}
+.bc.y{background:var(--green-light);border-color:var(--green);color:var(--green);}
+.bc.h{background:none;border:none;color:var(--text-secondary);font-size:9px;}
+
+/* Embedding lookup */
+.emb-wrap{display:flex;gap:16px;margin:22px 0;align-items:center;flex-wrap:wrap;font-size:12px;}
+.emb-ids{display:flex;flex-direction:column;gap:4px;}
+.eid{border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-family:var(--font-mono);font-size:12px;background:var(--bg-aside);text-align:center;}
+.emb-arr{font-size:22px;color:var(--text-secondary);}
+.emb-matrix{border:1px solid var(--border);border-radius:6px;overflow:hidden;font-family:var(--font-mono);font-size:10px;}
+.em-header{background:var(--bg-aside);padding:5px 10px;color:var(--text-secondary);}
+.em-row{display:flex;align-items:center;border-top:1px solid var(--border-light);}
+.em-row.hi{background:var(--amber-light);}
+.em-id{width:40px;padding:4px 8px;color:var(--text-secondary);border-right:1px solid var(--border-light);}
+.em-row.hi .em-id{color:var(--amber);font-weight:700;}
+.em-dots{display:flex;gap:2px;padding:4px 8px;}
+.ed{width:9px;height:16px;border-radius:2px;}
+.emb-out{display:flex;flex-direction:column;gap:4px;}
+.eout{border:1px solid var(--green);border-radius:4px;padding:5px 10px;font-family:var(--font-mono);font-size:10px;background:var(--green-light);color:var(--green);}
+
+/* PE comparison */
+.pe-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
+.pe-card{border:1px solid var(--border);border-radius:8px;padding:14px;}
+.pe-card h4{font-size:12px;font-weight:700;margin-bottom:6px;font-family:var(--font-mono);}
+.pc-sin{border-top:3px solid var(--blue);}.pc-sin h4{color:var(--blue);}
+.pc-learn{border-top:3px solid var(--amber);}.pc-learn h4{color:var(--amber);}
+.pc-rope{border-top:3px solid var(--green);}.pc-rope h4{color:var(--green);}
+.pc-alibi{border-top:3px solid var(--purple);}.pc-alibi h4{color:var(--purple);}
+.pe-card p{font-size:12px;color:var(--text-secondary);line-height:1.55;margin-bottom:4px;}
+.pe-used{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-top:4px;}
+
+/* Corpus sources */
+.corpus-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0;}
+.corpus-card{border:1px solid var(--border);border-radius:7px;padding:11px 14px;}
+.corpus-card h4{font-size:12px;font-weight:700;margin-bottom:4px;}
+.corpus-card p{font-size:12px;color:var(--text-secondary);line-height:1.5;}
+.corpus-size{font-family:var(--font-mono);font-size:11px;color:var(--accent);margin-top:4px;}
+
+/* Special tokens */
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0;}
+.sp-card{border:1px solid var(--border);border-radius:7px;padding:11px 14px;}
+.sp-tok{font-family:var(--font-mono);font-size:12px;font-weight:700;margin-bottom:4px;}
+.sp-card p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-top:4px;}
+.sp-eot{border-left:3px solid var(--accent);}
+.sp-cls{border-left:3px solid var(--blue);}
+.sp-pad{border-left:3px solid var(--purple);}
+.sp-im{border-left:3px solid var(--green);}
+
+/* Summary table */
+.sum-table{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;}
+.sum-table th{background:var(--bg-aside);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;}
+.sum-table td{padding:9px 14px;border-bottom:1px solid var(--border-light);vertical-align:top;}
+.sum-table tr:hover td{background:var(--accent-light);}
+.sk{font-family:var(--font-mono);font-size:12px;color:var(--accent);}
+
+/* Chapter nav */
+.ch-nav{display:flex;justify-content:space-between;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:20px;}
+.ch-nav a{text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:3px;}
+.ch-nav a:hover{color:var(--accent);}
+.cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.cnt{font-size:15px;font-weight:500;}
+
+#pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container">
+    <span class="topnav-title">Practical LLMs</span>
+    <div class="topnav-links">
+      <a href="chapter1.html">← Ch 1</a>
+      <a href="index.html">Index</a>
+      <a href="chapter3.html">Ch 3 →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+<header class="chapter-header">
+  <div class="chapter-label">Chapter 2</div>
+  <h1>Working with Text Data</h1>
+  <p>Before a model can learn anything, raw text must become numbers. This chapter traces every step: why subword tokenization won, how BPE works algorithmically, how a billion-token corpus gets turned into training batches, and how token IDs finally become the floating-point vectors that enter the transformer.</p>
+  <div class="chapter-meta">
+    <span>📐 12 sections</span>
+    <span>⚙️ 12 runnable cells</span>
+    <span>🎨 9 CSS diagrams</span>
+    <span>🔤 BPE built from scratch</span>
+    <span>📚 Sennrich + Karpathy + Weng + Raschka</span>
+  </div>
+</header>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <div class="toc-grid">
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">2.1</span>The Tokenization Problem</a></li>
+      <li><a href="#s2"><span class="toc-num">2.2</span>Byte Pair Encoding</a></li>
+      <li><a href="#s3"><span class="toc-num">2.3</span>Building BPE from Scratch</a></li>
+      <li><a href="#s4"><span class="toc-num">2.4</span>tiktoken in Practice</a></li>
+      <li><a href="#s5"><span class="toc-num">2.5</span>Special Tokens</a></li>
+      <li><a href="#s6"><span class="toc-num">2.6</span>SentencePiece and Alternatives</a></li>
+    </ul>
+    <ul class="toc-list">
+      <li><a href="#s7"><span class="toc-num">2.7</span>From Raw Text to Clean Corpus</a></li>
+      <li><a href="#s8"><span class="toc-num">2.8</span>Sliding-Window Sampling</a></li>
+      <li><a href="#s9"><span class="toc-num">2.9</span>The DataLoader Pattern</a></li>
+      <li><a href="#s10"><span class="toc-num">2.10</span>Token Embeddings</a></li>
+      <li><a href="#s11"><span class="toc-num">2.11</span>Positional Encoding</a></li>
+      <li><a href="#s12"><span class="toc-num">2.12</span>The Full Input Pipeline</a></li>
+    </ul>
+  </div>
+</div>
+
+<div id="pyodide-status">⏳ Loading Python runtime — runnable cells will be ready in a moment.</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.1  The Tokenization Problem                          -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s1">
+  <div class="section-label">2.1</div>
+  <h2>The Tokenization Problem</h2>
+
+  <p>Neural networks operate on vectors of real numbers. Text is a sequence of Unicode characters. Bridging that gap is tokenization — the choice of how to divide text into discrete units that can each be assigned a number. This decision is not cosmetic. It determines the effective context length, the model's ability to handle rare words, the difficulty of learning morphology, and even the security of the deployed system.</p>
+
+  <p>Three strategies have been tried seriously. <strong>Character-level</strong> tokenization uses a fixed alphabet of ~256 byte values. Any text can be represented, OOV (out-of-vocabulary) is impossible, but sequences become 4× longer than word-level — making it much harder for attention mechanisms to connect distant ideas. <strong>Word-level</strong> tokenization splits on whitespace and punctuation, using a fixed vocabulary of ~170,000 English words. Compact and interpretable, but it fails on unseen compounds, multilingual text, code, emoji, and morphologically rich languages (Finnish can form millions of distinct word-forms from a handful of roots). <strong>Subword tokenization</strong> is the practical sweet spot: common words stay whole, rare words decompose into recognizable pieces, and the vocabulary stays fixed and manageable. Every modern LLM uses a subword approach.</p>
+
+  <p>The same phrase tokenized three ways shows the stakes. "unbelievably" becomes 12 character tokens, 1 word token (which fails on unseen compounds like "unbelievably-fast"), or 3 subword tokens: ["un", "believ", "ably"] — pieces that transfer their meaning to hundreds of other words the model has seen. The concrete tradeoff: GPT-2's tokenizer encodes English prose at approximately 1.3 tokens per word. Chinese prose averages 1.5 tokens per character. Python code averages 0.8 tokens per character. The model never sees words — only tokens.</p>
+
+  <div class="tok-compare">
+    <div class="tok-card tc-char">
+      <h4>Character-level</h4>
+      <div class="tok-tokens">
+        <span class="tt tt-c">u</span><span class="tt tt-c">n</span><span class="tt tt-c">b</span><span class="tt tt-c">e</span><span class="tt tt-c">l</span><span class="tt tt-c">i</span><span class="tt tt-c">e</span><span class="tt tt-c">v</span><span class="tt tt-c">a</span><span class="tt tt-c">b</span><span class="tt tt-c">l</span><span class="tt tt-c">y</span>
+      </div>
+      <div class="tok-stat">Vocab: 256 bytes · 12 tokens<br>✗ Sequences 4× too long</div>
+    </div>
+    <div class="tok-card tc-word">
+      <h4>Word-level</h4>
+      <div class="tok-tokens">
+        <span class="tt tt-w">unbelievably</span>
+      </div>
+      <div class="tok-stat">Vocab: ~170k words · 1 token<br>✗ Fails on unseen words</div>
+    </div>
+    <div class="tok-card tc-sub">
+      <h4>Subword (BPE)</h4>
+      <div class="tok-tokens">
+        <span class="tt tt-s">un</span><span class="tt tt-s">believ</span><span class="tt tt-s">ably</span>
+      </div>
+      <div class="tok-stat">Vocab: 50,257 · 3 tokens<br>✓ Handles any input</div>
+    </div>
+  </div>
+
+  <div class="callout"><strong>Key insight:</strong> Tokenization is irreversible. A model trained with one tokenizer cannot use another without full retraining. This is why the tokenizer is considered part of the model — it ships with it, is versioned with it, and its design choices echo through every downstream capability.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://huggingface.co/learn/nlp-course/chapter6/1" target="_blank">🔗 HuggingFace NLP Course Ch 6 — Tokenizers from scratch (the definitive practical walkthrough)</a>
+    <a href="https://arxiv.org/abs/1508.07909" target="_blank">🔗 Sennrich et al. 2016 — Neural Machine Translation of Rare Words with Subword Units (the BPE paper)</a>
+    <a href="https://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank">🔗 Karpathy 2015 — Unreasonable Effectiveness of RNNs (character-level models and why they work/fail)</a>
+  </div>
+
+  <div class="cell" id="cell-1">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 1 — Compare tokenization strategies on real text</span>
+      <button class="run-btn" onclick="runCell('cell-1')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import re
+
+def char_tokens(text):
+    return list(text.encode('utf-8'))       # byte-level character tokenization
+
+def word_tokens(text):
+    return re.findall(r"[a-zA-Z0-9']+|[^\w\s]", text)  # simple word split
+
+def bpe_approx(text):
+    # approximate subword split using common English affixes
+    affixes = ["un","re","pre","dis","ing","tion","ness","ment","ful","less","ably","ed","er","est","ly"]
+    tokens = []
+    for word in text.split():
+        split = False
+        for af in affixes:
+            if word.lower().startswith(af) and len(word) > len(af) + 2:
+                tokens += [word[:len(af)], word[len(af):]]
+                split = True; break
+            if word.lower().endswith(af) and len(word) > len(af) + 2:
+                tokens += [word[:-len(af)], word[-len(af):]]
+                split = True; break
+        if not split:
+            tokens.append(word)
+    return tokens
+
+texts = [
+    "The quick brown fox jumps over the lazy dog.",
+    "unbelievably sophisticated tokenization",
+    "GPT-4 encodes 1.3 tokens per English word on average.",
+    "Ärger mit Ärgernis",   # German — lots of morphology
+]
+
+print(f"{'Text':<44} {'Bytes':>6} {'Words':>6} {'BPE≈':>6}")
+print("─" * 64)
+for t in texts:
+    c = len(char_tokens(t))
+    w = len(word_tokens(t))
+    b = len(bpe_approx(t))
+    print(f"{t[:42]:<44} {c:>6} {w:>6} {b:>6}")
+
+print()
+print("GPT-2 actual vocab size: 50,257 tokens")
+print("GPT-4 actual vocab size: 100,277 tokens (cl100k_base)")
+print("Character vocabulary:    256 byte values")
+print("English word vocabulary: ~170,000 unique words")
+print()
+print("Try: add your own sentence and observe the token counts.")
+</pre></div>
+    <div class="cell-output" id="cell-1-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.2  Byte Pair Encoding                                -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s2">
+  <div class="section-label">2.2</div>
+  <h2>Byte Pair Encoding</h2>
+
+  <p>BPE was invented in 1994 as a data compression algorithm by Philip Gage. The observation: the most redundant information in a file is adjacent byte pairs that repeat — compress them, and file size shrinks. Sennrich, Haddow, and Birch (2016) applied this idea to tokenization for neural machine translation and transformed the field. Every major LLM released since 2019 uses some variant of BPE.</p>
+
+  <p>The training algorithm is elegant in its simplicity. Start with a corpus where every word is pre-split into individual characters (with a special end-of-word marker, <code>&lt;/w&gt;</code>, to preserve word boundaries). Count every adjacent pair across the entire corpus. Find the most frequent pair. Merge every occurrence of that pair into a single new token. Repeat for <em>k</em> merge operations. The result is an ordered list of <em>k</em> merge rules plus the final vocabulary.</p>
+
+  <p>GPT-2 made one critical refinement: <strong>byte-level BPE</strong>. Instead of starting with Unicode characters (some of which may never appear in the training corpus), start with all 256 raw byte values. This guarantees the tokenizer can encode <em>any</em> byte sequence — including emoji, arbitrary Unicode, binary data, and broken encodings — without ever needing an unknown-token fallback. GPT-2's vocabulary: 256 base bytes + 50,000 merges + 1 special token (<code>&lt;|endoftext|&gt;</code>) = <strong>50,257 tokens</strong>.</p>
+
+  <div class="bpe-steps">
+    <div class="bpe-step">
+      <div class="bpe-iter">Start</div>
+      <div class="bpe-content">
+        <div class="bpe-action">Corpus: "low low low did did did wider". Each character is its own token.</div>
+        <div class="bpe-tokens">
+          <span class="bt">l</span><span class="bt">o</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt">l</span><span class="bt">o</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt">l</span><span class="bt">o</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">w</span><span class="bt">i</span><span class="bt">d</span><span class="bt">e</span><span class="bt">r</span>
+        </div>
+      </div>
+    </div>
+    <div class="bpe-step">
+      <div class="bpe-iter">Merge 1</div>
+      <div class="bpe-content">
+        <div class="bpe-action">Most frequent pair: <strong>(l, o)</strong> — appears 3×. Create token <strong>lo</strong>.</div>
+        <div class="bpe-tokens">
+          <span class="bt bt-new">lo</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">lo</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">lo</span><span class="bt">w</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">w</span><span class="bt">i</span><span class="bt">d</span><span class="bt">e</span><span class="bt">r</span>
+        </div>
+      </div>
+    </div>
+    <div class="bpe-step">
+      <div class="bpe-iter">Merge 2</div>
+      <div class="bpe-content">
+        <div class="bpe-action">Most frequent pair: <strong>(lo, w)</strong> — appears 3×. Create token <strong>low</strong>.</div>
+        <div class="bpe-tokens">
+          <span class="bt bt-new">low</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">low</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">low</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">d</span><span class="bt">i</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">w</span><span class="bt">i</span><span class="bt bt-new">d</span><span class="bt">e</span><span class="bt">r</span>
+        </div>
+      </div>
+    </div>
+    <div class="bpe-step">
+      <div class="bpe-iter">Merge 3</div>
+      <div class="bpe-content">
+        <div class="bpe-action">Most frequent pair: <strong>(d, i)</strong> — appears 2×. Create token <strong>di</strong>.</div>
+        <div class="bpe-tokens">
+          <span class="bt">low</span><span class="bt-sep">|</span>
+          <span class="bt">low</span><span class="bt-sep">|</span>
+          <span class="bt">low</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">di</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt bt-new">di</span><span class="bt">d</span><span class="bt-sep">|</span>
+          <span class="bt">w</span><span class="bt">i</span><span class="bt">d</span><span class="bt">e</span><span class="bt">r</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula">
+    <span class="eq-label">VOCABULARY SIZE</span>
+    |V| = |base_chars| + num_merges + |special_tokens|
+    <span class="eq-note">GPT-2: 256 bytes + 50,000 merges + 1 special = 50,257 &nbsp;·&nbsp; GPT-4: 100,000 merges → 100,277</span>
+  </div>
+
+  <div class="callout blue"><strong>Why byte-level?</strong> Unicode has 1.1 million code points. A corpus-level character vocabulary omits any character not seen in training — fail on Japanese if trained only on English. Byte-level BPE starts from the 256 byte alphabet (which covers every possible Unicode character when UTF-8 encoded) and merges upward. Zero OOV problems by construction.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://arxiv.org/abs/1508.07909" target="_blank">🔗 Sennrich et al. 2016 — Neural Machine Translation of Rare Words (BPE applied to NLP)</a>
+    <a href="https://github.com/karpathy/minbpe" target="_blank">🔗 Karpathy — minbpe: a clean, minimal BPE implementation (~200 lines, the best learning resource)</a>
+    <a href="https://arxiv.org/abs/1901.08860" target="_blank">🔗 Radford et al. 2019 — GPT-2 paper (Appendix A: byte-level BPE, 50,257 vocab)</a>
+  </div>
+
+  <div class="cell" id="cell-2">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 2 — Trace BPE merge steps on a toy corpus</span>
+      <button class="run-btn" onclick="runCell('cell-2')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+from collections import Counter
+
+def get_stats(vocab):
+    """Count every adjacent pair across all word entries."""
+    pairs = Counter()
+    for word, freq in vocab.items():
+        syms = word.split()
+        for i in range(len(syms) - 1):
+            pairs[(syms[i], syms[i+1])] += freq
+    return pairs
+
+def merge_vocab(pair, vocab):
+    """Replace every occurrence of the pair with a merged token."""
+    src = ' '.join(pair)         # 'e s' as the string key to replace
+    dst = ''.join(pair)          # 'es' as the merged token
+    return {w.replace(src, dst): f for w, f in vocab.items()}
+
+# Classic Sennrich 2016 example corpus (word → frequency)
+vocab = {
+    'l o w </w>': 5,
+    'l o w e r </w>': 2,
+    'n e w e s t </w>': 6,
+    'w i d e s t </w>': 3,
+}
+
+print("Initial vocabulary (word: frequency):")
+for w, f in vocab.items():
+    print(f"  {f}×  {w}")
+
+NUM_MERGES = 10
+print(f"\nApplying {NUM_MERGES} BPE merges:\n")
+
+all_tokens = set()
+for i in range(NUM_MERGES):
+    pairs = get_stats(vocab)
+    if not pairs: break
+    best = max(pairs, key=pairs.get)
+    vocab = merge_vocab(best, vocab)
+    merged = ''.join(best)
+    all_tokens.add(merged)
+    print(f"  Merge {i+1:2d}: ({best[0]!r} + {best[1]!r}) → {merged!r:12}  count={pairs[best]}")
+
+print("\nFinal token sequences:")
+for w, f in vocab.items():
+    print(f"  {f}×  [{', '.join(repr(t) for t in w.split())}]")
+
+# collect all learned tokens
+all_toks = set()
+for w in vocab:
+    all_toks.update(w.split())
+print(f"\nVocabulary: {sorted(all_toks)}")
+print(f"Size grew from 8 chars → {len(all_toks)} tokens after {NUM_MERGES} merges.")
+print("Try: change NUM_MERGES or the vocab frequencies.")
+</pre></div>
+    <div class="cell-output" id="cell-2-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.3  Building BPE from Scratch                         -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s3">
+  <div class="section-label">2.3</div>
+  <h2>Building BPE from Scratch</h2>
+
+  <p>The toy example above is the core algorithm. A production BPE tokenizer adds two things: a regex pre-tokenizer that splits text into word-like units before BPE runs (so the tokenizer never merges characters across word or punctuation boundaries), and a fast encoder that applies the saved merge list to any new string at inference time.</p>
+
+  <p>The pre-tokenization regex is often overlooked but critically important. GPT-2 uses a regex that correctly handles English contractions ("don't" → ["don", "'t"]), attaches a leading space to most words (so "cat" and " cat" can become different tokens), and separates numbers and punctuation into their own tokens. Without pre-tokenization, BPE might merge letters across a space — turning "lower" and " older" into "lower older" and merging "r " as a token, which would be confusing and wasteful.</p>
+
+  <p>Here is the complete working byte-level BPE — the same logic Karpathy uses in minbpe. <code>train_bpe</code> takes a string and vocabulary size; <code>encode</code> and <code>decode</code> round-trip perfectly:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">bpe.py</span>
+      <button class="code-copy" onclick="copyCode(this)">Copy</button>
+    </div>
+<pre><code><span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+<span class="kw">def</span> <span class="fn">get_stats</span>(ids):
+    <span class="cm"># count every consecutive pair in the flat token list</span>
+    <span class="kw">return</span> <span class="cl">Counter</span>(<span class="bi">zip</span>(ids, ids[<span class="nu">1</span>:]))
+    <span class="lm"># ↑ zip(ids, ids[1:]) pairs each token with its right neighbour</span>
+    <span class="lm">#   e.g. [72, 101, 108] → {(72,101):1, (101,108):1}</span>
+
+<span class="kw">def</span> <span class="fn">merge</span>(ids, pair, new_id):
+    <span class="cm"># replace every occurrence of pair with the merged token new_id</span>
+    out, i = [], <span class="nu">0</span>
+    <span class="kw">while</span> i &lt; <span class="bi">len</span>(ids):
+        <span class="kw">if</span> (i + <span class="nu">1</span> &lt; <span class="bi">len</span>(ids) <span class="kw">and</span>
+                ids[i] == pair[<span class="nu">0</span>] <span class="kw">and</span> ids[i+<span class="nu">1</span>] == pair[<span class="nu">1</span>]):
+            out.<span class="fn">append</span>(new_id)
+            <span class="lm"># ↑ found the pair: emit the merged token, skip both</span>
+            i += <span class="nu">2</span>
+        <span class="kw">else</span>:
+            out.<span class="fn">append</span>(ids[i]); i += <span class="nu">1</span>
+    <span class="kw">return</span> out
+
+<span class="kw">def</span> <span class="fn">train_bpe</span>(text, vocab_size=<span class="nu">300</span>):
+    <span class="cm"># encode text as raw bytes, then run BPE for (vocab_size - 256) merges</span>
+    ids = <span class="bi">list</span>(text.<span class="fn">encode</span>(<span class="st">'utf-8'</span>))
+    <span class="lm"># ↑ byte-level: every byte is a valid initial token (IDs 0–255)</span>
+    vocab = {i: <span class="bi">bytes</span>([i]) <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">256</span>)}
+    <span class="lm"># ↑ initial vocab: byte 65 = b'A', byte 32 = b' ', etc.</span>
+    merges = {}   <span class="cm"># (pair) → new_token_id, in training order</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(vocab_size - <span class="nu">256</span>):
+        stats = <span class="fn">get_stats</span>(ids)
+        <span class="kw">if</span> <span class="kw">not</span> stats: <span class="kw">break</span>
+        best = <span class="fn">max</span>(stats, key=stats.<span class="fn">get</span>)
+        <span class="lm"># ↑ greedy: always merge the most frequent pair first</span>
+        new_id = <span class="nu">256</span> + i
+        <span class="lm"># ↑ new tokens are assigned IDs starting at 256</span>
+        ids = <span class="fn">merge</span>(ids, best, new_id)
+        merges[best] = new_id
+        vocab[new_id] = vocab[best[<span class="nu">0</span>]] + vocab[best[<span class="nu">1</span>]]
+        <span class="lm"># ↑ new token's bytes = left bytes + right bytes concatenated</span>
+
+    <span class="kw">return</span> merges, vocab   <span class="cm"># save these two objects; they ARE the tokenizer</span>
+
+<span class="kw">def</span> <span class="fn">encode</span>(text, merges):
+    <span class="cm"># tokenize new text by applying merge rules in training order</span>
+    ids = <span class="bi">list</span>(text.<span class="fn">encode</span>(<span class="st">'utf-8'</span>))
+    <span class="kw">for</span> pair, new_id <span class="kw">in</span> merges.<span class="fn">items</span>():
+        ids = <span class="fn">merge</span>(ids, pair, new_id)
+        <span class="lm"># ↑ MUST apply in same order as training — order matters!</span>
+    <span class="kw">return</span> ids
+
+<span class="kw">def</span> <span class="fn">decode</span>(ids, vocab):
+    <span class="cm"># convert token IDs back to text via the vocab byte map</span>
+    raw = <span class="bi">bytes</span>().<span class="fn">join</span>(vocab[i] <span class="kw">for</span> i <span class="kw">in</span> ids)
+    <span class="kw">return</span> raw.<span class="fn">decode</span>(<span class="st">'utf-8'</span>, errors=<span class="st">'replace'</span>)
+</code></pre>
+  </div>
+
+  <div class="callout green"><strong>The merge table is the tokenizer.</strong> Two objects are all you need: the ordered list of merges (applied in sequence during encoding) and the vocab map (ID → byte sequence, used during decoding). No neural network parameters. Encoding "hello world" is O(k·n) where k = number of merges and n = number of tokens.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://github.com/karpathy/minbpe" target="_blank">🔗 Karpathy — minbpe: full BPE tokenizer in ~200 lines with regex pre-tokenizer</a>
+    <a href="https://github.com/openai/tiktoken/blob/main/tiktoken/_educational.py" target="_blank">🔗 OpenAI — tiktoken/_educational.py: simplified BPE encoder walkthrough</a>
+    <a href="https://huggingface.co/learn/nlp-course/chapter6/5" target="_blank">🔗 HuggingFace NLP Course — BPE tokenization in depth (training + encoding)</a>
+  </div>
+
+  <div class="cell" id="cell-3">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 3 — Train a real BPE tokenizer and round-trip encode/decode</span>
+      <button class="run-btn" onclick="runCell('cell-3')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+from collections import Counter
+
+def get_stats(ids):
+    return Counter(zip(ids, ids[1:]))
+
+def merge(ids, pair, new_id):
+    out, i = [], 0
+    while i < len(ids):
+        if i+1 < len(ids) and ids[i] == pair[0] and ids[i+1] == pair[1]:
+            out.append(new_id); i += 2
+        else:
+            out.append(ids[i]); i += 1
+    return out
+
+def train_bpe(text, vocab_size=300):
+    ids = list(text.encode('utf-8'))
+    vocab = {i: bytes([i]) for i in range(256)}
+    merges = {}
+    for i in range(vocab_size - 256):
+        stats = get_stats(ids)
+        if not stats: break
+        best = max(stats, key=stats.get)
+        new_id = 256 + i
+        ids = merge(ids, best, new_id)
+        merges[best] = new_id
+        vocab[new_id] = vocab[best[0]] + vocab[best[1]]
+    return merges, vocab
+
+def encode(text, merges):
+    ids = list(text.encode('utf-8'))
+    for pair, new_id in merges.items():
+        ids = merge(ids, pair, new_id)
+    return ids
+
+def decode(ids, vocab):
+    return bytes().join(vocab[i] for i in ids).decode('utf-8', errors='replace')
+
+# Train on a sample corpus (repeated to get meaningful pair frequencies)
+corpus = (
+    "The quick brown fox jumps over the lazy dog. "
+    "The dog slept all day in the warm afternoon sun. "
+    "Fox and dog became friends over time. "
+    "Quick brown foxes are rare but beautiful creatures. "
+) * 5
+
+merges, vocab = train_bpe(corpus, vocab_size=320)
+print(f"Corpus: {len(corpus)} bytes → trained {len(merges)} merges → {256 + len(merges)} token vocabulary")
+
+print("\nTop 10 learned tokens (most frequent merges first):")
+for i, (pair, new_id) in enumerate(list(merges.items())[:10]):
+    tok = vocab[new_id]
+    try: readable = tok.decode('utf-8')
+    except: readable = repr(tok)
+    print(f"  {i+1:2d}. {pair[0]:3d}+{pair[1]:3d} → {new_id}: {readable!r}")
+
+# Encode and decode test strings
+tests = ["the quick fox", "jumped", "extraordinary", "lazy dog"]
+print("\nEncode → token IDs → decode (round-trip):")
+for t in tests:
+    ids = encode(t, merges)
+    parts = []
+    for i in ids:
+        try: parts.append(repr(vocab[i].decode('utf-8')))
+        except: parts.append(repr(vocab[i]))
+    back = decode(ids, vocab)
+    ok = "✓" if back == t else "✗"
+    print(f"  {ok} {t!r:22} → {len(ids)} tokens → {parts}")
+
+print("\nAll round-trips verified. Try changing vocab_size (256→400) and observe.")
+</pre></div>
+    <div class="cell-output" id="cell-3-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+</div><!-- /.container -->
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.4  tiktoken in Practice                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s4">
+  <div class="section-label">2.4</div>
+  <h2>tiktoken in Practice</h2>
+
+  <p>tiktoken is the tokenizer OpenAI uses for all GPT-3.5, GPT-4, and Codex models. Built in Rust with a Python wrapper, it encodes at roughly 1 GB/s — 3–6× faster than HuggingFace tokenizers for the same vocabulary, fast enough that tokenization is never the bottleneck in a training or inference pipeline.</p>
+
+  <p>tiktoken ships with three main encoding schemes. <strong>r50k_base</strong> (also called "gpt2") has 50,257 tokens — the original GPT-2 vocabulary. <strong>p50k_base</strong> extends it to 50,281 tokens and adds a small set of additional code-related tokens; used for GPT-3 and Codex. <strong>cl100k_base</strong> is a completely retrained vocabulary with 100,277 tokens, designed for multilingual text and code simultaneously; used for GPT-3.5-turbo, GPT-4, and text-embedding-ada-002. The jump from 50k to 100k tokens means each token encodes roughly 1.7× more information — shorter sequences, lower cost, higher quality for non-English languages.</p>
+
+  <p>The API is minimal. <code>enc.encode(text)</code> returns a list of integer token IDs. <code>enc.decode(ids)</code> converts back to a string. <code>enc.encode_ordinary(text)</code> is the same but never emits special tokens — useful when you want to count tokens without triggering any special-token handling. The most useful utility function for practitioners: <code>len(enc.encode(text))</code> to measure how many tokens a string costs before sending it to the API.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">tiktoken_demo.py</span>
+      <button class="code-copy" onclick="copyCode(this)">Copy</button>
+    </div>
+<pre><code><span class="kw">import</span> tiktoken
+
+enc = tiktoken.<span class="fn">get_encoding</span>(<span class="st">"cl100k_base"</span>)
+<span class="lm"># ↑ load GPT-4's tokenizer (100,277 tokens, best for multilingual)</span>
+
+<span class="cm"># Encoding: string → list of integer token IDs</span>
+ids = enc.<span class="fn">encode</span>(<span class="st">"Hello, world! 🌍"</span>)
+<span class="lm"># ↑ returns something like [9906, 11, 1917, 0, 11410, 234, 228]</span>
+<span class="bi">print</span>(ids)
+
+<span class="cm"># Decoding: list of integer IDs → string</span>
+text = enc.<span class="fn">decode</span>(ids)
+<span class="lm"># ↑ perfect round-trip; decode(encode(x)) == x always</span>
+<span class="bi">print</span>(text)
+
+<span class="cm"># Count tokens (critical for API cost estimation)</span>
+<span class="bi">print</span>(<span class="fn">len</span>(enc.<span class="fn">encode</span>(prompt)))
+<span class="lm"># ↑ GPT-4 charges per token; always count before sending</span>
+
+<span class="cm"># Inspect individual token bytes</span>
+<span class="kw">for</span> token_id <span class="kw">in</span> ids:
+    token_bytes = enc.<span class="fn">decode_single_token_bytes</span>(token_id)
+    <span class="lm"># ↑ each token ID maps to a specific byte sequence</span>
+    <span class="bi">print</span>(<span class="fn">f</span><span class="st">"{token_id:6d} → {token_bytes}"</span>)
+
+<span class="cm"># Count how a model's context window fills up</span>
+context_window = <span class="nu">128_000</span>   <span class="cm"># GPT-4o context length</span>
+<span class="lm"># ↑ GPT-4o can process 128,000 tokens (~96,000 words) at once</span>
+tokens_used = <span class="fn">len</span>(enc.<span class="fn">encode</span>(document))
+<span class="bi">print</span>(<span class="fn">f</span><span class="st">"Used {tokens_used} / {context_window} tokens"</span>)
+</code></pre>
+  </div>
+
+  <div class="callout amber"><strong>Token counting matters.</strong> OpenAI's API charges by token. A typical English sentence uses 10–20 tokens. A 4,000-word essay uses ~5,000 tokens. GPT-4o at $5/1M tokens means a million-word novel costs about $6 to process. Always count before sending; always cache results when possible.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://github.com/openai/tiktoken" target="_blank">🔗 OpenAI — tiktoken GitHub (source code + encoding descriptions)</a>
+    <a href="https://platform.openai.com/tokenizer" target="_blank">🔗 OpenAI — Tokenizer playground (visualize how any text is tokenized interactively)</a>
+    <a href="https://huggingface.co/docs/transformers/tokenizer_summary" target="_blank">🔗 HuggingFace — Tokenizer summary (comparing BPE, WordPiece, Unigram implementations)</a>
+  </div>
+
+  <div class="cell" id="cell-4">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 4 — Simulate tiktoken-style encoding with a trained BPE vocab</span>
+      <button class="run-btn" onclick="runCell('cell-4')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+from collections import Counter
+
+# Reuse BPE from §2.3 — train on a corpus, then measure token efficiency
+def get_stats(ids):
+    return Counter(zip(ids, ids[1:]))
+
+def merge(ids, pair, new_id):
+    out, i = [], 0
+    while i < len(ids):
+        if i+1 < len(ids) and ids[i] == pair[0] and ids[i+1] == pair[1]:
+            out.append(new_id); i += 2
+        else:
+            out.append(ids[i]); i += 1
+    return out
+
+def train_bpe(text, vocab_size=512):
+    ids = list(text.encode('utf-8'))
+    vocab = {i: bytes([i]) for i in range(256)}
+    merges = {}
+    for i in range(vocab_size - 256):
+        stats = get_stats(ids)
+        if not stats: break
+        best = max(stats, key=stats.get)
+        new_id = 256 + i
+        ids = merge(ids, best, new_id)
+        merges[best] = new_id
+        vocab[new_id] = vocab[best[0]] + vocab[best[1]]
+    return merges, vocab
+
+def encode(text, merges):
+    ids = list(text.encode('utf-8'))
+    for pair, new_id in merges.items():
+        ids = merge(ids, pair, new_id)
+    return ids
+
+def decode(ids, vocab):
+    return bytes().join(vocab[i] for i in ids).decode('utf-8', errors='replace')
+
+# Compare token efficiency across vocab sizes (mimicking r50k vs cl100k)
+corpus = ("The quick brown fox jumps over the lazy dog. " * 20 +
+          "Neural networks learn representations of data. " * 20 +
+          "Tokenization is the first step in NLP pipelines. " * 20)
+
+test_text = "The quick brown fox jumps over the lazy dog. Neural tokenization works."
+
+print(f"Test string: {len(test_text.encode())} bytes\n")
+print(f"{'Vocab size':>12} {'# tokens':>10} {'bytes/token':>12} {'compression':>12}")
+print("─" * 48)
+
+for vsize in [256, 300, 350, 400, 450, 512]:
+    merges, vocab = train_bpe(corpus, vocab_size=vsize)
+    ids = encode(test_text, merges)
+    bpt = len(test_text.encode()) / len(ids)
+    ratio = len(ids) / len(test_text.encode())
+    print(f"{vsize:>12} {len(ids):>10} {bpt:>12.2f} {ratio:>12.2f}x")
+
+print()
+print("GPT-2 (r50k_base, 50,257 tokens): ~4 bytes per token for English")
+print("GPT-4 (cl100k_base, 100,277 tokens): ~4.5 bytes per token for English")
+print("More merges → fewer tokens → cheaper API calls → richer per-token context.")
+print("\nTry: change test_text to a non-English string and observe compression.")
+</pre></div>
+    <div class="cell-output" id="cell-4-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.5  Special Tokens                                    -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s5">
+  <div class="section-label">2.5</div>
+  <h2>Special Tokens</h2>
+
+  <p>A tokenizer needs tokens that do not correspond to text — they carry structural meaning: "this is where a document ends", "this is where the user's message starts", "this position should be ignored". These are <strong>special tokens</strong>, and they are added to the vocabulary after BPE training so they are always single tokens, never split.</p>
+
+  <p>GPT-2 uses exactly one special token: <code>&lt;|endoftext|&gt;</code> (ID 50256). During training, every document in the corpus is concatenated to the next with this token in between. This teaches the model that when it sees <code>&lt;|endoftext|&gt;</code>, the current "story" has ended — a fresh context begins. At generation time, placing this token in the prompt creates a clean slate. Because BPE can encode any byte sequence, GPT-2 technically doesn't need an unknown-token — but it does need a document boundary.</p>
+
+  <p>Chat models need more structure. The ChatML format (used by GPT-3.5/4) introduces <code>&lt;|im_start|&gt;</code> and <code>&lt;|im_end|&gt;</code> to delimit turns. LLaMA-3 uses <code>&lt;|begin_of_text|&gt;</code>, <code>&lt;|start_header_id|&gt;</code>, <code>&lt;|end_header_id|&gt;</code>, and <code>&lt;|eot_id|&gt;</code>. BERT-style encoder models use <code>[CLS]</code> (a classification token whose embedding is used as the sequence representation), <code>[SEP]</code> (separator between sentence pairs), <code>[MASK]</code> (replaced tokens during masked language modeling), and <code>[PAD]</code> (padding to equal length).</p>
+
+  <div class="sp-grid">
+    <div class="sp-card sp-eot">
+      <div class="sp-tok">&lt;|endoftext|&gt; — ID 50256</div>
+      <p>GPT-2/GPT-3: document boundary. Separates training documents. At inference: "start fresh" signal. BPE makes it impossible to accidentally generate from its components.</p>
+    </div>
+    <div class="sp-card sp-cls">
+      <div class="sp-tok">[CLS] / [SEP] / [MASK]</div>
+      <p>BERT-family encoders. [CLS] at position 0 — its output vector represents the full sequence for classification. [SEP] separates premise from hypothesis in NLI tasks. [MASK] for MLM training.</p>
+    </div>
+    <div class="sp-card sp-im">
+      <div class="sp-tok">&lt;|im_start|&gt; / &lt;|im_end|&gt;</div>
+      <p>ChatML format (GPT-3.5/4). Each conversation turn is wrapped: &lt;|im_start|&gt;user\nHello&lt;|im_end|&gt;. The model is trained to predict &lt;|im_end|&gt; as its stopping condition.</p>
+    </div>
+    <div class="sp-card sp-pad">
+      <div class="sp-tok">&lt;|pad|&gt; / [PAD]</div>
+      <p>Padding token: fills shorter sequences in a batch to equal length. Masked out in the loss function — model is not penalized for what it "predicts" at padding positions. GPT-2 uses EOT as pad.</p>
+    </div>
+  </div>
+
+  <div class="callout purple"><strong>Prompt injection via special tokens.</strong> If a user can inject <code>&lt;|im_end|&gt;</code> into their input, they can trick the model into "ending" the system prompt early and continuing as if a new role started. Always encode user input as ordinary text (never with special tokens enabled in user-controlled fields). tiktoken's <code>encode_ordinary()</code> strips all special-token handling.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://github.com/openai/openai-python/blob/main/chatml.md" target="_blank">🔗 OpenAI — ChatML format specification (im_start/im_end turn structure)</a>
+    <a href="https://huggingface.co/docs/transformers/en/chat_templating" target="_blank">🔗 HuggingFace — Chat templating (how different models format special tokens)</a>
+    <a href="https://arxiv.org/abs/1810.04805" target="_blank">🔗 Devlin et al. 2018 — BERT paper (Section 3.1: [CLS], [SEP], [MASK] design rationale)</a>
+  </div>
+
+  <div class="cell" id="cell-5">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 5 — Simulate document concatenation with &lt;|endoftext|&gt; boundaries</span>
+      <button class="run-btn" onclick="runCell('cell-5')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+# Simulate how GPT-2's training data is assembled
+# Documents are concatenated with <|endoftext|> separating them
+# The sliding window then cuts across these boundaries
+
+ENDOFTEXT = "<|endoftext|>"   # token ID 50256 in GPT-2
+
+documents = [
+    "The quick brown fox jumps over the lazy dog.",
+    "A second document about machine learning and neural networks.",
+    "Third document: tokenization is the first step in NLP.",
+    "Final document: transformers changed the field of NLP completely.",
+]
+
+# Step 1: concatenate all documents with the boundary token
+training_stream = ENDOFTEXT.join(documents) + ENDOFTEXT
+print("Training stream (first 120 chars):")
+print(f"  {training_stream[:120]!r}...")
+print(f"  Total chars: {len(training_stream)}")
+
+# Step 2: naive word tokenizer (real GPT-2 uses tiktoken)
+def tokenize(text):
+    import re
+    tokens = []
+    for part in re.split(r'(<\|endoftext\|>)', text):
+        if part == ENDOFTEXT:
+            tokens.append(ENDOFTEXT)
+        elif part:
+            tokens.extend(re.findall(r'\S+|\s+', part))
+    return [t for t in tokens if t.strip() or t == ENDOFTEXT]
+
+tokens = tokenize(training_stream)
+print(f"\nTokenized stream ({len(tokens)} tokens):")
+for i, tok in enumerate(tokens):
+    marker = " ← boundary!" if tok == ENDOFTEXT else ""
+    print(f"  {i:3d}: {tok!r}{marker}")
+    if i > 22:
+        print(f"  ... ({len(tokens) - i - 1} more tokens)")
+        break
+
+# Step 3: sliding window creates (input, target) pairs
+CONTEXT_LEN = 10
+print(f"\nSliding window samples (context={CONTEXT_LEN}):")
+for start in range(0, min(30, len(tokens) - CONTEXT_LEN), CONTEXT_LEN):
+    x = tokens[start : start + CONTEXT_LEN]
+    y = tokens[start+1 : start + CONTEXT_LEN + 1]   # shifted by 1
+    print(f"  x: {[t[:8] for t in x]}")
+    print(f"  y: {[t[:8] for t in y]}")
+    print()
+
+print("Notice: the model learns to predict <|endoftext|> at doc end,")
+print("and learns that the token AFTER it starts a fresh context.")
+</pre></div>
+    <div class="cell-output" id="cell-5-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.6  SentencePiece and Alternatives                    -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s6">
+  <div class="section-label">2.6</div>
+  <h2>SentencePiece and Alternatives</h2>
+
+  <p>BPE is not the only subword algorithm. Three others matter in practice: <strong>WordPiece</strong>, <strong>Unigram Language Model</strong>, and <strong>SentencePiece</strong> (which is a framework that can run either BPE or Unigram).</p>
+
+  <p><strong>WordPiece</strong> (Schuster & Nakamura 2012, popularized by BERT) starts like BPE — character-level vocabulary — but chooses merges differently. Instead of merging the pair that appears most frequently, it merges the pair that most increases the likelihood of the training corpus under a unigram language model. In practice this produces similar but not identical vocabularies to BPE. The key surface difference: WordPiece marks sub-word continuations with a <code>##</code> prefix, so "playing" might tokenize as ["play", "##ing"]. BERT, RoBERTa, DistilBERT, and mBERT all use WordPiece.</p>
+
+  <p><strong>SentencePiece</strong> (Kudo & Richardson 2018) is a language-agnostic tokenization library that treats the raw Unicode string as input directly — no pre-whitespace-splitting step. This makes it suitable for Japanese, Chinese, Thai, and other languages that don't delimit words with spaces. It implements both BPE and Unigram objectives. LLaMA 1/2 (and their derivatives: Mistral, Vicuna, WizardLM) use SentencePiece with BPE. T5, mT5, and all Google models use SentencePiece with Unigram. Gemini and PaLM also use SentencePiece.</p>
+
+  <p>The <strong>Unigram LM</strong> algorithm (Kudo 2018) takes a different approach entirely: start with a large initial vocabulary, then iteratively <em>remove</em> tokens that decrease corpus likelihood the least. It converges to a smaller vocabulary by pruning, not merging. Unigram vocabularies are probabilistic — the same string can tokenize differently at inference (it samples the most likely segmentation), which adds some robustness to rare inputs.</p>
+
+  <div style="overflow-x:auto;margin:22px 0;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:var(--bg-aside);">
+          <th style="padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);">Algorithm</th>
+          <th style="padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);">Direction</th>
+          <th style="padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);">Merge Criterion</th>
+          <th style="padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);">Used By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">BPE (byte-level)</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Build up</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Most frequent pair</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">GPT-2/3/4, Codex, tiktoken</td></tr>
+        <tr style="background:var(--bg-aside);"><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">WordPiece</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Build up</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Max corpus likelihood gain</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">BERT, RoBERTa, DistilBERT</td></tr>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Unigram LM</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Prune down</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">Min likelihood loss on removal</td><td style="padding:9px 14px;border-bottom:1px solid var(--border-light);">T5, mT5, XLNet</td></tr>
+        <tr style="background:var(--bg-aside);"><td style="padding:9px 14px;">SentencePiece + BPE</td><td style="padding:9px 14px;">Build up</td><td style="padding:9px 14px;">Most frequent pair (no whitespace split)</td><td style="padding:9px 14px;">LLaMA 1/2, Mistral, Gemma</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout green"><strong>Practical choice in 2025:</strong> If you are building on GPT-2/3/4 weights or using OpenAI APIs, use tiktoken. If you are fine-tuning LLaMA or Mistral, use their SentencePiece model (do not retrain the tokenizer — your fine-tuned weights won't work with a different vocabulary). Only retrain a tokenizer if you are pretraining a model from scratch on a domain with highly unusual vocabulary (code, chemistry, genomics).</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://arxiv.org/abs/1808.06226" target="_blank">🔗 Kudo & Richardson 2018 — SentencePiece: A simple and language independent subword tokenizer</a>
+    <a href="https://arxiv.org/abs/1804.10959" target="_blank">🔗 Kudo 2018 — Subword Regularization: Unigram Language Model tokenization</a>
+    <a href="https://huggingface.co/learn/nlp-course/chapter6/6" target="_blank">🔗 HuggingFace NLP Course — WordPiece tokenization (BERT's algorithm in detail)</a>
+  </div>
+
+  <div class="cell" id="cell-6">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 6 — Compare BPE vs WordPiece merge criteria on the same corpus</span>
+      <button class="run-btn" onclick="runCell('cell-6')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import math
+from collections import Counter
+
+def get_stats(vocab):
+    pairs = Counter()
+    for word, freq in vocab.items():
+        syms = word.split()
+        for i in range(len(syms) - 1):
+            pairs[(syms[i], syms[i+1])] += freq
+    return pairs
+
+def count_tokens(vocab):
+    """Count individual token frequencies for unigram probability."""
+    counts = Counter()
+    for word, freq in vocab.items():
+        for tok in word.split():
+            counts[tok] += freq
+    return counts
+
+def wordpiece_score(pair, pair_count, token_counts):
+    """WordPiece score: pair_freq / (freq_A * freq_B) — prefers rare component pairs."""
+    a, b = pair
+    if token_counts[a] == 0 or token_counts[b] == 0:
+        return 0
+    return pair_count / (token_counts[a] * token_counts[b])
+
+def merge_vocab(pair, vocab):
+    src = ' '.join(pair)
+    dst = ''.join(pair)
+    return {w.replace(src, dst): f for w, f in vocab.items()}
+
+corpus = {
+    'l o w </w>': 5, 'l o w e r </w>': 2,
+    'n e w e s t </w>': 6, 'w i d e s t </w>': 3,
+    'n e w </w>': 4, 'e s t </w>': 2,
+}
+
+print("=== BPE: merge most frequent pair ===")
+v_bpe = dict(corpus)
+for i in range(6):
+    pairs = get_stats(v_bpe)
+    if not pairs: break
+    best = max(pairs, key=pairs.get)
+    v_bpe = merge_vocab(best, v_bpe)
+    print(f"  {i+1}. Merge {best} (freq={pairs[best]}) → {''.join(best)!r}")
+
+print("\n=== WordPiece: merge highest freq/(f_A * f_B) ===")
+v_wp = dict(corpus)
+for i in range(6):
+    pairs = get_stats(v_wp)
+    if not pairs: break
+    tok_counts = count_tokens(v_wp)
+    scored = {p: wordpiece_score(p, c, tok_counts) for p, c in pairs.items()}
+    best = max(scored, key=scored.get)
+    v_wp = merge_vocab(best, v_wp)
+    print(f"  {i+1}. Merge {best} (score={scored[best]:.4f}) → {''.join(best)!r}")
+
+print()
+print("BPE always picks the globally most common pair.")
+print("WordPiece prefers pairs where the components are individually rare,")
+print("meaning the merged form carries unique information.")
+print("Both produce similar but not identical vocabularies in practice.")
+</pre></div>
+    <div class="cell-output" id="cell-6-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+</div><!-- /.container — part 3 -->
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.7  From Raw Text to Clean Corpus                     -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s7">
+  <div class="section-label">2.7</div>
+  <h2>From Raw Text to Clean Corpus</h2>
+
+  <p>The quality of training data is the single most important factor in the quality of the resulting model. "Garbage in, garbage out" is not a metaphor — Llama 3 8B outperforms Llama 2 70B on many benchmarks despite being 8× smaller, primarily because it trained on 15T tokens of aggressively curated data versus 2T tokens of less-filtered data. The data pipeline deserves as much engineering attention as the model architecture.</p>
+
+  <p>The raw source for most large models is <strong>Common Crawl</strong> — a monthly snapshot of the web containing roughly 3.4 billion web pages, 80TB of uncompressed HTML. Common Crawl is free, enormous, and nearly unusable without cleaning: it contains spam, duplicate content, machine-generated text, personal information, pornography, and content in every language ever written. The filtering pipeline that converts raw CC into a usable corpus is where most of the IP lives.</p>
+
+  <p>A standard cleaning pipeline runs these steps in order: (1) <strong>Language detection</strong> — fastText's language classifier on the first 200 characters; discard non-target-language documents. (2) <strong>Rule-based quality filters</strong> — minimum word count (GPT-2 requires ≥50 words after filtering), max fraction of lines ending in ellipsis (spam signals), minimum stop-word coverage (random character strings fail), max symbol-to-word ratio. (3) <strong>Deduplication</strong> — MinHash + LSH to find near-duplicate documents (~3-4% of CC is near-duplicate; deduplication improves perplexity by ~10%). (4) <strong>Toxicity and PII filtering</strong> — classifier-based removal of hate speech, explicit content; regex-based removal of emails, phone numbers, SSNs. (5) <strong>Quality scoring</strong> — some pipelines train a fastText classifier to distinguish "Wikipedia-quality" from "low-quality" text using those as positive/negative examples.</p>
+
+  <div class="corpus-grid">
+    <div class="corpus-card">
+      <h4>Common Crawl (raw)</h4>
+      <p>~3.4B web pages/month. Free. Mostly noise. Used as the starting point for almost every large model's training data.</p>
+      <div class="corpus-size">~80 TB/month uncompressed</div>
+    </div>
+    <div class="corpus-card">
+      <h4>C4 (Colossal Clean Crawled Corpus)</h4>
+      <p>Google's cleaned CC (Raffel et al. 2020). ~750GB after dedup + filtering. Used to train T5, Flan-T5, GPT-J.</p>
+      <div class="corpus-size">156B tokens</div>
+    </div>
+    <div class="corpus-card">
+      <h4>The Pile (EleutherAI)</h4>
+      <p>825GB across 22 curated subsets: PubMed, arXiv, GitHub, Wikipedia, StackExchange, DM Mathematics, and more. Used to train GPT-Neo, GPT-J, GPT-NeoX.</p>
+      <div class="corpus-size">825 GB · 22 domains</div>
+    </div>
+    <div class="corpus-card">
+      <h4>FineWeb (HuggingFace 2024)</h4>
+      <p>15 trillion tokens from 5 years of CC with aggressive deduplication and quality filtering. Openly released. Outperforms The Pile and C4 on benchmarks. State-of-the-art for open training data.</p>
+      <div class="corpus-size">15T tokens (open)</div>
+    </div>
+  </div>
+
+  <div class="callout"><strong>GPT-2's training data:</strong> WebText — 45 million URLs scraped from links posted on Reddit with ≥3 upvotes. ~8 million documents, ~40GB of text. The upvote filter acts as a proxy for quality: content that humans found valuable enough to share. GPT-3 used a much larger, heavily down-sampled Common Crawl plus WebText2, Books1, Books2, and Wikipedia.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://arxiv.org/abs/2101.00027" target="_blank">🔗 Gao et al. 2020 — The Pile: An 800GB Dataset of Diverse Text for Language Modeling</a>
+    <a href="https://huggingface.co/datasets/HuggingFaceFW/fineweb" target="_blank">🔗 HuggingFace — FineWeb: 15 trillion tokens of high-quality web data (dataset card + process)</a>
+    <a href="https://arxiv.org/abs/2107.06499" target="_blank">🔗 Lee et al. 2022 — Deduplicating Training Data Makes Language Models Better (~10% PPL improvement)</a>
+  </div>
+
+  <div class="cell" id="cell-7">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 7 — Simulate a text quality filtering pipeline</span>
+      <button class="run-btn" onclick="runCell('cell-7')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import re, math
+from collections import Counter
+
+# Sample "documents" with varying quality
+documents = [
+    ("Wikipedia article", "Tokenization is the process of dividing text into meaningful units called tokens. "
+     "In natural language processing, tokenization is a fundamental preprocessing step. "
+     "Different algorithms produce different token vocabularies for the same input text."),
+    ("Spam/SEO", "buy cheap tokens now!!! click here for free tokens!!! "
+     "token token token buy buy buy limited offer FREE FREE FREE!!!"),
+    ("Too short", "Hello world."),
+    ("High repetition", "the the the the the the the the the the the the the "
+     "is is is is is is is is is is is is is is is is is is is is"),
+    ("Code document", "def tokenize(text): return text.split() # simple split tokenizer"),
+    ("Good blog post", "Modern language models like GPT-4 use subword tokenization to handle "
+     "the trade-off between vocabulary size and sequence length. The byte pair encoding "
+     "algorithm starts with individual characters and iteratively merges the most frequent "
+     "adjacent pairs until the desired vocabulary size is reached."),
+    ("Gibberish", "xkzq pqrst uvwxy zab123 !@#$ qwerty asdfgh zxcvbn mnbvcx"),
+]
+
+STOP_WORDS = {"the","a","an","is","in","of","to","and","that","it","for","with","on","are","was"}
+
+def quality_score(text):
+    words = text.lower().split()
+    if len(words) < 10:                               # too short
+        return 0.0, "too short"
+
+    # symbol ratio check
+    symbols = sum(1 for c in text if not c.isalnum() and c not in " .,!?;:'\"-")
+    if symbols / len(text) > 0.15:                    # too many symbols
+        return 0.0, "high symbol ratio"
+
+    # stop word coverage (real text has ~25-35% stop words)
+    sw_count = sum(1 for w in words if w in STOP_WORDS)
+    sw_ratio = sw_count / len(words)
+    if sw_ratio < 0.05:                               # too few stop words
+        return 0.0, "low stop word coverage"
+
+    # repetition: most common word shouldn't dominate
+    most_common_freq = Counter(words).most_common(1)[0][1] / len(words)
+    if most_common_freq > 0.3:
+        return 0.0, "high repetition"
+
+    # exclamation marks (spam signal)
+    excl_ratio = text.count('!') / max(len(words), 1)
+    if excl_ratio > 0.1:
+        return 0.0, "spam signals"
+
+    # base score: stop word ratio (proxy for "natural language-ness")
+    score = min(1.0, sw_ratio * 3.0) * (1 - most_common_freq)
+    return round(score, 3), "pass"
+
+print(f"{'Document':<20} {'Words':>6} {'Score':>7} {'Status'}")
+print("─" * 52)
+kept = 0
+for name, text in documents:
+    words = text.split()
+    score, status = quality_score(text)
+    kept_flag = "✓ kept" if score > 0 else f"✗ filtered ({status})"
+    print(f"{name:<20} {len(words):>6} {score:>7.3f}  {kept_flag}")
+    if score > 0:
+        kept += 1
+
+print(f"\nKept {kept}/{len(documents)} documents ({kept/len(documents)*100:.0f}%)")
+print("Real CC filtering keeps ~5-10% of raw crawl pages.")
+print("Try: edit a document above to make it pass or fail the filters.")
+</pre></div>
+    <div class="cell-output" id="cell-7-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.8  Sliding-Window Sampling                           -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s8">
+  <div class="section-label">2.8</div>
+  <h2>Sliding-Window Sampling</h2>
+
+  <p>Once we have a clean corpus tokenized into a flat sequence of integers, we need to produce training examples. The core insight: language modeling is next-token prediction. Given the tokens so far, predict the next one. Every position in every sequence is simultaneously an input and a label — just offset by one.</p>
+
+  <p>The mechanics: take your full flat token stream (all documents concatenated with <code>&lt;|endoftext|&gt;</code> separators). Extract a window of length <code>T+1</code>. The first <code>T</code> tokens are the input <code>x</code>; the last <code>T</code> tokens (shifted by one) are the target <code>y</code>. Advance the window by <code>stride</code> positions and repeat. This is called <strong>sliding window sampling</strong>.</p>
+
+  <p>The choice of stride controls data efficiency and training cost. <strong>Stride = T</strong> (non-overlapping, GPT-2's approach): simple, no repeated tokens, but some cross-document relationships are never seen. <strong>Stride &lt; T</strong> (overlapping): each token appears in multiple windows with different context prefixes — more training signal per token, at the cost of more passes over the data. For a corpus of N tokens, stride=T gives ⌊N/T⌋ samples; stride=1 gives N−T samples (much more, but each is only slightly different from the last). GPT-2 trained on 40GB of WebText with T=1024 and stride=1024, yielding roughly 40 million training samples.</p>
+
+  <div class="slide-wrap">
+    <div class="slide-title">SLIDING WINDOW — stride = T (no overlap)</div>
+    <div class="slide-row">
+      <div class="slide-lbl">tok:</div>
+      <span class="stok w1">the</span><span class="stok w1">cat</span><span class="stok w1">sat</span><span class="stok w1">on</span><span class="stok w2">a</span><span class="stok w2">mat</span><span class="stok w2">and</span><span class="stok w2">slept</span><span class="stok w3">the</span><span class="stok w3">dog</span><span class="stok w3">ran</span><span class="stok w3">fast</span><span class="stok wd">...</span>
+    </div>
+    <div class="slide-row">
+      <div class="slide-lbl">x₁:</div>
+      <span class="stok w1">the</span><span class="stok w1">cat</span><span class="stok w1">sat</span><span class="stok w1">on</span>
+    </div>
+    <div class="slide-row">
+      <div class="slide-lbl">y₁:</div>
+      <span class="stok w1">cat</span><span class="stok w1">sat</span><span class="stok w1">on</span><span class="stok w2">a</span>
+    </div>
+    <div class="slide-row">
+      <div class="slide-lbl">x₂:</div>
+      <span class="stok w2">a</span><span class="stok w2">mat</span><span class="stok w2">and</span><span class="stok w2">slept</span>
+    </div>
+    <div class="slide-row">
+      <div class="slide-lbl">y₂:</div>
+      <span class="stok w2">mat</span><span class="stok w2">and</span><span class="stok w2">slept</span><span class="stok w3">the</span>
+    </div>
+  </div>
+
+  <div class="formula">
+    <span class="eq-label">INPUT / TARGET RELATIONSHIP</span>
+    x = tokens[i : i+T] &nbsp;&nbsp;·&nbsp;&nbsp; y = tokens[i+1 : i+T+1]
+    <span class="eq-note">For T=1024: one window gives 1,024 simultaneous prediction tasks — one per position</span>
+  </div>
+
+  <div class="callout blue"><strong>One sequence, T predictions.</strong> A single context window of 1,024 tokens produces 1,024 training pairs in a single forward pass. Position 0 predicts token 1 with context of length 1. Position 1 predicts token 2 with context of length 2. Position 1,023 predicts token 1,024 with the full 1,024-token context. The causal mask (Chapter 3) is what makes all these computations happen in parallel.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://github.com/rasbt/LLMs-from-scratch/blob/main/ch02/01_main-chapter-code/ch02.ipynb" target="_blank">🔗 Raschka — LLMs from Scratch Ch 2: DataLoader and sliding-window implementation</a>
+    <a href="https://arxiv.org/abs/1901.08860" target="_blank">🔗 Radford et al. 2019 — GPT-2: language model training details (stride, context length)</a>
+    <a href="https://github.com/karpathy/nanoGPT/blob/master/data/shakespeare_char/prepare.py" target="_blank">🔗 Karpathy — nanoGPT data preparation script (concrete sliding window code)</a>
+  </div>
+
+  <div class="cell" id="cell-8">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 8 — Build a sliding-window sampler and measure sample count</span>
+      <button class="run-btn" onclick="runCell('cell-8')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+def sliding_window_samples(tokens, context_len, stride):
+    """
+    Generate (x, y) pairs from a flat token stream.
+    x = input sequence of length context_len
+    y = target sequence = x shifted right by 1
+    """
+    samples = []
+    n = len(tokens)
+    for start in range(0, n - context_len, stride):
+        x = tokens[start : start + context_len]
+        y = tokens[start + 1 : start + context_len + 1]
+        samples.append((x, y))
+    return samples
+
+# Simulate a small corpus
+ENDOFTEXT_ID = 50256
+doc1 = list(range(0, 20))     # pretend token IDs 0-19
+doc2 = list(range(100, 120))  # pretend token IDs 100-119
+doc3 = list(range(200, 215))  # pretend token IDs 200-214
+
+# Concatenate with boundary tokens
+token_stream = doc1 + [ENDOFTEXT_ID] + doc2 + [ENDOFTEXT_ID] + doc3
+print(f"Token stream: {len(token_stream)} tokens")
+print(f"  doc1: {len(doc1)} tokens + EOT")
+print(f"  doc2: {len(doc2)} tokens + EOT")
+print(f"  doc3: {len(doc3)} tokens")
+
+CONTEXT_LEN = 8
+
+print(f"\nContext length: {CONTEXT_LEN}")
+print()
+
+for stride_name, stride in [("No overlap (stride=T)", CONTEXT_LEN),
+                              ("Half overlap (stride=T/2)", CONTEXT_LEN//2),
+                              ("Max overlap (stride=1)", 1)]:
+    samples = sliding_window_samples(token_stream, CONTEXT_LEN, stride)
+    total_predictions = len(samples) * CONTEXT_LEN
+    print(f"Stride: {stride_name}")
+    print(f"  Samples: {len(samples)} windows × {CONTEXT_LEN} positions = {total_predictions} predictions")
+    # Show first 2 samples
+    for i, (x, y) in enumerate(samples[:2]):
+        print(f"  Sample {i}: x={x}  →  y={y}")
+    print()
+
+# Scale to GPT-2
+N_TOKENS_GPT2 = 9_000_000_000  # ~9B tokens in WebText (40GB)
+CTX = 1024
+stride_gpt2 = CTX  # non-overlapping
+n_samples = (N_TOKENS_GPT2 - CTX) // stride_gpt2
+print(f"GPT-2 scale: {N_TOKENS_GPT2/1e9:.0f}B tokens, ctx={CTX}, stride={stride_gpt2}")
+print(f"→ ~{n_samples/1e6:.1f}M training samples, {n_samples*CTX/1e9:.1f}B token predictions")
+print("Try: experiment with different strides and watch sample count change.")
+</pre></div>
+    <div class="cell-output" id="cell-8-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.9  The DataLoader Pattern                            -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s9">
+  <div class="section-label">2.9</div>
+  <h2>The DataLoader Pattern</h2>
+
+  <p>Individual samples are not fed to the model one at a time — they are batched. A batch of <code>B</code> sequences each of length <code>T</code> creates an input tensor of shape <code>(B, T)</code>: <code>B</code> rows of <code>T</code> token IDs. The model processes all <code>B</code> sequences simultaneously, producing <code>B × T</code> next-token predictions in a single forward pass. For GPT-2's training configuration: B=512, T=1024 → 524,288 predictions per batch.</p>
+
+  <p>The <strong>DataLoader</strong> pattern (formalized in PyTorch) solves two problems: (1) it shuffles the dataset so every epoch sees samples in a different order, preventing the model from memorizing the presentation sequence; (2) it prefetches the next batch on the CPU while the GPU is processing the current one, keeping GPU utilization close to 100%. For a trillion-token corpus, the dataset doesn't fit in RAM — the DataLoader streams from disk, often from pre-tokenized binary files (GPT-2 stored its data in a flat binary file of uint16 token IDs, 2 bytes each).</p>
+
+  <p>Memory analysis is important for understanding why batches are sized as they are. The input batch <code>(B, T)</code> of int64 IDs uses <code>512 × 1024 × 8 = 4MB</code> — trivial. After the embedding lookup, the tensor becomes <code>(B, T, d_model) = (512, 1024, 768)</code> of float32 → <code>1.6GB</code> per batch, just for the embedding output. Activations from all transformer layers, optimizer states, and gradients can push GPU memory requirements to 10–20GB per batch for a 124M-parameter model. This is why batch size is tuned per hardware configuration.</p>
+
+  <div class="batch-wrap">
+    <div class="batch-title">BATCH TENSOR (B, T) — input token IDs, shape 4×8 shown</div>
+    <div class="batch-row">
+      <div class="batch-lbl"></div>
+      <div class="bc h">t₀</div><div class="bc h">t₁</div><div class="bc h">t₂</div><div class="bc h">t₃</div>
+      <div class="bc h">t₄</div><div class="bc h">t₅</div><div class="bc h">t₆</div><div class="bc h">t₇</div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-lbl">b₀</div>
+      <div class="bc">464</div><div class="bc">2267</div><div class="bc">318</div><div class="bc">257</div>
+      <div class="bc">2769</div><div class="bc">11</div><div class="bc">82</div><div class="bc">461</div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-lbl">b₁</div>
+      <div class="bc">40</div><div class="bc">284</div><div class="bc">1854</div><div class="bc">502</div>
+      <div class="bc">428</div><div class="bc">2280</div><div class="bc">13</div><div class="bc">632</div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-lbl">b₂</div>
+      <div class="bc">383</div><div class="bc">7264</div><div class="bc">290</div><div class="bc">19232</div>
+      <div class="bc">2174</div><div class="bc">412</div><div class="bc">9386</div><div class="bc">13</div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-lbl">b₃</div>
+      <div class="bc">770</div><div class="bc">1573</div><div class="bc">284</div><div class="bc">3494</div>
+      <div class="bc">257</div><div class="bc">4096</div><div class="bc">422</div><div class="bc">8522</div>
+    </div>
+    <div style="margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">
+      → target y is the same matrix shifted right by 1 column: y[b,t] = x[b,t+1]
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">dataloader.py</span>
+      <button class="code-copy" onclick="copyCode(this)">Copy</button>
+    </div>
+<pre><code><span class="kw">import</span> torch
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> Dataset, DataLoader
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">class</span> <span class="cl">TokenDataset</span>(Dataset):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, data_path, context_len):
+        self.tokens = np.<span class="fn">memmap</span>(data_path, dtype=<span class="st">'uint16'</span>, mode=<span class="st">'r'</span>)
+        <span class="lm"># ↑ memory-map: file stays on disk, OS pages it in on demand</span>
+        <span class="lm">#   2 bytes per token × 9B tokens = 18GB file, but uses no RAM upfront</span>
+        <span class="pr">self</span>.context_len = context_len
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="pr">self</span>):
+        <span class="kw">return</span> <span class="bi">len</span>(<span class="pr">self</span>.tokens) - <span class="pr">self</span>.context_len
+        <span class="lm"># ↑ every position except the last is a valid start</span>
+
+    <span class="kw">def</span> <span class="fn">__getitem__</span>(<span class="pr">self</span>, idx):
+        chunk = <span class="pr">self</span>.tokens[idx : idx + <span class="pr">self</span>.context_len + <span class="nu">1</span>]
+        <span class="lm"># ↑ grab T+1 tokens so we have both x (T) and y (T, shifted)</span>
+        chunk = torch.<span class="fn">tensor</span>(chunk.<span class="fn">astype</span>(np.int64), dtype=torch.long)
+        x = chunk[:<span class="nu">-1</span>]    <span class="cm"># input tokens: positions 0..T-1</span>
+        y = chunk[<span class="nu">1</span>:]     <span class="cm"># targets: positions 1..T (each x[i] predicts y[i])</span>
+        <span class="lm"># ↑ y is x shifted one step to the right</span>
+        <span class="kw">return</span> x, y
+
+<span class="cm"># Create DataLoader with prefetch workers</span>
+dataset = <span class="cl">TokenDataset</span>(<span class="st">'train.bin'</span>, context_len=<span class="nu">1024</span>)
+loader = <span class="fn">DataLoader</span>(
+    dataset,
+    batch_size=<span class="nu">512</span>,         <span class="cm"># B=512, T=1024 → 524,288 predictions/step</span>
+    shuffle=<span class="kw">True</span>,           <span class="lm"># ↑ different order each epoch</span>
+    num_workers=<span class="nu">4</span>,          <span class="lm"># ↑ 4 CPU workers prefetch while GPU trains</span>
+    pin_memory=<span class="kw">True</span>,        <span class="lm"># ↑ faster CPU→GPU transfer via pinned memory</span>
+)
+
+<span class="kw">for</span> x, y <span class="kw">in</span> loader:        <span class="cm"># x: (512, 1024), y: (512, 1024), both int64</span>
+    loss = model.<span class="fn">forward</span>(x, y)
+    loss.<span class="fn">backward</span>()
+</code></pre>
+  </div>
+
+  <div class="callout amber"><strong>Gradient accumulation.</strong> If your GPU can only fit B=64 in memory but you want the statistics of B=512, run 8 forward passes without calling <code>optimizer.step()</code>, accumulating gradients, then step once. The math is identical to a single batch of 512 — gradient accumulation is a memory-vs-time trade-off, not an approximation.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://pytorch.org/docs/stable/data.html" target="_blank">🔗 PyTorch docs — DataLoader and Dataset (official reference, all parameters explained)</a>
+    <a href="https://github.com/rasbt/LLMs-from-scratch/blob/main/ch02/01_main-chapter-code/ch02.ipynb" target="_blank">🔗 Raschka — LLMs from Scratch Ch 2 (complete DataLoader implementation for LLM training)</a>
+    <a href="https://github.com/karpathy/nanoGPT/blob/master/data/shakespeare_char/prepare.py" target="_blank">🔗 Karpathy — nanoGPT data prep (binary .bin format, uint16 token storage)</a>
+  </div>
+
+  <div class="cell" id="cell-9">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 9 — Simulate a DataLoader: batching, memory sizing, predictions/step</span>
+      <button class="run-btn" onclick="runCell('cell-9')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import math, random
+
+def make_token_stream(n_tokens):
+    """Simulate a flat stream of token IDs (uint16, range 0-50256)."""
+    return [random.randint(0, 50256) for _ in range(n_tokens)]
+
+def batch_generator(tokens, context_len, batch_size, shuffle=True):
+    """Yield (x, y) batches like PyTorch's DataLoader."""
+    n = len(tokens)
+    # All valid starting positions
+    indices = list(range(0, n - context_len - 1))
+    if shuffle:
+        random.shuffle(indices)
+
+    for batch_start in range(0, len(indices), batch_size):
+        batch_idx = indices[batch_start : batch_start + batch_size]
+        if len(batch_idx) < batch_size:
+            break   # drop last incomplete batch
+
+        x_batch = [tokens[i : i + context_len] for i in batch_idx]
+        y_batch = [tokens[i+1 : i + context_len + 1] for i in batch_idx]
+        yield x_batch, y_batch
+
+# Simulate different GPT-size configurations
+configs = [
+    ("GPT-2 small", 512, 1024, 768,   4),   # B, T, d_model, bytes_per_param
+    ("GPT-2 medium",256, 1024, 1024,  4),
+    ("LLaMA-3 8B",   8, 4096, 4096,  2),    # BF16 = 2 bytes; tiny batch
+]
+
+print(f"{'Model':<18} {'B':>5} {'T':>6} {'d':>6} {'Pred/step':>10} {'Emb tensor':>12}")
+print("─" * 60)
+for name, B, T, d, bpp in configs:
+    preds = B * T
+    emb_bytes = B * T * d * bpp   # embedding output tensor size
+    emb_gb = emb_bytes / 1e9
+    input_mb = B * T * 8 / 1e6   # input IDs in int64
+    print(f"{name:<18} {B:>5} {T:>6} {d:>6} {preds:>10,} {emb_gb:>11.2f}GB")
+
+print()
+
+# Concrete DataLoader simulation
+N_TOKENS = 100_000
+CTX = 16
+BATCH = 8
+random.seed(42)
+tokens = make_token_stream(N_TOKENS)
+
+batches = list(batch_generator(tokens, CTX, BATCH))
+print(f"Token stream: {N_TOKENS:,} tokens")
+print(f"Context length: {CTX}, Batch size: {BATCH}")
+print(f"Batches per epoch: {len(batches):,}")
+print(f"Predictions per epoch: {len(batches) * BATCH * CTX:,}")
+print()
+x0, y0 = batches[0]
+print(f"First batch — x[0] (first 8 positions): {x0[0][:8]}")
+print(f"First batch — y[0] (first 8 positions): {y0[0][:8]}")
+print("Notice: y is x shifted right by one — predict next token at each position.")
+print("\nTry: change CTX=64 and BATCH=4, observe predictions per epoch change.")
+</pre></div>
+    <div class="cell-output" id="cell-9-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+</div><!-- part 3 end -->
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.10  Token Embeddings                                 -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s10">
+  <div class="section-label">2.10</div>
+  <h2>Token Embeddings</h2>
+
+  <p>A token ID is just an integer. The model can't do anything meaningful with an integer — it needs a vector of real numbers it can run matrix multiplications through. The <strong>token embedding table</strong> is the translation layer: a matrix of shape <code>[vocab_size × d_model]</code> where row <em>i</em> is the learned vector representation of token <em>i</em>.</p>
+
+  <p>The lookup operation is conceptually simple: convert token ID <em>i</em> to a one-hot vector of length <code>vocab_size</code>, then multiply by the embedding matrix. Practically, this is implemented as a direct row lookup: <code>E[i]</code>. For GPT-2 small: E is <code>[50,257 × 768]</code>. That is 50,257 × 768 = <strong>38.6 million parameters</strong> — 31% of GPT-2 small's total 124M parameters, all in the embedding table.</p>
+
+  <p>What do embeddings learn? The <strong>distributional hypothesis</strong> (Harris 1954): words that appear in similar contexts get similar vectors. After training, <code>cosine_similarity(E["king"], E["queen"]) ≈ 0.7</code> and the classic arithmetic <code>E["king"] − E["man"] + E["woman"] ≈ E["queen"]</code> holds approximately. This is not explicitly trained — it emerges from predicting co-occurrences. Every token, including punctuation and spaces, gets its own 768-dimensional vector. The embedding for a space before a capital letter is different from the embedding for a capital letter without a space — GPT-2's byte-level BPE distinguishes these.</p>
+
+  <div class="emb-wrap">
+    <div class="emb-ids">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:6px;">TOKEN IDs</div>
+      <div class="eid">464 → "The"</div>
+      <div class="eid">2368 → "cat"</div>
+      <div class="eid">318 → " is"</div>
+    </div>
+    <div class="emb-arr">→</div>
+    <div class="emb-matrix">
+      <div class="em-header">E [50,257 × 768]</div>
+      <div class="em-row"><div class="em-id">0</div><div class="em-dots">
+        <div class="ed" style="background:#6a9955;opacity:.4;"></div><div class="ed" style="background:#4fc3f7;opacity:.3;"></div><div class="ed" style="background:#cf8e6d;opacity:.5;"></div><div class="ed" style="background:#6a9955;opacity:.2;"></div><div class="ed" style="background:#79b4de;opacity:.6;"></div><div class="ed" style="background:#cf8e6d;opacity:.3;"></div>
+      </div></div>
+      <div class="em-row"><div class="em-id">…</div><div class="em-dots" style="color:var(--text-secondary);font-size:10px;padding:6px 8px;">···</div></div>
+      <div class="em-row hi"><div class="em-id">464</div><div class="em-dots">
+        <div class="ed" style="background:#b87c2a;"></div><div class="ed" style="background:#b87c2a;opacity:.7;"></div><div class="ed" style="background:#b87c2a;opacity:.4;"></div><div class="ed" style="background:#b87c2a;opacity:.9;"></div><div class="ed" style="background:#b87c2a;opacity:.5;"></div><div class="ed" style="background:#b87c2a;opacity:.6;"></div>
+      </div></div>
+      <div class="em-row"><div class="em-id">…</div><div class="em-dots" style="color:var(--text-secondary);font-size:10px;padding:6px 8px;">···</div></div>
+      <div class="em-row hi"><div class="em-id">2368</div><div class="em-dots">
+        <div class="ed" style="background:#b87c2a;opacity:.3;"></div><div class="ed" style="background:#b87c2a;opacity:.8;"></div><div class="ed" style="background:#b87c2a;opacity:.6;"></div><div class="ed" style="background:#b87c2a;opacity:.2;"></div><div class="ed" style="background:#b87c2a;opacity:.9;"></div><div class="ed" style="background:#b87c2a;opacity:.4;"></div>
+      </div></div>
+    </div>
+    <div class="emb-arr">→</div>
+    <div class="emb-out">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:6px;">768-DIM VECTORS</div>
+      <div class="eout">E[464]: [0.23, −0.11, 0.87, …]  (768 floats)</div>
+      <div class="eout">E[2368]: [−0.41, 0.09, 0.34, …] (768 floats)</div>
+      <div class="eout">E[318]: [0.05, −0.77, 0.12, …]  (768 floats)</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">gpt2_embedding.py</span>
+      <button class="code-copy" onclick="copyCode(this)">Copy</button>
+    </div>
+<pre><code><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="cm"># GPT-2 small configuration</span>
+vocab_size = <span class="nu">50_257</span>   <span class="cm"># BPE vocabulary (256 bytes + 50,000 merges + 1 EOT)</span>
+d_model    = <span class="nu">768</span>      <span class="cm"># embedding dimension (d_model for GPT-2 small)</span>
+
+<span class="cm"># Token embedding table: one 768-dim vector per vocabulary entry</span>
+wte = nn.<span class="cl">Embedding</span>(vocab_size, d_model)
+<span class="lm"># ↑ wte = word token embedding. Weight shape: [50257, 768] = 38.6M parameters</span>
+<span class="lm">#   initialized ~ Normal(0, 0.02); refined during training</span>
+
+<span class="cm"># Usage: batch of token IDs → batch of vectors</span>
+token_ids = torch.<span class="fn">tensor</span>([[<span class="nu">464</span>, <span class="nu">2368</span>, <span class="nu">318</span>, <span class="nu">257</span>]])  <span class="cm"># shape: (1, 4)</span>
+embeddings = <span class="fn">wte</span>(token_ids)
+<span class="lm"># ↑ output shape: (1, 4, 768) — one 768-dim vector per token</span>
+
+<span class="bi">print</span>(embeddings.shape)   <span class="cm"># torch.Size([1, 4, 768])</span>
+
+<span class="cm"># Cosine similarity reveals semantic relationships</span>
+<span class="kw">def</span> <span class="fn">cosine_sim</span>(a, b):
+    <span class="kw">return</span> (a @ b) / (a.<span class="fn">norm</span>() * b.<span class="fn">norm</span>())
+    <span class="lm"># ↑ dot product of unit vectors = cosine of angle between them</span>
+    <span class="lm">#   1.0 = identical direction, 0.0 = orthogonal, -1.0 = opposite</span>
+</code></pre>
+  </div>
+
+  <div class="callout"><strong>38.6 million parameters just for token IDs.</strong> GPT-2 small has 124M total parameters. The embedding table alone accounts for 31% of them. This is why weight tying (sharing the embedding table with the output projection layer) saves 38.6M parameters — and is used by every GPT-2 variant. See §2.12 for how it fits into the full pipeline.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://jalammar.github.io/illustrated-word2vec/" target="_blank">🔗 Jay Alammar — The Illustrated Word2Vec (best visual explanation of what embeddings learn)</a>
+    <a href="https://arxiv.org/abs/1301.3666" target="_blank">🔗 Mikolov et al. 2013 — Word2Vec: Efficient Estimation of Word Representations (king−man+woman=queen)</a>
+    <a href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html" target="_blank">🔗 PyTorch docs — nn.Embedding (parameters, padding_idx, max_norm)</a>
+  </div>
+
+  <div class="cell" id="cell-10">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 10 — Embedding lookup, cosine similarity, and analogy arithmetic</span>
+      <button class="run-btn" onclick="runCell('cell-10')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import math, random
+
+random.seed(42)
+
+def make_embedding(vocab_size, d_model, seed_offset=0):
+    """Create a random embedding table (simulating initialized weights)."""
+    random.seed(seed_offset)
+    # Normal(0, 0.02) initialization like GPT-2
+    return [[random.gauss(0, 0.02) for _ in range(d_model)]
+            for _ in range(vocab_size)]
+
+def lookup(E, token_id):
+    """Embedding lookup: just return row token_id of the table."""
+    return E[token_id]  # O(1) — no matrix multiplication needed
+
+def dot(a, b):
+    return sum(x*y for x, y in zip(a, b))
+
+def norm(v):
+    return math.sqrt(sum(x*x for x in v))
+
+def cosine_sim(a, b):
+    return dot(a, b) / (norm(a) * norm(b))
+
+def vec_add(a, b):
+    return [x+y for x, y in zip(a, b)]
+
+def vec_sub(a, b):
+    return [x-y for x, y in zip(a, b)]
+
+def nearest(E, query, vocab, k=3):
+    """Find k nearest tokens by cosine similarity."""
+    sims = [(cosine_sim(query, E[i]), i) for i in range(len(E))]
+    sims.sort(reverse=True)
+    return [(vocab[i], s) for s, i in sims[:k]]
+
+# Small demo vocab
+VOCAB = ["<EOT>","the","cat","sat","on","a","mat","dog","ran","fast",
+         "slow","quick","big","small","king","queen","man","woman"]
+VOCAB_SIZE = len(VOCAB)
+D = 16  # tiny d_model for demo
+
+E = make_embedding(VOCAB_SIZE, D)
+print(f"Embedding table: {VOCAB_SIZE} tokens × {D} dims = {VOCAB_SIZE*D} parameters")
+print()
+
+# Lookup examples
+for word in ["the", "cat", "king"]:
+    idx = VOCAB.index(word)
+    vec = lookup(E, idx)
+    print(f"E['{word}'] (ID={idx}): [{', '.join(f'{v:.3f}' for v in vec[:5])}, ...]")
+
+print()
+
+# Cosine similarity between pairs
+pairs = [("cat","dog"), ("cat","mat"), ("king","queen"), ("king","fast")]
+print("Cosine similarities (random init — all near 0, random):")
+for w1, w2 in pairs:
+    i1, i2 = VOCAB.index(w1), VOCAB.index(w2)
+    sim = cosine_sim(lookup(E, i1), lookup(E, i2))
+    print(f"  sim('{w1}', '{w2}') = {sim:.4f}")
+
+print()
+print("After training, semantically similar tokens would cluster together.")
+print("king−man+woman ≈ queen (from trained GPT-2's actual embeddings).")
+print(f"\nMemory: {VOCAB_SIZE} × {D} × 4 bytes = {VOCAB_SIZE*D*4} bytes")
+print(f"GPT-2 small: 50,257 × 768 × 4 bytes = {50257*768*4/1e6:.1f} MB")
+print("Try: change D (embedding dim) and see parameter count change.")
+</pre></div>
+    <div class="cell-output" id="cell-10-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.11  Positional Encoding                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s11">
+  <div class="section-label">2.11</div>
+  <h2>Positional Encoding</h2>
+
+  <p>Token embeddings have a critical blind spot: they contain no information about <em>where</em> in the sequence a token appears. The embedding for "cat" at position 0 is identical to the embedding for "cat" at position 500. But position matters enormously — "the cat ate the fish" means something entirely different from "the fish ate the cat". Self-attention compounds this: it computes a weighted sum over all tokens simultaneously, with no built-in notion of order. Without explicit position information, a transformer is a <em>bag-of-tokens</em> model — permutation invariant.</p>
+
+  <p><strong>Positional encoding</strong> solves this by adding a position-specific vector to each token embedding before the first transformer block. The model can then distinguish "cat at position 0" from "cat at position 500" because their input vectors differ. Four approaches are in wide use, each with different trade-offs:</p>
+
+  <div class="pe-cards">
+    <div class="pe-card pc-sin">
+      <h4>Sinusoidal (Vaswani 2017)</h4>
+      <p>Fixed mathematical patterns: PE(pos, 2i) = sin(pos / 10000^(2i/d)). No learned parameters. Theoretically generalizes to any length. Encodes absolute position only.</p>
+      <div class="pe-used">Original Transformer · BERT (variant) · T5</div>
+    </div>
+    <div class="pe-card pc-learn">
+      <h4>Learned Absolute (GPT-2)</h4>
+      <p>A second nn.Embedding of shape [T_max × d_model]. GPT-2: 1,024 × 768 = 786K parameters. Trained jointly with the model. Cannot extrapolate beyond T_max.</p>
+      <div class="pe-used">GPT-2 · GPT-3 · GPT-J · early LLMs</div>
+    </div>
+    <div class="pe-card pc-rope">
+      <h4>RoPE (Su et al. 2021)</h4>
+      <p>Rotates Q and K vectors by a position-dependent angle in attention. Encodes relative position, not absolute. No separate embedding table. Efficiently extendable with YaRN/RoPE scaling.</p>
+      <div class="pe-used">LLaMA 1/2/3 · Mistral · Falcon · Qwen</div>
+    </div>
+    <div class="pe-card pc-alibi">
+      <h4>ALiBi (Press et al. 2022)</h4>
+      <p>No learned positions — instead adds −m×|i−j| to each attention score (m is a head-specific constant). Penalizes attending to distant tokens. Extrapolates to 2× training length freely.</p>
+      <div class="pe-used">BLOOM · MPT · OPT-175B variants</div>
+    </div>
+  </div>
+
+  <div class="formula">
+    <span class="eq-label">SINUSOIDAL PE (Vaswani et al. 2017)</span>
+    PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
+    PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+    <span class="eq-note">Even dims use sin, odd dims use cos · different frequencies let model distinguish positions</span>
+  </div>
+
+  <p>Why sinusoidal? The frequency decreases geometrically — position 0 vs 1 differs a lot in the high-frequency (small <em>i</em>) dimensions, but is almost identical in the low-frequency (large <em>i</em>) dimensions. This creates a positional "fingerprint" that is unique for every position and, crucially, allows the model to compute relative positions via dot products: PE(pos+k)·PE(pos) depends only on <em>k</em>, not on the absolute value of pos. GPT-2 uses learned absolute PE instead — simpler, and the data regime (1024-token training) makes extrapolation unnecessary. Modern models use RoPE because it naturally handles relative position and scales better to long contexts.</p>
+
+  <div class="callout blue"><strong>RoPE in three sentences.</strong> Represent position as a rotation angle. Rotate Q and K vectors by their respective position angles before computing Q·Kᵀ. The dot product of rotated vectors QK naturally captures relative position (rotation of Q by pos_q minus rotation of K by pos_k = relative rotation of pos_q−pos_k). No separate position embedding layer, no parameter cost.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://arxiv.org/abs/2104.09864" target="_blank">🔗 Su et al. 2021 — RoFormer: Enhanced Transformer with Rotary Position Embedding</a>
+    <a href="https://arxiv.org/abs/2108.12409" target="_blank">🔗 Press et al. 2022 — ALiBi: Train Short, Test Long (linear attention bias for extrapolation)</a>
+    <a href="https://arxiv.org/abs/1706.03762" target="_blank">🔗 Vaswani et al. 2017 — Attention Is All You Need (Section 3.5: sinusoidal PE derivation)</a>
+  </div>
+
+  <div class="cell" id="cell-11">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 11 — Generate sinusoidal PE and verify relative-position property</span>
+      <button class="run-btn" onclick="runCell('cell-11')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import math
+
+def sinusoidal_pe(pos, d_model=16):
+    """Generate the sinusoidal positional encoding for one position."""
+    pe = []
+    for i in range(d_model):
+        freq = 1.0 / (10000 ** (2 * (i // 2) / d_model))
+        if i % 2 == 0:
+            pe.append(math.sin(pos * freq))   # even dims: sin
+        else:
+            pe.append(math.cos(pos * freq))   # odd dims: cos
+    return pe
+
+def dot(a, b):
+    return sum(x*y for x,y in zip(a,b))
+
+def norm(v):
+    return math.sqrt(sum(x*x for x in v))
+
+# Generate PE for positions 0..7
+D = 16
+positions = list(range(8))
+PE = [sinusoidal_pe(p, D) for p in positions]
+
+print("Sinusoidal PE — first 6 dimensions across positions:")
+print(f"{'pos':>4}", end="")
+for i in range(6):
+    print(f"  dim{i:d}  ", end="")
+print()
+for p in positions:
+    print(f"{p:>4}", end="")
+    for i in range(6):
+        print(f" {PE[p][i]:>7.3f}", end="")
+    print()
+
+print()
+# Key property: dot(PE[a], PE[b]) depends only on |a-b|
+print("Dot products (should depend only on distance, not absolute positions):")
+for offset in [0, 1, 2, 3]:
+    sims = []
+    for base in range(0, len(positions) - offset):
+        s = dot(PE[base], PE[base + offset]) / (norm(PE[base]) * norm(PE[base + offset]))
+        sims.append(s)
+    avg = sum(sims) / len(sims)
+    std = math.sqrt(sum((s - avg)**2 for s in sims) / len(sims))
+    print(f"  Offset {offset}: cosine sims = {[f'{s:.3f}' for s in sims]}  (std={std:.4f})")
+
+print()
+print("Notice: same offset → very similar dot products regardless of base position.")
+print("This is the 'relative position' property that inspired RoPE.")
+print("Try: change D=64 and see how much more stable the sims become.")
+</pre></div>
+    <div class="cell-output" id="cell-11-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- §2.12  The Full Input Pipeline                          -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="s12">
+  <div class="section-label">2.12</div>
+  <h2>The Full Input Pipeline</h2>
+
+  <p>Every concept in this chapter connects into a single pipeline. Raw text enters one end; a tensor of shape <code>(B, T, d_model)</code> exits the other end, ready for the first transformer block. Understanding this pipeline end-to-end is essential for debugging data issues, understanding model limitations, and designing preprocessing for fine-tuning.</p>
+
+  <div class="pipe-wrap">
+    <div class="pipe-step ps-raw">Raw text<br><span style="font-size:10px;opacity:.7;">"The cat sat…"</span></div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-step ps-clean">Clean &amp; filter<br><span style="font-size:10px;opacity:.7;">quality · dedup</span></div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-step ps-tok">Tokenize<br><span style="font-size:10px;opacity:.7;">BPE / tiktoken</span></div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-step ps-ids">Batch (B, T)<br><span style="font-size:10px;opacity:.7;">int64 IDs</span></div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-step ps-emb">Embed (B,T,d)<br><span style="font-size:10px;opacity:.7;">tok + pos</span></div>
+  </div>
+
+  <p>The GPT-2 code for the final step — converting a batch of token IDs into the embedding tensor — is eight lines:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">gpt2.py (model.py forward pass, first 8 lines)</span>
+      <button class="code-copy" onclick="copyCode(this)">Copy</button>
+    </div>
+<pre><code><span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, idx, targets=<span class="kw">None</span>):
+    B, T = idx.<span class="fn">size</span>()
+    <span class="lm"># ↑ idx is the batch of token IDs, shape (B, T)</span>
+
+    <span class="cm"># 1. Create position indices: [0, 1, 2, ..., T-1] for each sequence</span>
+    pos = torch.<span class="fn">arange</span>(<span class="nu">0</span>, T, device=idx.device).<span class="fn">unsqueeze</span>(<span class="nu">0</span>)
+    <span class="lm"># ↑ shape: (1, T) — same positions for every sequence in the batch</span>
+
+    <span class="cm"># 2. Look up token embeddings: one 768-dim vector per token ID</span>
+    tok_emb = <span class="pr">self</span>.transformer.wte(idx)
+    <span class="lm"># ↑ wte: shape [50257, 768]; idx selects rows → output (B, T, 768)</span>
+
+    <span class="cm"># 3. Look up positional embeddings: one 768-dim vector per position</span>
+    pos_emb = <span class="pr">self</span>.transformer.wpe(pos)
+    <span class="lm"># ↑ wpe: shape [1024, 768]; pos selects rows → output (1, T, 768)</span>
+    <span class="lm">#   broadcasts to (B, T, 768) — same position vector for all batch items</span>
+
+    <span class="cm"># 4. Add token and positional embeddings — elementwise sum</span>
+    x = <span class="pr">self</span>.transformer.drop(tok_emb + pos_emb)
+    <span class="lm"># ↑ x shape: (B, T, 768). This is the input to the first transformer block.</span>
+    <span class="lm">#   Dropout applied here at training time (p=0.1 in GPT-2)</span>
+
+    <span class="cm"># 5. Pass through N transformer blocks</span>
+    <span class="kw">for</span> block <span class="kw">in</span> <span class="pr">self</span>.transformer.h:
+        x = <span class="fn">block</span>(x)
+    <span class="lm"># ↑ 12 blocks for GPT-2 small, each refining x in-place via residuals</span>
+</code></pre>
+  </div>
+
+  <p>The parameter count of the input pipeline for GPT-2 small: token embedding 50,257 × 768 = <strong>38.6M</strong>, positional embedding 1,024 × 768 = <strong>0.8M</strong>. Together, 39.4M parameters — 32% of the model's total. The remaining 68% lives in the transformer blocks. This ratio is why weight tying (sharing the token embedding with the output LM head) is so impactful: it converts 38.6M parameters from the input into free supervision for the output layer.</p>
+
+  <div class="callout green"><strong>The +: the most important operator in GPT-2.</strong> tok_emb + pos_emb is an elementwise addition of two (B, T, 768) tensors. No concatenation, no gating, no learned combination — just addition. The model must learn, through training, to encode "this token's meaning" in one part of the 768-dim space and "this position's identity" in another part, such that gradient descent through the combined representation finds both signals useful.</div>
+
+  <div class="deepdive">
+    <div class="deepdive-label">Deep Dive</div>
+    <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">🔗 Karpathy — nanoGPT model.py (GPT.forward() shows tok_emb + pos_emb verbatim)</a>
+    <a href="https://jalammar.github.io/illustrated-gpt2/#part-1-gpt2-and-language-modeling" target="_blank">🔗 Jay Alammar — The Illustrated GPT-2 (visual walkthrough of the input pipeline)</a>
+    <a href="https://arxiv.org/abs/2202.01855" target="_blank">🔗 Press, Smith &amp; Lewis 2022 — Train Short, Test Long: Attention with Linear Biases</a>
+  </div>
+
+  <div class="cell" id="cell-12">
+    <div class="cell-header">
+      <span class="cell-label">▶ Cell 12 — Simulate the full pipeline: raw text → (B, T, d) embedding tensor</span>
+      <button class="run-btn" onclick="runCell('cell-12')">Run</button>
+    </div>
+    <div class="cell-code"><pre>
+import math, random
+
+random.seed(0)
+
+# ── Tiny BPE tokenizer (from §2.3) ──────────────────────────────────────────
+from collections import Counter
+
+def get_stats(ids): return Counter(zip(ids, ids[1:]))
+def merge(ids, pair, new_id):
+    out, i = [], 0
+    while i < len(ids):
+        if i+1<len(ids) and ids[i]==pair[0] and ids[i+1]==pair[1]:
+            out.append(new_id); i+=2
+        else: out.append(ids[i]); i+=1
+    return out
+def train_bpe(text, vocab_size=300):
+    ids = list(text.encode('utf-8'))
+    vocab = {i: bytes([i]) for i in range(256)}
+    merges = {}
+    for i in range(vocab_size - 256):
+        stats = get_stats(ids)
+        if not stats: break
+        best = max(stats, key=stats.get)
+        new_id = 256+i; ids = merge(ids, best, new_id)
+        merges[best]=new_id; vocab[new_id]=vocab[best[0]]+vocab[best[1]]
+    return merges, vocab
+def encode(text, merges):
+    ids = list(text.encode('utf-8'))
+    for p, nid in merges.items(): ids = merge(ids, p, nid)
+    return ids
+
+# ── Tiny embedding tables ────────────────────────────────────────────────────
+VOCAB_SIZE = 300
+D_MODEL = 16   # tiny for demo (real GPT-2: 768)
+T_MAX = 32     # context length (real GPT-2: 1024)
+BATCH = 2
+
+def make_embedding_table(rows, cols):
+    """Initialize with Normal(0, 0.02) like GPT-2."""
+    return [[random.gauss(0, 0.02) for _ in range(cols)] for _ in range(rows)]
+
+def lookup_embed(table, idx):
+    return table[min(idx, len(table)-1)]  # clamp to valid range
+
+def vec_add(a, b):
+    return [x+y for x,y in zip(a,b)]
+
+# ── Step 1: corpus and tokenizer ─────────────────────────────────────────────
+corpus = "The cat sat on a mat. The dog ran fast. The fox jumped over the lazy dog."
+merges, vocab = train_bpe(corpus, vocab_size=VOCAB_SIZE)
+print(f"Step 1 — Tokenizer: {256 + len(merges)} tokens in vocabulary")
+
+# ── Step 2: tokenize two documents ──────────────────────────────────────────
+docs = ["The cat sat on a mat.", "The dog ran very fast indeed."]
+token_ids = [encode(d, merges)[:T_MAX] for d in docs]
+# Pad/truncate to same length
+max_len = max(len(t) for t in token_ids)
+token_ids = [t + [0]*(max_len-len(t)) for t in token_ids]  # pad with 0
+
+print(f"\nStep 2 — Tokenize {len(docs)} documents:")
+for doc, ids in zip(docs, token_ids):
+    print(f"  {doc!r[:40]}")
+    print(f"  → {len(ids)} tokens: {ids[:8]}...")
+
+# ── Step 3: embedding tables ─────────────────────────────────────────────────
+wte = make_embedding_table(VOCAB_SIZE, D_MODEL)   # token embeddings
+wpe = make_embedding_table(T_MAX, D_MODEL)         # positional embeddings
+
+print(f"\nStep 3 — Embedding tables:")
+print(f"  wte (token):    {VOCAB_SIZE} × {D_MODEL} = {VOCAB_SIZE*D_MODEL:,} parameters")
+print(f"  wpe (position): {T_MAX} × {D_MODEL} = {T_MAX*D_MODEL:,} parameters")
+print(f"  GPT-2 actual:   {50257*768:,} + {1024*768:,} = {50257*768+1024*768:,} parameters")
+
+# ── Step 4: tok_emb + pos_emb ───────────────────────────────────────────────
+print(f"\nStep 4 — tok_emb + pos_emb for batch (B={len(token_ids)}, T={max_len}, d={D_MODEL}):")
+for b, ids in enumerate(token_ids):
+    print(f"  Sequence {b} (first 3 positions):")
+    for t, tok_id in enumerate(ids[:3]):
+        tok_vec = lookup_embed(wte, tok_id)
+        pos_vec = lookup_embed(wpe, t)
+        combined = vec_add(tok_vec, pos_vec)
+        print(f"    t={t} tok_id={tok_id:4d}: tok[{tok_vec[0]:+.3f},...]"
+              f" + pos[{pos_vec[0]:+.3f},...] = [{combined[0]:+.3f},...]")
+
+print(f"\nOutput tensor shape: ({len(token_ids)}, {max_len}, {D_MODEL})")
+print("This tensor is the input to Block 0 of the transformer.")
+print("\nTry: change D_MODEL=32 or T_MAX=64 and observe parameter count change.")
+</pre></div>
+    <div class="cell-output" id="cell-12-out">Click Run to execute.</div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- Summary                                                 -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="section" id="summary">
+  <div class="section-label">Summary</div>
+  <h2>Chapter 2 — Key Takeaways</h2>
+
+  <table class="sum-table">
+    <thead>
+      <tr><th>Concept</th><th>Key Number / Insight</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Subword tokenization</strong></td><td>Sweet spot between character-level (too long) and word-level (too brittle). Handles any input text without OOV.</td></tr>
+      <tr><td><strong>BPE algorithm</strong></td><td>Count adjacent pairs → merge most frequent → repeat k times. The merge list IS the tokenizer.</td></tr>
+      <tr><td><span class="sk">vocab_size = 50,257</span></td><td>GPT-2: 256 bytes + 50,000 merges + 1 special token. GPT-4: 100,277 (cl100k_base).</td></tr>
+      <tr><td><strong>Byte-level BPE</strong></td><td>Starts from 256 raw byte values. Encodes any byte sequence. No OOV possible — guaranteed.</td></tr>
+      <tr><td><strong>tiktoken</strong></td><td>OpenAI's tokenizer: Rust backend, ~1 GB/s. 3–6× faster than HuggingFace tokenizers.</td></tr>
+      <tr><td><strong>Special tokens</strong></td><td>&lt;|endoftext|&gt; separates training documents. Chat models add &lt;|im_start|&gt;/&lt;|im_end|&gt; for turn structure.</td></tr>
+      <tr><td><strong>SentencePiece</strong></td><td>Trains on raw Unicode (no pre-whitespace-split). Used by LLaMA, T5, Gemini. Supports BPE and Unigram.</td></tr>
+      <tr><td><strong>Data quality &gt; quantity</strong></td><td>LLaMA-3 8B &gt; LLaMA-2 70B partly due to 15T curated tokens vs 2T less-filtered tokens.</td></tr>
+      <tr><td><strong>Sliding-window sampling</strong></td><td>x = tokens[i:i+T], y = tokens[i+1:i+T+1]. One window → T simultaneous predictions.</td></tr>
+      <tr><td><span class="sk">B × T = 524,288</span></td><td>GPT-2: batch=512, seq=1024. That many next-token predictions per gradient step.</td></tr>
+      <tr><td><strong>Token embeddings</strong></td><td>[50,257 × 768] = 38.6M parameters. 31% of GPT-2 small's total. Shared with LM head (weight tying).</td></tr>
+      <tr><td><strong>Positional encoding</strong></td><td>GPT-2: learned [1024 × 768] = 0.8M parameters. Modern: RoPE (relative, extrapolates) or ALiBi (no params).</td></tr>
+      <tr><td><span class="sk">tok_emb + pos_emb</span></td><td>Final input to transformer: elementwise sum, shape (B, T, d_model). Simple addition, no gating.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="ch-nav">
+  <a href="chapter1.html">
+    <span class="cnd">← Previous</span>
+    <span class="cnt">Chapter 1: Understanding LLMs</span>
+  </a>
+  <a href="chapter3.html" style="text-align:right">
+    <span class="cnd">Next →</span>
+    <span class="cnt">Chapter 3: The Transformer Architecture</span>
+  </a>
+</div>
+
+</section>
+</div><!-- /.container -->
+
+<script>
+let pyodideReady=false,pyodide=null;
+async function initPyodide(){
+  const s=document.getElementById('pyodide-status');
+  try{
+    pyodide=await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.27.3/full/'});
+    pyodideReady=true;
+    s.textContent='✓ Python ready — click Run on any cell.';
+    s.style.color='var(--green)';s.style.borderColor='var(--green)';
+  }catch(e){s.textContent='⚠ Could not load Python runtime.';s.style.color='var(--accent)';}
+}
+async function runCell(id){
+  const cell=document.getElementById(id);
+  const code=cell.querySelector('.cell-code pre').textContent;
+  const out=cell.querySelector('.cell-output');
+  const btn=cell.querySelector('.run-btn');
+  if(!pyodideReady){out.textContent='⏳ Runtime loading…';return;}
+  btn.disabled=true;out.className='cell-output running';out.textContent='⏳ Running…';
+  try{
+    pyodide.runPython('import sys,io;_o=io.StringIO();sys.stdout=_o');
+    await pyodide.runPythonAsync(code);
+    const r=pyodide.runPython('sys.stdout=sys.__stdout__;_o.getvalue()');
+    out.className='cell-output';out.textContent=r||'(no output)';
+  }catch(e){
+    try{pyodide.runPython('sys.stdout=sys.__stdout__');}catch(_){}
+    out.className='cell-output error';out.textContent='❌ '+e.message;
+  }
+  btn.disabled=false;
+}
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent);
+  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js" onload="initPyodide()" async></script>
+</body>
+</html>
