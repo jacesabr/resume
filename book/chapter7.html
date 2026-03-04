@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 7 — Fine-Tuning to Follow Instructions</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f7;--bg-code:#1a1a1a;--bg-card:#fff;--bg-aside:#f3f1ee;--bg-deep:#f7f4ef;
+  --text:#1a1a1a;--text-secondary:#6b6560;--text-code:#e8e4de;
+  --accent:#c96442;--accent-light:rgba(201,100,66,.08);
+  --blue:#3b6bb5;--blue-light:rgba(59,107,181,.07);
+  --green:#4a8c6f;--green-light:rgba(74,140,111,.07);
+  --purple:#7c5cbf;--purple-light:rgba(124,92,191,.07);
+  --amber:#b87c2a;--amber-light:rgba(184,124,42,.07);
+  --border:#e8e4de;--border-light:#f0ece6;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',monospace;
+  --max-w:740px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased;}
+::selection{background:var(--accent);color:#fff;}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+.topnav{position:sticky;top:0;z-index:100;background:rgba(250,249,247,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light);padding:14px 0;}
+.topnav .container{display:flex;align-items:center;justify-content:space-between;}
+.topnav-title{font-family:var(--font-serif);font-size:15px;}
+.topnav-links{display:flex;gap:16px;}
+.topnav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;transition:color .2s;}
+.topnav-links a:hover{color:var(--accent);}
+.chapter-header{padding:80px 0 56px;border-bottom:1px solid var(--border);}
+.chapter-label{font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.chapter-header h1{font-family:var(--font-serif);font-size:clamp(30px,5vw,46px);font-weight:400;line-height:1.18;margin-bottom:18px;}
+.chapter-header>p{font-size:17px;color:var(--text-secondary);max-width:580px;line-height:1.72;}
+.chapter-meta{display:flex;gap:24px;margin-top:24px;font-size:13px;color:var(--text-secondary);flex-wrap:wrap;}
+.toc{padding:32px 0;border-bottom:1px solid var(--border);}
+.toc h3{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:2px;}
+.toc-list a{display:flex;gap:10px;text-decoration:none;color:var(--text);padding:6px 8px;font-size:13.5px;transition:all .2s;border-radius:5px;}
+.toc-list a:hover{color:var(--accent);background:var(--accent-light);}
+.toc-num{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);min-width:26px;}
+.section{padding:60px 0 0;}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.5px;margin-bottom:8px;}
+.section h2{font-family:var(--font-serif);font-size:30px;font-weight:400;line-height:1.28;margin-bottom:22px;}
+.section p{margin-bottom:18px;max-width:680px;}
+.section-divider{border:none;border-top:1px solid var(--border-light);margin:64px 0 0;}
+.callout{background:var(--bg-aside);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 22px;margin:22px 0;font-size:15px;line-height:1.72;}
+.callout strong{color:var(--accent);}
+.callout.blue{border-left-color:var(--blue);}.callout.blue strong{color:var(--blue);}
+.callout.green{border-left-color:var(--green);}.callout.green strong{color:var(--green);}
+.callout.purple{border-left-color:var(--purple);}.callout.purple strong{color:var(--purple);}
+.callout.amber{border-left-color:var(--amber);}.callout.amber strong{color:var(--amber);}
+.deepdive{background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:14px 20px;margin:22px 0;}
+.deepdive-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px;}
+.deepdive a{display:block;font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;}
+.deepdive a:hover{text-decoration:underline;}
+.formula{background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:13.5px;padding:18px 24px;border-radius:8px;margin:20px 0;text-align:center;}
+.formula .eq-label{font-size:10px;color:#666;display:block;margin-bottom:6px;text-align:left;letter-spacing:.5px;}
+.formula .eq-note{font-size:11px;color:#888;display:block;margin-top:6px;}
+.code-block{background:var(--bg-code);border-radius:10px;margin:22px 0;overflow:hidden;}
+.code-header{display:flex;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.code-filename{font-family:var(--font-mono);font-size:11px;color:#888;}
+.code-copy{background:none;border:1px solid #444;color:#888;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;}
+.code-copy:hover{border-color:#888;color:#ddd;}
+.code-block pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.72;color:var(--text-code);padding:20px 24px;overflow-x:auto;}
+.kw{color:#cf8e6d;font-weight:500;}.fn{color:#87ceeb;}.cm{color:#6a9955;font-style:italic;}
+.lm{color:#4fc3f7;font-style:italic;}.st{color:#6aab73;}.nu{color:#79b4de;}
+.cl{color:#ffd580;}.pr{color:#9cdcfe;}.bi{color:#dcdcaa;}
+.cell{border:1px solid var(--border);border-radius:10px;margin:26px 0;overflow:hidden;}
+.cell-header{display:flex;justify-content:space-between;padding:10px 18px;background:var(--bg-aside);border-bottom:1px solid var(--border);}
+.cell-label{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.run-btn{background:var(--accent);color:#fff;border:none;padding:5px 16px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;}
+.run-btn:hover{opacity:.85;}.run-btn:disabled{opacity:.5;cursor:default;}
+.cell-code{background:var(--bg-code);padding:18px 22px;}
+.cell-code pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.68;color:var(--text-code);white-space:pre-wrap;}
+.cell-output{padding:14px 18px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#444;background:#fff;border-top:1px solid var(--border);white-space:pre-wrap;min-height:28px;}
+.cell-output.running{color:var(--accent);}.cell-output.error{color:#c0392b;}
+.ch-nav{display:flex;justify-content:space-between;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:20px;}
+.ch-nav a{text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:3px;}
+.ch-nav a:hover{color:var(--accent);}
+.cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.cnt{font-size:15px;font-weight:500;}
+#pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
+.format-compare{display:flex;flex-direction:column;gap:10px;margin:22px 0;}
+.fc{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.fc-header{padding:8px 14px;font-family:var(--font-mono);font-size:11px;font-weight:700;}
+.fc-alpaca .fc-header{background:var(--amber-light);color:var(--amber);}
+.fc-sharegpt .fc-header{background:var(--blue-light);color:var(--blue);}
+.fc-chatml .fc-header{background:var(--purple-light);color:var(--purple);}
+.fc-body{background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:12px;padding:12px 16px;line-height:1.6;}
+.fc-tok-on{color:#4fc3f7;}
+.fc-tok-off{color:#6a9955;font-style:italic;}
+.lora-math{display:flex;align-items:center;gap:16px;margin:22px 0;flex-wrap:wrap;}
+.lm-box{border-radius:8px;padding:14px 18px;text-align:center;font-family:var(--font-mono);font-size:12px;}
+.lm-W0{background:#eee;border:2px solid #999;color:#555;min-width:100px;}
+.lm-A{background:var(--amber-light);border:2px solid var(--amber);color:var(--amber);min-width:70px;}
+.lm-B{background:var(--blue-light);border:2px solid var(--blue);color:var(--blue);min-width:70px;}
+.lm-eq{font-size:22px;color:var(--text-secondary);}
+.lm-label{font-size:10px;display:block;margin-top:4px;opacity:.7;}
+.rlhf-vs-dpo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
+.rvd{border:1px solid var(--border);border-radius:8px;padding:14px;}
+.rvd h4{font-size:12px;font-weight:700;margin-bottom:10px;font-family:var(--font-mono);}
+.rvd-rlhf h4{color:var(--accent);}
+.rvd-dpo h4{color:var(--green);}
+.rvd-step{font-size:12px;color:var(--text-secondary);padding:3px 0;border-bottom:1px solid var(--border-light);}
+.rvd-step:last-child{border-bottom:none;}
+.benchmark-table{width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;}
+.benchmark-table th{background:var(--bg-aside);padding:9px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;}
+.benchmark-table td{padding:8px 14px;border-bottom:1px solid var(--border-light);}
+.benchmark-table tr:hover td{background:var(--accent-light);}
+.rank-bar{display:inline-block;height:8px;border-radius:2px;background:var(--accent);vertical-align:middle;margin-right:6px;}
+.deploy-steps{display:flex;flex-direction:column;gap:8px;margin:22px 0;}
+.ds-step{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);}
+.ds-num{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--accent);min-width:28px;}
+.ds-body h4{font-size:13px;font-weight:600;margin-bottom:3px;}
+.ds-body p{font-size:12.5px;color:var(--text-secondary);}
+.ds-body code{font-family:var(--font-mono);font-size:11px;background:var(--bg-aside);padding:1px 5px;border-radius:3px;}
+.pipeline-diag{display:flex;flex-direction:column;gap:4px;margin:22px 0;}
+.pd-row{display:flex;align-items:center;gap:8px;}
+.pd-box{flex:1;border-radius:7px;padding:10px 14px;text-align:center;font-size:12.5px;font-weight:500;}
+.pd-1{background:var(--bg-code);color:var(--text-code);}
+.pd-2{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple);}
+.pd-3{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue);}
+.pd-4{background:var(--amber-light);border:1px solid var(--amber);color:var(--amber);}
+.pd-5{background:var(--green-light);border:1px solid var(--green);color:var(--green);}
+.pd-arr{color:var(--text-secondary);font-size:18px;text-align:center;min-width:22px;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container">
+    <span class="topnav-title">Building With LLMs</span>
+    <div class="topnav-links">
+      <a href="index.html">Index</a>
+      <a href="chapter6.html">Ch 6</a>
+      <a href="#s71">7.1</a>
+      <a href="#s72">7.2</a>
+      <a href="#s73">7.3</a>
+      <a href="#s74">7.4</a>
+      <a href="#s75">7.5</a>
+      <a href="#s76">7.6</a>
+      <a href="#s77">7.7</a>
+      <a href="#s78">7.8</a>
+      <a href="#s79">7.9</a>
+      <a href="#s710">7.10</a>
+      <a href="#s711">7.11</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 7 &mdash; Final Chapter</div>
+    <h1>Fine-Tuning to Follow Instructions</h1>
+    <p>From raw pretrained weights to a deployed assistant: SFT dataset formats, masked loss, LoRA mathematics, QLoRA, DPO, evaluation benchmarks, and the complete pipeline from data to production.</p>
+    <div class="chapter-meta">
+      <span>~90 min read</span>
+      <span>11 sections</span>
+      <span>8 runnable cells</span>
+      <span>SFT &middot; LoRA &middot; DPO &middot; Evaluation &middot; Deployment</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h3>Contents</h3>
+    <div class="toc-grid">
+      <ul class="toc-list">
+        <li><a href="#s71"><span class="toc-num">7.1</span>From Pretraining to Instruction Following</a></li>
+        <li><a href="#s72"><span class="toc-num">7.2</span>SFT Dataset Formats</a></li>
+        <li><a href="#s73"><span class="toc-num">7.3</span>Chat Templates and Masked Loss</a></li>
+        <li><a href="#s74"><span class="toc-num">7.4</span>LoRA in Depth</a></li>
+        <li><a href="#s75"><span class="toc-num">7.5</span>QLoRA: Quantized Fine-Tuning</a></li>
+        <li><a href="#s76"><span class="toc-num">7.6</span>Direct Preference Optimization</a></li>
+      </ul>
+      <ul class="toc-list">
+        <li><a href="#s77"><span class="toc-num">7.7</span>RLHF vs DPO</a></li>
+        <li><a href="#s78"><span class="toc-num">7.8</span>Evaluation: MMLU, MT-Bench, Elo</a></li>
+        <li><a href="#s79"><span class="toc-num">7.9</span>Deploying a Local Assistant</a></li>
+        <li><a href="#s710"><span class="toc-num">7.10</span>The Complete Fine-Tuning Pipeline</a></li>
+        <li><a href="#s711"><span class="toc-num">7.11</span>Closing: What You've Built</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="pyodide-status">Loading Python runtime&hellip;</div>
+
+  <!-- ==================== 7.1 ==================== -->
+  <section class="section" id="s71">
+    <div class="section-label">7.1</div>
+    <h2>From Pretraining to Instruction Following</h2>
+
+    <p>A pretrained language model is, at its core, a completion engine. Feed it the prefix "The capital of France is" and it will confidently predict "Paris." Feed it the opening of a Hemingway novel and it will continue in Hemingway's voice. The model has absorbed a staggering amount of world knowledge &mdash; facts, reasoning patterns, stylistic registers, common sense &mdash; but it has learned exactly one skill: predict the next token given the preceding context. That is not the same as following instructions.</p>
+
+    <p>The gap becomes obvious the moment you ask a raw pretrained model a direct question. Ask "What is the boiling point of water?" and it will often respond by generating more questions in the same format, because that is what Q&amp;A pages on the internet look like: one question followed by another. The model has no concept of "I am the assistant, you are the user, my job is to answer." That role structure, that turn-taking convention, that helpful disposition &mdash; none of it exists in the pretrained weights. It has to be taught, and the process of teaching it is called <em>instruction tuning</em> or <em>supervised fine-tuning (SFT)</em>.</p>
+
+    <p>The history of this insight unfolded in three distinct eras. The first era (GPT-1, GPT-2) showed that pretraining on web text yielded surprisingly capable zero-shot performance on downstream tasks &mdash; but the models were unreliable, inconsistent, and prone to ignoring what you actually asked. The second era began with the FLAN paper (Wei et al., 2021), which showed that fine-tuning on a mixture of tasks described in natural language dramatically improved instruction following and generalization to unseen tasks. The third era arrived with InstructGPT (Ouyang et al., 2022) and ChatGPT: combine SFT with human preference learning (RLHF), and you get a model that is not only helpful but actively aligned with human expectations about tone, safety, and format. The open-source ecosystem &mdash; LLaMA, Mistral, Falcon, Qwen &mdash; has since replicated and extended these techniques, making instruction tuning accessible to anyone with a GPU and a dataset.</p>
+
+    <div class="pipeline-diag">
+      <div class="pd-row">
+        <div class="pd-box pd-1">Raw Pretrained Weights<br><small style="opacity:.6">next-token prediction on web text</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-2">Supervised Fine-Tuning (SFT)<br><small>instruction-response pairs, masked loss</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-3">Preference Alignment (DPO / RLHF)<br><small>chosen vs. rejected response pairs</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-5">Deployed Instruction-Following Assistant<br><small>quantized, served via Ollama / vLLM / TGI</small></div>
+      </div>
+    </div>
+
+    <p>What makes SFT work? The pretrained model already knows how to write coherent prose, reason about facts, and handle edge cases. SFT does not teach it new knowledge &mdash; it teaches it a new <em>mode of operation</em>. By showing the model thousands of examples where a system prompt, a user message, and a well-formed assistant response co-occur, the model learns to condition its generation on the instruction-following frame. It learns that when it sees a certain token pattern (e.g., <code>&lt;|im_start|&gt;user</code>) it should generate a response to whatever follows, not a continuation of the same pattern. The knowledge is already there; SFT is the key that unlocks it in the right direction.</p>
+
+    <div class="callout blue">
+      <strong>Key insight:</strong> Pretraining gives the model everything it knows. SFT gives it a job description. The model's capabilities are largely fixed after pretraining &mdash; SFT reshapes how those capabilities are expressed and when they activate.
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2109.01652" target="_blank">Wei et al. 2021 &mdash; FLAN: Finetuned Language Models Are Zero-Shot Learners</a>
+      <a href="https://arxiv.org/abs/2203.02155" target="_blank">Ouyang et al. 2022 &mdash; InstructGPT: Training language models to follow instructions with human feedback</a>
+      <a href="https://arxiv.org/abs/2302.13971" target="_blank">Touvron et al. 2023 &mdash; LLaMA: Open and Efficient Foundation Language Models</a>
+      <a href="https://arxiv.org/abs/2305.11206" target="_blank">Zhou et al. 2023 &mdash; LIMA: Less Is More for Alignment &mdash; 1,000 carefully curated examples match the quality of 52K Alpaca; curation beats volume</a>
+      <a href="https://arxiv.org/abs/2305.14233" target="_blank">Ding et al. 2023 &mdash; Enhancing Chat Language Models by Scaling High-quality Instructional Conversations (UltraChat) &mdash; 1.5M diverse multi-turn dialogues; landmark large-scale SFT corpus</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.2 ==================== -->
+  <section class="section" id="s72">
+    <div class="section-label">7.2</div>
+    <h2>SFT Dataset Formats</h2>
+
+    <p>Before you can fine-tune a model, you need data in the right shape. The field has converged on three dominant formats, each representing a different philosophy about what the training signal should look like. Understanding the tradeoffs between them is not academic: the wrong format choice can cause the model to learn the template structure but not the content, or to confuse user turns with assistant turns, or to fail entirely on multi-turn conversations.</p>
+
+    <p>The <strong>Alpaca format</strong> emerged from Stanford's Alpaca project (2023), which used GPT-3 to generate 52,000 instruction-following examples using a "self-instruct" procedure. It is simple: a JSON object with three fields &mdash; <code>instruction</code>, <code>input</code>, and <code>output</code>. The <code>input</code> field is optional context (a passage to summarize, code to debug), and may be empty for pure instruction-following tasks. Alpaca is excellent for curating domain-specific fine-tunes because the format is human-readable and easy to write by hand. Its limitation is that it is inherently single-turn: there is no mechanism for conversation history.</p>
+
+    <p>The <strong>ShareGPT format</strong> captures multi-turn conversations as an alternating sequence of human and assistant turns. Each example is a JSON object with a <code>conversations</code> list, where each entry has a <code>from</code> field ("human" or "gpt") and a <code>value</code> field containing the text. This format was popularized by the ShareGPT dataset &mdash; real conversations scraped from ChatGPT users with their permission &mdash; and it enables the model to learn how to maintain context across turns, refer back to earlier parts of the conversation, and handle follow-up questions naturally. The tradeoff is that curation is harder: a bad turn anywhere in the sequence contaminates the example.</p>
+
+    <p>The <strong>ChatML format</strong>, developed by OpenAI and adopted by most modern open-source models including Mistral, Llama-3, and Qwen, uses special tokens to delineate roles at the token level. Rather than relying on string matching, the tokenizer has dedicated vocabulary entries for role boundaries. This makes the format unambiguous even when the content itself contains text that looks like role markers. ChatML is the industry standard for production fine-tuning today. Llama-3 uses a slightly different flavor with <code>&lt;|begin_of_text|&gt;</code> and <code>&lt;|eot_id|&gt;</code> tokens, but the principle is identical.</p>
+
+    <div class="format-compare">
+      <div class="fc fc-alpaca">
+        <div class="fc-header">ALPACA FORMAT &mdash; single-turn, JSON</div>
+        <div class="fc-body">{
+  "instruction": "Explain why the sky is blue in simple terms.",
+  "input": "",
+  "output": "The sky is blue because of a process called Rayleigh scattering..."
+}
+
+<span class="fc-tok-off">// Rendered as prompt during training:</span>
+<span class="fc-tok-on">### Instruction:</span>
+Explain why the sky is blue in simple terms.
+
+<span class="fc-tok-on">### Response:</span>
+The sky is blue because of a process called Rayleigh scattering...</div>
+      </div>
+      <div class="fc fc-sharegpt">
+        <div class="fc-header">SHAREGPT FORMAT &mdash; multi-turn, conversation list</div>
+        <div class="fc-body">{
+  "conversations": [
+    {"from": "human", "value": "What is gradient descent?"},
+    {"from": "gpt",   "value": "Gradient descent is an optimization algorithm..."},
+    {"from": "human", "value": "Can you give me a concrete example?"},
+    {"from": "gpt",   "value": "Sure. Imagine you're in a hilly landscape..."}
+  ]
+}</div>
+      </div>
+      <div class="fc fc-chatml">
+        <div class="fc-header">CHATML FORMAT &mdash; token-delimited, production standard</div>
+        <div class="fc-body"><span class="fc-tok-on">&lt;|im_start|&gt;system</span>
+You are a helpful assistant.
+<span class="fc-tok-on">&lt;|im_end|&gt;</span>
+<span class="fc-tok-on">&lt;|im_start|&gt;user</span>
+What is gradient descent?
+<span class="fc-tok-on">&lt;|im_end|&gt;</span>
+<span class="fc-tok-on">&lt;|im_start|&gt;assistant</span>
+Gradient descent is an optimization algorithm that...
+<span class="fc-tok-on">&lt;|im_end|&gt;</span>
+
+<span class="fc-tok-off">// Special tokens are real vocabulary entries — not just strings</span></div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <strong>Why format matters:</strong> The model learns the template structure as much as the content. If your dataset has inconsistent formatting &mdash; some examples using "### Instruction:" and others using "&lt;|im_start|&gt;" &mdash; the model will learn to output both interchangeably, which is not what you want at inference time.
+    </div>
+
+    <div class="cell" id="cell-alpaca-gen">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Generate a random Alpaca-format training example</span>
+        <button class="run-btn" onclick="runCell('cell-alpaca-gen')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import random, json
+
+INSTRUCTIONS = [
+    "Explain {topic} to a 10-year-old.",
+    "Write a Python function that {task}.",
+    "Summarize the key idea behind {topic} in two sentences.",
+    "What are the three most important things to know about {topic}?",
+    "Compare and contrast {topic} and {other}.",
+]
+TOPICS = ["gradient descent", "attention mechanisms", "tokenization",
+          "regularization", "backpropagation", "embeddings", "LoRA"]
+TASKS  = ["computes cosine similarity between two vectors",
+          "flattens a nested list", "implements a simple tokenizer"]
+
+def make_alpaca_example():
+    instr_tmpl = random.choice(INSTRUCTIONS)
+    topic = random.choice(TOPICS)
+    other = random.choice([t for t in TOPICS if t != topic])
+    task  = random.choice(TASKS)
+    instruction = (instr_tmpl
+        .replace("{topic}", topic)
+        .replace("{other}", other)
+        .replace("{task}", task))
+    example = {
+        "instruction": instruction,
+        "input": "",
+        "output": f"[Model would generate a response about {topic!r} here]"
+    }
+    return example
+
+for i in range(3):
+    ex = make_alpaca_example()
+    print(f"--- Example {i+1} ---")
+    print(json.dumps(ex, indent=2))
+    print()
+</pre></div>
+      <div class="cell-output">Click ▶ Run to generate examples.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://github.com/tatsu-lab/stanford_alpaca" target="_blank">Stanford Alpaca &mdash; original dataset and training code</a>
+      <a href="https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered" target="_blank">ShareGPT dataset on HuggingFace</a>
+      <a href="https://github.com/openai/openai-python/blob/main/chatml.md" target="_blank">ChatML format specification (OpenAI)</a>
+      <a href="https://arxiv.org/abs/2305.11206" target="_blank">Zhou et al. 2023 &mdash; LIMA: Less Is More for Alignment &mdash; shows that 1,000 high-quality examples in Alpaca format can match 52K; quality filter beats raw scale</a>
+      <a href="https://arxiv.org/abs/2305.14233" target="_blank">Ding et al. 2023 &mdash; UltraChat: 1.5M multi-turn ChatML-format dialogues across 30 topics; one of the largest open SFT corpora for conversational fine-tuning</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.3 ==================== -->
+  <section class="section" id="s73">
+    <div class="section-label">7.3</div>
+    <h2>Chat Templates and Masked Loss</h2>
+
+    <p>Fine-tuning a model on instruction data requires two things that are easy to get wrong: a consistent way to serialize the conversation into a flat token sequence (the chat template), and a training objective that only punishes the model for mistakes on the tokens it is supposed to generate (masked loss). Getting either wrong is enough to produce a model that either ignores instructions or degrades into incoherent output after a few turns.</p>
+
+    <p>The chat template defines how roles, messages, and special tokens are arranged in the input sequence. In the ChatML convention used by Mistral and OpenHermes, a conversation is serialized as: <code>&lt;|im_start|&gt;system\n{system_prompt}\n&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n{user_message}\n&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</code>. The model generates tokens starting after the final <code>assistant\n</code> until it emits <code>&lt;|im_end|&gt;</code>, at which point generation stops. Llama-3 uses a different set of special tokens &mdash; <code>&lt;|begin_of_text|&gt;</code>, <code>&lt;|start_header_id|&gt;</code>, <code>&lt;|end_header_id|&gt;</code>, <code>&lt;|eot_id|&gt;</code> &mdash; but the concept is identical. HuggingFace's <code>tokenizer.apply_chat_template()</code> handles this serialization automatically once you supply the correct Jinja2 template for your model family.</p>
+
+    <p>Masked loss is the mechanism that makes SFT actually work as instruction tuning rather than general text modeling. The cross-entropy loss is computed over the entire token sequence, but only certain positions contribute gradients: the assistant turns. System prompts and user messages are <em>masked out</em> by setting their label values to <code>-100</code> &mdash; a sentinel value that PyTorch's <code>nn.CrossEntropyLoss</code> silently ignores. Without this masking, the model receives gradient signal from every token in the sequence, which teaches it to predict user messages given prior user messages. This is precisely the wrong objective: you end up with a model that completes user queries rather than responding to them. The masking forces the model to learn: "Given everything before my turn, what should I say?"</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">chat_template.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>
+<span class="kw">from</span> <span class="pr">transformers</span> <span class="kw">import</span> <span class="cl">AutoTokenizer</span>
+
+<span class="cm"># Load a tokenizer that knows the ChatML template</span>
+tokenizer = <span class="cl">AutoTokenizer</span>.<span class="fn">from_pretrained</span>(<span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)
+
+messages = [
+    {<span class="st">"role"</span>: <span class="st">"system"</span>,    <span class="st">"content"</span>: <span class="st">"You are a helpful assistant."</span>},
+    {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"What is backpropagation?"</span>},
+    {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="st">"Backpropagation is the algorithm..."</span>},
+]
+
+<span class="cm"># Serialize to a flat token sequence — handles special tokens automatically</span>
+flat = tokenizer.<span class="fn">apply_chat_template</span>(
+    messages,
+    tokenize=<span class="kw">False</span>,       <span class="lm"># ↑ return string, not token IDs — easier to inspect</span>
+    add_generation_prompt=<span class="kw">False</span>
+)
+<span class="bi">print</span>(flat)
+
+<span class="cm"># ------ Masked loss: only train on assistant tokens ------</span>
+IGNORE_INDEX = <span class="nu">-100</span>  <span class="lm"># ↑ PyTorch CrossEntropyLoss ignores this sentinel value</span>
+
+<span class="kw">def</span> <span class="fn">mask_labels</span>(input_ids, tokenizer):
+    <span class="st">"""Return labels tensor: -100 everywhere except assistant response tokens."""</span>
+    labels = list(input_ids)  <span class="lm"># ↑ start with a copy of all token IDs</span>
+
+    <span class="cm"># Find the assistant start token position</span>
+    assistant_token = tokenizer.<span class="fn">encode</span>(<span class="st">"&lt;|im_start|&gt;assistant"</span>, add_special_tokens=<span class="kw">False</span>)
+
+    in_assistant = <span class="kw">False</span>
+    i = <span class="nu">0</span>
+    <span class="kw">while</span> i &lt; <span class="bi">len</span>(labels):
+        <span class="cm"># Check if we're entering an assistant span</span>
+        span = labels[i:i+<span class="bi">len</span>(assistant_token)]
+        <span class="kw">if</span> span == assistant_token:
+            in_assistant = <span class="kw">True</span>
+            labels[i:i+<span class="bi">len</span>(assistant_token)] = [IGNORE_INDEX]*<span class="bi">len</span>(assistant_token)
+            i += <span class="bi">len</span>(assistant_token)
+            <span class="kw">continue</span>
+        <span class="cm"># Check if we're leaving an assistant span</span>
+        <span class="kw">if</span> in_assistant <span class="kw">and</span> labels[i] == tokenizer.<span class="fn">convert_tokens_to_ids</span>(<span class="st">"&lt;|im_end|&gt;"</span>):
+            in_assistant = <span class="kw">False</span>
+        <span class="cm"># Mask non-assistant tokens</span>
+        <span class="kw">if not</span> in_assistant:
+            labels[i] = IGNORE_INDEX  <span class="lm"># ↑ gradient will be zero at this position</span>
+        i += <span class="nu">1</span>
+
+    <span class="kw">return</span> labels
+</pre>
+    </div>
+
+    <div class="callout green">
+      <strong>Without masking:</strong> The model trains to predict user messages given prior context &mdash; essentially a general next-token predictor. With masking, it trains to generate responses given full conversational context. This single change is the difference between a completion model and an instruction-following model.
+    </div>
+
+    <div class="cell" id="cell-masked-loss">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Implement masked cross-entropy loss on a toy sequence</span>
+        <button class="run-btn" onclick="runCell('cell-masked-loss')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import math
+
+def softmax(logits):
+    m = max(logits)
+    exps = [math.exp(x - m) for x in logits]
+    s = sum(exps)
+    return [e / s for e in exps]
+
+def cross_entropy(logits, target):
+    """Standard cross-entropy: -log(prob[target])"""
+    probs = softmax(logits)
+    return -math.log(probs[target] + 1e-9)
+
+IGNORE_INDEX = -100
+
+# Toy sequence: 6 positions, vocab size 5
+# Positions 0-1 are system/user (masked), positions 2-5 are assistant (trained)
+logits = [
+    [2.1, 0.5, 0.3, 0.1, 0.0],  # pos 0: system token    (masked)
+    [0.1, 3.2, 0.2, 0.1, 0.1],  # pos 1: user token      (masked)
+    [0.2, 0.1, 4.1, 0.3, 0.2],  # pos 2: assistant tok 1 (trained)
+    [0.1, 0.2, 0.1, 3.8, 0.1],  # pos 3: assistant tok 2 (trained)
+    [0.3, 0.1, 0.2, 0.1, 2.9],  # pos 4: assistant tok 3 (trained)
+    [1.1, 0.2, 3.1, 0.1, 0.1],  # pos 5: EOS token       (trained)
+]
+targets = [IGNORE_INDEX, IGNORE_INDEX, 2, 3, 4, 2]  # -100 = masked
+
+print("Position  Label     Loss")
+print("-" * 40)
+total_loss = 0.0
+num_active = 0
+for i, (lg, tgt) in enumerate(zip(logits, targets)):
+    if tgt == IGNORE_INDEX:
+        print(f"  {i}       MASKED    ---  (no gradient)")
+    else:
+        loss = cross_entropy(lg, tgt)
+        total_loss += loss
+        num_active += 1
+        print(f"  {i}       {tgt}         {loss:.4f}")
+
+avg_loss = total_loss / num_active
+print(f"\nAverage loss (active positions only): {avg_loss:.4f}")
+print(f"Without masking, loss would include {len(logits)} positions.")
+print(f"With masking, only {num_active} positions contribute gradients.")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to see masked loss computation.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://huggingface.co/docs/transformers/chat_templating" target="_blank">HuggingFace &mdash; Chat Templating documentation</a>
+      <a href="https://arxiv.org/abs/2307.09288" target="_blank">Llama-2 paper &mdash; describes chat format and training details</a>
+      <a href="https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md" target="_blank">Llama-3 model card &mdash; new special token format</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.4 ==================== -->
+  <section class="section" id="s74">
+    <div class="section-label">7.4</div>
+    <h2>LoRA in Depth</h2>
+
+    <p>Fine-tuning all the parameters of a large language model is prohibitively expensive. A 7B-parameter model in 16-bit precision requires 14 GB just to store the weights; optimizer states (Adam maintains two moments per parameter) add another 28 GB, and activations during backpropagation can push the total well above 80 GB. This puts full fine-tuning out of reach for anyone without access to multiple high-end GPUs. Low-Rank Adaptation (LoRA), introduced by Hu et al. in 2021, offers an elegant solution: instead of updating the full weight matrix W, learn a low-rank decomposition of the update.</p>
+
+    <p>The key observation is that when you fine-tune a pretrained model on a downstream task, the weight changes tend to be low-rank &mdash; they live in a small subspace of the full parameter space. LoRA exploits this by parameterizing the weight update as the product of two small matrices: <strong>A</strong> of shape (d, r) and <strong>B</strong> of shape (r, k), where r &lt;&lt; min(d, k) is the rank. The forward pass becomes h = Wx + (B &middot; A &middot; x) &middot; (&#945;/r), where W is frozen and only A and B are updated during training. At initialization, A is drawn from a Gaussian distribution and B is zero, so the adapter contributes nothing at the start of training &mdash; you begin exactly where the pretrained model left off.</p>
+
+    <p>The parameter savings are dramatic. Consider the query projection in a GPT-2 attention head: d = k = 768, so W has 768 &times; 768 = 589,824 parameters. With LoRA at rank 8, A has 768 &times; 8 = 6,144 parameters and B has 8 &times; 768 = 6,144 parameters, for a total of 12,288 &mdash; just 2.1% of the original. Across all attention layers in a 7B model, LoRA at r=16 typically introduces 4&ndash;8 million trainable parameters out of 7 billion, reducing optimizer memory by 99% and enabling fine-tuning on a single 24 GB GPU.</p>
+
+    <div class="lora-math">
+      <div class="lm-box lm-W0">W<sub>0</sub><br><span class="lm-label">frozen pretrained<br>d &times; k</span></div>
+      <div class="lm-eq">+</div>
+      <div class="lm-box lm-B">B<br><span class="lm-label">trainable<br>d &times; r</span></div>
+      <div class="lm-eq">&middot;</div>
+      <div class="lm-box lm-A">A<br><span class="lm-label">trainable<br>r &times; k</span></div>
+      <div class="lm-eq">=</div>
+      <div class="lm-box" style="background:var(--green-light);border:2px solid var(--green);color:var(--green);min-width:110px;">W<sub>0</sub> + &Delta;W<br><span class="lm-label">effective weight<br>d &times; k</span></div>
+    </div>
+
+    <div class="formula">
+      <span class="eq-label">LORA FORWARD PASS</span>
+      h = W<sub>0</sub>x + (&#945;/r) &middot; B &middot; A &middot; x
+      <span class="eq-note">W<sub>0</sub> frozen &mdash; only B and A receive gradients. &#945; is a scaling hyperparameter, typically 16&ndash;32. r is the rank, typically 4&ndash;64.</span>
+    </div>
+
+    <p>Which layers should you adapt? The standard practice is to apply LoRA to the query and value projection matrices (Wq and Wv) in every attention head. Some practitioners also adapt the key matrix Wk and the output projection Wo. Adapting the feed-forward network (FFN) layers adds more parameters but can improve performance on knowledge-intensive tasks. What you should almost never adapt are the embedding layers: they are large (vocab_size &times; d_model), sparse in their gradients, and slow to train. The practical recommendation for most fine-tunes is Wq + Wv with r=16 and &#945;=32 as a starting point.</p>
+
+    <p>After training, LoRA adapters can be merged back into the base weights with zero inference overhead: W_merged = W<sub>0</sub> + (&#945;/r) &middot; B &middot; A. The merged model is identical in architecture to the original &mdash; it can be served by any standard runtime without adapter-aware infrastructure. This merge-at-inference property is one of LoRA's most practical advantages over other PEFT methods like prefix tuning, which require permanent changes to the inference pipeline.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">lora_adapter.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>
+<span class="kw">import</span> <span class="pr">math</span>
+
+<span class="kw">class</span> <span class="cl">LoRALinear</span>:
+    <span class="st">"""LoRA adapter wrapping a frozen linear layer (no PyTorch for clarity)."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, d_in, d_out, rank=<span class="nu">8</span>, alpha=<span class="nu">16</span>):
+        <span class="pr">self</span>.d_in  = d_in     <span class="lm"># ↑ input dimension (e.g. 768 for GPT-2)</span>
+        <span class="pr">self</span>.d_out = d_out    <span class="lm"># ↑ output dimension</span>
+        <span class="pr">self</span>.rank  = rank     <span class="lm"># ↑ r — the bottleneck rank, controls param count</span>
+        <span class="pr">self</span>.scale = alpha / rank  <span class="lm"># ↑ α/r — prevents large jumps at high rank</span>
+
+        <span class="cm"># A: Gaussian init — starts contributing to the forward pass immediately</span>
+        std = <span class="nu">1</span> / math.<span class="fn">sqrt</span>(rank)
+        <span class="pr">self</span>.A = [[<span class="fn">_gauss</span>(std) <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(d_out)]
+                   <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(rank)]
+
+        <span class="cm"># B: zero init — adapter outputs zero at training start (stable baseline)</span>
+        <span class="pr">self</span>.B = [[<span class="nu">0.0</span> <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(rank)]
+                   <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(d_in)]
+
+    <span class="kw">def</span> <span class="fn">adapter_params</span>(<span class="pr">self</span>):
+        <span class="st">"""Count trainable parameters in this LoRA adapter."""</span>
+        a_params = <span class="pr">self</span>.rank * <span class="pr">self</span>.d_out   <span class="lm"># ↑ A matrix</span>
+        b_params = <span class="pr">self</span>.d_in * <span class="pr">self</span>.rank    <span class="lm"># ↑ B matrix</span>
+        <span class="kw">return</span> a_params + b_params
+
+    <span class="kw">def</span> <span class="fn">base_params</span>(<span class="pr">self</span>):
+        <span class="st">"""Count frozen parameters in the original weight matrix."""</span>
+        <span class="kw">return</span> <span class="pr">self</span>.d_in * <span class="pr">self</span>.d_out        <span class="lm"># ↑ W0 is never updated</span>
+
+<span class="kw">import</span> <span class="pr">random</span>
+<span class="kw">def</span> <span class="fn">_gauss</span>(std): <span class="kw">return</span> random.<span class="fn">gauss</span>(<span class="nu">0</span>, std)
+</pre>
+    </div>
+
+    <div class="cell" id="cell-lora-params">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Count LoRA parameter savings for different ranks</span>
+        <button class="run-btn" onclick="runCell('cell-lora-params')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+# Compute LoRA parameter savings for a 7B model configuration
+# Typical 7B model: 32 layers, attention dim 4096, heads use Q/V projections
+
+def lora_stats(d_model, num_layers, rank, alpha, adapt_layers=["q", "v"]):
+    params_per_adapter = 2 * d_model * rank  # A + B for one projection
+    num_adapters = num_layers * len(adapt_layers)
+    total_lora = params_per_adapter * num_adapters
+
+    # Rough total params for 7B model attention layers
+    total_attention = num_layers * 4 * d_model * d_model  # Q,K,V,O
+    total_model = 7_000_000_000
+
+    return {
+        "lora_params": total_lora,
+        "model_params": total_model,
+        "pct_trainable": 100 * total_lora / total_model,
+        "attention_pct": 100 * total_lora / total_attention,
+    }
+
+print(f"{'Rank':>6} {'LoRA Params':>14} {'% of 7B':>10} {'Savings':>10}")
+print("-" * 48)
+for r in [4, 8, 16, 32, 64, 128]:
+    s = lora_stats(d_model=4096, num_layers=32, rank=r, alpha=r*2)
+    saved = 100 - s["pct_trainable"]
+    print(f"  r={r:<4} {s['lora_params']:>12,}   {s['pct_trainable']:>8.3f}%   {saved:.3f}%")
+
+print()
+print("GPT-2 attention head example (d=768):")
+print(f"  Full W:  {768*768:,} params")
+for r in [4, 8, 16]:
+    lora = 2 * 768 * r
+    pct  = 100 * lora / (768*768)
+    print(f"  LoRA r={r}: {lora:,} params  ({pct:.1f}% of original)")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to see parameter counts.</div>
+    </div>
+
+    <div class="callout purple">
+      <strong>Merge at inference:</strong> After training, compute W_merged = W<sub>0</sub> + (&#945;/r) &middot; B &middot; A and save the result. The adapter disappears into the weights. No inference overhead, no adapter-aware runtime &mdash; just a standard model file.
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2106.09685" target="_blank">Hu et al. 2021 &mdash; LoRA: Low-Rank Adaptation of Large Language Models</a>
+      <a href="https://huggingface.co/docs/peft/conceptual_guides/lora" target="_blank">HuggingFace PEFT &mdash; LoRA conceptual guide</a>
+      <a href="https://arxiv.org/abs/2309.02397" target="_blank">Biderman et al. 2024 &mdash; LoRA learns less and forgets less (analysis of LoRA behavior)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.5 ==================== -->
+  <section class="section" id="s75">
+    <div class="section-label">7.5</div>
+    <h2>QLoRA: Quantized Fine-Tuning</h2>
+
+    <p>LoRA reduces the number of trainable parameters dramatically, but the frozen base model still needs to be held in memory during training. A 7B model in 16-bit floating point requires 14 GB of VRAM just for the weights, plus activations and optimizer states for the LoRA parameters. QLoRA, introduced by Dettmers et al. in 2023, pushes this boundary further by quantizing the frozen base model to 4 bits while keeping the LoRA adapters in 16-bit precision. The result is remarkable: a 65B model fine-tune fits on a single 48 GB A6000 GPU, and a 7B fine-tune fits on a 10 GB consumer GPU.</p>
+
+    <p>The 4-bit format used by QLoRA is called <strong>NF4</strong> (Normal Float 4). Unlike uniform 4-bit quantization, which divides the weight range into 16 equally spaced bins, NF4 places its 16 quantization levels non-uniformly &mdash; they are spaced to match the normal distribution that neural network weights approximately follow. The densest part of the quantization grid is in the center of the distribution, where most weights live, and the levels spread out toward the tails. This information-theoretically optimal placement means NF4 loses less information than uniform 4-bit for the same number of bits.</p>
+
+    <p>QLoRA also introduces <strong>double quantization</strong>, which quantizes the quantization constants themselves. Standard quantization stores a scale and zero-point per block of 64 weights (32-bit floats). Double quantization treats these constants as another set of values to be quantized, reducing their storage cost from 32 bits to 8 bits and saving an additional 0.37 bits per parameter &mdash; roughly 3 GB across a 65B model. Finally, <strong>paged optimizers</strong> handle the case where GPU memory is temporarily exhausted by gradient checkpointing: the CUDA unified memory system automatically pages optimizer states to CPU RAM and back, preventing out-of-memory crashes at the cost of some latency.</p>
+
+    <div class="callout blue">
+      <strong>Practical rule of thumb:</strong> With QLoRA, divide the model's parameter count by 2 to get the approximate VRAM requirement in GB. A 7B model needs ~4&ndash;6 GB, a 13B model needs ~8&ndash;10 GB, a 70B model needs ~40&ndash;48 GB. Full fine-tuning needs roughly 20&times; the model size in VRAM.
+    </div>
+
+    <div class="cell" id="cell-qlora-mem">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Compute VRAM requirements for different training methods</span>
+        <button class="run-btn" onclick="runCell('cell-qlora-mem')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+def vram_gb(params_b, method, lora_rank=16):
+    """Estimate VRAM requirement in GB for a given model size and method."""
+    params = params_b * 1e9
+
+    if method == "full_fp16":
+        weights   = params * 2        # 2 bytes per param (fp16)
+        gradients = params * 2        # same size as weights
+        adam      = params * 2 * 4   # Adam: m + v, each fp32 (4 bytes)
+        activations = params * 1.5   # rough estimate
+        return (weights + gradients + adam + activations) / 1e9
+
+    elif method == "lora_fp16":
+        lora_params = 2 * 4096 * lora_rank * 32 * 2  # 32 layers, Q+V
+        weights   = params * 2          # frozen base in fp16
+        lora_adam = lora_params * 4 * 2 # Adam states on lora params only
+        return (weights + lora_adam) / 1e9
+
+    elif method == "qlora_nf4":
+        lora_params = 2 * 4096 * lora_rank * 32 * 2
+        weights   = params * 0.5       # 4-bit = 0.5 bytes per param
+        lora_adam = lora_params * 4 * 2
+        overhead  = params * 0.05      # paged optimizer overhead
+        return (weights + lora_adam + overhead) / 1e9
+
+methods = ["full_fp16", "lora_fp16", "qlora_nf4"]
+sizes   = [7, 13, 34, 70]
+
+print(f"{'Model':>8}", end="")
+for m in methods:
+    print(f"  {m:>14}", end="")
+print()
+print("-" * 60)
+
+for s in sizes:
+    print(f"{s}B params", end="")
+    for m in methods:
+        gb = vram_gb(s, m)
+        feasible = "✓" if gb < 80 else "✗"
+        print(f"  {gb:>10.1f} GB {feasible}", end="")
+    print()
+
+print()
+print("GPU VRAM reference: RTX 3090=24GB, A100=40/80GB, H100=80GB")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to see VRAM estimates.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2305.14314" target="_blank">Dettmers et al. 2023 &mdash; QLoRA: Efficient Finetuning of Quantized LLMs</a>
+      <a href="https://arxiv.org/abs/2208.07339" target="_blank">Dettmers et al. 2022 &mdash; LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale</a>
+      <a href="https://huggingface.co/blog/4bit-transformers-bitsandbytes" target="_blank">HuggingFace Blog &mdash; Making LLMs even more accessible with bitsandbytes (QLoRA tutorial)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.6 ==================== -->
+  <section class="section" id="s76">
+    <div class="section-label">7.6</div>
+    <h2>Direct Preference Optimization (DPO)</h2>
+
+    <p>Supervised fine-tuning teaches the model to follow instructions, but it does not teach it to prefer good responses over mediocre ones. A model trained only on SFT will generate plausible-sounding text, but it has no mechanism to learn that one response is more helpful, more honest, or less harmful than another. Reinforcement Learning from Human Feedback (RLHF) addresses this by training a reward model on human preference judgments and then optimizing the language model to maximize reward using policy gradient methods. The approach works &mdash; it produced ChatGPT &mdash; but it is notoriously complex, requiring four models (reference, reward, policy, critic), careful hyperparameter tuning for PPO, and significant infrastructure overhead.</p>
+
+    <p>Direct Preference Optimization (DPO), introduced by Rafailov et al. in 2023, reformulates the RLHF objective in a way that eliminates the reward model entirely. The key insight is mathematical: the optimal language model policy under the RLHF objective has a closed-form relationship to the reward function, which means you can express the reward implicitly in terms of the policy and the reference model. Substituting this expression into the Bradley-Terry model for human preferences gives a classification loss that can be minimized directly on a dataset of (prompt, chosen_response, rejected_response) triples &mdash; no RL, no reward model, no PPO.</p>
+
+    <p>The DPO loss has an intuitive interpretation: it increases the log-probability of chosen responses relative to the reference model and decreases the log-probability of rejected responses relative to the reference model, where the &#946; parameter controls how aggressively to deviate from the reference. A small &#946; (e.g., 0.1) allows large divergence from the reference policy &mdash; the model can change significantly &mdash; while a large &#946; keeps the aligned model close to the SFT checkpoint. Too small and you get mode collapse; too large and the preference signal is barely absorbed. In practice, &#946; = 0.1 is a good starting point for models fine-tuned with SFT first.</p>
+
+    <div class="formula">
+      <span class="eq-label">DPO LOSS</span>
+      L<sub>DPO</sub>(&pi;<sub>&#952;</sub>) = &minus; E<sub>(x, y<sub>w</sub>, y<sub>l</sub>)</sub> [log &#963;( &#946; &middot; log(&pi;<sub>&#952;</sub>(y<sub>w</sub>|x) / &pi;<sub>ref</sub>(y<sub>w</sub>|x)) &minus; &#946; &middot; log(&pi;<sub>&#952;</sub>(y<sub>l</sub>|x) / &pi;<sub>ref</sub>(y<sub>l</sub>|x)) )]
+      <span class="eq-note">&#963; = sigmoid. y<sub>w</sub> = chosen response. y<sub>l</sub> = rejected response. &#946; controls KL penalty strength (typically 0.1). &pi;<sub>ref</sub> = frozen SFT checkpoint.</span>
+    </div>
+
+    <div class="callout green">
+      <strong>DPO in one sentence:</strong> Maximize the gap between how much more likely the model is to generate the chosen response over the rejected response, relative to a frozen reference model, measured in log-probability space.
+    </div>
+
+    <div class="cell" id="cell-dpo-loss">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Implement DPO loss on toy log-probabilities</span>
+        <button class="run-btn" onclick="runCell('cell-dpo-loss')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import math
+
+def sigmoid(x):
+    return 1.0 / (1.0 + math.exp(-x))
+
+def dpo_loss(log_pi_chosen, log_pi_ref_chosen,
+             log_pi_reject, log_pi_ref_reject, beta=0.1):
+    """
+    Compute DPO loss for a single (prompt, chosen, rejected) triple.
+    All inputs are log-probabilities (sum over tokens).
+    """
+    # Implicit reward for chosen: how much more likely vs reference?
+    reward_chosen = beta * (log_pi_chosen - log_pi_ref_chosen)
+    # ↑ positive = model prefers chosen MORE than reference did (good)
+
+    # Implicit reward for rejected
+    reward_reject = beta * (log_pi_reject - log_pi_ref_reject)
+    # ↑ negative = model prefers rejected LESS than reference did (good)
+
+    # Loss = -log(sigmoid(reward_chosen - reward_reject))
+    margin = reward_chosen - reward_reject
+    loss   = -math.log(sigmoid(margin) + 1e-9)
+    return loss, reward_chosen, reward_reject, margin
+
+print("DPO Loss Demonstration")
+print("=" * 55)
+
+# Scenario 1: model already prefers chosen over rejected
+print("\nScenario 1: Model prefers chosen (ideal after training)")
+l, rc, rr, m = dpo_loss(
+    log_pi_chosen=-2.1, log_pi_ref_chosen=-3.0,  # chosen: prob went up
+    log_pi_reject=-4.5, log_pi_ref_reject=-3.0,  # rejected: prob went down
+    beta=0.1
+)
+print(f"  Reward(chosen)={rc:.4f}  Reward(rejected)={rr:.4f}")
+print(f"  Margin={m:.4f}  Loss={l:.4f}  (low = good)")
+
+# Scenario 2: model incorrectly prefers rejected
+print("\nScenario 2: Model still prefers rejected (early training)")
+l, rc, rr, m = dpo_loss(
+    log_pi_chosen=-4.0, log_pi_ref_chosen=-3.0,  # chosen: prob went down
+    log_pi_reject=-2.5, log_pi_ref_reject=-3.0,  # rejected: prob went up
+    beta=0.1
+)
+print(f"  Reward(chosen)={rc:.4f}  Reward(rejected)={rr:.4f}")
+print(f"  Margin={m:.4f}  Loss={l:.4f}  (high = bad, gradient pushes model)")
+
+# Show effect of beta
+print("\nEffect of beta (lower = more aggressive alignment):")
+for b in [0.05, 0.1, 0.2, 0.5]:
+    l, *_ = dpo_loss(-2.1, -3.0, -4.5, -3.0, beta=b)
+    print(f"  beta={b:.2f}  loss={l:.4f}")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to see DPO loss behavior.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2305.18290" target="_blank">Rafailov et al. 2023 &mdash; Direct Preference Optimization: Your Language Model is Secretly a Reward Model</a>
+      <a href="https://arxiv.org/abs/2402.01306" target="_blank">SimPO 2024 &mdash; Simple Preference Optimization with a Reference-Free Reward</a>
+      <a href="https://huggingface.co/docs/trl/dpo_trainer" target="_blank">HuggingFace TRL &mdash; DPOTrainer documentation</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.7 ==================== -->
+  <section class="section" id="s77">
+    <div class="section-label">7.7</div>
+    <h2>RLHF vs DPO</h2>
+
+    <p>The choice between RLHF and DPO is not purely academic &mdash; it affects your infrastructure requirements, the stability of training, the quality of the resulting model, and how much expertise you need on your team. Both approaches share the same goal (align a language model to human preferences using paired data) and both use a reference model to define a KL constraint that prevents the policy from drifting too far from the SFT checkpoint. The difference is in how they get there.</p>
+
+    <p>RLHF, as implemented in InstructGPT and LLaMA-2-Chat, requires four distinct model instances: the reference model (frozen SFT checkpoint), the reward model (trained from human comparisons), the policy model (the model being aligned), and, in PPO-style training, a critic model that estimates the value function. Training requires coordinating all four simultaneously, which means the GPU memory footprint is 4&times; a single model, plus the overhead of RL optimization (which introduces hyperparameters like the PPO clip ratio, the advantage estimation coefficient, and the KL penalty weight that interact in non-obvious ways). Reward hacking is a persistent risk: the policy can find inputs that fool the reward model into assigning high scores without being genuinely helpful. OpenAI's experience building ChatGPT required significant engineering to mitigate these failure modes.</p>
+
+    <p>DPO collapses this to two models: the frozen reference model and the policy being trained. The loss is a simple binary cross-entropy that can be implemented in a standard supervised training loop. Training is stable, reproducible, and compatible with standard gradient accumulation, mixed precision, and LoRA. The practical results are compelling: Zephyr-7B (trained with DPO on top of Mistral-7B SFT) outperformed LLaMA-2-Chat-70B on MT-Bench despite being 10&times; smaller. The field has largely converged on DPO for open-source instruction tuning, with RLHF reserved for cases where you need fine-grained reward control (e.g., safety-critical applications) or have the infrastructure to run it reliably.</p>
+
+    <div class="rlhf-vs-dpo">
+      <div class="rvd rvd-rlhf">
+        <h4>RLHF (PPO)</h4>
+        <div class="rvd-step">4 model instances in memory</div>
+        <div class="rvd-step">Reward model trained separately</div>
+        <div class="rvd-step">PPO optimization (complex)</div>
+        <div class="rvd-step">KL penalty (explicit)</div>
+        <div class="rvd-step">Reward hacking risk</div>
+        <div class="rvd-step">Many sensitive hyperparams</div>
+        <div class="rvd-step">Wins: fine-grained reward shaping</div>
+        <div class="rvd-step">Wins: safety-critical alignment</div>
+      </div>
+      <div class="rvd rvd-dpo">
+        <h4>DPO</h4>
+        <div class="rvd-step">2 model instances (ref + policy)</div>
+        <div class="rvd-step">No separate reward model</div>
+        <div class="rvd-step">Supervised training loop</div>
+        <div class="rvd-step">KL penalty (implicit, via beta)</div>
+        <div class="rvd-step">More stable, reproducible</div>
+        <div class="rvd-step">Fewer hyperparams (mainly beta)</div>
+        <div class="rvd-step">Wins: paired preference data</div>
+        <div class="rvd-step">Wins: resource-constrained setups</div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <strong>The newest frontier:</strong> ORPO (Odds Ratio Preference Optimization) and SimPO eliminate the reference model entirely, further simplifying the pipeline. SPIN (Self-Play Fine-Tuning) uses the model itself to generate rejected responses, removing the need for human-annotated rejected pairs. These methods represent the direction the field is moving in 2024&ndash;2025.
+    </div>
+
+    <div class="cell" id="cell-kl-div">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Implement KL divergence (used in both RLHF and DPO)</span>
+        <button class="run-btn" onclick="runCell('cell-kl-div')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import math
+
+def kl_divergence(p, q):
+    """
+    KL(p || q) — how much q diverges from p, in nats.
+    Used as the penalty term in both RLHF and DPO to keep
+    the aligned policy close to the reference distribution.
+    """
+    total = 0.0
+    for pi, qi in zip(p, q):
+        if pi > 1e-10:
+            total += pi * math.log(pi / (qi + 1e-10))
+            # ↑ pi * log(pi/qi): each token's contribution to divergence
+    return total
+
+def normalize(probs):
+    s = sum(probs)
+    return [x / s for x in probs]
+
+# Toy 6-token vocabulary
+# Reference model (SFT checkpoint) distribution over next token
+ref   = normalize([0.3, 0.25, 0.2, 0.15, 0.07, 0.03])
+
+# Slightly aligned policy — prefers token 0 more, token 3 less
+mild  = normalize([0.4, 0.25, 0.2, 0.08, 0.05, 0.02])
+
+# Aggressively aligned policy — mode collapse toward token 0
+aggro = normalize([0.85, 0.08, 0.04, 0.01, 0.01, 0.01])
+
+print("Policy comparison vs. reference:")
+print(f"  Mild alignment:       KL = {kl_divergence(mild,  ref):.4f} nats")
+print(f"  Aggressive alignment: KL = {kl_divergence(aggro, ref):.4f} nats")
+print(f"  (reference vs itself: KL = {kl_divergence(ref,   ref):.4f} nats)")
+print()
+print("RLHF KL penalty: reward -= beta * KL(policy || reference)")
+print("DPO implicit KL: controlled via beta hyperparameter in loss")
+print()
+
+# Demonstrate how beta scales the KL penalty
+reward_base = 2.5  # reward model score
+print(f"{'Beta':>6}  {'KL Penalty':>12}  {'Net Reward (mild)':>20}")
+print("-" * 44)
+for beta in [0.0, 0.05, 0.1, 0.2, 0.5, 1.0]:
+    kl = kl_divergence(mild, ref)
+    penalty = beta * kl
+    net = reward_base - penalty
+    print(f"  {beta:.2f}   {penalty:>10.4f}   {net:>18.4f}")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to see KL divergence computation.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2310.16944" target="_blank">Tunstall et al. 2023 &mdash; Zephyr: Direct Distillation of LM Alignment (DPO beats RLHF at 7B)</a>
+      <a href="https://arxiv.org/abs/2401.01335" target="_blank">Chen et al. 2024 &mdash; SPIN: Self-Play Fine-Tuning Converts Weak Language Models to Strong</a>
+      <a href="https://arxiv.org/abs/2403.07691" target="_blank">Hong et al. 2024 &mdash; ORPO: Monolithic Preference Optimization without Reference Model</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.8 ==================== -->
+  <section class="section" id="s78">
+    <div class="section-label">7.8</div>
+    <h2>Evaluation: MMLU, MT-Bench, Elo</h2>
+
+    <p>Building a fine-tuned model without a principled evaluation strategy is like calibrating a scale by checking whether it feels right. The field has developed three complementary evaluation paradigms that together give a reasonably complete picture of a model's capabilities: MMLU for knowledge breadth, MT-Bench for instruction-following quality, and Chatbot Arena Elo for human preference at scale. Each captures something the others miss, and each has well-documented failure modes that practitioners should understand before trusting the numbers.</p>
+
+    <p>MMLU (Massive Multitask Language Understanding, Hendrycks et al. 2021) consists of 14,042 multiple-choice questions spanning 57 subjects, from elementary mathematics and US history to professional medicine and international law. Models are evaluated in a 5-shot setting: five example questions are provided in the context before the test question, and the model must select the correct letter (A/B/C/D). MMLU is excellent for measuring factual knowledge and reasoning across domains, and it scales well &mdash; you can run it without GPT-4 as a judge. Its limitation is saturation: GPT-4 scores 86.4%, and the gap between models is increasingly compressed at the top. Small improvements in MMLU do not reliably predict differences in user experience.</p>
+
+    <p>MT-Bench (Zheng et al. 2023) addresses MMLU's blind spot by testing instruction following and multi-turn reasoning. It consists of 80 carefully crafted questions across 8 categories (writing, roleplay, extraction, reasoning, math, coding, STEM, humanities), each followed by a mandatory follow-up question that requires the model to build on its own previous answer. Each response is graded by GPT-4 on a 1&ndash;10 scale. This LLM-as-judge paradigm is powerful &mdash; it can evaluate open-ended responses that multiple-choice benchmarks cannot &mdash; but it introduces a circularity: a model trained to be similar to GPT-4 will tend to score higher. Chatbot Arena Elo sidesteps this by using human judges in anonymous head-to-head comparisons, applying the Bradley-Terry model to compute Elo-style ratings. It is the ground truth that practitioners trust most, but it requires thousands of evaluations to converge and cannot be run cheaply on every checkpoint.</p>
+
+    <table class="benchmark-table">
+      <thead>
+        <tr><th>Model</th><th>MMLU (5-shot)</th><th>MT-Bench</th><th>Arena Elo (approx)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GPT-4</td><td><span class="rank-bar" style="width:86px"></span>86.4%</td><td>8.99</td><td>~1250</td></tr>
+        <tr><td>Claude-2</td><td><span class="rank-bar" style="width:78px"></span>78.5%</td><td>8.06</td><td>~1195</td></tr>
+        <tr><td>Mistral-7B-Instruct</td><td><span class="rank-bar" style="width:60px"></span>60.1%</td><td>6.84</td><td>~1072</td></tr>
+        <tr><td>Zephyr-7B-beta (DPO)</td><td><span class="rank-bar" style="width:62px"></span>61.4%</td><td>7.34</td><td>~1095</td></tr>
+        <tr><td>LLaMA-2-70B-Chat</td><td><span class="rank-bar" style="width:63px"></span>63.0%</td><td>6.27</td><td>~1083</td></tr>
+        <tr><td>LLaMA-2-7B-Chat</td><td><span class="rank-bar" style="width:46px"></span>46.2%</td><td>6.27</td><td>~1020</td></tr>
+        <tr><td>Random baseline</td><td><span class="rank-bar" style="width:25px;background:#ccc"></span>25.0%</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Benchmark contamination:</strong> Test sets, once public, find their way into training data. MMLU questions appear in scraped web text; some MT-Bench questions are well-known. When a model's MMLU score improves dramatically with a small training set, suspect contamination. Always hold out domain-specific evaluation data that has never appeared on the internet.
+    </div>
+
+    <div class="cell" id="cell-elo">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Implement Elo rating with Bradley-Terry model</span>
+        <button class="run-btn" onclick="runCell('cell-elo')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import random, math
+
+def expected_score(rating_a, rating_b):
+    """Bradley-Terry: probability model A wins given ratings."""
+    return 1.0 / (1.0 + 10 ** ((rating_b - rating_a) / 400))
+
+def update_elo(rating_a, rating_b, result_a, k=32):
+    """Update Elo ratings. result_a=1 if A wins, 0 if B wins, 0.5 if tie."""
+    exp_a  = expected_score(rating_a, rating_b)
+    exp_b  = 1 - exp_a
+    new_a  = rating_a + k * (result_a     - exp_a)
+    new_b  = rating_b + k * ((1-result_a) - exp_b)
+    return new_a, new_b
+
+# Simulate Chatbot Arena: 3 models, 150 head-to-head comparisons
+random.seed(42)
+models = {
+    "GPT-4":           {"rating": 1200, "true_strength": 0.85},
+    "Zephyr-7B (DPO)": {"rating": 1200, "true_strength": 0.62},
+    "LLaMA-2-7B":      {"rating": 1200, "true_strength": 0.45},
+}
+names = list(models.keys())
+
+for _ in range(150):
+    a, b = random.sample(names, 2)
+    # Probability A wins is proportional to true_strength difference
+    sa = models[a]["true_strength"]
+    sb = models[b]["true_strength"]
+    prob_a_wins = sa / (sa + sb)
+    result_a = 1 if random.random() < prob_a_wins else 0
+    ra, rb = update_elo(models[a]["rating"], models[b]["rating"], result_a)
+    models[a]["rating"] = ra
+    models[b]["rating"] = rb
+
+print("Arena Elo Ratings after 150 matchups:")
+print("-" * 45)
+ranked = sorted(models.items(), key=lambda x: -x[1]["rating"])
+for rank, (name, info) in enumerate(ranked, 1):
+    bar = "#" * int((info["rating"] - 1050) / 15)
+    print(f"  #{rank} {name:<22} {info['rating']:>7.1f}  {bar}")
+
+print()
+print("Note: ratings converge toward true relative strength.")
+print("Arena requires 1000s of battles for statistical reliability.")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to simulate the Arena.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://arxiv.org/abs/2009.03300" target="_blank">Hendrycks et al. 2021 &mdash; MMLU: Measuring Massive Multitask Language Understanding</a>
+      <a href="https://arxiv.org/abs/2306.05685" target="_blank">Zheng et al. 2023 &mdash; Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena</a>
+      <a href="https://chat.lmsys.org" target="_blank">Chatbot Arena &mdash; live Elo leaderboard (LMSYS)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.9 ==================== -->
+  <section class="section" id="s79">
+    <div class="section-label">7.9</div>
+    <h2>Deploying a Local Assistant</h2>
+
+    <p>Once you have a fine-tuned model &mdash; whether merged weights or a base model plus LoRA adapter &mdash; you need a runtime that can serve it efficiently. Production deployments at scale use vLLM or Text Generation Inference (TGI) with PagedAttention and continuous batching, but for local deployment, personal projects, or development environments, two tools dominate: llama.cpp and Ollama. Both are purpose-built for running quantized models on consumer hardware with minimal setup.</p>
+
+    <p>llama.cpp, written in C++ by Georgi Gerganov, was the project that first made LLM inference accessible on CPUs and consumer GPUs. It introduced the GGUF format &mdash; a self-describing binary file that bundles quantized weights, tokenizer vocabulary, and model configuration into a single portable file. GGUF supports a range of quantization levels: Q2_K (smallest, most degraded), Q4_K_M (recommended sweet spot), Q5_K_M (excellent quality, slightly larger), Q8_0 (near-lossless, 2&times; the 4-bit size). The performance hit from Q4 quantization is real but modest: typical MMLU degradation is 1&ndash;3 percentage points relative to the 16-bit model, in exchange for a 4&times; reduction in model size and the ability to run on CPUs.</p>
+
+    <p>Ollama wraps llama.cpp with a higher-level interface: a model library (with one-line <code>ollama pull</code> commands), a REST API compatible with the OpenAI client, and automatic model management. You can run any GGUF model with <code>ollama run model_name</code> and interact with it via <code>http://localhost:11434</code>. For production local deployments, Ollama is typically the right choice; for maximum control over quantization parameters and sampling settings, llama.cpp directly is more powerful. Both support streaming output, context management, and the full suite of sampling hyperparameters (temperature, top-p, repetition penalty).</p>
+
+    <div class="deploy-steps">
+      <div class="ds-step">
+        <div class="ds-num">1</div>
+        <div class="ds-body">
+          <h4>Merge LoRA adapter (if applicable)</h4>
+          <p>Merge adapter into base weights: <code>peft.merge_adapter()</code> then <code>save_pretrained()</code>. Skip if using a pre-merged checkpoint from HuggingFace.</p>
+        </div>
+      </div>
+      <div class="ds-step">
+        <div class="ds-num">2</div>
+        <div class="ds-body">
+          <h4>Convert to GGUF with llama.cpp</h4>
+          <p>Run <code>python convert_hf_to_gguf.py ./merged_model --outtype f16</code>, then quantize: <code>./llama-quantize model-f16.gguf model-Q4_K_M.gguf Q4_K_M</code></p>
+        </div>
+      </div>
+      <div class="ds-step">
+        <div class="ds-num">3</div>
+        <div class="ds-body">
+          <h4>Write a Modelfile for Ollama</h4>
+          <p><code>FROM ./model-Q4_K_M.gguf</code> then <code>SYSTEM "You are a helpful assistant."</code> and <code>PARAMETER temperature 0.7</code></p>
+        </div>
+      </div>
+      <div class="ds-step">
+        <div class="ds-num">4</div>
+        <div class="ds-body">
+          <h4>Create and run the model</h4>
+          <p><code>ollama create my-assistant -f Modelfile</code> then <code>ollama run my-assistant</code> or serve via <code>ollama serve</code></p>
+        </div>
+      </div>
+      <div class="ds-step">
+        <div class="ds-num">5</div>
+        <div class="ds-body">
+          <h4>Expose via API (FastAPI wrapper)</h4>
+          <p>POST to <code>http://localhost:11434/api/chat</code> with OpenAI-compatible JSON. Stream tokens via SSE. Wrap with FastAPI for auth, rate limiting, and logging.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">local_assistant_server.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>
+<span class="kw">from</span> <span class="pr">fastapi</span> <span class="kw">import</span> <span class="cl">FastAPI</span>
+<span class="kw">from</span> <span class="pr">fastapi.responses</span> <span class="kw">import</span> <span class="cl">StreamingResponse</span>
+<span class="kw">import</span> <span class="pr">httpx</span>, json, asyncio
+
+app = <span class="cl">FastAPI</span>()
+OLLAMA_URL = <span class="st">"http://localhost:11434"</span>
+
+<span class="kw">async def</span> <span class="fn">stream_ollama</span>(model, messages, temperature=<span class="nu">0.7</span>):
+    <span class="st">"""Proxy streaming tokens from Ollama to the client via SSE."""</span>
+    payload = {
+        <span class="st">"model"</span>:       model,
+        <span class="st">"messages"</span>:    messages,        <span class="lm"># ↑ OpenAI-compatible message list</span>
+        <span class="st">"stream"</span>:      <span class="kw">True</span>,            <span class="lm"># ↑ token-by-token SSE streaming</span>
+        <span class="st">"options"</span>:     {<span class="st">"temperature"</span>: temperature},
+    }
+    <span class="kw">async with</span> httpx.<span class="cl">AsyncClient</span>(timeout=<span class="nu">None</span>) <span class="kw">as</span> client:
+        <span class="kw">async with</span> client.<span class="fn">stream</span>(
+            <span class="st">"POST"</span>,
+            f<span class="st">"{OLLAMA_URL}/api/chat"</span>,
+            json=payload
+        ) <span class="kw">as</span> resp:
+            <span class="kw">async for</span> line <span class="kw">in</span> resp.<span class="fn">aiter_lines</span>():
+                <span class="kw">if</span> line:
+                    chunk = json.<span class="fn">loads</span>(line)       <span class="lm"># ↑ each line is a JSON chunk</span>
+                    token = chunk.<span class="fn">get</span>(<span class="st">"message"</span>, {}).<span class="fn">get</span>(<span class="st">"content"</span>, <span class="st">""</span>)
+                    <span class="kw">if</span> token:
+                        <span class="kw">yield</span> f<span class="st">"data: {json.dumps({'token': token})}\n\n"</span>
+                    <span class="kw">if</span> chunk.<span class="fn">get</span>(<span class="st">"done"</span>):
+                        <span class="kw">yield</span> <span class="st">"data: [DONE]\n\n"</span>  <span class="lm"># ↑ signal end of stream</span>
+                        <span class="kw">return</span>
+
+<span class="cm">@app.post("/chat")</span>
+<span class="kw">async def</span> <span class="fn">chat</span>(body: dict):
+    <span class="kw">return</span> <span class="cl">StreamingResponse</span>(
+        <span class="fn">stream_ollama</span>(
+            model=body.<span class="fn">get</span>(<span class="st">"model"</span>, <span class="st">"my-assistant"</span>),
+            messages=body[<span class="st">"messages"</span>],
+            temperature=body.<span class="fn">get</span>(<span class="st">"temperature"</span>, <span class="nu">0.7</span>),
+        ),
+        media_type=<span class="st">"text/event-stream"</span>
+    )
+<span class="cm"># Run: uvicorn local_assistant_server:app --port 8000</span>
+</pre>
+    </div>
+
+    <div class="cell" id="cell-stream-sim">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Simulate streaming token accumulator</span>
+        <button class="run-btn" onclick="runCell('cell-stream-sim')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import time, random
+
+def simulate_token_stream(text, avg_ms=60):
+    """Simulate token-by-token streaming with realistic timing."""
+    # Split into word-level "tokens" for demo (real tokenizer is subword)
+    tokens = text.split()
+    for tok in tokens:
+        delay = random.gauss(avg_ms, 15) / 1000  # stochastic GPU timing
+        yield tok + " ", max(0, delay)
+
+def display_stream(token_gen):
+    """Accumulate and display tokens as they arrive."""
+    accumulated = []
+    total_time  = 0.0
+    for token, delay in token_gen:
+        accumulated.append(token)
+        total_time += delay
+
+    full_text   = "".join(accumulated)
+    token_count = len(accumulated)
+    tps         = token_count / total_time if total_time > 0 else 0
+    return full_text, token_count, total_time, tps
+
+response = (
+    "Gradient descent is an iterative optimization algorithm that "
+    "minimizes a loss function by repeatedly moving in the direction "
+    "of the negative gradient. Each step updates the parameters by "
+    "a small amount proportional to the learning rate."
+)
+
+gen = simulate_token_stream(response, avg_ms=55)
+full, n_tok, t_sec, tps = display_stream(gen)
+
+print("Simulated streaming response:")
+print("-" * 50)
+print(full)
+print()
+print(f"Tokens generated: {n_tok}")
+print(f"Simulated time:   {t_sec:.2f}s")
+print(f"Throughput:       {tps:.1f} tok/s (simulated)")
+print()
+print("Real Q4_K_M on RTX 3090: ~40-80 tok/s")
+print("Real Q4_K_M on CPU only: ~5-15 tok/s")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to simulate streaming output.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://github.com/ggerganov/llama.cpp" target="_blank">ggerganov/llama.cpp &mdash; C++ LLM inference with GGUF format</a>
+      <a href="https://ollama.ai" target="_blank">Ollama &mdash; model management and serving for local LLMs</a>
+      <a href="https://github.com/vllm-project/vllm" target="_blank">vLLM &mdash; PagedAttention for high-throughput production serving</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.10 ==================== -->
+  <section class="section" id="s710">
+    <div class="section-label">7.10</div>
+    <h2>The Complete Fine-Tuning Pipeline</h2>
+
+    <p>Every technique in this chapter &mdash; SFT, masked loss, LoRA, QLoRA, DPO, evaluation, deployment &mdash; is a piece of a larger pipeline. Understanding each piece in isolation is necessary but not sufficient; the hard part is knowing how they fit together and how to make decisions at each step based on what you actually have: the size of your dataset, the VRAM available, the nature of the task, and the quality bar you need to hit. This section ties the pieces into an end-to-end walkthrough.</p>
+
+    <p>The pipeline begins with your base model. A strong pretrained model makes everything downstream easier: better knowledge, better instruction-following latent capability, more signal per training step. For most applications, a Mistral-7B, Llama-3-8B, or Qwen2-7B base is the right starting point. From there, the decision tree branches primarily on dataset size. With fewer than 500 instruction examples, the risk of overfitting is high; use LoRA with a small rank (r=4 to r=8) and early stopping. Between 500 and 5,000 examples, LoRA (r=16) followed by DPO on high-quality preference pairs is the standard recipe. Above 5,000 examples, a full QLoRA fine-tune with a moderate rank (r=64) is worth considering; above 50,000, full fine-tuning on 16-bit weights if your hardware supports it.</p>
+
+    <p>The open-source ecosystem has matured rapidly. HuggingFace PEFT handles LoRA configuration and adapter management. TRL (Transformer Reinforcement Learning) provides the <code>SFTTrainer</code> and <code>DPOTrainer</code> classes that wrap all the complexity of masked loss, chat template application, and preference pair sampling. Axolotl provides a YAML-configurable wrapper over TRL for reproducible, multi-GPU fine-tuning with sensible defaults. LLaMA-Factory extends this with a web UI. For most practitioners, Axolotl is the right tool: it handles gradient checkpointing, LoRA rank selection, chat template selection, and evaluation integration, all from a single configuration file.</p>
+
+    <div class="pipeline-diag">
+      <div class="pd-row">
+        <div class="pd-box pd-1">1. Collect &amp; curate dataset<br><small style="opacity:.6">Alpaca / ShareGPT / ChatML format, remove low-quality examples</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-2">2. SFT with LoRA / QLoRA<br><small>apply_chat_template + mask_labels + SFTTrainer, r=16, alpha=32</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-3">3. Evaluate on held-out set<br><small>MMLU subset, MT-Bench, domain-specific evals, human spot-check</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-4">4. DPO alignment (optional)<br><small>collect chosen/rejected pairs, DPOTrainer, beta=0.1, 1-3 epochs</small></div>
+      </div>
+      <div class="pd-row"><div class="pd-arr">&#8595;</div></div>
+      <div class="pd-row">
+        <div class="pd-box pd-5">5. Merge + quantize + deploy<br><small>merge adapter &rarr; convert to GGUF &rarr; quantize Q4_K_M &rarr; Ollama / vLLM</small></div>
+      </div>
+    </div>
+
+    <div class="callout purple">
+      <strong>The most important step is data quality, not model size.</strong> A 7B model trained on 2,000 meticulously curated examples in your domain will outperform a 70B model trained on 50,000 noisy examples. Filter aggressively: remove examples with broken formatting, factual errors, inconsistent instruction style, or responses shorter than two sentences.
+    </div>
+
+    <div class="cell" id="cell-axolotl-config">
+      <div class="cell-header">
+        <span class="cell-label">Python &mdash; Generate an Axolotl training configuration from parameters</span>
+        <button class="run-btn" onclick="runCell('cell-axolotl-config')">&#9654; Run</button>
+      </div>
+      <div class="cell-code"><pre>
+import json
+
+def generate_axolotl_config(
+    base_model="mistralai/Mistral-7B-v0.1",
+    dataset_path="./data/train.jsonl",
+    dataset_format="sharegpt",
+    num_examples=2000,
+    vram_gb=24,
+    use_dpo=False,
+    output_dir="./output/my-model",
+):
+    """Generate an Axolotl-compatible YAML config dict."""
+
+    # Determine LoRA rank based on dataset size
+    if num_examples < 500:
+        rank, alpha = 8, 16
+    elif num_examples < 5000:
+        rank, alpha = 16, 32
+    else:
+        rank, alpha = 64, 128
+
+    # Determine quantization based on VRAM
+    load_in_4bit = vram_gb < 40
+    load_in_8bit = (not load_in_4bit) and vram_gb < 80
+
+    # Determine batch size based on VRAM
+    batch_size = max(1, vram_gb // 8)
+    grad_accum = max(1, 32 // batch_size)
+
+    cfg = {
+        "base_model": base_model,
+        "model_type": "AutoModelForCausalLM",
+        "tokenizer_type": "AutoTokenizer",
+        "load_in_4bit": load_in_4bit,
+        "load_in_8bit": load_in_8bit and not load_in_4bit,
+        "datasets": [{"path": dataset_path, "type": dataset_format}],
+        "dataset_prepared_path": "./data/prepared",
+        "val_set_size": 0.05,
+        "output_dir": output_dir,
+        "adapter": "lora",
+        "lora_r": rank,
+        "lora_alpha": alpha,
+        "lora_dropout": 0.05,
+        "lora_target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
+        "sequence_len": 4096,
+        "micro_batch_size": batch_size,
+        "gradient_accumulation_steps": grad_accum,
+        "num_epochs": 3,
+        "optimizer": "adamw_bnb_8bit" if load_in_4bit else "adamw_torch",
+        "lr_scheduler": "cosine",
+        "learning_rate": 2e-4,
+        "train_on_inputs": False,   # masked loss — only train on responses
+        "group_by_length": True,
+        "bf16": True,
+        "logging_steps": 10,
+        "save_steps": 100,
+        "eval_steps": 100,
+    }
+    if use_dpo:
+        cfg["rl"] = "dpo"
+        cfg["dpo_beta"] = 0.1
+    return cfg
+
+config = generate_axolotl_config(
+    base_model="mistralai/Mistral-7B-v0.1",
+    num_examples=1500,
+    vram_gb=24,
+    use_dpo=False,
+)
+
+print("Generated Axolotl configuration:")
+print("-" * 45)
+for k, v in config.items():
+    print(f"  {k:<35} {str(v)}")
+
+print()
+print(f"LoRA rank selected: {config['lora_r']} (for {1500} examples)")
+print(f"4-bit quantization: {config['load_in_4bit']} (for {24}GB VRAM)")
+print(f"Effective batch:    {config['micro_batch_size'] * config['gradient_accumulation_steps']}")
+</pre></div>
+      <div class="cell-output">Click ▶ Run to generate training config.</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Further Reading</div>
+      <a href="https://huggingface.co/docs/trl" target="_blank">HuggingFace TRL &mdash; SFTTrainer and DPOTrainer documentation</a>
+      <a href="https://github.com/axolotl-ai-cloud/axolotl" target="_blank">Axolotl &mdash; configurable fine-tuning framework</a>
+      <a href="https://github.com/hiyouga/LLaMA-Factory" target="_blank">LLaMA-Factory &mdash; fine-tuning with web UI</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ==================== 7.11 ==================== -->
+  <section class="section" id="s711">
+    <div class="section-label">7.11</div>
+    <h2>Closing: What You've Built</h2>
+
+    <p>Seven chapters ago, a language model was a black box that somehow produced coherent text when you typed into a chat interface. Now you have the full picture, from first principles to production deployment. You started with raw text &mdash; bytes of web-scraped documents &mdash; and you understand how a BPE tokenizer converts them into integer sequences that a neural network can process. You built a transformer from scratch, and you understand why every component is there: the attention mechanism that lets tokens communicate across sequence positions, the positional encodings that give the model a sense of order, the feed-forward sublayers that perform per-token computation, the layer normalization that prevents gradient explosion, the residual connections that make deep networks trainable.</p>
+
+    <p>You saw how pretraining works at scale: the cross-entropy objective, the Adam optimizer, the learning rate schedule that warms up and decays, the data pipeline that never lets the GPU starve. You understand why scale matters (Chinchilla scaling laws), why data quality matters more than data quantity at the tail of the compute budget, and why the pretrained model is not the same as the assistant you interact with &mdash; the gap that this entire chapter was dedicated to closing. You learned how SFT bridges that gap by showing the model its job description in the form of instruction-response pairs, how masked loss ensures the model trains to respond rather than to repeat, and how LoRA and QLoRA make the whole process tractable on consumer hardware. You saw how DPO replaces an entire reinforcement learning pipeline with a stable supervised objective, and how to evaluate and deploy the result.</p>
+
+    <p>What comes next is an open frontier. Multimodal models (LLaVA, GPT-4V, Gemini) add vision encoders that project image patches into the same embedding space as text tokens, enabling reasoning over images, diagrams, and documents. Retrieval-augmented generation (RAG) augments fixed model knowledge with dynamic retrieval from external databases, addressing one of the most persistent limitations of parametric memory. Mixture-of-Experts (MoE) architectures &mdash; Mixtral, Grok-1, DeepSeek-MoE &mdash; dramatically increase model capacity without proportionally increasing inference cost by routing each token to a small subset of specialized feed-forward layers. Speculative decoding uses a small draft model to generate candidate tokens that a large model verifies in parallel, achieving 2&ndash;4&times; inference speedup with identical output quality. Reasoning models (o1, DeepSeek-R1) add an extended "chain of thought" generation phase that the model trains to use before producing a final answer, dramatically improving performance on math and logic tasks.</p>
+
+    <p>The direction the field is moving is unmistakable: smaller models trained on better data. Phi-3-mini (3.8B parameters) outperforms models 10&times; larger on many benchmarks, trained on carefully curated "textbook quality" data. Long-context models now support 128K&ndash;1M token contexts, enabling reasoning over entire codebases and books. The compute requirements for competitive performance at the research frontier have grown, but the compute requirements for building a genuinely useful domain-specific assistant have fallen dramatically. A single A100 GPU, a week of QLoRA training, and a well-curated 5,000-example dataset is enough to produce a model that outperforms GPT-3.5 on your specific task.</p>
+
+    <div class="callout green">
+      <strong>The papers that changed everything:</strong> Attention Is All You Need (Vaswani et al. 2017) gave us the transformer. Scaling Laws for Neural Language Models (Kaplan et al. 2020) gave us the compute-optimal recipe. InstructGPT (Ouyang et al. 2022) gave us alignment. LoRA (Hu et al. 2021) and QLoRA (Dettmers et al. 2023) gave us accessibility. DPO (Rafailov et al. 2023) gave us simplicity. Every model you interact with today is downstream of these six papers. The next six are probably being written right now.
+    </div>
+
+    <div class="callout blue">
+      <strong>Everything you built in this book:</strong> BPE tokenizer from scratch (Ch. 2). Scaled dot-product attention from scratch (Ch. 3). Full transformer encoder/decoder from scratch (Ch. 4). Pretraining loop with cosine schedule (Ch. 5). Embedding and retrieval system (Ch. 6). Masked loss, LoRA, DPO loss, Elo ratings, streaming inference server (Ch. 7). You did not use any deep learning library for the core implementations &mdash; just Python and mathematics. That was the point.
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Where to go next</div>
+      <a href="https://arxiv.org/abs/2307.09288" target="_blank">LLaMA-2 paper &mdash; full SFT + RLHF pipeline as used at Meta</a>
+      <a href="https://arxiv.org/abs/2401.04088" target="_blank">Mixtral paper &mdash; Mixture of Experts at the frontier</a>
+      <a href="https://arxiv.org/abs/2310.06825" target="_blank">Mistral 7B paper &mdash; grouped query attention and sliding window</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <nav class="ch-nav">
+    <a href="chapter6.html">
+      <span class="cnd">&larr; Previous</span>
+      <span class="cnt">Chapter 6 &mdash; Fine-Tuning for Classification</span>
+    </a>
+    <a href="index.html">
+      <span class="cnd">Back to &rarr;</span>
+      <span class="cnt">Book Index</span>
+    </a>
+  </nav>
+
+</div><!-- /container -->
+
+<script>
+async function runCell(id){
+  const cell=document.getElementById(id);
+  const code=cell.querySelector('.cell-code pre').textContent;
+  const out=cell.querySelector('.cell-output');
+  const btn=cell.querySelector('.run-btn');
+  if(!window.pyodide){out.textContent='Python runtime still loading — try again in a moment.';return;}
+  btn.disabled=true;out.className='cell-output running';out.textContent='Running...';
+  try{
+    window.pyodide.runPython('import sys,io;sys.stdout=io.StringIO()');
+    await window.pyodide.runPythonAsync(code);
+    const r=window.pyodide.runPython('sys.stdout.getvalue()');
+    out.className='cell-output';out.textContent=r||'(no output)';
+  }catch(e){out.className='cell-output error';out.textContent='Error: '+e.message;}
+  btn.disabled=false;
+}
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent);
+  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+}
+</script>
+<script>
+(async()=>{
+  try{
+    const p=await loadPyodide();window.pyodide=p;
+    document.getElementById('pyodide-status').textContent='Python runtime ready — click Run on any cell.';
+    setTimeout(()=>{const s=document.getElementById('pyodide-status');if(s)s.style.display='none';},2000);
+  }catch(e){document.getElementById('pyodide-status').textContent='Python runtime unavailable — view code only.';}
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+</body>
+</html>

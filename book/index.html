@@ -3,289 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Building With LLMs — Jace Sabr</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>Building With Large Language Models — Jace Sabr</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f5f0e8;--surface:#ffffff;--border:rgba(120,100,80,0.12);--border-h:rgba(120,100,80,0.22);--text:#2c2520;--text-dim:#6b6058;--text-muted:#9a8e82;--clay:#c2694a;--clay-dim:rgba(194,105,74,0.1);--sand:#b8943e;--sand-dim:rgba(184,148,62,0.1);--sage:#5e9a6f;--sage-dim:rgba(94,154,111,0.1);--slate:#6882a3;--slate-dim:rgba(104,130,163,0.1);--radius:8px}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;font-size:14.5px}
-a{color:inherit;text-decoration:none}
+:root{
+  --bg:#faf9f7;--surface:#fff;
+  --text:#1a1a1a;--text-dim:#6b6560;--text-muted:#9a8e82;
+  --accent:#c96442;--accent-dim:rgba(201,100,66,.08);
+  --blue:#3b6bb5;--green:#4a8c6f;--purple:#7c5cbf;--amber:#b87c2a;
+  --border:#e8e4de;--border-h:#d8d0c8;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:50px;display:flex;align-items:center;justify-content:space-between;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.logo{font-weight:700;font-size:14px}.logo span{color:var(--clay)}
-.nav-links{display:flex;gap:1.5rem}.nav-links a{color:var(--text-dim);font-size:12px;font-weight:500;transition:color 0.2s}.nav-links a:hover{color:var(--clay)}
-.nav-back{background:var(--clay);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;transition:opacity 0.2s}.nav-back:hover{opacity:0.85}
+nav{position:sticky;top:0;z-index:100;background:rgba(250,249,247,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:var(--font-serif);font-size:16px;}
+.nav-logo span{color:var(--accent);}
+.nav-back{font-size:12px;color:var(--text-dim);border:1px solid var(--border-h);padding:5px 14px;border-radius:20px;transition:all .2s;}
+.nav-back:hover{color:var(--accent);border-color:var(--accent);}
 
-.wrap{max-width:900px;margin:0 auto;padding:0 2.5rem}
-section{padding:3rem 0}
-hr{border:none;height:1px;background:var(--border)}
-
-.st{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.st-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:3px 8px;border-radius:4px;background:var(--clay-dim)}
-.st span{color:var(--text-muted);font-weight:400}
+.wrap{max-width:820px;margin:0 auto;padding:0 32px;}
 
 /* Hero */
-.hero{padding-top:90px;padding-bottom:3rem;text-align:center}
-.hero .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--clay);margin-bottom:12px}
-.hero h1{font-family:'Crimson Pro',serif;font-size:48px;font-weight:600;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;max-width:700px;margin-left:auto;margin-right:auto}
-.hero h1 em{color:var(--clay);font-style:italic}
-.hero .sub{font-size:15px;color:var(--text-dim);max-width:580px;margin:0 auto 28px;line-height:1.7}
-.hero-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.btn{padding:8px 22px;border-radius:6px;font-size:13px;font-weight:600;transition:all 0.2s}
-.btn-p{background:var(--clay);color:#fff}.btn-p:hover{opacity:0.85}
-.btn-s{border:1px solid var(--border-h);color:var(--text-dim)}.btn-s:hover{color:var(--clay);border-color:var(--clay)}
+.hero{padding:96px 0 72px;}
+.hero-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;margin-bottom:18px;}
+.hero h1{font-family:var(--font-serif);font-size:clamp(34px,5vw,52px);font-weight:400;line-height:1.15;margin-bottom:20px;max-width:580px;}
+.hero h1 em{color:var(--accent);}
+.hero p{font-size:16px;color:var(--text-dim);max-width:500px;line-height:1.75;margin-bottom:32px;}
+.hero-stats{display:flex;gap:32px;padding-top:24px;border-top:1px solid var(--border);}
+.stat .v{font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--text);}
+.stat .l{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
 
-/* Book meta */
-.book-meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
-.bm{text-align:center}.bm .v{font-size:18px;font-weight:700;color:var(--clay);font-family:'JetBrains Mono',monospace}.bm .l{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-top:2px}
+hr{border:none;border-top:1px solid var(--border);}
 
-/* Chapter list */
-.chapters{}
-.part{margin-bottom:2rem}
-.part-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--clay);padding:4px 10px;border-radius:4px;background:var(--clay-dim);display:inline-block;margin-bottom:12px}
-.ch{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:16px;transition:all 0.2s;box-shadow:0 1px 4px rgba(80,60,40,0.04)}
-.ch:hover{border-color:var(--border-h);box-shadow:0 3px 12px rgba(80,60,40,0.08)}
-.ch-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--clay);min-width:40px;padding-top:2px}
-.ch-body{flex:1}
-.ch-body h3{font-size:14px;font-weight:700;margin-bottom:3px}
-.ch-body p{font-size:13px;color:var(--text-dim);line-height:1.6}
-.ch-body .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
-.tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px}
-.ch-status{display:flex;align-items:center;gap:5px;font-size:11px;padding-top:2px}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-.dot-done{background:var(--sage)}.dot-progress{background:var(--sand)}.dot-planned{background:var(--border-h)}
-.status-done{color:var(--sage)}.status-progress{color:var(--sand)}.status-planned{color:var(--text-muted)}
+/* Chapters */
+.section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:20px;padding-top:48px;}
+.part-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;margin-top:32px;}
+.part-title:first-child{margin-top:0;}
 
-/* About */
-.about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:0 2px 12px rgba(80,60,40,0.06)}
-.about-card .quote{font-family:'Crimson Pro',serif;font-size:18px;font-style:italic;color:var(--text-dim);line-height:1.65;margin-bottom:16px;border-left:2px solid var(--clay);padding-left:16px}
-.about-card p{font-size:13.5px;color:var(--text-dim);line-height:1.75;margin-bottom:10px}
-.about-card p:last-child{margin-bottom:0}
+.ch{display:flex;align-items:baseline;gap:20px;padding:18px 0;border-bottom:1px solid var(--border);}
+.ch:last-child{border-bottom:none;}
+.ch-num{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);min-width:26px;padding-top:1px;}
+.ch-main{flex:1;}
+.ch-main h3{font-size:15px;font-weight:600;margin-bottom:4px;color:var(--text);transition:color .2s;}
+.ch-main p{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:580px;}
+.ch-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:120px;}
+.ch-status{font-family:var(--font-mono);font-size:11px;display:flex;align-items:center;gap:5px;}
+.dot{width:6px;height:6px;border-radius:50%;}
+.done{color:var(--green);}.dot-done{background:var(--green);}
+.soon{color:var(--text-muted);}.dot-soon{background:var(--border-h);}
+.ch-link{font-size:12px;color:var(--accent);border:1px solid rgba(201,100,66,.25);padding:3px 10px;border-radius:4px;transition:all .2s;}
+.ch-link:hover{background:var(--accent);color:#fff;}
+a.ch:hover .ch-main h3{color:var(--accent);}
+a.ch{cursor:pointer;}
 
-/* Research basis */
-.refs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ref{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
-.ref .rname{font-size:13px;font-weight:600;margin-bottom:2px}
-.ref .rdesc{font-size:12px;color:var(--text-dim)}
+/* Research */
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-bottom:48px;}
+.ref{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:11px 14px;transition:border-color .2s;}
+.ref:hover{border-color:var(--border-h);}
+.ref-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ref-desc{font-size:12px;color:var(--text-dim);line-height:1.5;}
 
-/* Notify */
-.notify{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;text-align:center;box-shadow:0 2px 12px rgba(80,60,40,0.06)}
-.notify h3{font-size:15px;font-weight:700;margin-bottom:4px}
-.notify p{font-size:13px;color:var(--text-dim);margin-bottom:14px}
-.notify-form{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.notify-form input{padding:8px 14px;border-radius:6px;border:1px solid var(--border-h);background:var(--bg);font-size:13px;color:var(--text);outline:none;min-width:240px}
-.notify-form input:focus{border-color:var(--clay)}
-.notify-form button{padding:8px 20px;background:var(--clay);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.2s}.notify-form button:hover{opacity:0.85}
+footer{text-align:center;padding:28px;color:var(--text-muted);font-size:12px;border-top:1px solid var(--border);}
+footer a{color:var(--accent);}
 
-footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
-
-@media(max-width:768px){.nav-links{display:none}.hero h1{font-size:32px}.refs{grid-template-columns:1fr}.ch{flex-direction:column;gap:8px}.book-meta{gap:14px}}
+@media(max-width:640px){
+  .wrap{padding:0 20px;}
+  nav{padding:0 20px;}
+  .hero{padding:72px 0 48px;}
+  .hero-stats{gap:20px;}
+  .ref-grid{grid-template-columns:1fr;}
+  .ch{flex-direction:column;gap:8px;}
+  .ch-right{align-items:flex-start;flex-direction:row;}
+}
 </style>
 </head>
 <body>
 
 <nav>
-<div class="logo">Jace<span>.</span></div>
-<div class="nav-links">
-  <a href="#about">About</a>
-  <a href="#chapters">Chapters</a>
-  <a href="#research">Research</a>
-</div>
-<a href="../index.html" class="nav-back">← Portfolio</a>
+  <div class="nav-logo">Jace<span>.</span></div>
+  <a href="../index.html" class="nav-back">← Portfolio</a>
 </nav>
 
 <div class="wrap">
 
 <div class="hero">
-  <div class="eyebrow">In Progress — 2026</div>
-  <h1>Building With <em>Large Language Models</em></h1>
-  <p class="sub">A practitioner's guide to designing, deploying, and governing LLM systems — written by someone who built one from scratch, grounded in 100+ research papers.</p>
-  <div class="hero-btns">
-    <a href="mailto:jace100233260@gmail.com?subject=LLM Book — Early Access" class="btn btn-p">Request Early Access</a>
-    <a href="#chapters" class="btn btn-s">View Chapters ↓</a>
-  </div>
-  <div class="book-meta">
-    <div class="bm"><div class="v">7</div><div class="l">Chapters</div></div>
-    <div class="bm"><div class="v">100+</div><div class="l">Research Papers</div></div>
-    <div class="bm"><div class="v">5,000+</div><div class="l">Lines of Annotated Code</div></div>
-    <div class="bm"><div class="v">50+</div><div class="l">Runnable Cells</div></div>
-    <div class="bm"><div class="v">From Scratch</div><div class="l">Build a GPT</div></div>
+  <div class="hero-label">Technical Book · 2026</div>
+  <h1>Building With<br><em>Large Language Models</em></h1>
+  <p>From next-token prediction to fine-tuned assistants — every layer of the stack explained precisely, with annotated code you can run in your browser.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="v">7</div><div class="l">Chapters</div></div>
+    <div class="stat"><div class="v">100+</div><div class="l">Research Papers</div></div>
+    <div class="stat"><div class="v">70+</div><div class="l">Runnable Cells</div></div>
+    <div class="stat"><div class="v">5k+</div><div class="l">Lines of Code</div></div>
   </div>
 </div>
 
 <hr>
 
-<!-- About -->
-<section id="about">
-<div class="st"><span class="st-label">The Book</span> What This Is</div>
-<div class="about-card">
-  <div class="quote">"Most LLM books teach you to call an API. This one teaches you to build one from scratch — tokenizer to fine-tuned assistant, every line annotated, every design decision traced to the paper that justified it."</div>
-  <p>This book is a practitioner's guide to understanding and building large language models — from the mathematics of next-token prediction through pre-training, deployment, and fine-tuning. Each chapter explains one layer of the stack deeply, with annotated code the reader can run in their browser and links to every primary source.</p>
-  <p>The target reader is someone technical enough to read Python, curious enough to want the real math, but not necessarily a researcher. A senior developer, a data scientist pivoting to LLMs, or a technically-minded builder who wants to go beyond the API.</p>
-  <p>By the end of this book you will have built a working GPT model from an empty file — tokenizer, attention mechanism, transformer architecture, pre-training loop, and two different fine-tuning strategies — understanding every line of code and every design trade-off along the way.</p>
-</div>
-</section>
+<!-- ── Chapters ── -->
+<div class="section-label">Table of Contents</div>
 
-<hr>
+<div class="part-title">Part I — Foundations</div>
 
-<!-- Chapters -->
-<section id="chapters">
-<div class="st">Chapters <span>— 7 chapters, tokenizer to fine-tuned assistant</span></div>
-
-<div class="part">
-  <span class="part-label">Part I — Foundations</span>
-
-  <a href="chapter1.html" class="ch">
-    <div class="ch-num">01</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
-      <h3>Understanding Large Language Models</h3>
-      <p>Next-token prediction, tokenisation, embeddings, the transformer architecture, self-attention, pre-training at scale, BERT vs GPT, RLHF/LoRA, scale and emergence, MoE, quantization, and the 2025 open-source landscape.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Transformers</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Pre-training</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Scale</span>
-      </div>
-    </div>
-  </a>
-
-  <a href="chapter2.html" class="ch">
-    <div class="ch-num">02</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
-      <h3>Working with Text Data</h3>
-      <p>Tokenisers in depth — BPE, SentencePiece, tiktoken. Building a BPE tokenizer from scratch. Token IDs, special tokens, sliding-window data sampling. Token embeddings and positional encoding. The full input pipeline from raw text to embedding tensor.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">BPE</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Tokenization</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Embeddings</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">DataLoader</span>
-      </div>
-    </div>
-  </a>
-
-  <a href="chapter3.html" class="ch">
-    <div class="ch-num">03</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-done"></span><span class="status-done">Complete — Read →</span></div>
-      <h3>The Transformer Architecture</h3>
-      <p>Residual stream, token &amp; positional embeddings, layer normalisation, Q/K/V projections, scaled dot-product attention, multi-head attention, causal mask, Flash Attention, feedforward sublayer, induction heads, and the generation loop.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Self-Attention</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Multi-Head</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Flash Attention</span>
-      </div>
-    </div>
-  </a>
-</div>
-
-<div class="part">
-  <span class="part-label">Part II — Building the Model</span>
-
-  <div class="ch">
-    <div class="ch-num">04</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
-      <h3>Implementing a GPT Model</h3>
-      <p>Full decoder-only transformer from scratch. Layer normalisation, GELU activation, shortcut connections, stacked transformer blocks, the GPT-2 architecture, weight tying, parameter counting, and greedy text generation.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">GPT-2</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">GELU</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">Residual</span>
-        <span class="tag" style="background:var(--sand-dim);color:var(--sand)">124M Params</span>
-      </div>
-    </div>
+<a href="chapter1.html" class="ch">
+  <div class="ch-num">01</div>
+  <div class="ch-main">
+    <h3>Understanding Large Language Models</h3>
+    <p>Next-token prediction, tokenisation, embeddings, transformer architecture, self-attention, pre-training, RLHF, LoRA, scaling laws, MoE, quantization.</p>
   </div>
-
-  <div class="ch">
-    <div class="ch-num">05</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
-      <h3>Pretraining on Unlabeled Data</h3>
-      <p>The training loop from scratch. Cross-entropy loss, gradient clipping, learning rate scheduling with cosine warmup, mixed precision (BF16), evaluation on validation loss, temperature scaling, top-k sampling, and loading real pretrained weights.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Training Loop</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Cosine LR</span>
-        <span class="tag" style="background:var(--clay-dim);color:var(--clay)">Top-k Sampling</span>
-      </div>
-    </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
   </div>
-</div>
+</a>
 
-<div class="part">
-  <span class="part-label">Part III — Fine-Tuning</span>
-
-  <div class="ch">
-    <div class="ch-num">06</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
-      <h3>Fine-Tuning for Classification</h3>
-      <p>Adding a classification head to a pretrained GPT. Freezing layers, training on downstream datasets, evaluation metrics (F1, ROC-AUC), overfitting detection, early stopping, and building a spam classifier from scratch.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Classification</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">Transfer Learning</span>
-        <span class="tag" style="background:var(--slate-dim);color:var(--slate)">F1 / ROC-AUC</span>
-      </div>
-    </div>
+<a href="chapter2.html" class="ch">
+  <div class="ch-num">02</div>
+  <div class="ch-main">
+    <h3>Working with Text Data</h3>
+    <p>BPE, SentencePiece, tiktoken — building a tokenizer from scratch. Sliding-window sampling, DataLoader, token embeddings, positional encoding.</p>
   </div>
-
-  <div class="ch">
-    <div class="ch-num">07</div>
-    <div class="ch-body">
-      <div class="ch-status"><span class="dot dot-planned"></span><span class="status-planned">Coming Soon</span></div>
-      <h3>Fine-Tuning to Follow Instructions</h3>
-      <p>Supervised fine-tuning (SFT) dataset formats — Alpaca, ShareGPT, ChatML. Training with masked loss. DPO alignment. Evaluation with benchmarks. Deploying a local instruction-following assistant.</p>
-      <div class="tags">
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">SFT</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Alpaca</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">DPO</span>
-        <span class="tag" style="background:var(--sage-dim);color:var(--sage)">Instruction Tuning</span>
-      </div>
-    </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
   </div>
-</div>
-</section>
+</a>
 
-<hr>
-
-<!-- Research Basis -->
-<section id="research">
-<div class="st">Research Basis <span>— built on peer-reviewed literature</span></div>
-<div class="refs">
-  <div class="ref"><div class="rname">Vaswani et al. 2017</div><div class="rdesc">Attention Is All You Need — the original transformer architecture</div></div>
-  <div class="ref"><div class="rname">Radford et al. 2018–2019</div><div class="rdesc">GPT and GPT-2 — generative pre-training and unsupervised multitask learning</div></div>
-  <div class="ref"><div class="rname">Kaplan et al. 2020</div><div class="rdesc">Scaling Laws for Neural Language Models — parameter/data/compute relationships</div></div>
-  <div class="ref"><div class="rname">Hoffmann et al. 2022</div><div class="rdesc">Chinchilla — compute-optimal training (tokens should scale with parameters)</div></div>
-  <div class="ref"><div class="rname">Dao et al. 2022</div><div class="rdesc">FlashAttention — IO-aware exact attention with tiling</div></div>
-  <div class="ref"><div class="rname">Sennrich et al. 2016</div><div class="rdesc">BPE for NMT — byte pair encoding applied to subword tokenization</div></div>
-  <div class="ref"><div class="rname">Hu et al. 2021</div><div class="rdesc">LoRA — low-rank adaptation of large language models</div></div>
-  <div class="ref"><div class="rname">Ouyang et al. 2022</div><div class="rdesc">InstructGPT — training language models to follow instructions with RLHF</div></div>
-  <div class="ref"><div class="rname">Rafailov et al. 2023</div><div class="rdesc">DPO — direct preference optimization without reinforcement learning</div></div>
-  <div class="ref"><div class="rname">Raschka 2025</div><div class="rdesc">Build a Large Language Model (From Scratch) — primary reference text</div></div>
-  <div class="ref"><div class="rname">Karpathy (nanoGPT)</div><div class="rdesc">Minimal GPT-2 reimplementation — the gold standard for learning by building</div></div>
-  <div class="ref"><div class="rname">Elhage et al. 2021 (Anthropic)</div><div class="rdesc">A Mathematical Framework for Transformer Circuits — residual stream formalism</div></div>
-</div>
-</section>
-
-<hr>
-
-<!-- Notify -->
-<section>
-<div class="notify">
-  <h3>Get Notified When It Ships</h3>
-  <p>Chapters are released as they are completed. Leave your email to receive early access and chapter previews.</p>
-  <div class="notify-form">
-    <input type="email" placeholder="your@email.com" />
-    <button onclick="this.textContent='Added ✓';this.style.background='var(--sage)'">Notify Me</button>
+<a href="chapter3.html" class="ch">
+  <div class="ch-num">03</div>
+  <div class="ch-main">
+    <h3>The Transformer Architecture</h3>
+    <p>Scaled dot-product attention from scratch, multi-head attention, causal mask, Flash Attention, RoPE, GQA, KV caching — every component built line by line.</p>
   </div>
-</div>
-</section>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
+  </div>
+</a>
 
+<div class="part-title">Part II — Building the Model</div>
+
+<a href="chapter4.html" class="ch">
+  <div class="ch-num">04</div>
+  <div class="ch-main">
+    <h3>Implementing a GPT Model</h3>
+    <p>Layer normalisation, GELU, FeedForward sublayer, shortcut connections, stacked transformer blocks, the GPT-2 architecture, weight tying, parameter counting (124M), text generation.</p>
+  </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
+  </div>
+</a>
+
+<a href="chapter5.html" class="ch">
+  <div class="ch-num">05</div>
+  <div class="ch-main">
+    <h3>Pretraining on Unlabeled Data</h3>
+    <p>Cross-entropy loss, the training loop, perplexity, cosine LR scheduling with warmup, gradient clipping, BF16 mixed precision, gradient checkpointing, temperature &amp; top-k sampling, scaling laws.</p>
+  </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
+  </div>
+</a>
+
+<div class="part-title">Part III — Fine-Tuning</div>
+
+<a href="chapter6.html" class="ch">
+  <div class="ch-num">06</div>
+  <div class="ch-main">
+    <h3>Fine-Tuning for Classification</h3>
+    <p>Transfer learning, classification head, freezing layers, building a spam detector, F1, ROC-AUC, overfitting detection, early stopping, layer-wise learning rates.</p>
+  </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
+  </div>
+</a>
+
+<a href="chapter7.html" class="ch">
+  <div class="ch-num">07</div>
+  <div class="ch-main">
+    <h3>Fine-Tuning to Follow Instructions</h3>
+    <p>SFT datasets (Alpaca, ShareGPT, ChatML), masked loss, LoRA, QLoRA, Direct Preference Optimization (DPO), RLHF vs DPO, MMLU &amp; MT-Bench evaluation, deploying a local assistant.</p>
+  </div>
+  <div class="ch-right">
+    <div class="ch-status done"><span class="dot dot-done"></span>Complete</div>
+    <span class="ch-link">Read →</span>
+  </div>
+</a>
+
+<hr style="margin:48px 0 0;">
+
+<!-- ── Research ── -->
+<div class="section-label">Research Basis</div>
+<div class="ref-grid">
+  <div class="ref"><div class="ref-name">Vaswani et al. 2017</div><div class="ref-desc">Attention Is All You Need — the original transformer</div></div>
+  <div class="ref"><div class="ref-name">Radford et al. 2018–2019</div><div class="ref-desc">GPT and GPT-2 — generative pre-training and language models as multitask learners</div></div>
+  <div class="ref"><div class="ref-name">Kaplan et al. 2020</div><div class="ref-desc">Scaling Laws for Neural Language Models — power laws in N, D, C</div></div>
+  <div class="ref"><div class="ref-name">Hoffmann et al. 2022</div><div class="ref-desc">Chinchilla — compute-optimal training, 20 tokens per parameter</div></div>
+  <div class="ref"><div class="ref-name">Dao et al. 2022</div><div class="ref-desc">FlashAttention — IO-aware exact attention with tiling</div></div>
+  <div class="ref"><div class="ref-name">Sennrich et al. 2016</div><div class="ref-desc">BPE for NMT — subword tokenization applied to neural MT</div></div>
+  <div class="ref"><div class="ref-name">Hu et al. 2021</div><div class="ref-desc">LoRA — low-rank adaptation of large language models</div></div>
+  <div class="ref"><div class="ref-name">Dettmers et al. 2023</div><div class="ref-desc">QLoRA — efficient fine-tuning of quantized language models</div></div>
+  <div class="ref"><div class="ref-name">Ouyang et al. 2022</div><div class="ref-desc">InstructGPT — training LMs to follow instructions with RLHF</div></div>
+  <div class="ref"><div class="ref-name">Rafailov et al. 2023</div><div class="ref-desc">DPO — direct preference optimization without RL</div></div>
+  <div class="ref"><div class="ref-name">Ba et al. 2016</div><div class="ref-desc">Layer Normalization — training recurrent neural networks</div></div>
+  <div class="ref"><div class="ref-name">Hendrycks &amp; Gimpel 2016</div><div class="ref-desc">GELU — Gaussian error linear units activation function</div></div>
+  <div class="ref"><div class="ref-name">He et al. 2016</div><div class="ref-desc">Deep Residual Learning — shortcut connections for very deep networks</div></div>
+  <div class="ref"><div class="ref-name">Elhage et al. 2021</div><div class="ref-desc">Mathematical Framework for Transformer Circuits — residual stream formalism</div></div>
+  <div class="ref"><div class="ref-name">Tenney et al. 2019</div><div class="ref-desc">BERT Rediscovers the Classical NLP Pipeline — what each layer learns</div></div>
+  <div class="ref"><div class="ref-name">Karpathy (nanoGPT)</div><div class="ref-desc">Minimal GPT-2 reimplementation — the canonical from-scratch reference</div></div>
+  <div class="ref"><div class="ref-name">Devlin et al. 2018</div><div class="ref-desc">BERT — bidirectional pre-training on masked language modelling, origin of encoder-only transformers</div></div>
+  <div class="ref"><div class="ref-name">Brown et al. 2020</div><div class="ref-desc">GPT-3 — 175B parameters, in-context learning, few-shot prompting without gradient updates</div></div>
+  <div class="ref"><div class="ref-name">Su et al. 2021</div><div class="ref-desc">RoFormer — Rotary Position Embedding (RoPE), now standard in LLaMA, Mistral, Gemma, Qwen</div></div>
+  <div class="ref"><div class="ref-name">Shazeer 2020</div><div class="ref-desc">GLU Variants Improve Transformer — SwiGLU activation adopted by LLaMA, PaLM, Gemini, GPT-4</div></div>
+  <div class="ref"><div class="ref-name">Zhang &amp; Sennrich 2019</div><div class="ref-desc">Root Mean Square Layer Normalization (RMSNorm) — standard pre-norm in LLaMA and all modern LLMs</div></div>
+  <div class="ref"><div class="ref-name">Ainslie et al. 2023</div><div class="ref-desc">GQA — Grouped-Query Attention balances MHA quality and MQA KV-cache efficiency</div></div>
+  <div class="ref"><div class="ref-name">Bahdanau et al. 2014</div><div class="ref-desc">Neural Machine Translation by Jointly Learning to Align and Translate — origin of the attention mechanism</div></div>
+  <div class="ref"><div class="ref-name">Touvron et al. 2023</div><div class="ref-desc">LLaMA 2 — open foundation models with SFT + RLHF; blueprint for open-weight model development</div></div>
+  <div class="ref"><div class="ref-name">Srivastava et al. 2014</div><div class="ref-desc">Dropout — simple regularization by randomly zeroing units during training; prevents co-adaptation</div></div>
+  <div class="ref"><div class="ref-name">Biderman et al. 2023</div><div class="ref-desc">Pythia — suite for analyzing LLMs across training; checkpoints every 512 steps for 300B tokens</div></div>
+  <div class="ref"><div class="ref-name">Zhou et al. 2023</div><div class="ref-desc">LIMA — Less Is More for Alignment; 1,000 carefully curated examples match 52K Alpaca quality</div></div>
+  <div class="ref"><div class="ref-name">Wei et al. 2022</div><div class="ref-desc">Chain-of-Thought Prompting Elicits Reasoning in Large Language Models — few-shot CoT</div></div>
+  <div class="ref"><div class="ref-name">Kudo &amp; Richardson 2018</div><div class="ref-desc">SentencePiece — language-independent subword tokenizer used by LLaMA, T5, Gemini</div></div>
 </div>
+
+</div><!-- /wrap -->
 
 <footer>
-  © 2026 Jace Sabr · <em>Building With Large Language Models</em> — Work in Progress
-  &nbsp;·&nbsp; <a href="../index.html" style="color:var(--clay)">← Back to Portfolio</a>
+  © 2026 Jace Sabr · <em>Building With Large Language Models</em>
+  &nbsp;·&nbsp;<a href="../index.html">← Portfolio</a>
 </footer>
+
 </body>
 </html>

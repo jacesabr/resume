@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 5 — Pretraining on Unlabeled Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f7;--bg-code:#1a1a1a;--bg-card:#fff;--bg-aside:#f3f1ee;--bg-deep:#f7f4ef;
+  --text:#1a1a1a;--text-secondary:#6b6560;--text-code:#e8e4de;
+  --accent:#c96442;--accent-light:rgba(201,100,66,.08);
+  --blue:#3b6bb5;--blue-light:rgba(59,107,181,.07);
+  --green:#4a8c6f;--green-light:rgba(74,140,111,.07);
+  --purple:#7c5cbf;--purple-light:rgba(124,92,191,.07);
+  --amber:#b87c2a;--amber-light:rgba(184,124,42,.07);
+  --border:#e8e4de;--border-light:#f0ece6;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:-apple-system,'Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',monospace;
+  --max-w:740px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased;}
+::selection{background:var(--accent);color:#fff;}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 24px;}
+.topnav{position:sticky;top:0;z-index:100;background:rgba(250,249,247,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light);padding:14px 0;}
+.topnav .container{display:flex;align-items:center;justify-content:space-between;}
+.topnav-title{font-family:var(--font-serif);font-size:15px;}
+.topnav-links{display:flex;gap:16px;}
+.topnav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;transition:color .2s;}
+.topnav-links a:hover{color:var(--accent);}
+.chapter-header{padding:80px 0 56px;border-bottom:1px solid var(--border);}
+.chapter-label{font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.chapter-header h1{font-family:var(--font-serif);font-size:clamp(30px,5vw,46px);font-weight:400;line-height:1.18;margin-bottom:18px;}
+.chapter-header>p{font-size:17px;color:var(--text-secondary);max-width:580px;line-height:1.72;}
+.chapter-meta{display:flex;gap:24px;margin-top:24px;font-size:13px;color:var(--text-secondary);flex-wrap:wrap;}
+.toc{padding:32px 0;border-bottom:1px solid var(--border);}
+.toc h3{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:2px;}
+.toc-list a{display:flex;gap:10px;text-decoration:none;color:var(--text);padding:6px 8px;font-size:13.5px;transition:all .2s;border-radius:5px;}
+.toc-list a:hover{color:var(--accent);background:var(--accent-light);}
+.toc-num{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);min-width:26px;}
+.section{padding:60px 0 0;}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.5px;margin-bottom:8px;}
+.section h2{font-family:var(--font-serif);font-size:30px;font-weight:400;line-height:1.28;margin-bottom:22px;}
+.section p{margin-bottom:18px;max-width:680px;}
+.section-divider{border:none;border-top:1px solid var(--border-light);margin:64px 0 0;}
+.callout{background:var(--bg-aside);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 22px;margin:22px 0;font-size:15px;line-height:1.72;}
+.callout strong{color:var(--accent);}
+.callout.blue{border-left-color:var(--blue);}.callout.blue strong{color:var(--blue);}
+.callout.green{border-left-color:var(--green);}.callout.green strong{color:var(--green);}
+.callout.purple{border-left-color:var(--purple);}.callout.purple strong{color:var(--purple);}
+.callout.amber{border-left-color:var(--amber);}.callout.amber strong{color:var(--amber);}
+.deepdive{background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:14px 20px;margin:22px 0;}
+.deepdive-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px;}
+.deepdive a{display:block;font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;}
+.deepdive a:hover{text-decoration:underline;}
+.formula{background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:13.5px;padding:18px 24px;border-radius:8px;margin:20px 0;text-align:center;}
+.formula .eq-label{font-size:10px;color:#666;display:block;margin-bottom:6px;text-align:left;letter-spacing:.5px;}
+.formula .eq-note{font-size:11px;color:#888;display:block;margin-top:6px;}
+.code-block{background:var(--bg-code);border-radius:10px;margin:22px 0;overflow:hidden;}
+.code-header{display:flex;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.code-filename{font-family:var(--font-mono);font-size:11px;color:#888;}
+.code-copy{background:none;border:1px solid #444;color:#888;padding:3px 10px;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;}
+.code-copy:hover{border-color:#888;color:#ddd;}
+.code-block pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.72;color:var(--text-code);padding:20px 24px;overflow-x:auto;}
+.kw{color:#cf8e6d;font-weight:500;}.fn{color:#87ceeb;}.cm{color:#6a9955;font-style:italic;}
+.lm{color:#4fc3f7;font-style:italic;}.st{color:#6aab73;}.nu{color:#79b4de;}
+.cl{color:#ffd580;}.pr{color:#9cdcfe;}.bi{color:#dcdcaa;}
+.cell{border:1px solid var(--border);border-radius:10px;margin:26px 0;overflow:hidden;}
+.cell-header{display:flex;justify-content:space-between;padding:10px 18px;background:var(--bg-aside);border-bottom:1px solid var(--border);}
+.cell-label{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.run-btn{background:var(--accent);color:#fff;border:none;padding:5px 16px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;}
+.run-btn:hover{opacity:.85;}.run-btn:disabled{opacity:.5;cursor:default;}
+.cell-code{background:var(--bg-code);padding:18px 22px;}
+.cell-code pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.68;color:var(--text-code);white-space:pre-wrap;}
+.cell-output{padding:14px 18px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#444;background:#fff;border-top:1px solid var(--border);white-space:pre-wrap;min-height:28px;}
+.cell-output.running{color:var(--accent);}.cell-output.error{color:#c0392b;}
+.ch-nav{display:flex;justify-content:space-between;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:20px;}
+.ch-nav a{text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:3px;}
+.ch-nav a:hover{color:var(--accent);}
+.cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.cnt{font-size:15px;font-weight:500;}
+#pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
+.lr-curve{margin:22px 0;position:relative;height:120px;background:var(--bg-aside);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.lr-svg{width:100%;height:100%;}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:22px 0;}
+.sg-card{border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.sg-card h4{font-family:var(--font-mono);font-size:11px;font-weight:700;margin-bottom:8px;}
+.sg-greedy h4{color:var(--blue);}
+.sg-temp h4{color:var(--accent);}
+.sg-topk h4{color:var(--green);}
+.sg-card p{font-size:11.5px;color:var(--text-secondary);line-height:1.5;}
+.sg-example{font-family:var(--font-mono);font-size:10px;background:var(--bg-code);color:var(--text-code);padding:6px 8px;border-radius:4px;margin-top:8px;text-align:left;}
+.loop-steps{display:flex;flex-direction:column;gap:6px;margin:22px 0;}
+.ls{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:7px;background:var(--bg-card);}
+.ls-n{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--accent);min-width:28px;padding-top:2px;}
+.ls-body{flex:1;}
+.ls-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ls-desc{font-size:12px;color:var(--text-secondary);}
+.scaling-table{width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;}
+.scaling-table th{background:var(--bg-aside);padding:9px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;}
+.scaling-table td{padding:8px 14px;border-bottom:1px solid var(--border-light);}
+.scaling-table tr:hover td{background:var(--accent-light);}
+.prec-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0;}
+.pc-card{border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.pc-bits{font-family:var(--font-mono);font-size:28px;font-weight:700;margin-bottom:4px;}
+.pc-fp32 .pc-bits{color:var(--blue);}
+.pc-bf16 .pc-bits{color:var(--green);}
+.pc-fp16 .pc-bits{color:var(--amber);}
+.pc-name{font-size:12px;font-weight:600;margin-bottom:4px;}
+.pc-desc{font-size:11px;color:var(--text-secondary);line-height:1.5;}
+.pc-range{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-top:6px;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container">
+    <span class="topnav-title">Build an LLM from Scratch</span>
+    <div class="topnav-links">
+      <a href="index.html">Contents</a>
+      <a href="chapter4.html">← Ch 4</a>
+      <a href="chapter6.html">Ch 6 →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 5</div>
+    <h1>Pretraining on Unlabeled Data</h1>
+    <p>How a model learns language from raw text alone — the loss functions, training loops, numerical tricks, and sampling strategies that transform random weights into a capable language model.</p>
+    <div class="chapter-meta">
+      <span>~6,800 words</span>
+      <span>11 sections</span>
+      <span>11 runnable cells</span>
+      <span>4 CSS diagrams</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h3>In This Chapter</h3>
+    <div class="toc-grid">
+      <ul class="toc-list">
+        <li><a href="#s1"><span class="toc-num">5.1</span>Cross-Entropy Loss</a></li>
+        <li><a href="#s2"><span class="toc-num">5.2</span>The Training Loop</a></li>
+        <li><a href="#s3"><span class="toc-num">5.3</span>Perplexity</a></li>
+        <li><a href="#s4"><span class="toc-num">5.4</span>Learning Rate Scheduling</a></li>
+        <li><a href="#s5"><span class="toc-num">5.5</span>Gradient Clipping</a></li>
+        <li><a href="#s6"><span class="toc-num">5.6</span>Mixed Precision: BF16</a></li>
+      </ul>
+      <ul class="toc-list">
+        <li><a href="#s7"><span class="toc-num">5.7</span>Gradient Checkpointing</a></li>
+        <li><a href="#s8"><span class="toc-num">5.8</span>Temperature Sampling</a></li>
+        <li><a href="#s9"><span class="toc-num">5.9</span>Top-k and Nucleus Sampling</a></li>
+        <li><a href="#s10"><span class="toc-num">5.10</span>Loading Pretrained Weights</a></li>
+        <li><a href="#s11"><span class="toc-num">5.11</span>Scaling Laws</a></li>
+        <li><a href="#summary"><span class="toc-num">—</span>Summary</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="pyodide-status">Loading Python runtime (Pyodide)…</div>
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.1 -->
+  <section class="section" id="s1">
+    <div class="section-label">5.1</div>
+    <h2>Cross-Entropy Loss</h2>
+
+    <p>Every language model needs a training signal: a number that says how wrong the current weights are, and which direction to push them. For language modeling, that signal is <strong>cross-entropy loss</strong>. It is the dominant objective in pretraining, fine-tuning, and reinforcement-learning-from-human-feedback alike. Understanding it from first principles is non-negotiable.</p>
+
+    <p>Cross-entropy comes from information theory. Claude Shannon, in his 1948 paper "A Mathematical Theory of Communication," defined entropy as the average number of bits needed to encode an event drawn from a probability distribution. If you have a fair coin, entropy is 1 bit. If one side is weighted 99:1, entropy is much lower — you can use a short code because the outcome is predictable. Cross-entropy measures how many bits you <em>actually</em> need when you encode events from the true distribution <em>p</em> using a code designed for the model's distribution <em>q</em>. The more <em>q</em> diverges from <em>p</em>, the more bits you waste — and the higher the loss.</p>
+
+    <p>In language modeling, the "true distribution" is a one-hot vector: the correct next token gets probability 1, every other token gets 0. So the cross-entropy formula collapses to a single log term: only the probability the model assigned to the correct token matters. If the model assigns probability 0.5 to the correct token, loss = -log(0.5) ≈ 0.69. If it assigns 0.01, loss = -log(0.01) ≈ 4.6. Perfect confidence gives loss = 0.</p>
+
+    <div class="formula">
+      <span class="eq-label">CROSS-ENTROPY (single token, one-hot target)</span>
+      L = -log( p_correct )
+      <span class="eq-note">p_correct = softmax(logits)[true_token_index]</span>
+    </div>
+
+    <p>Over a full sequence of T tokens, we average the per-token losses. This is exactly the <em>negative log-likelihood</em> of the sequence under the model — the quantity the model is trained to minimize:</p>
+
+    <div class="formula">
+      <span class="eq-label">SEQUENCE CROSS-ENTROPY</span>
+      L = -(1/T) &Sigma;<sub>t=1..T</sub> log P( x<sub>t</sub> | x<sub>1</sub>...x<sub>t-1</sub> )
+      <span class="eq-note">Each token is conditioned on all prior tokens. The model predicts position t+1 from position 1..t.</span>
+    </div>
+
+    <p>At random initialization, the model distributes probability roughly uniformly across all vocabulary tokens. For GPT-2's vocabulary of 50,257 tokens, that's -log(1/50257) ≈ 10.82. A well-trained GPT-2 small achieves around 3.1 nats on its WebText test set. Every unit of loss reduction represents an enormous increase in the model's predictive precision — because of the exponential in the log.</p>
+
+    <div class="callout">
+      <strong>Intuition check:</strong> A loss of 3.0 means the model gives the correct token roughly e<sup>-3.0</sup> ≈ 5% probability on average. A loss of 1.0 means ~37% average probability. Perfect text memorization gives loss → 0. These numbers ground every training curve you will ever read.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">cross_entropy.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> math
+
+<span class="kw">def</span> <span class="fn">softmax</span>(logits):
+    <span class="lm"># ↑ convert raw scores to probabilities that sum to 1</span>
+    max_l = max(logits)                        <span class="lm"># ↑ numerical stability: subtract max before exp</span>
+    exps = [math.exp(x - max_l) <span class="kw">for</span> x <span class="kw">in</span> logits]
+    total = sum(exps)
+    <span class="kw">return</span> [e / total <span class="kw">for</span> e <span class="kw">in</span> exps]
+
+<span class="kw">def</span> <span class="fn">cross_entropy_loss</span>(logits, target_idx):
+    <span class="lm"># ↑ logits: raw model output (one float per vocab token)</span>
+    <span class="lm"># ↑ target_idx: index of the correct next token</span>
+    probs = softmax(logits)
+    p_correct = probs[target_idx]              <span class="lm"># ↑ probability assigned to the right answer</span>
+    <span class="kw">return</span> -math.log(p_correct + 1e-12)        <span class="lm"># ↑ +epsilon avoids log(0) = -inf</span>
+
+<span class="kw">def</span> <span class="fn">sequence_cross_entropy</span>(logits_list, targets):
+    <span class="lm"># ↑ average loss over an entire token sequence</span>
+    losses = [cross_entropy_loss(lg, tgt)
+              <span class="kw">for</span> lg, tgt <span class="kw">in</span> zip(logits_list, targets)]
+    <span class="kw">return</span> sum(losses) / len(losses)            <span class="lm"># ↑ mean over T tokens</span>
+
+<span class="cm"># --- demo ---</span>
+vocab_size = 5
+<span class="cm"># Simulate a near-random model: logits close to zero</span>
+random_logits = [0.1, -0.2, 0.05, 0.3, -0.1]
+true_token = 2
+loss_random = cross_entropy_loss(random_logits, true_token)
+
+<span class="cm"># Simulate a confident model: big score on correct token</span>
+confident_logits = [-5.0, -5.0, 8.0, -5.0, -5.0]
+loss_confident = cross_entropy_loss(confident_logits, true_token)
+
+print(f<span class="st">"Random-ish model loss:    {loss_random:.4f}"</span>)
+print(f<span class="st">"Confident model loss:     {loss_confident:.4f}"</span>)
+print(f<span class="st">"Baseline (uniform,V=5):   {math.log(vocab_size):.4f}"</span>)
+print(f<span class="st">"Baseline (GPT-2 V=50257): {math.log(50257):.4f}"</span>)</pre>
+    </div>
+
+    <div class="cell" id="cell-ce">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · cross_entropy_demo.py</span>
+        <button class="run-btn" onclick="runCell('cell-ce')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math
+
+def softmax(logits):
+    max_l = max(logits)
+    exps = [math.exp(x - max_l) for x in logits]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def cross_entropy_loss(logits, target_idx):
+    probs = softmax(logits)
+    p_correct = probs[target_idx]
+    return -math.log(p_correct + 1e-12)
+
+# Show how loss changes as model assigns more probability to correct token
+print("p_correct  | loss     | interpretation")
+print("-" * 46)
+for p in [0.001, 0.01, 0.05, 0.1, 0.3, 0.5, 0.8, 0.95, 0.99]:
+    loss = -math.log(p)
+    stars = int(loss * 3)
+    print(f"  {p:.3f}    | {loss:.4f}  | {'|' * min(stars,30)}")
+
+print()
+print(f"Random baseline (vocab=50257): {math.log(50257):.4f}")
+print(f"GPT-2 small (trained):         ~3.1")
+print(f"Improvement:                   {math.log(50257)-3.1:.2f} nats")</pre></div>
+      <div class="cell-output" id="cell-ce-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf">Shannon (1948) — A Mathematical Theory of Communication (original paper)</a>
+      <a href="https://www.deeplearningbook.org/contents/ml.html">Goodfellow et al. — Deep Learning, Ch 5: Maximum Likelihood Estimation</a>
+      <a href="https://arxiv.org/abs/1609.08144">Wu et al. (2016) — Google's Neural Machine Translation (cross-entropy at scale)</a>
+      <a href="https://arxiv.org/abs/2304.01373">Biderman et al. (2023) — Pythia: A Suite for Analyzing LLMs Across Training and Scaling — checkpoints every 512 steps; enables studying emergence, memorisation, and deduplication</a>
+      <a href="https://arxiv.org/abs/2402.00838">Groeneveld et al. (2024) — OLMo: Accelerating the Science of Language Models — fully open model, data, and training code; the reference for reproducible pretraining research</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.2 -->
+  <section class="section" id="s2">
+    <div class="section-label">5.2</div>
+    <h2>The Training Loop</h2>
+
+    <p>The training loop is the engine that turns a loss function and a dataset into a trained model. Every deep learning framework wraps the same seven-step cycle, repeated for millions of iterations. Understanding each step — not just their order but <em>why</em> they exist — lets you debug training instabilities, interpret loss curves, and reason about computational cost.</p>
+
+    <p>The most subtle step is why we call <code>zero_grad()</code> at the start of each iteration. PyTorch, by design, <em>accumulates</em> gradients — each call to <code>.backward()</code> adds new gradient values to whatever is already stored in <code>.grad</code>. This is useful for gradient accumulation across micro-batches, but catastrophic if forgotten: without zeroing, you are computing the gradient of the sum of all past losses, not just the current batch. The model would behave as if it had seen every previous batch simultaneously, with increasingly stale data.</p>
+
+    <p>Validation is equally important as training loss monitoring. A model that memorizes its training set will show a decreasing training loss while validation loss plateaus or climbs. This divergence is the definition of overfitting for language models. In practice, pretraining of large models rarely overfits on web-scale data — the dataset is so large the model never sees the same sequence twice — but the validation check remains essential for detecting hardware faults, runaway learning rates, and dataset contamination.</p>
+
+    <div class="loop-steps">
+      <div class="ls"><div class="ls-n">1</div><div class="ls-body"><div class="ls-title">Load Batch</div><div class="ls-desc">Draw a batch of token sequences (input_ids, target_ids) from the DataLoader. Input is tokens 0..T-1, target is tokens 1..T (shifted by one).</div></div></div>
+      <div class="ls"><div class="ls-n">2</div><div class="ls-body"><div class="ls-title">Forward Pass</div><div class="ls-desc">Run input_ids through the model. Each position predicts the next token. Output shape: (batch, seq_len, vocab_size) logits.</div></div></div>
+      <div class="ls"><div class="ls-n">3</div><div class="ls-body"><div class="ls-title">Compute Loss</div><div class="ls-desc">Cross-entropy between predicted logits and target token IDs. PyTorch's F.cross_entropy() handles softmax internally.</div></div></div>
+      <div class="ls"><div class="ls-n">4</div><div class="ls-body"><div class="ls-title">Zero Gradients</div><div class="ls-desc">optimizer.zero_grad() — clears accumulated gradients from the previous step. Forgetting this is one of the most common bugs in PyTorch.</div></div></div>
+      <div class="ls"><div class="ls-n">5</div><div class="ls-body"><div class="ls-title">Backward Pass</div><div class="ls-desc">loss.backward() — automatic differentiation traces the computation graph, computing ∂L/∂w for every parameter w via the chain rule.</div></div></div>
+      <div class="ls"><div class="ls-n">6</div><div class="ls-body"><div class="ls-title">Clip Gradients</div><div class="ls-desc">clip_grad_norm_(model.parameters(), max_norm=1.0) — prevents gradient explosion. Applied before the optimizer step, not after.</div></div></div>
+      <div class="ls"><div class="ls-n">7</div><div class="ls-body"><div class="ls-title">Optimizer Step</div><div class="ls-desc">optimizer.step() — applies Adam/AdamW update rule: w ← w - lr · m̂ / (√v̂ + ε), where m̂ and v̂ are bias-corrected moment estimates.</div></div></div>
+    </div>
+
+    <div class="callout blue">
+      <strong>Gradient accumulation:</strong> If your GPU can only fit batch_size=4 but you want effective_batch=32, run 8 forward+backward passes without calling zero_grad() or optimizer.step(). Divide the loss by 8 each time so gradients are averaged, not summed. Then clip and step once. This simulates a larger batch without extra memory.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">train_loop.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> torch
+<span class="kw">from</span> torch <span class="kw">import</span> nn
+
+<span class="kw">def</span> <span class="fn">train_one_epoch</span>(model, dataloader, optimizer, scheduler, device,
+                    grad_clip=<span class="nu">1.0</span>, val_loader=<span class="kw">None</span>, eval_every=<span class="nu">200</span>):
+    model.train()
+    total_loss = <span class="nu">0.0</span>
+    step = <span class="nu">0</span>
+
+    <span class="kw">for</span> input_ids, target_ids <span class="kw">in</span> dataloader:         <span class="lm"># ↑ Step 1: get batch</span>
+        input_ids  = input_ids.to(device)
+        target_ids = target_ids.to(device)
+
+        logits = model(input_ids)                      <span class="lm"># ↑ Step 2: forward pass → (B, T, V)</span>
+        B, T, V = logits.shape
+        loss = nn.functional.cross_entropy(            <span class="lm"># ↑ Step 3: compute loss</span>
+            logits.view(B * T, V),                     <span class="lm"># ↑ reshape to (B*T, V) for F.cross_entropy</span>
+            target_ids.view(B * T)                     <span class="lm"># ↑ targets flattened to (B*T,)</span>
+        )
+
+        optimizer.zero_grad()                          <span class="lm"># ↑ Step 4: clear old gradients</span>
+        loss.backward()                                <span class="lm"># ↑ Step 5: backpropagate</span>
+        nn.utils.clip_grad_norm_(model.parameters(),   <span class="lm"># ↑ Step 6: clip gradient norm</span>
+                                 max_norm=grad_clip)
+        optimizer.step()                               <span class="lm"># ↑ Step 7: update weights</span>
+        scheduler.step()                               <span class="lm"># ↑ advance LR schedule</span>
+
+        total_loss += loss.item()
+        step += <span class="nu">1</span>
+
+        <span class="kw">if</span> val_loader <span class="kw">and</span> step % eval_every == <span class="nu">0</span>:
+            val_loss = evaluate(model, val_loader, device)
+            print(f<span class="st">"step {step:>6} | train {total_loss/step:.4f} | val {val_loss:.4f}"</span>)
+
+    <span class="kw">return</span> total_loss / step
+
+<span class="kw">def</span> <span class="fn">evaluate</span>(model, dataloader, device):
+    <span class="lm"># ↑ validation: no gradient computation needed (saves memory)</span>
+    model.eval()
+    total_loss, steps = <span class="nu">0.0</span>, <span class="nu">0</span>
+    <span class="kw">with</span> torch.no_grad():                              <span class="lm"># ↑ disables autograd engine entirely</span>
+        <span class="kw">for</span> input_ids, target_ids <span class="kw">in</span> dataloader:
+            logits = model(input_ids.to(device))
+            B, T, V = logits.shape
+            loss = nn.functional.cross_entropy(
+                logits.view(B*T, V), target_ids.view(B*T).to(device))
+            total_loss += loss.item()
+            steps += <span class="nu">1</span>
+    model.train()
+    <span class="kw">return</span> total_loss / steps</pre>
+    </div>
+
+    <div class="cell" id="cell-loop">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · gradient_descent_toy.py</span>
+        <button class="run-btn" onclick="runCell('cell-loop')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre># Simulate gradient descent on a simple parabolic loss surface
+# f(w) = (w - 3)^2  -- minimum at w=3
+# gradient: df/dw = 2*(w-3)
+
+w = 0.0          # starting weight
+lr = 0.1         # learning rate
+grad_clip = 1.0  # max gradient magnitude
+
+print(f"{'Step':>4}  {'w':>8}  {'loss':>10}  {'grad':>8}  {'clipped':>8}")
+print("-" * 50)
+
+for step in range(20):
+    loss = (w - 3.0) ** 2
+    grad = 2.0 * (w - 3.0)            # analytic gradient
+
+    # gradient clipping (1D case: just abs check)
+    clipped = grad
+    if abs(grad) > grad_clip:
+        clipped = grad_clip * (1 if grad > 0 else -1)
+
+    w = w - lr * clipped               # gradient descent step
+    print(f"{step:>4}  {w:>8.4f}  {loss:>10.5f}  {grad:>8.4f}  {clipped:>8.4f}")
+
+print(f"\nFinal w = {w:.4f} (target = 3.0000)")</pre></div>
+      <div class="cell-output" id="cell-loop-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html">PyTorch F.cross_entropy — official docs with numerical stability notes</a>
+      <a href="https://karpathy.github.io/2019/04/25/recipe/">Karpathy — A Recipe for Training Neural Networks (debugging training loops)</a>
+      <a href="https://arxiv.org/abs/1412.6980">Kingma & Ba (2014) — Adam: A Method for Stochastic Optimization</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.3 -->
+  <section class="section" id="s3">
+    <div class="section-label">5.3</div>
+    <h2>Perplexity</h2>
+
+    <p>Cross-entropy loss is measured in <em>nats</em> (natural-log units) or <em>bits</em> (log-2 units), and a loss of 3.1 is hard to reason about intuitively. Perplexity converts this number into something more interpretable: the effective vocabulary size the model is choosing from at each step. A perplexity of 100 means the model is, on average, as confused as if it had to pick uniformly among 100 equally likely options. A perplexity of 1 means perfect prediction every time.</p>
+
+    <div class="formula">
+      <span class="eq-label">PERPLEXITY FROM CROSS-ENTROPY</span>
+      PPL = exp( L )    where L = -(1/T) &Sigma; log P(x<sub>t</sub> | x<sub>&lt;t</sub>)
+      <span class="eq-note">A loss drop of 1.0 nat corresponds to PPL / e ≈ PPL / 2.718 (multiplicative, not additive)</span>
+    </div>
+
+    <p>Concretely: GPT-2 small at random initialization has PPL ≈ exp(10.82) ≈ 50,000 (essentially the full vocabulary). After training on WebText, it reaches PPL ≈ exp(3.1) ≈ 22. GPT-4, benchmarked on Penn Treebank with the right tokenization, achieves single-digit perplexity. Each unit of loss improvement is a dramatic collapse in the model's effective uncertainty.</p>
+
+    <p>There is a critical benchmarking trap here. Perplexity comparisons are only valid when two conditions hold: the models use <em>identical tokenization</em>, and they are evaluated on <em>identical test sets</em>. A model with a larger vocabulary will assign different probability masses per-token even if the underlying language model is equally powerful. Bengio et al. (2003) first noted this in their seminal neural language model paper, and it remains a source of faulty comparisons in published benchmarks today. When you see two perplexity numbers in a paper, check the footnotes for tokenizer alignment before drawing conclusions.</p>
+
+    <div class="callout green">
+      <strong>PPL drop vs. loss drop:</strong> Because PPL = exp(L), a loss improvement from 4.0 → 3.0 (delta = 1.0) reduces PPL from 54.6 → 20.1 (delta = 34.5). A further improvement from 3.0 → 2.0 reduces PPL from 20.1 → 7.4 (delta = 12.7). Equal loss improvements become smaller perplexity improvements as the model gets better — a natural consequence of the exponential scale.
+    </div>
+
+    <div class="cell" id="cell-ppl">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · perplexity_demo.py</span>
+        <button class="run-btn" onclick="runCell('cell-ppl')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math
+
+def perplexity_from_loss(loss):
+    return math.exp(loss)
+
+def cross_entropy_sequence(log_probs):
+    """Given a list of log P(x_t | x_<t), compute mean CE and PPL."""
+    ce = -sum(log_probs) / len(log_probs)
+    ppl = math.exp(ce)
+    return ce, ppl
+
+# Simulate a sequence of token probabilities (as log-probs)
+# log_probs[i] = log P(correct token at position i)
+import random
+random.seed(42)
+
+print("Model quality comparison:")
+print(f"{'Model':<20} {'CE Loss':>8}  {'PPL':>10}  {'Interp':>30}")
+print("-" * 72)
+
+scenarios = [
+    ("Random (V=50257)",   [math.log(1/50257)] * 20),
+    ("Early training",     [math.log(p) for p in [0.03]*20]),
+    ("Mid training",       [math.log(p) for p in [0.12]*20]),
+    ("GPT-2 small ~",      [math.log(p) for p in [0.045]*20]),
+    ("GPT-3 large ~",      [math.log(p) for p in [0.10]*20]),
+    ("Near-perfect",       [math.log(p) for p in [0.80]*20]),
+]
+
+for name, lps in scenarios:
+    ce, ppl = cross_entropy_sequence(lps)
+    interp = f"avg {int(ppl)} choices/token"
+    print(f"{name:<20} {ce:>8.3f}  {ppl:>10.1f}  {interp:>30}")
+
+print()
+print("Loss drop of 1.0 nat → PPL divides by:", round(math.e, 3))</pre></div>
+      <div class="cell-output" id="cell-ppl-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://jmlr.org/papers/volume3/bengio03a/bengio03a.pdf">Bengio et al. (2003) — A Neural Probabilistic Language Model (PPL benchmarks)</a>
+      <a href="https://arxiv.org/abs/2106.00085">Meister & Cotterell (2021) — Language Model Evaluation Beyond Perplexity</a>
+      <a href="https://huggingface.co/docs/transformers/perplexity">HuggingFace — Perplexity of Fixed-Length Models (tokenization alignment guide)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.4 -->
+  <section class="section" id="s4">
+    <div class="section-label">5.4</div>
+    <h2>Learning Rate Scheduling</h2>
+
+    <p>A fixed learning rate is a poor choice for neural network training. In the first steps, the model's gradients are large and noisy — the weights are random, the loss surface is steep, and any large step risks bouncing off cliffs or into saddle points. Later in training, as the model converges toward a minimum, large steps cause oscillation rather than precise descent. Learning rate scheduling solves both problems: start small, peak, then decay.</p>
+
+    <p>Linear warmup addresses the early instability. By ramping the learning rate from nearly zero up to lr_max over the first warmup_steps, we allow the model to take many small exploratory steps before committing to a direction. GPT-3 uses 375 million tokens of warmup (roughly 1,500 gradient steps with batch size 0.5M tokens). The warmup phase also gives Adam's moment estimates time to warm up — Adam's bias correction is less effective in the first few steps, so a small LR limits the damage.</p>
+
+    <p>Cosine decay is the dominant schedule after warmup. After reaching lr_max, the learning rate follows a half-cosine curve descending to lr_min (typically 10% of lr_max). Cosine decay is smooth and schedule-free — no hyperparameters beyond T_max and lr_min — and empirically outperforms linear or step decay at large scale. The formula is: lr(t) = lr_min + 0.5 · (lr_max − lr_min) · (1 + cos(π · t / T)), where t is the current step after warmup and T is the total post-warmup steps.</p>
+
+    <div class="formula">
+      <span class="eq-label">COSINE DECAY SCHEDULE</span>
+      lr(t) = lr_min + 0.5 &middot; (lr_max - lr_min) &middot; (1 + cos(&pi; &middot; t / T))
+      <span class="eq-note">t = steps since end of warmup. T = total decay steps. At t=0: lr=lr_max. At t=T: lr=lr_min.</span>
+    </div>
+
+    <div class="lr-curve">
+      <svg class="lr-svg" viewBox="0 0 600 120" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="lrGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c96442" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#c96442" stop-opacity="0.0"/>
+          </linearGradient>
+        </defs>
+        <!-- grid lines -->
+        <line x1="0" y1="30" x2="600" y2="30" stroke="#e8e4de" stroke-width="0.8"/>
+        <line x1="0" y1="60" x2="600" y2="60" stroke="#e8e4de" stroke-width="0.8"/>
+        <line x1="0" y1="90" x2="600" y2="90" stroke="#e8e4de" stroke-width="0.8"/>
+        <!-- warmup phase (0–80px) -->
+        <line x1="80" y1="10" x2="80" y2="110" stroke="#e8e4de" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="40" y="108" font-size="9" fill="#6b6560" text-anchor="middle" font-family="monospace">warmup</text>
+        <text x="340" y="108" font-size="9" fill="#6b6560" text-anchor="middle" font-family="monospace">cosine decay</text>
+        <!-- LR curve: warmup ramp then cosine -->
+        <polyline points="0,110 80,18" fill="none" stroke="#c96442" stroke-width="2"/>
+        <!-- cosine from x=80 to x=580 -->
+        <path d="M80,18 C140,18 180,20 220,35 C260,50 300,70 340,85 C380,95 420,101 460,104 C500,106 540,107 580,108"
+              fill="url(#lrGrad)" stroke="none"/>
+        <path d="M80,18 C140,18 180,20 220,35 C260,50 300,70 340,85 C380,95 420,101 460,104 C500,106 540,107 580,108"
+              fill="none" stroke="#c96442" stroke-width="2"/>
+        <!-- labels -->
+        <text x="84" y="14" font-size="9" fill="#c96442" font-family="monospace">lr_max</text>
+        <text x="536" y="115" font-size="9" fill="#c96442" font-family="monospace">lr_min</text>
+        <text x="4" y="13" font-size="9" fill="#6b6560" font-family="monospace">LR</text>
+        <text x="570" y="118" font-size="9" fill="#6b6560" font-family="monospace">steps</text>
+      </svg>
+    </div>
+
+    <div class="callout amber">
+      <strong>GPT-3 schedule:</strong> lr_max = 6×10<sup>-4</sup>, warmup = 375M tokens (~1,500 steps), cosine decay to 10% (6×10<sup>-5</sup>) over 300B tokens total. Batch size = 3.2M tokens. Total steps ≈ 93,750. Note: at 175B parameters, even one step processes an enormous amount of compute — the schedule is tuned per-run, not universal.
+    </div>
+
+    <div class="cell" id="cell-lr">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · lr_schedule.py</span>
+        <button class="run-btn" onclick="runCell('cell-lr')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math
+
+def get_lr(step, warmup_steps, total_steps, lr_max, lr_min):
+    """Cosine schedule with linear warmup."""
+    if step < warmup_steps:
+        # linear warmup from 0 to lr_max
+        return lr_max * (step / warmup_steps)
+    # cosine decay from lr_max to lr_min
+    progress = (step - warmup_steps) / (total_steps - warmup_steps)
+    cosine = 0.5 * (1 + math.cos(math.pi * progress))
+    return lr_min + cosine * (lr_max - lr_min)
+
+warmup_steps = 100
+total_steps  = 1000
+lr_max       = 6e-4
+lr_min       = 6e-5   # 10% of max
+
+print(f"{'Step':>6}  {'LR':>12}  {'Phase':<14}  {'Bar'}")
+print("-" * 55)
+
+checkpoints = list(range(0, 101, 10)) + [150, 200, 300, 500, 750, 900, 1000]
+for step in checkpoints:
+    lr = get_lr(step, warmup_steps, total_steps, lr_max, lr_min)
+    phase = "warmup" if step < warmup_steps else "cosine decay"
+    bar_len = int((lr / lr_max) * 30)
+    print(f"{step:>6}  {lr:>12.2e}  {phase:<14}  {'█' * bar_len}")</pre></div>
+      <div class="cell-output" id="cell-lr-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1608.03983">Loshchilov & Hutter (2016) — SGDR: Stochastic Gradient Descent with Warm Restarts</a>
+      <a href="https://arxiv.org/abs/2005.14165">Brown et al. (2020) — GPT-3: Schedule details in Appendix B</a>
+      <a href="https://arxiv.org/abs/1706.02677">Vaswani et al. (2017) — Transformer: Original warmup-then-decay schedule</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.5 -->
+  <section class="section" id="s5">
+    <div class="section-label">5.5</div>
+    <h2>Gradient Clipping</h2>
+
+    <p>Even with careful learning rate scheduling, training deep networks occasionally produces runaway gradients. A single batch with an unusual token distribution, a poorly initialized layer, or a rare idiom in the data can cause the gradient norm to spike by orders of magnitude. Without protection, this spike updates weights so aggressively that the model "forgets" everything it has learned, and training effectively restarts from a corrupted state. Gradient clipping is the circuit breaker that prevents this.</p>
+
+    <p>The standard approach is <em>global norm clipping</em>. Compute the L2 norm of the concatenation of all gradient vectors across all parameters. If this global norm exceeds a threshold (typically 1.0), scale every gradient proportionally downward so the total norm exactly equals the threshold. This preserves the direction of the gradient — you are still descending in the right direction — but limits the step size. It is analogous to anti-lock brakes: you can steer and slow down simultaneously, because the clipping allows you to maintain traction rather than locking up on sudden deceleration.</p>
+
+    <p>The max_norm threshold of 1.0 is nearly universal across GPT-2, GPT-3, LLaMA, and Mistral. Raising it to 5.0 or 10.0 allows more aggressive steps and can speed up convergence in stable phases, but dramatically increases the risk of loss spikes. Lowering it to 0.5 produces smoother but slower training. In practice, monitoring the gradient norm itself — logging it every step — is informative: persistent norms above 0.5 suggest the learning rate may be too high.</p>
+
+    <div class="formula">
+      <span class="eq-label">GLOBAL GRADIENT NORM CLIPPING</span>
+      g_norm = &radic;( &Sigma;<sub>p</sub> &Sigma;<sub>i</sub> g<sub>p,i</sub><sup>2</sup> )
+      <br>
+      if g_norm > max_norm:  g<sub>p</sub> &larr; g<sub>p</sub> &middot; (max_norm / g_norm)
+      <span class="eq-note">All parameter gradients are scaled by the same factor, preserving gradient direction.</span>
+    </div>
+
+    <div class="callout">
+      <strong>Clipping vs. normalization:</strong> Gradient clipping only acts when the norm exceeds the threshold — it is a safety valve, not a constant normalization. Gradient <em>normalization</em> (setting norm=1.0 always) would prevent the model from taking larger, well-justified steps during stable phases. Clipping gives you the best of both: unconstrained updates when things are fine, safety when things are not.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">gradient_clipping.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> math
+
+<span class="kw">def</span> <span class="fn">compute_grad_norm</span>(gradients):
+    <span class="lm"># ↑ gradients: list of lists (one list of values per parameter tensor)</span>
+    total_sq = <span class="nu">0.0</span>
+    <span class="kw">for</span> grad <span class="kw">in</span> gradients:
+        <span class="kw">for</span> g <span class="kw">in</span> grad:
+            total_sq += g * g                  <span class="lm"># ↑ accumulate squared gradient values</span>
+    <span class="kw">return</span> math.sqrt(total_sq)                 <span class="lm"># ↑ global L2 norm across all parameters</span>
+
+<span class="kw">def</span> <span class="fn">clip_gradients</span>(gradients, max_norm):
+    <span class="lm"># ↑ returns scaled gradients and the pre-clip norm (for logging)</span>
+    norm = compute_grad_norm(gradients)
+    <span class="kw">if</span> norm > max_norm:
+        scale = max_norm / (norm + <span class="nu">1e-6</span>)         <span class="lm"># ↑ +epsilon prevents division by zero</span>
+        gradients = [[g * scale <span class="kw">for</span> g <span class="kw">in</span> param]
+                     <span class="kw">for</span> param <span class="kw">in</span> gradients]      <span class="lm"># ↑ uniform scale across all params</span>
+    <span class="kw">return</span> gradients, norm                       <span class="lm"># ↑ return pre-clip norm for monitoring</span>
+
+<span class="cm"># PyTorch one-liner (shown for reference, not runnable in pure Python):</span>
+<span class="cm"># torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)</span></pre>
+    </div>
+
+    <div class="cell" id="cell-clip">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · gradient_explosion_demo.py</span>
+        <button class="run-btn" onclick="runCell('cell-clip')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math
+
+def compute_grad_norm(grads):
+    return math.sqrt(sum(g**2 for g in grads))
+
+def clip_grads(grads, max_norm):
+    norm = compute_grad_norm(grads)
+    if norm > max_norm:
+        scale = max_norm / (norm + 1e-8)
+        grads = [g * scale for g in grads]
+    return grads, norm
+
+# Simulate gradient magnitudes over 15 training steps
+# with an explosion event at step 8
+import random
+random.seed(7)
+
+def sim_grad_norm(step):
+    base = 0.3 + 0.1 * random.random()
+    if step == 7:   return 24.8   # explosion!
+    if step == 8:   return 18.2   # aftermath
+    return base
+
+max_norm = 1.0
+print(f"{'Step':>4}  {'Raw norm':>10}  {'Clipped norm':>13}  {'Clipped?':>9}")
+print("-" * 45)
+for step in range(15):
+    raw_norm = sim_grad_norm(step)
+    # simulate single-value gradient for demo
+    fake_grads = [raw_norm]
+    clipped_grads, _ = clip_grads(fake_grads, max_norm)
+    clipped_norm = compute_grad_norm(clipped_grads)
+    was_clipped = "YES ***" if raw_norm > max_norm else "no"
+    print(f"{step:>4}  {raw_norm:>10.4f}  {clipped_norm:>13.4f}  {was_clipped:>9}")</pre></div>
+      <div class="cell-output" id="cell-clip-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1211.5063">Pascanu et al. (2013) — On the Difficulty of Training Recurrent Neural Networks (gradient clipping origin)</a>
+      <a href="https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html">PyTorch clip_grad_norm_ — implementation details</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.6 -->
+  <section class="section" id="s6">
+    <div class="section-label">5.6</div>
+    <h2>Mixed Precision: BF16 vs FP32</h2>
+
+    <p>A 7-billion-parameter model stored in FP32 requires 28 GB of GPU memory (4 bytes per parameter). The same model in BF16 requires 14 GB. But the memory savings are only the beginning: modern NVIDIA GPUs (A100, H100) execute BF16 matrix multiplications at roughly 3× the throughput of FP32. Mixed-precision training — running the forward and backward passes in BF16 while keeping a FP32 master copy of weights for the optimizer — makes large-model training feasible on hardware that would otherwise be impossible.</p>
+
+    <p>Understanding why BF16 is preferred over the older FP16 requires looking at the exponent bits. FP16 has 5 exponent bits, giving it a maximum representable value of 65,504. During a transformer's forward pass — especially through layer normalization and attention softmax — intermediate activations can easily exceed this range, producing NaN (Not a Number) values that cascade through the entire model. BF16, despite also being 16 bits, uses 8 exponent bits — the same as FP32 — giving it a dynamic range of roughly ±3.4×10<sup>38</sup>. The cost is reduced mantissa precision (7 bits vs FP32's 23), which introduces small rounding errors that are acceptable for training but catastrophic for FP16's overflow.</p>
+
+    <div class="prec-compare">
+      <div class="pc-card pc-fp32">
+        <div class="pc-bits">32</div>
+        <div class="pc-name">FP32</div>
+        <div class="pc-desc">1 sign · 8 exp · 23 mantissa. Full precision. Gold standard for optimizer state.</div>
+        <div class="pc-range">Range: ±3.4×10³⁸ · Precision: ~7 decimal digits</div>
+      </div>
+      <div class="pc-card pc-bf16">
+        <div class="pc-bits">BF16</div>
+        <div class="pc-name">BFloat16</div>
+        <div class="pc-desc">1 sign · 8 exp · 7 mantissa. Same range as FP32. GPT-3/4, LLaMA use this.</div>
+        <div class="pc-range">Range: ±3.4×10³⁸ · Precision: ~2–3 decimal digits</div>
+      </div>
+      <div class="pc-card pc-fp16">
+        <div class="pc-bits">FP16</div>
+        <div class="pc-name">Float16</div>
+        <div class="pc-desc">1 sign · 5 exp · 10 mantissa. Narrow range causes overflow in transformers.</div>
+        <div class="pc-range">Range: ±65504 · Precision: ~3–4 decimal digits</div>
+      </div>
+    </div>
+
+    <p>Mixed-precision training uses BF16 for the forward and backward passes (fast computation, low memory), but maintains a FP32 master copy of the weights that the optimizer updates. The FP32 weights are cast to BF16 before each forward pass. This preserves the small gradient signals that would be lost if the optimizer worked in BF16 directly — the Adam update involves subtracting numbers of very similar magnitude, which requires full precision to avoid cancellation errors.</p>
+
+    <div class="callout green">
+      <strong>PyTorch autocast:</strong> <code>with torch.autocast(device_type='cuda', dtype=torch.bfloat16):</code> wraps your forward pass. PyTorch automatically selects which operations run in BF16 (matmuls, convolutions) and which stay in FP32 (reductions, layer norm). You do not need to manually cast anything. Combined with a GradScaler (for FP16) or just autocast alone (for BF16), this is the full recipe.
+    </div>
+
+    <div class="cell" id="cell-prec">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · fp16_overflow_demo.py</span>
+        <button class="run-btn" onclick="runCell('cell-prec')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import struct, math
+
+def float_to_bits(f):
+    """Return binary representation of a 32-bit float."""
+    packed = struct.pack('>f', f)
+    bits = int.from_bytes(packed, 'big')
+    return f"{bits:032b}"
+
+def simulate_fp16_range():
+    """FP16: 5 exponent bits => max = (2 - 2^-10) * 2^15 = 65504"""
+    fp16_max = 65504.0
+
+    # Common transformer intermediate values that can exceed FP16 max
+    test_values = [
+        ("Attention logit (long seq)", 850.0),
+        ("After scale by sqrt(d)", 850 / math.sqrt(64)),
+        ("Layer norm intermediate", 1200.0),
+        ("Embedding norm (large d)", 2000.0),
+        ("FP16 max value",           65504.0),
+        ("Past FP16 max",            70000.0),
+        ("Deep layer activation",    80000.0),
+    ]
+
+    print(f"{'Value description':<34} {'Value':>10}  {'FP16 safe?':>11}  {'BF16 safe?':>11}")
+    print("-" * 72)
+    bf16_max = 3.4e38  # BF16 has same range as FP32
+
+    for name, val in test_values:
+        fp16_ok = "OK" if abs(val) <= fp16_max else "OVERFLOW!"
+        bf16_ok = "OK" if abs(val) <= bf16_max else "OVERFLOW!"
+        flag = " ← NaN" if abs(val) > fp16_max else ""
+        print(f"{name:<34} {val:>10.1f}  {fp16_ok:>11}  {bf16_ok:>11}{flag}")
+
+simulate_fp16_range()
+
+print()
+print("BF16 mantissa bits: 7  → precision ≈", round(2**-7, 5))
+print("FP32 mantissa bits: 23 → precision ≈", round(2**-23, 10))
+print("Relative error (BF16 vs FP32):", round((2**-7)/(2**-23), 1), "x worse")
+print("But BF16 has same exponent range as FP32: safe from overflow.")</pre></div>
+      <div class="cell-output" id="cell-prec-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1710.03740">Micikevicius et al. (2018) — Mixed Precision Training (original Microsoft/NVIDIA paper)</a>
+      <a href="https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus">Google (2019) — BFloat16: the secret to Cloud TPU performance</a>
+      <a href="https://pytorch.org/docs/stable/amp.html">PyTorch AMP — Automatic Mixed Precision tutorial</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.7 -->
+  <section class="section" id="s7">
+    <div class="section-label">5.7</div>
+    <h2>Gradient Checkpointing</h2>
+
+    <p>Backpropagation through a deep neural network requires storing all intermediate activations from the forward pass — every layer's output is needed to compute that layer's gradients. For a 12-layer transformer with a sequence length of 2048 and a model dimension of 768, the activation memory per sample is roughly 12 × 2048 × 768 × 2 bytes (BF16) ≈ 38 MB. At a batch size of 8, that is 300 MB per training step just for activations, before any consideration of weights or optimizer state. For 70-billion-parameter models, this activation memory becomes the dominant memory cost, not the weights.</p>
+
+    <p>Gradient checkpointing (also called activation recomputation) breaks this linear relationship. Instead of storing all activations, you store only the activations at certain "checkpoint" boundaries — typically every N transformer blocks. During the backward pass, when a layer's gradient is needed, its input is fetched from the nearest checkpoint and the forward pass is re-run on that segment to recompute the needed activations. You are trading compute (a 30–40% increase in FLOPs) for memory (a 5–10× reduction in activation memory). For multi-hundred-billion-parameter models, this trade is non-negotiable.</p>
+
+    <p>In PyTorch, wrapping a module with <code>torch.utils.checkpoint.checkpoint()</code> implements this automatically. The function discards all intermediate activations during the wrapped forward pass and re-runs the forward computation during the backward pass. The key constraint: the checkpointed function must be deterministic and free of side effects, because it will be executed twice. For transformer blocks with dropout, the random number state must be preserved between the two runs — PyTorch handles this automatically.</p>
+
+    <div class="callout purple">
+      <strong>Memory arithmetic:</strong> Without checkpointing, activation memory scales as O(n_layers × seq_len × d_model). With checkpointing at every layer, it scales as O(seq_len × d_model) — constant in depth. The cost: each layer's forward pass runs twice per training step. For a 96-layer GPT-4-scale model, checkpointing every layer would reduce activation memory by 96× at the cost of 2× FLOPs. In practice, checkpointing every 4–8 layers gives a better trade-off.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">gradient_checkpointing.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> torch
+<span class="kw">from</span> torch.utils.checkpoint <span class="kw">import</span> checkpoint
+
+<span class="kw">class</span> <span class="cl">TransformerBlock</span>(torch.nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, d_model, n_heads):
+        super().__init__()
+        self.attn  = torch.nn.MultiheadAttention(d_model, n_heads, batch_first=<span class="kw">True</span>)
+        self.norm1 = torch.nn.LayerNorm(d_model)
+        self.ff    = torch.nn.Sequential(
+            torch.nn.Linear(d_model, d_model * <span class="nu">4</span>),
+            torch.nn.GELU(),
+            torch.nn.Linear(d_model * <span class="nu">4</span>, d_model)
+        )
+        self.norm2 = torch.nn.LayerNorm(d_model)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        attn_out, _ = self.attn(x, x, x)
+        x = self.norm1(x + attn_out)
+        x = self.norm2(x + self.ff(x))
+        <span class="kw">return</span> x
+
+<span class="kw">class</span> <span class="cl">GPTWithCheckpointing</span>(torch.nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, n_layers, d_model, n_heads, use_ckpt=<span class="kw">True</span>):
+        super().__init__()
+        self.blocks = torch.nn.ModuleList(
+            [TransformerBlock(d_model, n_heads) <span class="kw">for</span> _ <span class="kw">in</span> range(n_layers)])
+        self.use_ckpt = use_ckpt
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">for</span> block <span class="kw">in</span> self.blocks:
+            <span class="kw">if</span> self.use_ckpt:
+                x = checkpoint(block, x, use_reentrant=<span class="kw">False</span>)
+                <span class="lm"># ↑ discards activations; recomputes during backward</span>
+            <span class="kw">else</span>:
+                x = block(x)               <span class="lm"># ↑ stores all activations (full memory)</span>
+        <span class="kw">return</span> x</pre>
+    </div>
+
+    <div class="cell" id="cell-ckpt">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · activation_memory_estimate.py</span>
+        <button class="run-btn" onclick="runCell('cell-ckpt')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre># Estimate activation memory for a transformer model
+# with and without gradient checkpointing
+
+def estimate_activation_memory(n_layers, seq_len, d_model,
+                                 batch_size, bytes_per_elem=2,  # BF16
+                                 checkpoint_every=None):
+    """
+    Without checkpointing: store activations for all layers.
+    With checkpointing every N layers: store only N checkpoint inputs.
+    """
+    # Per-layer activation size (simplified: attention + MLP intermediates)
+    # attention: Q,K,V matrices + attention weights + output
+    attn_mem = 3 * seq_len * d_model  + seq_len * seq_len + seq_len * d_model
+    # MLP: intermediate 4*d_model
+    mlp_mem  = 2 * seq_len * d_model + seq_len * 4 * d_model
+    per_layer = (attn_mem + mlp_mem) * bytes_per_elem * batch_size
+
+    if checkpoint_every is None:
+        total = per_layer * n_layers
+        strategy = "no checkpointing"
+    else:
+        checkpoints = n_layers // checkpoint_every
+        total = per_layer * checkpoint_every + per_layer * checkpoints
+        strategy = f"checkpoint every {checkpoint_every} layers"
+
+    return total / (1024**2), strategy  # return in MB
+
+configs = [
+    ("GPT-2 small",   12,  1024, 768,  32),
+    ("GPT-2 large",   36,  1024, 1280, 16),
+    ("GPT-3 13B~",    40,  2048, 5120, 4 ),
+    ("LLaMA-2 70B~",  80,  4096, 8192, 2 ),
+]
+
+print(f"{'Model':<16}  {'No Ckpt (MB)':>14}  {'Ckpt/4 (MB)':>12}  {'Ckpt/1 (MB)':>12}  {'Savings':>8}")
+print("-" * 68)
+for name, nl, sl, dm, bs in configs:
+    no_ckpt, _ = estimate_activation_memory(nl, sl, dm, bs)
+    ck4,     _ = estimate_activation_memory(nl, sl, dm, bs, checkpoint_every=4)
+    ck1,     _ = estimate_activation_memory(nl, sl, dm, bs, checkpoint_every=1)
+    ratio = no_ckpt / max(ck1, 1)
+    print(f"{name:<16}  {no_ckpt:>14,.0f}  {ck4:>12,.0f}  {ck1:>12,.0f}  {ratio:>7.1f}x")</pre></div>
+      <div class="cell-output" id="cell-ckpt-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1604.06174">Chen et al. (2016) — Training Deep Nets with Sublinear Memory Cost (checkpointing theory)</a>
+      <a href="https://pytorch.org/docs/stable/checkpoint.html">PyTorch torch.utils.checkpoint — API reference</a>
+      <a href="https://medium.com/tensorflow/fitting-larger-networks-into-memory-583e3c758ff9">Google Brain (2018) — Fitting Larger Networks into Memory</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.8 -->
+  <section class="section" id="s8">
+    <div class="section-label">5.8</div>
+    <h2>Temperature Sampling</h2>
+
+    <p>Once a language model is trained, generating text requires a sampling strategy. The model produces a vector of logits — one raw score per vocabulary token — and we must convert these into a token choice. The simplest approach is <em>greedy decoding</em>: always pick the token with the highest logit. Greedy decoding is deterministic and maximally confident, but it produces repetitive, generic text. Real language has natural variability; the same sentence beginning can end many reasonable ways, and a model that always picks the single most likely continuation sounds flat and mechanical.</p>
+
+    <p>Temperature controls how sharp or flat the probability distribution is before sampling. The trick is to divide all logits by a temperature T before computing the softmax. When T=1, the distribution is unchanged. When T approaches 0, the highest-logit token gets nearly all the probability mass — approaching greedy. When T>1, the distribution flattens; low-probability tokens get relatively more weight, and output becomes more varied (at the cost of occasional incoherence). Temperature does not change which tokens are possible, only how likely each is to be selected.</p>
+
+    <p>The intuition: imagine each logit as a temperature in Celsius. At T=0.5, you are dividing by 0.5 (multiplying by 2) — amplifying differences, making the distribution more extreme. At T=2, you are cutting each difference in half — making the model less decisive. For creative tasks like fiction writing, T≈0.8–1.2 produces natural, varied output. For factual tasks like code generation or question answering, T≈0.1–0.3 keeps the model focused on high-probability, correct tokens.</p>
+
+    <div class="formula">
+      <span class="eq-label">TEMPERATURE SAMPLING</span>
+      p<sub>i</sub> = exp(z<sub>i</sub> / T) / &Sigma;<sub>j</sub> exp(z<sub>j</sub> / T)
+      <span class="eq-note">z_i = logit for token i. T → 0: greedy. T = 1: standard softmax. T → ∞: uniform.</span>
+    </div>
+
+    <div class="sample-grid">
+      <div class="sg-card sg-greedy">
+        <h4>GREEDY (T≈0)</h4>
+        <p>Always selects the single highest-probability token. Deterministic. Prone to repetition.</p>
+        <div class="sg-example">"The cat sat on the mat. The cat sat on the mat."</div>
+      </div>
+      <div class="sg-card sg-temp">
+        <h4>TEMP=0.8</h4>
+        <p>Sharpened distribution. High-probability tokens dominate but variation exists. Best for most tasks.</p>
+        <div class="sg-example">"The cat curled up on the warm windowsill."</div>
+      </div>
+      <div class="sg-card sg-topk">
+        <h4>TEMP=1.4</h4>
+        <p>Flattened distribution. More surprising choices. Creative but risks incoherence on long sequences.</p>
+        <div class="sg-example">"The cat philosophized about Tuesday's peculiar geometry."</div>
+      </div>
+    </div>
+
+    <div class="cell" id="cell-temp">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · temperature_sampling.py</span>
+        <button class="run-btn" onclick="runCell('cell-temp')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math, random
+
+def softmax_temp(logits, temperature):
+    """Apply temperature then softmax."""
+    if temperature < 1e-8:
+        # greedy: one-hot on argmax
+        max_idx = max(range(len(logits)), key=lambda i: logits[i])
+        return [1.0 if i == max_idx else 0.0 for i in range(len(logits))]
+    scaled = [z / temperature for z in logits]
+    max_s = max(scaled)
+    exps = [math.exp(s - max_s) for s in scaled]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def sample_token(probs):
+    r = random.random()
+    cumulative = 0.0
+    for i, p in enumerate(probs):
+        cumulative += p
+        if r <= cumulative:
+            return i
+    return len(probs) - 1
+
+# Simulate: "The cat sat on the ___"
+# Logits for: ["mat", "floor", "table", "roof", "moon"]
+tokens  = ["mat", "floor", "table", "roof",  "moon"]
+logits  = [3.2,    2.1,     1.5,    0.8,    -0.5]
+
+temps = [0.1, 0.5, 1.0, 1.5, 2.0]
+
+print(f"Logits: {dict(zip(tokens, logits))}")
+print()
+print(f"{'Token':<8}", end="")
+for t in temps:
+    print(f"  T={t:.1f}  ", end="")
+print()
+print("-" * (8 + len(temps)*9))
+
+for i, tok in enumerate(tokens):
+    print(f"{tok:<8}", end="")
+    for t in temps:
+        p = softmax_temp(logits, t)[i]
+        bar = "█" * int(p * 8)
+        print(f"  {p:.3f}  ", end="")
+    print()
+
+print()
+# Sample 20 times at each temperature
+random.seed(42)
+print("Sampling 20 tokens at each temperature:")
+for t in temps:
+    probs = softmax_temp(logits, t)
+    samples = [tokens[sample_token(probs)] for _ in range(20)]
+    from collections import Counter
+    counts = Counter(samples)
+    result = " ".join(f"{tok}×{n}" for tok, n in counts.most_common())
+    print(f"T={t:.1f}: {result}")</pre></div>
+      <div class="cell-output" id="cell-temp-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1904.09751">Holtzman et al. (2020) — The Curious Case of Neural Text Degeneration (temperature analysis)</a>
+      <a href="https://arxiv.org/abs/2202.00666">Su et al. (2022) — A Contrastive Framework for Neural Text Generation (sampling comparison)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.9 -->
+  <section class="section" id="s9">
+    <div class="section-label">5.9</div>
+    <h2>Top-k and Nucleus Sampling</h2>
+
+    <p>Temperature alone does not solve all sampling problems. Consider a token position where the model is very confident: the top token has 95% probability, and the remaining probability mass is spread across 50,000 tokens at nearly 0.001% each. With temperature=1.0, the model might still occasionally pick one of these fringe tokens — an absurd word that breaks the sentence. Top-k sampling addresses this by zeroing out all but the k most probable tokens before sampling, ensuring the model can only pick from a reasonable set of candidates.</p>
+
+    <p>Top-k has its own failure mode. At positions where the model is genuinely uncertain — say, a comma following a noun could be followed by any of dozens of plausible continuations — top-k=50 might arbitrarily cut off at the 50th most likely option even though tokens 51–150 are all plausible and nearly equally likely. The truncation is too rigid. Nucleus sampling (top-p) solves this by specifying a <em>probability mass</em> threshold rather than a token count. Keep the minimum number of tokens that together cover at least p=0.9 of the probability mass, then renormalize and sample from that set. When the model is confident, the nucleus is small (maybe 2–3 tokens). When the model is uncertain, the nucleus expands to include more options.</p>
+
+    <p>In practice, top-p=0.9 or top-p=0.95 combined with temperature=0.7 is the most common production configuration. Many modern models (Claude, GPT-4, Llama 2) use top-p sampling by default. The two can be combined: apply temperature first (rescale logits), then apply top-p to the rescaled probabilities. This gives you both the sharpening effect of temperature and the adaptive cutoff of nucleus sampling.</p>
+
+    <div class="callout blue">
+      <strong>Why k=50?</strong> The k=50 default in many implementations is a heuristic from GPT-2 era experiments. For modern large models (7B+), the probability distribution is sharper, and k=20–40 is often sufficient. For creative tasks with smaller models, k=100 or even k=200 can produce more interesting output. Top-p=0.9 is more principled than top-k precisely because it adapts to the model's confidence automatically.
+    </div>
+
+    <div class="formula">
+      <span class="eq-label">TOP-P (NUCLEUS) SAMPLING</span>
+      S = smallest set such that &Sigma;<sub>i &isin; S</sub> p<sub>i</sub> &ge; p_threshold
+      <br>
+      p'<sub>i</sub> = p<sub>i</sub> / &Sigma;<sub>j &isin; S</sub> p<sub>j</sub>  for i &isin; S,  else 0
+      <span class="eq-note">S is the "nucleus." Size of S varies per step: 1 token when confident, many tokens when uncertain.</span>
+    </div>
+
+    <div class="cell" id="cell-topk">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · top_k_and_nucleus.py</span>
+        <button class="run-btn" onclick="runCell('cell-topk')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math, random
+
+def softmax(logits):
+    m = max(logits)
+    e = [math.exp(x - m) for x in logits]
+    s = sum(e)
+    return [x/s for x in e]
+
+def top_k_filter(probs, k):
+    """Zero out all but top-k probabilities, then renormalize."""
+    # sort indices by probability descending
+    indexed = sorted(enumerate(probs), key=lambda x: x[1], reverse=True)
+    filtered = [0.0] * len(probs)
+    for rank, (idx, p) in enumerate(indexed):
+        if rank < k:
+            filtered[idx] = p
+    total = sum(filtered)
+    return [p / total for p in filtered]
+
+def top_p_filter(probs, p_thresh):
+    """Keep minimum set of tokens covering p_thresh probability mass."""
+    indexed = sorted(enumerate(probs), key=lambda x: x[1], reverse=True)
+    filtered = [0.0] * len(probs)
+    cumulative = 0.0
+    for idx, p in indexed:
+        filtered[idx] = p
+        cumulative += p
+        if cumulative >= p_thresh:
+            break
+    total = sum(filtered)
+    nucleus_size = sum(1 for p in filtered if p > 0)
+    return [p / total for p in filtered], nucleus_size
+
+def sample(probs):
+    r = random.random()
+    cum = 0.0
+    for i, p in enumerate(probs):
+        cum += p
+        if r <= cum:
+            return i
+    return len(probs) - 1
+
+# Two scenarios: confident model vs uncertain model
+vocab = [f"tok_{i}" for i in range(20)]
+
+# Confident: one token dominates
+conf_logits  = [5.0] + [0.2] * 4 + [-1.0] * 15
+# Uncertain: flat distribution
+flat_logits  = [0.5, 0.4, 0.3, 0.3, 0.25] + [0.1] * 15
+
+for label, logits in [("CONFIDENT", conf_logits), ("UNCERTAIN", flat_logits)]:
+    probs = softmax(logits)
+    top5  = sorted(enumerate(probs), key=lambda x: x[1], reverse=True)[:5]
+
+    raw_k, _ = top_p_filter(probs, 0.9)
+    _, nucleus_sz = top_p_filter(probs, 0.9)
+    topk_probs = top_k_filter(probs, 5)
+
+    print(f"\n=== {label} distribution ===")
+    print(f"Top-5 raw probs: {[round(p,3) for _,p in top5]}")
+    print(f"Top-k=5 nucleus size: 5 (fixed)")
+    print(f"Top-p=0.9 nucleus size: {nucleus_sz} tokens")
+    print(f"  (top-p adapts; top-k is blind to distribution shape)")</pre></div>
+      <div class="cell-output" id="cell-topk-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/1904.09751">Holtzman et al. (2020) — The Curious Case of Neural Text Degeneration (nucleus sampling paper)</a>
+      <a href="https://arxiv.org/abs/1805.04833">Fan et al. (2018) — Hierarchical Neural Story Generation (original top-k sampling paper)</a>
+      <a href="https://huggingface.co/blog/how-to-generate">HuggingFace — How to Generate Text: Comparing Decoding Strategies</a>
+      <a href="https://arxiv.org/abs/1610.02424">Vijayakumar et al. (2016) — Diverse Beam Search: keeps the top-scoring partial sequences at each step; balance between greedy (quality) and sampling (diversity)</a>
+      <a href="https://en.wikipedia.org/wiki/Top-p_sampling">Top-p (nucleus) sampling — Wikipedia: selects from the smallest set of tokens whose cumulative probability exceeds p; avoids both repetition and incoherence</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.10 -->
+  <section class="section" id="s10">
+    <div class="section-label">5.10</div>
+    <h2>Loading Pretrained Weights</h2>
+
+    <p>OpenAI released GPT-2 weights publicly in 2019, and they remain among the most studied and reimplemented model weights in existence. Loading them into a custom PyTorch model — rather than using a HuggingFace wrapper — is an instructive exercise because it forces you to confront precisely how weights map between architectures, where naming conventions differ, and why some weight matrices must be transposed. Andrej Karpathy's nanoGPT repository is the canonical reference for this process.</p>
+
+    <p>The core challenge is the state dict mismatch. PyTorch's <code>nn.Linear</code> stores its weight as shape <code>(out_features, in_features)</code> — the matrix is already transposed relative to the mathematical convention W where y = Wx. HuggingFace's GPT-2 weights follow the convention of TensorFlow's original release, where the weight is stored as <code>(in_features, out_features)</code>. This means every projection matrix in attention (Q, K, V projections, output projection) and in the MLP must be transposed when loading from HuggingFace format. Miss this and your model will produce garbage output despite nominally correct architecture parameters.</p>
+
+    <p>Beyond transpositions, you must carefully map key names between the source and target state dicts. HuggingFace uses names like <code>transformer.h.0.attn.c_attn.weight</code> while your custom model might call it <code>blocks.0.attn.qkv.weight</code>. The weights themselves are identical; only the paths differ. A systematic mapping function that iterates both state dicts simultaneously and matches by shape and position is the cleanest approach. As an additional sanity check, always verify that the loaded model achieves approximately the same perplexity as the original on a reference text.</p>
+
+    <div class="callout amber">
+      <strong>HuggingFace GPT-2 weight shapes to transpose:</strong> <code>c_attn.weight</code> (combined QKV, shape 768×2304 in TF convention), <code>c_proj.weight</code> (output projection), <code>c_fc.weight</code> (MLP first layer), <code>mlp.c_proj.weight</code> (MLP second layer). Embedding and LayerNorm weights do <em>not</em> need transposition.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">load_pretrained.py</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="kw">import</span> torch
+<span class="kw">from</span> transformers <span class="kw">import</span> GPT2Model
+
+<span class="kw">def</span> <span class="fn">load_pretrained_weights</span>(our_model, model_type=<span class="st">"gpt2"</span>):
+    <span class="lm"># ↑ our_model: custom GPT in PyTorch, must have same n_layers/d_model</span>
+    print(f<span class="st">"Loading weights from HuggingFace: {model_type}"</span>)
+    hf_model = GPT2Model.from_pretrained(model_type)
+    hf_sd = hf_model.state_dict()                    <span class="lm"># ↑ HuggingFace state dict</span>
+    our_sd = our_model.state_dict()
+
+    <span class="cm"># Keys that need transposition: Conv1D -> Linear convention mismatch</span>
+    transpose_keys = [<span class="st">"attn.c_attn.weight"</span>, <span class="st">"attn.c_proj.weight"</span>,
+                      <span class="st">"mlp.c_fc.weight"</span>,   <span class="st">"mlp.c_proj.weight"</span>]
+
+    copied = <span class="nu">0</span>
+    <span class="kw">for</span> our_key <span class="kw">in</span> our_sd.keys():
+        hf_key = our_key                             <span class="lm"># ↑ assume 1-to-1 key mapping</span>
+
+        <span class="cm"># Map our key naming to HuggingFace naming if different</span>
+        hf_key = hf_key.replace(<span class="st">"blocks."</span>, <span class="st">"h."</span>)
+        hf_key = hf_key.replace(<span class="st">"ln_final"</span>, <span class="st">"ln_f"</span>)
+
+        <span class="kw">if</span> hf_key <span class="kw">in</span> hf_sd:
+            src = hf_sd[hf_key]
+            needs_t = <span class="bi">any</span>(hf_key.endswith(k) <span class="kw">for</span> k <span class="kw">in</span> transpose_keys)
+            <span class="kw">if</span> needs_t:
+                src = src.t()                        <span class="lm"># ↑ transpose Conv1D weights to Linear shape</span>
+            our_sd[our_key].copy_(src)               <span class="lm"># ↑ copy in-place into our model</span>
+            copied += <span class="nu">1</span>
+
+    print(f<span class="st">"Loaded {copied}/{len(our_sd)} weight tensors."</span>)
+    our_model.load_state_dict(our_sd)
+    <span class="kw">return</span> our_model</pre>
+    </div>
+
+    <div class="cell" id="cell-weights">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · weight_shape_demo.py</span>
+        <button class="run-btn" onclick="runCell('cell-weights')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre># Demonstrate the transpose convention mismatch
+# without needing torch: show the math
+
+def matmul(A, B):
+    """Simple matrix multiply A (m×n) @ B (n×p) -> (m×p)."""
+    m, n = len(A), len(A[0])
+    p = len(B[0])
+    C = [[0.0]*p for _ in range(m)]
+    for i in range(m):
+        for k in range(n):
+            for j in range(p):
+                C[i][j] += A[i][k] * B[k][j]
+    return C
+
+def transpose(M):
+    rows, cols = len(M), len(M[0])
+    return [[M[r][c] for r in range(rows)] for c in range(cols)]
+
+# TF/HuggingFace GPT-2 stores weight as (in, out) = (3, 4) for d_in=3, d_out=4
+W_hf = [[0.1, 0.2, 0.3, 0.4],   # row 0 = input dim 0 weights
+         [0.5, 0.6, 0.7, 0.8],   # row 1 = input dim 1 weights
+         [0.9, 1.0, 1.1, 1.2]]   # row 2 = input dim 2 weights
+# shape: (3, 4) = (in_features, out_features)
+
+# PyTorch nn.Linear stores weight as (out, in) = (4, 3)
+W_pt = transpose(W_hf)  # shape: (4, 3) = (out_features, in_features)
+
+x = [[1.0, 2.0, 3.0]]  # input: (1, 3)
+
+# TF convention: y = x @ W_hf  (1×3 @ 3×4 = 1×4)
+y_tf = matmul(x, W_hf)
+
+# PyTorch convention: y = x @ W_pt.T  (1×3 @ (4×3).T = 1×4)
+y_pt = matmul(x, transpose(W_pt))
+
+print("W_hf shape: (in=3, out=4) — TensorFlow/HuggingFace convention")
+print("W_pt shape: (out=4, in=3) — PyTorch nn.Linear convention")
+print()
+print("x =", x[0])
+print("y_tf (x @ W_hf)        =", [round(v, 4) for v in y_tf[0]])
+print("y_pt (x @ W_pt.T)      =", [round(v, 4) for v in y_pt[0]])
+print("Match:", y_tf == y_pt)
+print()
+print("Conclusion: loading HuggingFace weights into PyTorch Linear")
+print("REQUIRES transposing the weight matrix. If skipped, the model")
+print("multiplies a (3×4) matrix where a (4×3) is expected — wrong shapes")
+print("or silently wrong outputs if the dimensions happen to be square.")</pre></div>
+      <div class="cell-output" id="cell-weights-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://github.com/karpathy/nanoGPT">Karpathy — nanoGPT: minimal GPT with GPT-2 weight loading (model.py, ~300 lines)</a>
+      <a href="https://huggingface.co/gpt2">HuggingFace GPT-2 model card and weight files</a>
+      <a href="https://openai.com/research/gpt-2-1-5b-release">OpenAI — GPT-2 weight release announcement (2019)</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ 5.11 -->
+  <section class="section" id="s11">
+    <div class="section-label">5.11</div>
+    <h2>Scaling Laws</h2>
+
+    <p>One of the most surprising findings in deep learning is that language model performance obeys predictable power laws across many orders of magnitude of model size, data size, and compute budget. Kaplan et al. (2020) at OpenAI showed that cross-entropy loss decreases smoothly as you scale any of these three dimensions, and that the relationship is well-described by L ∝ 1/N<sup>0.076</sup> for model parameters N and L ∝ 1/D<sup>0.095</sup> for dataset tokens D. These small exponents mean you need roughly 10× more parameters to get a loss reduction equivalent to doubling your dataset size — but the relationship is reliable enough to project forward to untrained scales.</p>
+
+    <p>The more impactful implication from the Kaplan paper was about compute-optimal training. Given a fixed compute budget C (measured in FLOPs), what is the best allocation between model size N and training tokens D? Kaplan et al. concluded that it was usually better to train a very large model for a relatively short time than to train a small model exhaustively. This guided OpenAI's strategy for GPT-3: 175B parameters trained on 300B tokens — roughly 1.7 tokens per parameter.</p>
+
+    <p>Hoffmann et al. (2022) at DeepMind challenged this conclusion with the Chinchilla paper. They ran a more careful scaling experiment with many more data points at smaller scales and derived a different optimal ratio: approximately 20 tokens per parameter. The Chinchilla-optimal 70B model trained on 1.4T tokens (Chinchilla itself) outperformed GPT-3 on almost every benchmark despite being 2.5× smaller. This is the "Chinchilla finding" that reshaped the field: GPT-3 was severely undertrained, not because 300B tokens is small, but because 175B parameters demands 3.5T tokens to reach compute-optimality.</p>
+
+    <div class="formula">
+      <span class="eq-label">KAPLAN SCALING LAW (simplified)</span>
+      L(N, D) &asymp; A/N<sup>0.076</sup> + B/D<sup>0.095</sup> + L<sub>0</sub>
+      <span class="eq-note">N = model parameters. D = training tokens. L_0 = irreducible entropy of the data distribution.</span>
+    </div>
+
+    <div class="formula">
+      <span class="eq-label">CHINCHILLA COMPUTE-OPTIMAL RATIO</span>
+      D<sub>optimal</sub> &asymp; 20 &times; N
+      <br>
+      C<sub>optimal</sub> &asymp; 6 &times; N &times; D   (FLOPs for a forward+backward pass)
+      <span class="eq-note">Given a compute budget C, the optimal N = sqrt(C / 120) and D = 20 * N.</span>
+    </div>
+
+    <table class="scaling-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Parameters</th>
+          <th>Training Tokens</th>
+          <th>Tokens/Param</th>
+          <th>Chinchilla-Optimal?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>GPT-2</td><td>1.5B</td><td>40B</td><td>27×</td><td>Approximately</td></tr>
+        <tr><td>GPT-3</td><td>175B</td><td>300B</td><td>1.7×</td><td>No — severely undertrained</td></tr>
+        <tr><td>Chinchilla</td><td>70B</td><td>1.4T</td><td>20×</td><td>Yes — designed to be optimal</td></tr>
+        <tr><td>LLaMA 1 (65B)</td><td>65B</td><td>1.4T</td><td>21.5×</td><td>Yes — Chinchilla-aligned</td></tr>
+        <tr><td>LLaMA 2 (70B)</td><td>70B</td><td>2.0T</td><td>28.6×</td><td>Intentionally overtrained*</td></tr>
+        <tr><td>LLaMA 3 (70B)</td><td>70B</td><td>15T</td><td>214×</td><td>Heavily overtrained for inference</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--text-secondary);margin-top:-12px;">* Overtraining beyond Chinchilla-optimal reduces inference cost per token. A smaller, more-trained model can be cheaper to serve than a larger, less-trained one at the same quality level.</p>
+
+    <div class="callout">
+      <strong>The inference insight:</strong> Chinchilla optimality minimizes the <em>training</em> compute for a given quality level. But if you need to serve the model to millions of users, inference compute dominates. A 7B model trained on 200B tokens is cheaper to run per query than a 70B model trained on 20B tokens, even if both have the same training loss. Meta's LLaMA 3 8B (trained on 15T tokens) is a deliberate bet on inference efficiency over training efficiency.
+    </div>
+
+    <div class="cell" id="cell-scaling">
+      <div class="cell-header">
+        <span class="cell-label">▶ Python 3 · chinchilla_scaling.py</span>
+        <button class="run-btn" onclick="runCell('cell-scaling')">▶ Run</button>
+      </div>
+      <div class="cell-code"><pre>import math
+
+def chinchilla_optimal(compute_flops):
+    """
+    Given a compute budget in FLOPs, compute the Chinchilla-optimal
+    N (params) and D (tokens).
+
+    From Hoffmann et al. 2022:
+    C ≈ 6*N*D (FLOPs for forward+backward)
+    Optimal: N ≈ sqrt(C / 120), D ≈ 20*N
+    """
+    N_opt = math.sqrt(compute_flops / 120)
+    D_opt = 20 * N_opt
+    return N_opt, D_opt
+
+def kaplan_loss(N, D, A=406.4, B=410.7, L0=1.69):
+    """Simplified Kaplan et al. 2020 loss formula."""
+    return A / (N ** 0.34) + B / (D ** 0.28) + L0
+
+# Compute budgets in FLOPs (approximate for known models)
+budgets = {
+    "GPT-2 (1.5B)":        3.5e21,
+    "GPT-3 (175B)":        3.14e23,
+    "Chinchilla (70B)":    5.76e23,
+    "GPT-4 estimate":      2.15e25,
+    "Llama 3 405B est.":   3.8e25,
+}
+
+print(f"{'Model':<22}  {'Compute (FLOPs)':>16}  {'Opt. Params':>13}  {'Opt. Tokens':>13}  {'Tok/Param':>9}")
+print("-" * 80)
+for name, C in budgets.items():
+    N_opt, D_opt = chinchilla_optimal(C)
+    ratio = D_opt / N_opt
+    def fmt(x):
+        if x >= 1e12: return f"{x/1e12:.1f}T"
+        if x >= 1e9:  return f"{x/1e9:.1f}B"
+        if x >= 1e6:  return f"{x/1e6:.1f}M"
+        return str(x)
+    print(f"{name:<22}  {C:>16.2e}  {fmt(N_opt):>13}  {fmt(D_opt):>13}  {ratio:>9.1f}x")
+
+print()
+print("Key insight: Chinchilla says optimal token:param ratio is ~20x.")
+print("GPT-3 used 1.7x — was undertrained by a factor of ~12x in tokens.")</pre></div>
+      <div class="cell-output" id="cell-scaling-out">Click ▶ Run to execute</div>
+    </div>
+
+    <div class="deepdive">
+      <div class="deepdive-label">Deep Dive</div>
+      <a href="https://arxiv.org/abs/2001.08361">Kaplan et al. (2020) — Scaling Laws for Neural Language Models (OpenAI)</a>
+      <a href="https://arxiv.org/abs/2203.15556">Hoffmann et al. (2022) — Training Compute-Optimal Language Models (Chinchilla)</a>
+      <a href="https://arxiv.org/abs/2302.13971">Touvron et al. (2023) — LLaMA: Open and Efficient Foundation Language Models</a>
+      <a href="https://arxiv.org/abs/2309.05563">Sardana & Frankle (2023) — Beyond Chinchilla-Optimal: Accounting for Inference in LLM Scaling</a>
+      <a href="https://arxiv.org/abs/2403.08763">Ibrahim et al. (2024) — Simple and Scalable Strategies to Continually Pre-train LLMs — cosine restarts + LR re-warming for extending pretraining</a>
+      <a href="https://arxiv.org/abs/2403.03507">Zhao et al. (2024) — GaLore: Memory-Efficient LLM Training by Gradient Low-Rank Projection — drop-in AdamW replacement; cuts optimiser memory by 65%</a>
+      <a href="https://arxiv.org/abs/2402.00159">Soldaini et al. (2024) — Dolma: An Open Corpus of 3T Tokens for LLM Pretraining Research — dataset composition, deduplication, and quality filtering at scale</a>
+      <a href="https://arxiv.org/abs/2306.01116">Penedo et al. (2023) — The RefinedWeb Dataset for Falcon LLM — high-quality web data alone can match curated corpora</a>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════════════════ SUMMARY -->
+  <section class="section" id="summary">
+    <div class="section-label">Summary</div>
+    <h2>Chapter 5 in Brief</h2>
+
+    <p>This chapter traced the full arc from loss function to trained model. Cross-entropy loss gives us a differentiable signal from raw text, requiring no labels — only the next-token prediction objective. The seven-step training loop (load, forward, loss, zero_grad, backward, clip, step) is the universal engine that processes this signal. Perplexity translates loss into an interpretable quantity but is only comparable across identical tokenization setups.</p>
+
+    <p>Four numerical stability systems — learning rate scheduling, gradient clipping, mixed precision (BF16), and gradient checkpointing — make training at scale feasible. Without them, large models either diverge, overflow, or exhaust GPU memory. At inference time, temperature, top-k, and nucleus sampling control the balance between confidence and creativity in generated text, with nucleus sampling being the most principled adaptive approach.</p>
+
+    <p>Loading pretrained weights requires careful attention to weight transposition conventions between TensorFlow-origin models and PyTorch. Finally, scaling laws — both the Kaplan power laws and the Chinchilla correction — show that the field's understanding of optimal resource allocation has shifted: not merely "bigger is better," but "bigger and longer-trained together, at the right ratio" is what determines quality per compute dollar.</p>
+
+    <table class="scaling-table">
+      <thead>
+        <tr><th>Concept</th><th>Key Number / Formula</th><th>Practical Default</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cross-entropy loss (random)</td><td>log(50257) ≈ 10.82 nats</td><td>Target: &lt; 3.5 for GPT-2 scale</td></tr>
+        <tr><td>Perplexity</td><td>PPL = exp(L)</td><td>GPT-2 small: ~29 on WebText</td></tr>
+        <tr><td>Warmup steps</td><td>375M tokens (GPT-3)</td><td>~1–2% of total training</td></tr>
+        <tr><td>LR max (GPT-3)</td><td>6×10<sup>-4</sup></td><td>3–6×10<sup>-4</sup> for large models</td></tr>
+        <tr><td>Gradient clip norm</td><td>max_norm = 1.0</td><td>Universal default</td></tr>
+        <tr><td>Mixed precision</td><td>BF16 forward + FP32 master weights</td><td>BF16 on A100/H100</td></tr>
+        <tr><td>Temperature (creative)</td><td>T = 0.8–1.2</td><td>T = 0.7 for most production</td></tr>
+        <tr><td>Nucleus sampling</td><td>top-p = 0.9</td><td>Combined with T = 0.7</td></tr>
+        <tr><td>Chinchilla optimal</td><td>D ≈ 20 × N</td><td>LLaMA-style training</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <nav class="ch-nav">
+    <a href="chapter4.html">
+      <span class="cnd">← Previous</span>
+      <span class="cnt">Chapter 4: Implementing a GPT Model</span>
+    </a>
+    <a href="chapter6.html" style="text-align:right;">
+      <span class="cnd">Next →</span>
+      <span class="cnt">Chapter 6: Fine-Tuning for Classification</span>
+    </a>
+  </nav>
+
+</div><!-- /container -->
+
+<script>
+async function runCell(id){
+  const cell=document.getElementById(id);
+  const code=cell.querySelector('.cell-code pre').textContent;
+  const out=cell.querySelector('.cell-output');
+  const btn=cell.querySelector('.run-btn');
+  if(!window.pyodide){out.textContent='Python runtime still loading — try again in a moment.';return;}
+  btn.disabled=true;out.className='cell-output running';out.textContent='Running...';
+  try{
+    window.pyodide.runPython('import sys,io;sys.stdout=io.StringIO()');
+    await window.pyodide.runPythonAsync(code);
+    const r=window.pyodide.runPython('sys.stdout.getvalue()');
+    out.className='cell-output';out.textContent=r||'(no output)';
+  }catch(e){out.className='cell-output error';out.textContent='Error: '+e.message;}
+  btn.disabled=false;
+}
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent);
+  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+}
+</script>
+<script>
+(async()=>{
+  try{
+    const p=await loadPyodide();window.pyodide=p;
+    document.getElementById('pyodide-status').textContent='✓ Python runtime ready — click ▶ Run on any cell.';
+    setTimeout(()=>{const s=document.getElementById('pyodide-status');if(s)s.style.display='none';},2000);
+  }catch(e){document.getElementById('pyodide-status').textContent='Python runtime unavailable — view code only.';}
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+</body>
+</html>

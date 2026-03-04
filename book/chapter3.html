@@ -343,6 +343,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
   <div class="deepdive-label">Deep Dive — Learn More</div>
   <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">↗ A Mathematical Framework for Transformer Circuits — Elhage et al. 2021 (Anthropic). The definitive treatment of the residual stream, QK/OV circuit decomposition, and virtual attention heads.</a>
   <a href="https://jalammar.github.io/illustrated-transformer/" target="_blank">↗ The Illustrated Transformer — Jay Alammar (2018). The most widely-read visual explanation of the architecture. Every diagram has become a standard reference.</a>
+  <a href="https://arxiv.org/abs/1409.0473" target="_blank">↗ Bahdanau, Cho &amp; Bengio, 2014 — "Neural Machine Translation by Jointly Learning to Align and Translate" — The paper that introduced attention: soft alignment between encoder hidden states and decoder outputs. Self-attention is its natural generalisation.</a>
+  <a href="https://arxiv.org/abs/1706.03762" target="_blank">↗ Vaswani et al., 2017 — "Attention Is All You Need" — The residual stream design (token + positional embeddings → stacked blocks → unembedding) is introduced here. Read §3 for the original motivation.</a>
 </div>
 
 <div class="cell" id="cell-1">
@@ -1019,6 +1021,8 @@ print(f"  Softmax scaled:{[round(p,4) for p in softmax(scores_scaled)]}")</pre><
   <div class="deepdive-label">Deep Dive — Learn More</div>
   <a href="https://arxiv.org/abs/1706.03762" target="_blank">↗ Attention Is All You Need — Vaswani et al. 2017. Section 3.2.2: multi-head attention — the exact formulation and the motivation for parallel subspaces.</a>
   <a href="https://arxiv.org/abs/2305.13245" target="_blank">↗ GQA: Training Generalized Multi-Query Transformer Models — Ainslie et al. 2023. Introduces grouped-query attention, now used by LLaMA-2/3, Mistral, Falcon.</a>
+  <a href="https://jmlr.org/papers/v15/srivastava14a.html" target="_blank">↗ Srivastava et al., 2014 — "Dropout: A Simple Way to Prevent Neural Networks from Overfitting" — Randomly zeroing units during training prevents co-adaptation of feature detectors; the standard regulariser.</a>
+  <a href="https://arxiv.org/abs/2311.01906" target="_blank">↗ He &amp; Hofmann, 2023 — "Simplifying Transformer Blocks" — Removes the value weight matrix and projection layer while maintaining performance; shows which parts of MHA are load-bearing.</a>
 </div>
 
 <div class="cell" id="cell-7">
