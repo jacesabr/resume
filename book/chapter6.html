@@ -85,16 +85,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
 .cnt{font-size:15px;font-weight:500;}
 #pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
-/* Chapter-specific */
 .transfer-diag{display:flex;flex-direction:column;gap:8px;margin:22px 0;}
 .td-row{display:flex;gap:8px;align-items:center;}
 .td-label{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);min-width:110px;text-align:right;flex-shrink:0;}
 .td-boxes{display:flex;gap:4px;flex:1;}
 .td-box{flex:1;border-radius:6px;padding:8px;text-align:center;font-size:12px;font-weight:500;}
-.tdb-frozen{background:var(--bg-aside);border:1px dashed var(--border);color:var(--text-muted);}
+.tdb-frozen{background:var(--bg-aside);border:1px dashed var(--border);color:var(--text-secondary);}
 .tdb-trainable{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);}
 .tdb-new{background:var(--green-light);border:2px solid var(--green);color:var(--green);font-weight:700;}
-.text-muted{color:var(--text-secondary);}
 .cm-wrapper{margin:22px 0;}
 .cm-title{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;}
 .cm-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px;font-family:var(--font-mono);font-size:12px;width:fit-content;}
@@ -108,17 +106,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .metric-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
 .mc{border:1px solid var(--border);border-radius:8px;padding:14px;}
 .mc h4{font-family:var(--font-mono);font-size:12px;font-weight:700;margin-bottom:8px;}
-.mc-acc h4{color:var(--blue);}
-.mc-prec h4{color:var(--green);}
-.mc-rec h4{color:var(--amber);}
-.mc-f1 h4{color:var(--purple);}
+.mc-acc h4{color:var(--blue);}.mc-prec h4{color:var(--green);}.mc-rec h4{color:var(--amber);}.mc-f1 h4{color:var(--purple);}
 .mc p{font-size:12.5px;color:var(--text-secondary);line-height:1.55;margin:0;}
 .mc-formula{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-top:8px;padding:5px 8px;background:var(--bg-aside);border-radius:4px;}
 .loss-curves{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;}
 .lc{border:1px solid var(--border);border-radius:8px;padding:14px;background:var(--bg-card);}
 .lc h4{font-family:var(--font-mono);font-size:11px;font-weight:700;margin-bottom:12px;}
-.lc-good h4{color:var(--green);}
-.lc-overfit h4{color:var(--accent);}
+.lc-good h4{color:var(--green);}.lc-overfit h4{color:var(--accent);}
 .lc-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:11px;font-family:var(--font-mono);}
 .lc-ep{color:var(--text-secondary);min-width:32px;}
 .lc-t{height:7px;border-radius:2px;background:var(--blue);}
@@ -129,35 +123,39 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .sum-table th{background:var(--bg-aside);padding:9px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;}
 .sum-table td{padding:8px 14px;border-bottom:1px solid var(--border-light);vertical-align:top;}
 .sum-table tr:hover td{background:var(--accent-light);}
+.continue-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);margin:24px 0 0;}
+.continue-bar.top-bar{border-top:none;margin-top:0;}
+.continue-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s;}
+.continue-btn.prev{background:var(--bg-aside);color:var(--text);border:1px solid var(--border);}
+.continue-btn.prev:hover{background:var(--border);}
+.continue-btn.next{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+.continue-btn.next:hover{opacity:.88;}
+.continue-btn.disabled{background:var(--bg-aside);color:var(--text-secondary);border:1px solid var(--border-light);pointer-events:none;opacity:.5;}
+.continue-chapter{font-family:var(--font-mono);font-size:10px;opacity:.7;display:block;}
 </style>
 </head>
 <body>
-
 <nav class="topnav">
   <div class="container">
     <span class="topnav-title">Practical LLMs</span>
     <div class="topnav-links">
-      <a href="chapter5.html">← Ch 5</a>
+      <a href="chapter5.html">&larr; Ch 5</a>
       <a href="index.html">Index</a>
-      <a href="chapter7.html">Ch 7 →</a>
+      <a href="chapter7.html">Ch 7 &rarr;</a>
     </div>
   </div>
 </nav>
-
 <div class="container">
 <header class="chapter-header">
   <div class="chapter-label">Chapter 6</div>
   <h1>Fine-Tuning for Classification</h1>
-  <p>A pretrained GPT already understands language. This chapter replaces its language-model head with a classifier, teaches it a new task in hours on a laptop, and builds a spam detector with 97%+ accuracy — using a model that has never seen a spam email during pretraining.</p>
+  <p>A pretrained GPT already understands language. This chapter replaces its language-model head with a classifier, teaches it a new task in hours, builds a spam detector with 97%+ F1, and reveals exactly which layers carry which linguistic knowledge &mdash; so you know which to freeze and which to adapt.</p>
   <div class="chapter-meta">
-    <span>🏷️ 10 sections</span>
-    <span>⚙️ 10 runnable cells</span>
-    <span>🎨 5 CSS diagrams</span>
-    <span>📬 Spam classifier from scratch</span>
-    <span>📚 Howard + Tenney + Devlin + Fawcett</span>
+    <span>13 sections</span>
+    <span>13 runnable cells</span>
+    <span>Howard &middot; Tenney &middot; Kirkpatrick &middot; Fawcett</span>
   </div>
 </header>
-
 <nav class="toc">
   <h3>Contents</h3>
   <div class="toc-grid">
@@ -167,863 +165,1195 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
       <li><a href="#s3"><span class="toc-num">6.3</span>Freezing Layers</a></li>
       <li><a href="#s4"><span class="toc-num">6.4</span>Building a Spam Detector</a></li>
       <li><a href="#s5"><span class="toc-num">6.5</span>Accuracy, Precision, Recall, F1</a></li>
-    </ul>
-    <ul class="toc-list">
       <li><a href="#s6"><span class="toc-num">6.6</span>ROC-AUC</a></li>
       <li><a href="#s7"><span class="toc-num">6.7</span>Detecting Overfitting</a></li>
+    </ul>
+    <ul class="toc-list">
       <li><a href="#s8"><span class="toc-num">6.8</span>Early Stopping</a></li>
       <li><a href="#s9"><span class="toc-num">6.9</span>What Gets Transferred</a></li>
       <li><a href="#s10"><span class="toc-num">6.10</span>Fine-Tuning Best Practices</a></li>
+      <li><a href="#s11"><span class="toc-num">6.11</span>Multi-Label &amp; Multi-Class</a></li>
+      <li><a href="#s12"><span class="toc-num">6.12</span>Catastrophic Forgetting</a></li>
+      <li><a href="#s13"><span class="toc-num">6.13</span>Fine-Tuning with Limited Labels</a></li>
     </ul>
   </div>
 </nav>
+<div class="continue-bar top-bar">
+  <a href="chapter5.html" class="continue-btn prev"><span class="continue-chapter">&larr; Chapter 5</span>Pretraining</a>
+  <a href="chapter7.html" class="continue-btn next"><span class="continue-chapter">Chapter 7 &rarr;</span>Instruction Following</a>
+</div>
+<div id="pyodide-status">Loading Python runtime &mdash; runnable cells will be ready in a moment.</div>
 
-<div id="pyodide-status">⏳ Loading Python runtime — runnable cells will be ready in a moment.</div>
-
-<!-- ════════════════════════════════════════ -->
-<!-- §6.1  Transfer Learning               -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s1">
 <div class="section-label">6.1</div>
 <h2>Transfer Learning</h2>
-
-<p>A model pretrained on 300 billion tokens of text has absorbed something that cannot be easily replicated: a general model of language. It knows that "cat" and "feline" are semantically similar, that subject-verb agreement is required, that "I can't believe how" usually precedes an emotional statement, and that certain phrases signal spam. This knowledge exists in the weights — specifically, in the patterns learned across all 12 transformer blocks. Fine-tuning transfers this knowledge to a new task by showing the model a small set of labeled examples and adjusting its weights slightly.</p>
-
-<p>The key insight is that most of what makes a classifier good — understanding syntax, recognising entities, modelling sentiment — is exactly what language modeling learns. A model that can predict "The syringe contained a lethal dose of" is already tracking semantic relationships that matter for medical text classification. Fine-tuning on 2,000 labeled examples therefore doesn't start from scratch — it starts from a foundation that has already seen billions of examples of the problem structure.</p>
-
-<p>Three paradigms exist, each with different trade-offs. <strong>Feature extraction</strong>: freeze all pretrained weights, train only the new classification head. Fast, low memory, works even with 100 examples, but can't adapt to domain-specific language. <strong>Partial fine-tuning</strong>: unfreeze the last few transformer blocks and the new head. Better performance, needs 500+ examples. <strong>Full fine-tuning</strong>: all weights trainable. Best performance with enough data (2,000+), but requires careful LR selection to avoid catastrophic forgetting.</p>
-
+<p>In 2018 Jeremy Howard and Sebastian Ruder published ULMFiT (Universal Language Model Fine-Tuning, arxiv 1801.06146) and demonstrated something that seemed almost too good: a model pretrained on general English text, then fine-tuned on a small task-specific dataset, could beat much larger models trained from scratch on that same task. On the IMDb sentiment benchmark they achieved 4.6% error with only 100 labeled examples &mdash; a regime where a model trained from scratch produces near-random outputs. Their key finding was quantitative: fine-tuning needs 18&times; less labeled data than training from scratch to reach equivalent performance. The pretraining is doing 95% of the work; fine-tuning redirects it.</p>
+<p>The mechanism is representational reuse. A model pretrained to predict the next token must learn syntax (so it can model grammatical continuations), morphology (so it understands word forms), semantics (so it knows that "cat" and "feline" predict similar continuations), and discourse (so it can follow multi-sentence arguments). All of these are exactly the representations that a text classifier needs. GPT-2 fine-tuned on SST-2 (Stanford Sentiment Treebank) achieves 91.4% accuracy; the identical architecture trained from scratch on SST-2 alone achieves only 85.3%. That 6.1-point gap is the value of pretrained representations &mdash; it is knowledge extracted from hundreds of billions of tokens, transferred for free into a task the model has never seen.</p>
+<p>Three strategies occupy the freeze/unfreeze spectrum. <strong>Feature extraction</strong>: freeze all pretrained weights, train only the new classification head. Fast, CPU-compatible, works with as few as 100 examples, but cannot adapt to domain-specific vocabulary. <strong>Partial fine-tuning</strong>: freeze early layers, unfreeze the last 2&ndash;4 transformer blocks plus the head. Better domain adaptation with 500+ examples. <strong>Full fine-tuning</strong>: all weights trainable. Best performance with 2,000+ clean examples, but requires a carefully tuned learning rate to avoid catastrophic forgetting. ULMFiT introduced a fourth option &mdash; <strong>gradual unfreezing</strong> &mdash; where one layer group is unfrozen per epoch from top to bottom, giving each layer time to adapt before the next is released. Their ablation showed this beats both fully frozen and fully unfrozen approaches on every benchmark tested.</p>
 <div class="transfer-diag">
-  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;">Transfer Learning Strategies</div>
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;">Transfer Learning Strategies (GPT-2, 12 blocks)</div>
   <div class="td-row">
-    <div class="td-label">Strategy A<br>Feature extract</div>
+    <div class="td-label">A: Feature<br>extraction</div>
     <div class="td-boxes">
-      <div class="td-box tdb-frozen">Block 1–4<br>🔒 frozen</div>
-      <div class="td-box tdb-frozen">Block 5–8<br>🔒 frozen</div>
-      <div class="td-box tdb-frozen">Block 9–12<br>🔒 frozen</div>
-      <div class="td-box tdb-new">Head<br>✓ new</div>
+      <div class="td-box tdb-frozen">Blocks 1&ndash;4<br>frozen</div>
+      <div class="td-box tdb-frozen">Blocks 5&ndash;8<br>frozen</div>
+      <div class="td-box tdb-frozen">Blocks 9&ndash;12<br>frozen</div>
+      <div class="td-box tdb-new">Head<br>new</div>
     </div>
   </div>
   <div class="td-row">
-    <div class="td-label">Strategy B<br>Partial tune</div>
+    <div class="td-label">B: Partial<br>fine-tune</div>
     <div class="td-boxes">
-      <div class="td-box tdb-frozen">Block 1–8<br>🔒 frozen</div>
-      <div class="td-box tdb-trainable">Block 9–12<br>↻ tuning</div>
-      <div class="td-box tdb-new">Head<br>✓ new</div>
+      <div class="td-box tdb-frozen">Blocks 1&ndash;8<br>frozen</div>
+      <div class="td-box tdb-trainable">Blocks 9&ndash;12<br>tuning</div>
+      <div class="td-box tdb-new">Head<br>new</div>
     </div>
   </div>
   <div class="td-row">
-    <div class="td-label">Strategy C<br>Full fine-tune</div>
+    <div class="td-label">C: Full<br>fine-tune</div>
     <div class="td-boxes">
-      <div class="td-box tdb-trainable">Block 1–4<br>↻ tuning</div>
-      <div class="td-box tdb-trainable">Block 5–8<br>↻ tuning</div>
-      <div class="td-box tdb-trainable">Block 9–12<br>↻ tuning</div>
-      <div class="td-box tdb-new">Head<br>✓ new</div>
+      <div class="td-box tdb-trainable">Blocks 1&ndash;4<br>tuning</div>
+      <div class="td-box tdb-trainable">Blocks 5&ndash;8<br>tuning</div>
+      <div class="td-box tdb-trainable">Blocks 9&ndash;12<br>tuning</div>
+      <div class="td-box tdb-new">Head<br>new</div>
     </div>
   </div>
 </div>
-
-<div class="callout"><strong>Key insight:</strong> Transfer learning is why fine-tuning works with as few as 100 labeled examples. You're not teaching the model what language is — you're redirecting its existing language understanding toward a new output format. The pretrained model has already done 99% of the work.</div>
-
+<div class="callout"><strong>Key insight:</strong> Transfer learning works because language modeling and classification share almost all their knowledge requirements. Syntax, morphology, word-sense disambiguation, entity recognition &mdash; the pretrained model has already solved these. Fine-tuning redirects that knowledge toward a new output format; it does not teach the model what language is.</div>
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1801.06146" target="_blank">🔗 Howard &amp; Ruder 2018 — ULMFiT: Universal Language Model Fine-Tuning for Text Classification (the paper that proved NLP transfer learning works)</a>
-  <a href="https://arxiv.org/abs/1810.04805" target="_blank">🔗 Devlin et al. 2018 — BERT: Pre-training of Deep Bidirectional Transformers (the canonical fine-tuning reference)</a>
+  <a href="https://arxiv.org/abs/1801.06146" target="_blank">Howard &amp; Ruder 2018 &mdash; ULMFiT: Universal Language Model Fine-Tuning for Text Classification (arxiv 1801.06146)</a>
+  <a href="https://arxiv.org/abs/1905.05950" target="_blank">Tenney et al. 2019 &mdash; BERT Rediscovers the Classical NLP Pipeline (arxiv 1905.05950)</a>
+  <a href="https://arxiv.org/abs/2004.10964" target="_blank">Gururangan et al. 2020 &mdash; Don't Stop Pretraining: Adapt Language Models to Domains and Tasks (arxiv 2004.10964)</a>
 </div>
-
-<div class="cell" id="cell-1">
+<div class="cell" id="run-6-1">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 1 — Estimate data requirements for each transfer strategy</span>
-    <button class="run-btn" onclick="runCell('cell-1')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; data requirements vs transfer strategy</span>
+    <button class="run-btn" onclick="runCode('run-6-1')">Run</button>
   </div>
-  <div class="cell-code"><pre># Rule-of-thumb: typical data requirements per strategy
+  <div class="cell-code"><pre>import math
+
+# ULMFiT: fine-tuning needs 18x less data than from-scratch
+# GPT-2 on SST-2: 91.4% fine-tuned vs 85.3% from scratch (6.1 point gap)
+
 strategies = [
-    ("Feature extraction",  "~100–500",  "Minutes on CPU",   "Medium"),
-    ("Partial fine-tuning", "~500–2000", "~30 min on GPU",   "Good"),
-    ("Full fine-tuning",    "~2000+",    "~2 hrs on GPU",    "Best"),
-    ("LoRA (Ch 7)",         "~100–5000", "~1 hr on GPU",     "Best, memory-efficient"),
+    ("Feature extraction",  100,    500,  "minutes / CPU",  "medium"),
+    ("Partial fine-tune",   500,   2000,  "~30 min / GPU",  "good"),
+    ("Full fine-tune",     2000,  50000,  "~2 hrs / GPU",   "best"),
+    ("Gradual unfreeze",    500,   5000,  "~1 hr / GPU",    "best (ULMFiT)"),
 ]
 
-print(f"{'Strategy':<24} {'Examples':<14} {'Time':<18} {'Quality'}")
-print("-" * 72)
-for strat, data, time, qual in strategies:
-    print(f"{strat:<24} {data:<14} {time:<18} {qual}")
+print(f"{'Strategy':<22} {'Min ex':>8} {'Max ex':>9}  {'Time':<16} {'Quality'}")
+print("-" * 70)
+for name, lo, hi, time, qual in strategies:
+    print(f"{name:<22} {lo:>8,} {hi:>9,}  {time:<16} {qual}")
 
-print("\nGeneral rule: if you have < 500 examples, feature extract or LoRA.")
-print("With > 2000 clean examples, full fine-tuning is worth the compute.")</pre></div>
+print()
+scratch_needed = 36000   # examples to match fine-tune perf from scratch
+finetune_needed = 2000
+print(f"Data efficiency: {scratch_needed:,} (scratch) / {finetune_needed:,} (fine-tune) = {scratch_needed//finetune_needed}x")
+print(f"GPT-2 SST-2: 91.4% fine-tuned  vs  85.3% from scratch  (+{91.4-85.3:.1f} pts from pretraining)")
+
+# Layer-wise representation quality (from Tenney et al. 2019)
+print()
+print("What each layer group contributes:")
+groups = [
+    ("Blocks 1-4",  "Morphology, POS tagging, basic syntax"),
+    ("Blocks 5-8",  "Semantics, named entities, coreference"),
+    ("Blocks 9-12", "Task-specific patterns, discourse"),
+    ("Head (new)",  "Maps representations -> class labels"),
+]
+for g, desc in groups:
+    print(f"  {g:<14} {desc}")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.2  The Classification Head         -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s2">
 <div class="section-label">6.2</div>
 <h2>The Classification Head</h2>
-
-<p>Modifying GPT-2 for classification requires replacing one layer. Instead of the LM head (Linear(768 → 50,257) that predicts the next token), we add a classification head: Linear(768 → num_classes). The rest of the model — all 12 transformer blocks, the embeddings, the LayerNorms — remains unchanged. This is the elegance of the residual stream architecture: the final hidden state is a rich representation of the entire input, and any linear probe on top of it can extract a classification signal.</p>
-
-<p>For a GPT-style (decoder-only, causal) model, the standard practice is to use the hidden state at the <strong>last token position</strong> as the input to the classification head. Unlike BERT (which uses the [CLS] token at position 0), GPT's causal attention means the last token can attend to the entire sequence — it has the most complete contextual information. For a sequence of length T, we take hidden_state[:, -1, :] (shape: batch × d_model) and project it to num_classes.</p>
-
-<p>The classification head has 768 × num_classes + num_classes parameters. For binary spam detection (2 classes): 768 × 2 + 2 = 1,538 parameters. Compare that to the full GPT-2: 124 million. This means only 0.0012% of the model is new when doing feature extraction — every prediction comes almost entirely from pretrained knowledge, redirected by a tiny linear transformation.</p>
-
-<div class="callout blue"><strong>Key insight:</strong> The classification head adds essentially no parameters relative to the pretrained model. Its job is not to add new knowledge — it's to learn which direction in the 768-dimensional residual stream corresponds to the target class. The pretrained model has already encoded that direction; the head just finds it.</div>
-
+<p>The language-model head in GPT-2 is a single linear layer: <code>lm_head = Linear(768, 50257)</code>. It maps the 768-dimensional residual stream at each token position to a probability distribution over the 50,257-token vocabulary. For classification we replace it with a classification head: <code>Linear(768, num_classes)</code>. Everything else &mdash; all 12 transformer blocks, the token and positional embeddings, the final LayerNorm &mdash; remains unchanged. The residual stream at the output is not discarded; we simply project it to a different target space.</p>
+<p>Which token position to read matters. GPT uses causal (unidirectional) attention: every token can attend to itself and all preceding tokens, but not future tokens. This means the hidden state at position T-1 (the last token) has attended to the entire input sequence &mdash; it is the most information-rich position. For sequence classification we take <code>hidden_states[:, -1, :]</code> (shape: batch &times; 768) as the input to the classification head. BERT uses a dedicated <code>[CLS]</code> token at position 0 that was pretrained specifically to aggregate sequence-level representations; GPT has no equivalent, so the last position is the natural choice. A dropout layer (10&ndash;20%) immediately before the head provides additional regularisation; GPT-2 already uses <code>resid_pdrop=0.1</code> throughout, and the extra dropout before the head reduces variance in the gradient signal.</p>
+<p>The head adds almost no parameters. A 5-class sentiment classifier on GPT-2 small (768-dimensional hidden states): <code>Linear(768, 5)</code> = 768 &times; 5 + 5 = 3,845 parameters. The full GPT-2 small has 117,000,000 parameters. The head is 0.0033% of the model. For binary classification (spam / ham): <code>Linear(768, 2)</code> = 1,538 parameters. When doing pure feature extraction with a frozen backbone, those 1,538 parameters are the only ones that change during the entire training run. The pretrained model contributes 99.9987% of the computation; the head finds which linear direction in the existing representation space separates the classes.</p>
+<div class="callout blue"><strong>Key insight:</strong> The classification head does not add knowledge &mdash; it locates the direction in the pretrained representation space that separates your target classes. That direction almost certainly already exists in the 768-dimensional space; the head is a search algorithm, not a learning algorithm.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">classifier.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="kw">class</span> <span class="cl">GPTClassifier</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, pretrained_gpt, num_classes, freeze_backbone=<span class="kw">True</span>):
-        <span class="pr">self</span>.backbone = pretrained_gpt         <span class="lm"># ↑ full GPT-2 (without lm_head)</span>
-        <span class="pr">self</span>.head = <span class="cl">Linear</span>(<span class="nu">768</span>, num_classes)   <span class="lm"># ↑ NEW: 768 → num_classes, randomly initialised</span>
-        <span class="kw">if</span> freeze_backbone:
-            <span class="kw">for</span> param <span class="kw">in</span> <span class="pr">self</span>.backbone.parameters():
-                param.requires_grad = <span class="kw">False</span>    <span class="lm"># ↑ freeze: only head updates during training</span>
+  <div class="code-header"><span class="code-filename">classifier_head.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
 
-    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, token_ids):
-        <span class="cm"># Run GPT backbone to get hidden states for every position</span>
-        hidden = <span class="pr">self</span>.backbone.<span class="fn">get_hidden_states</span>(token_ids)   <span class="lm"># ↑ (batch, seq_len, 768)</span>
-        last   = hidden[:, -<span class="nu">1</span>, :]                            <span class="lm"># ↑ last token position: (batch, 768)</span>
-        <span class="cm"># The last position has attended to all preceding tokens — richest representation</span>
-        logits = <span class="pr">self</span>.head.<span class="fn">forward</span>(last)                      <span class="lm"># ↑ (batch, num_classes) — raw class scores</span>
-        <span class="kw">return</span> logits
-</code></pre>
+<span class="kw">class</span> <span class="cl">GPTClassifier</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, backbone, num_classes, dropout=<span class="nu">0.1</span>):
+        <span class="bi">super</span>().__init__()
+        <span class="pr">self</span>.backbone = backbone                    <span class="lm"># &#8593; GPT-2 pretrained weights (no lm_head)</span>
+        <span class="pr">self</span>.drop = nn.<span class="cl">Dropout</span>(p=dropout)          <span class="lm"># &#8593; drop 10% of activations before head</span>
+        <span class="pr">self</span>.head = nn.<span class="cl">Linear</span>(<span class="nu">768</span>, num_classes)    <span class="lm"># &#8593; 768 hidden dims -&gt; num_classes logits</span>
+        <span class="cm"># GPT-2 small: 768-dim. Medium: 1024. Large: 1280. XL: 1600.</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, input_ids, attention_mask=<span class="kw">None</span>):
+        out = <span class="pr">self</span>.backbone(                        <span class="lm"># &#8593; run full 12-layer transformer</span>
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            output_hidden_states=<span class="kw">True</span>
+        )
+        hidden = out.hidden_states[-<span class="nu">1</span>]             <span class="lm"># &#8593; last block output: (batch, seq_len, 768)</span>
+        last_tok = hidden[:, -<span class="nu">1</span>, :]               <span class="lm"># &#8593; last token position: (batch, 768)</span>
+        last_tok = <span class="pr">self</span>.drop(last_tok)             <span class="lm"># &#8593; regularise before projection</span>
+        logits   = <span class="pr">self</span>.head(last_tok)             <span class="lm"># &#8593; (batch, num_classes) raw scores</span>
+        <span class="kw">return</span> logits                              <span class="lm"># &#8593; pass to CrossEntropyLoss (no softmax here)</span>
+
+<span class="cm"># Parameter counts</span>
+<span class="kw">for</span> nc <span class="kw">in</span> [<span class="nu">2</span>, <span class="nu">5</span>, <span class="nu">28</span>]:
+    head_p = <span class="nu">768</span> * nc + nc
+    pct = <span class="nu">100</span> * head_p / <span class="nu">117_000_000</span>
+    <span class="bi">print</span>(<span class="st">f"Linear(768, {nc}): {head_p:,} params = {pct:.5f}% of GPT-2"</span>)</pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://magazine.sebastianraschka.com/p/finetuning-large-language-models" target="_blank">🔗 Raschka 2023 — Finetuning Large Language Models (practical guide to GPT classification heads)</a>
+  <a href="https://magazine.sebastianraschka.com/p/finetuning-large-language-models" target="_blank">Raschka 2023 &mdash; Finetuning Large Language Models (practical guide to GPT classification heads)</a>
+  <a href="https://arxiv.org/abs/1810.04805" target="_blank">Devlin et al. 2018 &mdash; BERT: Pre-training of Deep Bidirectional Transformers (CLS token design rationale)</a>
 </div>
-
-<div class="cell" id="cell-2">
+<div class="cell" id="run-6-2">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 2 — Linear probing: find the classification direction</span>
-    <button class="run-btn" onclick="runCell('cell-2')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; linear probe: find the classification direction</span>
+    <button class="run-btn" onclick="runCode('run-6-2')">Run</button>
   </div>
   <div class="cell-code"><pre>import math, random
 random.seed(42)
 
-# Simulate: pretrained model produces 4-dimensional embeddings
-# "spam" texts cluster around one region, "ham" around another
-def make_embeddings(n, center, noise=0.3):
-    random.seed(42)
-    return [[center[i] + random.gauss(0, noise) for i in range(len(center))]
-            for _ in range(n)]
+# Simulate pretrained GPT producing 4-dim embeddings
+# Spam texts cluster near  [+1.2, -0.8,  0.5, +1.1]
+# Ham  texts cluster near  [-0.9, +0.7, -0.3, -0.8]
+def make_emb(n, center, noise=0.28, seed=0):
+    random.seed(seed)
+    return [[c + random.gauss(0, noise) for c in center] for _ in range(n)]
 
-spam_emb = make_embeddings(20, [1.2, -0.8, 0.5, 1.1])
-ham_emb  = make_embeddings(20, [-0.9, 0.7, -0.3, -0.8])
+spam = make_emb(40, [1.2, -0.8,  0.5,  1.1], seed=1)
+ham  = make_emb(40, [-0.9, 0.7, -0.3, -0.8], seed=2)
 
-# Simple linear classifier: w · x + b, trained with gradient descent
-w = [0.0, 0.0, 0.0, 0.0]
-b = 0.0
-lr = 0.1
+# Linear classification head: w*x + b, binary cross-entropy
+w = [0.0]*4; b = 0.0; lr = 0.05
+sigmoid = lambda x: 1/(1+math.exp(-max(-30, min(30, x))))
+dot = lambda a, bv: sum(x*y for x,y in zip(a, bv))
 
-def sigmoid(x): return 1/(1+math.exp(-max(-30,min(30,x))))
-def dot(a, b): return sum(x*y for x,y in zip(a,b))
-
-data = [(e,1) for e in spam_emb] + [(e,0) for e in ham_emb]
-random.shuffle(data)
+data = [(e,1) for e in spam] + [(e,0) for e in ham]
+random.seed(99); random.shuffle(data)
 
 for epoch in range(30):
-    loss = 0
     for x, y in data:
-        p = sigmoid(dot(w,x)+b)
+        p = sigmoid(dot(w, x) + b)
         err = p - y
-        for i in range(len(w)):
-            w[i] -= lr * err * x[i]
-        b -= lr * err
-        loss += -y*math.log(p+1e-9) - (1-y)*math.log(1-p+1e-9)
+        for i in range(4): w[i] -= lr * err * x[i] / len(data)
+        b -= lr * err / len(data)
 
-correct = sum(1 for x,y in data if round(sigmoid(dot(w,x)+b))==y)
-print(f"Accuracy after 30 epochs: {correct}/{len(data)} = {100*correct/len(data):.0f}%")
-print(f"Weights (classification direction): {[round(wi,3) for wi in w]}")
-print("These weights define the direction in embedding space that separates classes.")</pre></div>
+correct = sum(1 for x,y in data if round(sigmoid(dot(w,x)+b)) == y)
+print(f"Linear probe accuracy: {correct}/{len(data)} = {100*correct/len(data):.1f}%")
+print(f"Learned weights (the classification direction):")
+print(f"  w = {[round(wi,3) for wi in w]}")
+print(f"  b = {round(b,3)}")
+print()
+print("This 4-number vector is analogous to Linear(768, 1) in a real GPT.")
+print("It 'finds' the spam direction in embedding space.")
+print(f"Head parameters: {4*1+1} total  (vs millions in the backbone)")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.3  Freezing Layers                 -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s3">
 <div class="section-label">6.3</div>
 <h2>Freezing Layers</h2>
-
-<p>Freezing a layer means setting <code>requires_grad = False</code> on its parameters. During the backward pass, PyTorch skips computing gradients for frozen parameters and skips updating them in the optimizer step. The parameters simply do not change. This is computationally cheaper (no gradient storage for frozen layers) and prevents <strong>catastrophic forgetting</strong> — the phenomenon where fine-tuning on a small dataset causes the model to forget the general-purpose representations learned during pretraining.</p>
-
-<p>With only 100 labeled examples, full fine-tuning is almost guaranteed to overfit and degrade the pretrained representations. Freezing all blocks and training only the head avoids this: the head sees gradient signal from the classification task, but the backbone — which holds 124M parameters of carefully learned language representations — stays intact. As dataset size grows, progressively unfreezing more layers generally helps: unfreeze the last 4 blocks with a small learning rate, then the full model with an even smaller rate.</p>
-
-<p>Layer-wise learning rate decay (LLRD) is a complementary technique: instead of the same learning rate for all layers, use a decay factor (e.g. 0.9 per layer from top to bottom). The last block gets lr=1e-4, the block before it gets 0.9×1e-4, the one before 0.81×1e-4, and so on. This reflects the insight from §6.9: early layers learn general syntax (low LR = don't change much); late layers learn task patterns (higher LR = adapt more).</p>
-
-<div class="callout amber"><strong>Key insight:</strong> Freezing is not a binary choice. Progressive unfreezing — thaw layers from top to bottom, one epoch at a time — is almost always better than either fully frozen or fully unfrozen fine-tuning. Howard &amp; Ruder's ULMFiT paper demonstrated a 3-point accuracy gain on text classification benchmarks using this approach.</div>
-
+<p>In PyTorch, freezing a parameter means setting <code>param.requires_grad = False</code>. The backward pass skips gradient computation for frozen parameters entirely &mdash; no gradient is stored, no optimizer update is applied. The weights simply do not change. This is not only a memory and compute saving; it is a mechanism for preserving the pretrained representations that make transfer learning valuable. Fine-tuning GPT-2 (117M parameters) on 500 labeled examples leaves the model with 117M degrees of freedom but only 500 gradient signals. Given enough epochs it will memorise those 500 examples perfectly while generalising to nothing.</p>
+<p>Howard &amp; Ruder's <strong>gradual unfreezing</strong> schedule addresses this directly. Start with all backbone weights frozen; train only the classification head for one epoch until its random initialisation settles. Then unfreeze the last transformer block and train for another epoch. Continue unfreezing one block per epoch from top to bottom. Their ablation across six text classification benchmarks showed this outperformed both fully frozen feature extraction and fully unfrozen fine-tuning by an average of 3.1 F1 points. The intuition is that late layers encode task patterns (they need to change substantially), while early layers encode universal syntax (they should be disturbed as little as possible).</p>
+<p><strong>Discriminative learning rates</strong> (LLRD &mdash; layer-wise learning rate decay) complement gradual unfreezing. Each layer group receives a different learning rate, decaying by a factor of roughly 2.6&times; per layer from the classification head downward. If the head uses lr=1e-3: block 12 gets 3.85e-4, block 11 gets 1.48e-4, and so on down to block 1 at approximately 1.5e-6. The practical rule: with fewer than 1,000 labeled examples, freeze all backbone weights and train only the head; with 1,000&ndash;10,000, unfreeze the top 2&ndash;4 blocks; with 10,000+, full fine-tuning with LLRD is safe and usually optimal.</p>
+<div class="callout amber"><strong>Key insight:</strong> Every unfrozen parameter is a parameter that can overfit. Freeze aggressively at first; unfreeze incrementally as you accumulate evidence that the model is generalising. The goal is to change as little as possible while adapting as much as necessary.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">freezing.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Freeze all backbone parameters</span>
+  <div class="code-header"><span class="code-filename">freezing_strategies.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="cm"># Strategy A: Feature extraction (freeze everything except head)</span>
 <span class="kw">def</span> <span class="fn">freeze_backbone</span>(model):
-    <span class="kw">for</span> name, param <span class="kw">in</span> model.backbone.<span class="fn">named_parameters</span>():
-        param.requires_grad = <span class="kw">False</span>    <span class="lm"># ↑ no gradient computed or stored for these</span>
-    <span class="cm"># Only model.head.parameters() will be updated by the optimizer</span>
+    <span class="kw">for</span> param <span class="kw">in</span> model.backbone.<span class="fn">parameters</span>():
+        param.requires_grad = <span class="kw">False</span>    <span class="lm"># &#8593; no gradient computed; no optimizer update</span>
+    <span class="cm"># model.head parameters still have requires_grad=True by default</span>
 
-<span class="cm"># Progressive unfreezing: thaw last N blocks</span>
-<span class="kw">def</span> <span class="fn">unfreeze_last_n_blocks</span>(model, n):
-    blocks = model.backbone.blocks  <span class="lm"># ↑ list of 12 TransformerBlock instances</span>
-    <span class="kw">for</span> block <span class="kw">in</span> blocks[-n:]:        <span class="lm"># ↑ last n blocks only</span>
-        <span class="kw">for</span> param <span class="kw">in</span> block.<span class="fn">parameters</span>():
-            param.requires_grad = <span class="kw">True</span>    <span class="lm"># ↑ re-enable gradient flow</span>
+<span class="cm"># Strategy B: Partial fine-tune (unfreeze top N blocks)</span>
+<span class="kw">def</span> <span class="fn">unfreeze_top_n</span>(model, n=<span class="nu">4</span>):
+    <span class="fn">freeze_backbone</span>(model)                        <span class="lm"># &#8593; start fully frozen</span>
+    blocks = model.backbone.transformer.h          <span class="lm"># &#8593; list of 12 Block objects</span>
+    <span class="kw">for</span> block <span class="kw">in</span> blocks[-n:]:                      <span class="lm"># &#8593; last n (closest to output)</span>
+        <span class="kw">for</span> p <span class="kw">in</span> block.<span class="fn">parameters</span>(): p.requires_grad = <span class="kw">True</span>
 
-<span class="cm"># Layer-wise learning rate decay</span>
-<span class="kw">def</span> <span class="fn">get_layer_lrs</span>(model, base_lr=<span class="nu">1e-4</span>, decay=<span class="nu">0.9</span>):
-    param_groups = []
-    blocks = model.backbone.blocks
-    <span class="kw">for</span> i, block <span class="kw">in</span> <span class="bi">enumerate</span>(<span class="bi">reversed</span>(blocks)):   <span class="lm"># ↑ start from last block (highest LR)</span>
-        lr = base_lr * (decay ** i)                    <span class="lm"># ↑ each block gets decay× less LR</span>
-        param_groups.append({<span class="st">"params"</span>: block.<span class="fn">parameters</span>(), <span class="st">"lr"</span>: lr})
-    param_groups.append({<span class="st">"params"</span>: model.head.<span class="fn">parameters</span>(), <span class="st">"lr"</span>: base_lr})
-    <span class="kw">return</span> param_groups    <span class="lm"># ↑ pass this to optimizer: Adam(param_groups)</span>
-</code></pre>
+<span class="cm"># Strategy C: LLRD - different LR per layer group</span>
+<span class="kw">def</span> <span class="fn">llrd_optimizer</span>(model, head_lr=<span class="nu">1e-3</span>, decay=<span class="nu">1</span>/<span class="nu">2.6</span>):
+    groups = [{<span class="st">"params"</span>: model.head.<span class="fn">parameters</span>(), <span class="st">"lr"</span>: head_lr}]
+    blocks = model.backbone.transformer.h
+    <span class="kw">for</span> i, block <span class="kw">in</span> <span class="bi">enumerate</span>(<span class="bi">reversed</span>(blocks)):  <span class="lm"># &#8593; enumerate from top (block 11) to bottom</span>
+        lr = head_lr * (decay ** (i + <span class="nu">1</span>))          <span class="lm"># &#8593; each lower block gets decay x less LR</span>
+        groups.<span class="fn">append</span>({<span class="st">"params"</span>: block.<span class="fn">parameters</span>(), <span class="st">"lr"</span>: lr})
+    <span class="kw">return</span> torch.optim.<span class="cl">AdamW</span>(groups, weight_decay=<span class="nu">0.01</span>)
+
+<span class="cm"># Check how many parameters are trainable after each strategy</span>
+<span class="kw">def</span> <span class="fn">trainable_pct</span>(model):
+    total = <span class="bi">sum</span>(p.numel() <span class="kw">for</span> p <span class="kw">in</span> model.<span class="fn">parameters</span>())
+    train = <span class="bi">sum</span>(p.numel() <span class="kw">for</span> p <span class="kw">in</span> model.<span class="fn">parameters</span>() <span class="kw">if</span> p.requires_grad)
+    <span class="kw">return</span> <span class="nu">100</span> * train / total      <span class="lm"># &#8593; feature extract = 0.003%; full = 100%</span></pre>
 </div>
-
-<div class="cell" id="cell-3">
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/1801.06146" target="_blank">Howard &amp; Ruder 2018 &mdash; ULMFiT Section 3.3: Gradual unfreezing and discriminative fine-tuning</a>
+  <a href="https://arxiv.org/abs/1905.05583" target="_blank">Sun et al. 2019 &mdash; How to Fine-Tune BERT for Text Classification (layer freezing ablations)</a>
+</div>
+<div class="cell" id="run-6-3">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 3 — Compare trainable parameter counts across freeze strategies</span>
-    <button class="run-btn" onclick="runCell('cell-3')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; LLRD: compute per-layer learning rates</span>
+    <button class="run-btn" onclick="runCode('run-6-3')">Run</button>
   </div>
-  <div class="cell-code"><pre>def gpt2_component_params(d=768, n_heads=12, n_layers=12, vocab=50257, ctx=1024):
-    d_ff = 4 * d
-    per_block = (2*2*d + 3*d*d + 3*d + d*d + d + d*d_ff + d_ff + d_ff*d + d)
-    head_cls  = d * 2 + 2  # binary classification head
-    emb       = vocab*d + ctx*d
-    final_ln  = 2*d
-    backbone  = emb + n_layers*per_block + final_ln
-    return {
-        "per_block": per_block,
-        "backbone":  backbone,
-        "head":      head_cls,
-        "total":     backbone + head_cls
-    }
+  <div class="cell-code"><pre>import math
 
-p = gpt2_component_params()
+# ULMFiT discriminative learning rates
+# Decay factor = 1/2.6 ~= 0.385 per layer from top to bottom
+n_blocks = 12     # GPT-2 small
+head_lr  = 1e-3   # classification head
+decay    = 1 / 2.6
 
-print("GPT-2 small + binary classification head:")
-print(f"  Backbone:         {p['backbone']:>12,} params  (embeddings + 12 blocks)")
-print(f"  Classification head: {p['head']:>9,} params")
-print(f"  Total:            {p['total']:>12,} params\n")
+print("Discriminative learning rates (ULMFiT schedule):")
+print(f"{'Component':<24} {'LR':>12}  {'Relative to head':>18}")
+print("-" * 58)
+print(f"  {'Classification head':<22} {head_lr:>12.2e}  {'1.0000x':>18}")
+for i in range(n_blocks):
+    block_num = n_blocks - i        # block 12 is top, block 1 is bottom
+    lr = head_lr * (decay ** (i+1))
+    rel = lr / head_lr
+    frozen_note = " <- freeze here" if block_num <= 8 else ""
+    print(f"  {'Block ' + str(block_num):<22} {lr:>12.2e}  {rel:>17.5f}x{frozen_note}")
 
-strategies = [
-    ("Feature extraction", p["head"],             p["total"]),
-    ("Unfreeze last 4 blocks", p["head"] + 4*p["per_block"], p["total"]),
-    ("Full fine-tuning",   p["total"],             p["total"]),
-]
-
-print(f"{'Strategy':<28} {'Trainable':>12} {'% of total':>12}")
-print("-" * 55)
-for name, trainable, total in strategies:
-    pct = 100*trainable/total
-    print(f"{name:<28} {trainable:>12,} {pct:>11.2f}%")</pre></div>
+bottom_lr = head_lr * (decay ** n_blocks)
+print(f"
+LR span: {head_lr:.1e} (head) down to {bottom_lr:.2e} (block 1)")
+print(f"Total ratio: {head_lr/bottom_lr:.0f}x between head and earliest block")
+print()
+print("Dataset size rule of thumb:")
+rules = [("<1k examples", "freeze all backbone; train head only"),
+         ("1k-10k",       "unfreeze top 4 blocks + head"),
+         ("10k+",         "full fine-tune with LLRD")]
+for size, rule in rules:
+    print(f"  {size:<15} -> {rule}")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.4  Building a Spam Detector        -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s4">
 <div class="section-label">6.4</div>
 <h2>Building a Spam Detector</h2>
-
-<p>The UCI SMS Spam Collection is an ideal benchmark: 5,574 English SMS messages, 747 spam (13.4%) and 4,827 ham (86.6%). The class imbalance is realistic — production spam filters see similar ratios. The messages are short (average 80 characters), which fits easily within GPT-2's 1,024-token context window. The task is binary: given a message, output 0 (ham) or 1 (spam).</p>
-
-<p>The pipeline: tokenize each message with GPT-2's tokenizer → pad or truncate to 128 tokens → DataLoader with batch_size=32 → forward pass through GPT-2 classifier → cross-entropy loss against label → optimizer step. After 3 epochs of full fine-tuning, typical performance is accuracy 98.4%, F1 0.964, AUC 0.997. Feature extraction alone (frozen backbone, only head trained) achieves 95.2% accuracy, 0.89 F1 — substantially worse, but still far above a naive keyword filter (typical accuracy ~85%).</p>
-
-<p>Two important implementation details. First: GPT-2's tokenizer produces variable-length outputs. SMS messages tokenize to 10–200 tokens. You must either pad all sequences to the same length within a batch (using a pad token and attention mask) or sort sequences by length and batch similarly-sized ones together. Second: the class imbalance (86.6% ham) means a model that predicts all-ham achieves 86.6% accuracy — this is the <strong>accuracy baseline trap</strong>. Always compare against this baseline and report F1, not just accuracy.</p>
-
-<div class="callout green"><strong>Key insight:</strong> A pretrained GPT fine-tuned on 4,457 SMS messages (80% train split) outperforms a logistic regression model trained on all 5,574 examples with TF-IDF features. The transfer learning head start — 300B tokens of language modeling — is worth thousands of labeled examples.</div>
-
+<p>The UCI SMS Spam Collection (Almeida et al. 2011) is the standard benchmark for binary text classification. It contains 5,574 SMS messages: 4,827 labeled &ldquo;ham&rdquo; (legitimate) and 747 labeled &ldquo;spam&rdquo; &mdash; an 86.6% / 13.4% split. This severe imbalance is deliberate; it mirrors real-world spam filter distributions. The critical consequence: a model predicting &ldquo;ham&rdquo; for every single message achieves 86.6% accuracy without learning a single pattern. Accuracy is not the right metric here. F1 on the spam class and PR-AUC are the metrics that matter.</p>
+<p>The training pipeline has four stages. <strong>Tokenisation</strong>: each SMS is tokenized with the GPT-2 tokenizer. SMS messages are short (median &asymp;70 characters, &asymp;15 tokens after subword splitting), so <code>max_length=128</code> covers all but a handful of outliers. <strong>Padding</strong>: sequences shorter than <code>max_length</code> are padded with the pad token ID; an attention mask (1 for real tokens, 0 for padding) tells the model to ignore padded positions when computing attention. <strong>Batching</strong>: 32 examples per batch is standard &mdash; fits comfortably on a 4GB GPU, provides stable gradient estimates. <strong>Learning rate</strong>: 2e-5 for full fine-tuning, 1e-3 for head-only. The pretraining learning rate for GPT-2 was approximately 6e-4; fine-tuning at 1/300th of that rate ensures the optimizer does not take steps large enough to overwrite pretrained representations. Two to five epochs is sufficient; more risks catastrophic forgetting.</p>
+<p>To counteract the class imbalance, weight the loss by the inverse class frequency: the spam class weight = total / (2 &times; spam_count) &asymp; 3.73; the ham class weight &asymp; 0.58. Every spam example then contributes 3.73/0.58 &asymp; 6.4&times; more gradient signal than a ham example, effectively equalising the model's exposure to both classes. A fine-tuned GPT-2 with this weighting achieves F1 &asymp; 0.97&ndash;0.99 on the spam class. The performance comes almost entirely from the pretrained representations: the model already understands phrases like &ldquo;FREE entry&rdquo; and &ldquo;claim your prize&rdquo;; it just needs to learn that those patterns map to class 1.</p>
+<div class="callout green"><strong>Key insight:</strong> The SMS Spam Collection is 86.6% ham. A model predicting ham always achieves 86.6% accuracy, 0% spam recall, and F1 = 0.000. Never report accuracy as the primary metric on an imbalanced dataset. The baseline to beat is F1 &asymp; 0.00, not accuracy 86.6%.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">spam_detector.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Full fine-tuning pipeline for spam detection</span>
-<span class="kw">import</span> torch
-<span class="kw">from</span> torch <span class="kw">import</span> nn
+  <div class="code-header"><span class="code-filename">spam_trainer.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">from</span> transformers <span class="kw">import</span> GPT2Tokenizer
+<span class="kw">import</span> torch, torch.nn <span class="kw">as</span> nn
 
-<span class="kw">class</span> <span class="cl">SpamDataset</span>(torch.utils.data.<span class="cl">Dataset</span>):
-    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, texts, labels, tokenizer, max_len=<span class="nu">128</span>):
-        <span class="pr">self</span>.data = []
-        <span class="kw">for</span> text, label <span class="kw">in</span> <span class="bi">zip</span>(texts, labels):
-            ids = tokenizer.<span class="fn">encode</span>(text)[:max_len]        <span class="lm"># ↑ truncate if > 128 tokens</span>
-            ids += [tokenizer.eos_id] * (max_len - <span class="bi">len</span>(ids))  <span class="lm"># ↑ pad to max_len with eos token</span>
-            <span class="pr">self</span>.data.append((ids, label))
+<span class="cm"># Tokenise SMS messages</span>
+tok = <span class="cl">GPT2Tokenizer</span>.<span class="fn">from_pretrained</span>(<span class="st">"gpt2"</span>)
+tok.pad_token = tok.eos_token   <span class="lm"># &#8593; GPT-2 has no pad token; reuse EOS</span>
 
-    <span class="kw">def</span> <span class="fn">__getitem__</span>(<span class="pr">self</span>, i): <span class="kw">return</span> <span class="pr">self</span>.data[i]
-    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="pr">self</span>): <span class="kw">return</span> <span class="bi">len</span>(<span class="pr">self</span>.data)
+<span class="kw">def</span> <span class="fn">tokenise_batch</span>(texts, max_len=<span class="nu">128</span>):
+    <span class="kw">return</span> tok(texts,
+               padding=<span class="st">"max_length"</span>,     <span class="lm"># &#8593; pad all sequences to max_len</span>
+               truncation=<span class="kw">True</span>,          <span class="lm"># &#8593; cut anything longer than max_len</span>
+               max_length=max_len,
+               return_tensors=<span class="st">"pt"</span>)     <span class="lm"># &#8593; return PyTorch tensors</span>
 
-<span class="kw">def</span> <span class="fn">train_classifier</span>(model, train_loader, val_loader, epochs=<span class="nu">3</span>, lr=<span class="nu">1e-4</span>):
-    optimizer = torch.optim.<span class="fn">AdamW</span>(model.<span class="fn">parameters</span>(), lr=lr, weight_decay=<span class="nu">0.01</span>)
-    <span class="lm"># ↑ AdamW: Adam with decoupled weight decay — standard for fine-tuning</span>
-    criterion = nn.<span class="cl">CrossEntropyLoss</span>()   <span class="lm"># ↑ for 2-class: equivalent to binary cross-entropy</span>
+<span class="cm"># Class weights: inverse frequency (SMS Spam: 4827 ham, 747 spam)</span>
+ham_n, spam_n = <span class="nu">4827</span>, <span class="nu">747</span>
+total_n = ham_n + spam_n
+weights = torch.<span class="fn">tensor</span>([total_n / (<span class="nu">2</span> * ham_n),    <span class="lm"># &#8593; ham weight  = 0.577</span>
+                          total_n / (<span class="nu">2</span> * spam_n)])  <span class="lm"># &#8593; spam weight = 3.727  (~6.5x higher)</span>
+criterion = nn.<span class="cl">CrossEntropyLoss</span>(weight=weights)   <span class="lm"># &#8593; each spam loss counts 6.5x more</span>
 
-    <span class="kw">for</span> epoch <span class="kw">in</span> <span class="bi">range</span>(epochs):
-        model.<span class="fn">train</span>()
-        <span class="kw">for</span> token_ids, labels <span class="kw">in</span> train_loader:
-            logits = model.<span class="fn">forward</span>(token_ids)       <span class="lm"># ↑ (batch, 2) raw class scores</span>
-            loss   = criterion.<span class="fn">forward</span>(logits, labels)
-            optimizer.<span class="fn">zero_grad</span>()
-            loss.<span class="fn">backward</span>()                         <span class="lm"># ↑ compute gradients for trainable params</span>
-            torch.nn.utils.<span class="fn">clip_grad_norm_</span>(model.<span class="fn">parameters</span>(), <span class="nu">1.0</span>)
-            <span class="lm"># ↑ gradient clipping: prevent exploding gradients from overriding pretrained weights</span>
-            optimizer.<span class="fn">step</span>()
+<span class="cm"># Optimizer: AdamW with tiny LR to preserve pretrained weights</span>
+optimizer = torch.optim.<span class="cl">AdamW</span>(
+    model.<span class="fn">parameters</span>(),
+    lr=<span class="nu">2e-5</span>,               <span class="lm"># &#8593; 300x smaller than GPT-2 pretraining LR (~6e-4)</span>
+    weight_decay=<span class="nu">0.01</span>      <span class="lm"># &#8593; L2 regularisation (AdamW decouples this from momentum)</span>
+)
 
-        val_acc = <span class="fn">evaluate</span>(model, val_loader)
-        <span class="bi">print</span>(<span class="fn">f</span><span class="st">f"Epoch {epoch+1}: val_acc={val_acc:.3f}"</span>)
-</code></pre>
+<span class="cm"># Training loop (3 epochs standard; more risks forgetting)</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">3</span>):
+    <span class="kw">for</span> batch <span class="kw">in</span> train_loader:                       <span class="lm"># &#8593; batch_size=32</span>
+        logits = model(batch[<span class="st">"input_ids"</span>],          <span class="lm"># &#8593; forward pass through backbone + head</span>
+                       batch[<span class="st">"attention_mask"</span>])
+        loss = criterion(logits, batch[<span class="st">"label"</span>])    <span class="lm"># &#8593; weighted cross-entropy</span>
+        loss.<span class="fn">backward</span>()                               <span class="lm"># &#8593; compute gradients for all trainable params</span>
+        optimizer.<span class="fn">step</span>()                              <span class="lm"># &#8593; update weights</span>
+        optimizer.<span class="fn">zero_grad</span>()                        <span class="lm"># &#8593; clear gradient buffers for next batch</span></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection" target="_blank">🔗 UCI SMS Spam Collection — 5,574 labeled SMS messages (download and instructions)</a>
-  <a href="https://arxiv.org/abs/1408.5882" target="_blank">🔗 Kim 2014 — Convolutional Neural Networks for Sentence Classification (CNN baseline comparison)</a>
+  <a href="https://archive.ics.uci.edu/ml/datasets/sms+spam+collection" target="_blank">UCI SMS Spam Collection &mdash; Almeida et al. 2011 (5,574 messages, original dataset description)</a>
+  <a href="https://nlp.stanford.edu/sentiment/" target="_blank">Socher et al. 2013 &mdash; SST-2 Stanford Sentiment Treebank (67,349 train / 872 val, balanced binary)</a>
+  <a href="https://arxiv.org/abs/1901.11196" target="_blank">Wei &amp; Zou 2019 &mdash; EDA: Easy Data Augmentation Techniques for NLP (synonym replacement, back-translation)</a>
 </div>
-
-<div class="cell" id="cell-4">
+<div class="cell" id="run-6-4">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 4 — Compute the accuracy baseline trap for spam detection</span>
-    <button class="run-btn" onclick="runCell('cell-4')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; class weighting and imbalance effects</span>
+    <button class="run-btn" onclick="runCode('run-6-4')">Run</button>
   </div>
-  <div class="cell-code"><pre># The accuracy baseline trap: always-ham predictor
-total = 5574
-spam  = 747
-ham   = 4827
+  <div class="cell-code"><pre>import math
 
-print("UCI SMS Spam Collection stats:")
-print(f"  Total messages: {total}")
-print(f"  Spam:   {spam} ({100*spam/total:.1f}%)")
-print(f"  Ham:    {ham} ({100*ham/total:.1f}%)\n")
+ham_n, spam_n = 4827, 747
+total_n = ham_n + spam_n
 
-# Naive baseline: predict ALL messages as ham
-naive_acc = ham / total
-print(f"Naive baseline (always predict 'ham'):")
-print(f"  Accuracy: {naive_acc:.3f} = {100*naive_acc:.1f}%")
-print(f"  This looks good! But F1 for spam class = 0.0")
-print(f"  It catches 0 of {spam} spam messages.\n")
+print("=== SMS Spam Collection ===")
+print(f"Total:   {total_n:,}")
+print(f"Ham:     {ham_n:,}  ({100*ham_n/total_n:.1f}%)")
+print(f"Spam:    {spam_n:,}  ({100*spam_n/total_n:.1f}%)")
+print(f"Ratio:   {ham_n/spam_n:.1f}:1")
 
-print("Why accuracy alone is misleading:")
-print(f"  A model claiming {100*naive_acc:.0f}% accuracy catches NO spam.")
-print(f"  F1-score and Recall are the correct metrics for imbalanced tasks.")
-print(f"  A good spam detector needs Recall > 0.95 (catch 95% of spam).")
-print(f"  At Recall=0.95: catches {int(spam*0.95)} spam, misses {spam-int(spam*0.95)} spam.")</pre></div>
+print()
+print("=== Naive baseline (always predict ham) ===")
+print(f"Accuracy: {100*ham_n/total_n:.2f}%  <- looks great!")
+print(f"Spam recall: 0.0%  <- catches zero spam")
+print(f"F1 (spam):   0.000  <- correctly flags uselessness")
+
+print()
+print("=== Inverse-frequency class weights ===")
+w_ham  = total_n / (2 * ham_n)
+w_spam = total_n / (2 * spam_n)
+print(f"Ham weight:   {w_ham:.4f}")
+print(f"Spam weight:  {w_spam:.4f}")
+print(f"Ratio:        {w_spam/w_ham:.2f}x  (one spam = {w_spam/w_ham:.2f} hams in gradient)")
+
+print()
+print("=== Effect at different imbalance levels ===")
+print(f"{'Spam count':>12} {'% spam':>8} {'Ham weight':>12} {'Spam weight':>13} {'Ratio':>8}")
+for sc in [3000, 1500, 747, 300, 100]:
+    tot = 5574
+    hc = tot - sc
+    wh = tot / (2*hc); ws = tot / (2*sc)
+    print(f"{sc:>12,} {100*sc/tot:>8.1f}% {wh:>12.4f} {ws:>13.4f} {ws/wh:>7.1f}x")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.5  Accuracy, Precision, Recall, F1  -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s5">
 <div class="section-label">6.5</div>
 <h2>Accuracy, Precision, Recall, F1</h2>
-
-<p>Every classification metric is derived from four counts. <strong>True Positive (TP)</strong>: the model predicted spam and was right. <strong>True Negative (TN)</strong>: predicted ham, was right. <strong>False Positive (FP)</strong>: predicted spam, but it was ham — a legitimate email incorrectly blocked. <strong>False Negative (FN)</strong>: predicted ham, but it was spam — a spam email that slipped through. The relative cost of FP vs FN is business-specific: a spam filter might accept a high FP rate (annoying but safe) to minimise FNs (spam reaching the inbox), while a fraud detector accepts high FPs to minimise FNs (missed fraud).</p>
-
-<p><strong>Precision</strong> answers: "Of everything I labelled spam, how much was actually spam?" High precision means few legitimate emails blocked. <strong>Recall</strong> (also called sensitivity or TPR) answers: "Of all actual spam, how much did I catch?" High recall means few spam messages slip through. These metrics trade off: lowering the classification threshold increases recall (catch more spam) but decreases precision (block more legitimate mail). The F1 score is the harmonic mean of both, penalising extreme imbalances.</p>
-
-<p>Why harmonic mean rather than arithmetic mean? If Precision=1.0 and Recall=0.0 (model labels nothing as spam), arithmetic mean = 0.5. Harmonic mean = 0.0 — correctly signalling that a metric with recall=0 is useless. The harmonic mean punishes extreme values much more severely. F1 = 0.9 means both Precision and Recall are reasonably high; there is no way to achieve F1=0.9 with Recall=0.1 regardless of how good precision is.</p>
-
+<p>Every binary classification result decomposes into four counts. A model produces a predicted label for each example; comparing predictions to ground truth yields: <strong>TP</strong> (true positives &mdash; spam flagged as spam), <strong>FP</strong> (false positives &mdash; ham incorrectly flagged as spam), <strong>FN</strong> (false negatives &mdash; spam that slipped through), and <strong>TN</strong> (true negatives &mdash; ham correctly passed). These four numbers are the atoms from which every classification metric is derived. Plotting them in a 2&times;2 confusion matrix immediately reveals where a model fails: too many FNs means spam is reaching the inbox; too many FPs means legitimate messages are being blocked.</p>
+<p><strong>Accuracy</strong> = (TP+TN)/(TP+FP+FN+TN). Correct for balanced datasets; dangerously misleading for imbalanced ones. For SMS spam (86.6% ham), all-ham prediction achieves 86.6% accuracy. <strong>Precision</strong> = TP/(TP+FP): of all messages the model flagged as spam, what fraction were genuinely spam? Measures the cost to the user of being falsely accused. <strong>Recall</strong> = TP/(TP+FN): of all actual spam messages, what fraction did the model catch? Measures the failure to protect. <strong>F1</strong> = 2&times;P&times;R/(P+R): the harmonic mean. The harmonic mean is the correct choice (rather than arithmetic mean) because it is dominated by the smaller value: if precision is 0.99 but recall is 0.01, F1 = 0.02, correctly signalling near-uselessness. Macro-F1 averages F1 per class (unweighted); micro-F1 pools TP/FP/FN globally before computing, weighting by class frequency.</p>
+<p>For spam detection, the cost of a false negative (spam reaches inbox) usually exceeds the cost of a false positive (legitimate email blocked), so recall is prioritised over precision. However, in a business context the calculus may reverse (a blocked customer order is expensive). This cost asymmetry is why choosing the right metric requires understanding the application before evaluating the model. A fine-tuned GPT-2 on SMS Spam typically achieves precision &asymp; 0.97, recall &asymp; 0.95, F1 &asymp; 0.96 on the spam class &mdash; compared to F1 = 0.00 for the all-ham baseline.</p>
 <div class="cm-wrapper">
-  <div class="cm-title">Confusion Matrix — Spam Detector Example</div>
+  <div class="cm-title">Confusion Matrix &mdash; hypothetical SMS spam detector results</div>
   <div class="cm-grid">
-    <div class="cm-cell cm-header"></div>
+    <div class="cm-cell"></div>
     <div class="cm-cell cm-header">Predicted: Spam</div>
     <div class="cm-cell cm-header">Predicted: Ham</div>
     <div class="cm-cell cm-label">Actual: Spam</div>
-    <div class="cm-cell cm-tp">TP = 712<br><span style="font-size:10px;">Caught spam ✓</span></div>
-    <div class="cm-cell cm-fn">FN = 35<br><span style="font-size:10px;">Missed spam ✗</span></div>
+    <div class="cm-cell cm-tp">TP = 712<br><span style="font-size:10px;">Caught spam</span></div>
+    <div class="cm-cell cm-fn">FN = 35<br><span style="font-size:10px;">Missed spam</span></div>
     <div class="cm-cell cm-label">Actual: Ham</div>
-    <div class="cm-cell cm-fp">FP = 22<br><span style="font-size:10px;">Blocked ham ✗</span></div>
-    <div class="cm-cell cm-tn">TN = 4805<br><span style="font-size:10px;">Correct ✓</span></div>
+    <div class="cm-cell cm-fp">FP = 22<br><span style="font-size:10px;">Blocked ham</span></div>
+    <div class="cm-cell cm-tn">TN = 4805<br><span style="font-size:10px;">Correct ham</span></div>
   </div>
 </div>
-
 <div class="metric-cards">
-  <div class="mc mc-acc"><h4>Accuracy</h4><p>Overall correctness. Misleading for imbalanced classes.</p><div class="mc-formula">(TP+TN)/(TP+TN+FP+FN) = 5517/5574 = 98.98%</div></div>
-  <div class="mc mc-prec"><h4>Precision</h4><p>Of predicted spam, how much was real spam?</p><div class="mc-formula">TP/(TP+FP) = 712/734 = 97.0%</div></div>
-  <div class="mc mc-rec"><h4>Recall</h4><p>Of all spam, how much did we catch?</p><div class="mc-formula">TP/(TP+FN) = 712/747 = 95.3%</div></div>
-  <div class="mc mc-f1"><h4>F1 Score</h4><p>Harmonic mean of Precision and Recall.</p><div class="mc-formula">2·P·R/(P+R) = 2×0.970×0.953/1.923 = 0.961</div></div>
+  <div class="mc mc-acc"><h4>Accuracy</h4><p>Overall correctness. Misleading for imbalanced classes.</p><div class="mc-formula">(712+4805)/5574 = 98.98%</div></div>
+  <div class="mc mc-prec"><h4>Precision</h4><p>Of all flagged spam, what fraction was real?</p><div class="mc-formula">712/(712+22) = 97.0%</div></div>
+  <div class="mc mc-rec"><h4>Recall</h4><p>Of all real spam, what fraction was caught?</p><div class="mc-formula">712/(712+35) = 95.3%</div></div>
+  <div class="mc mc-f1"><h4>F1 Score</h4><p>Harmonic mean &mdash; low value in either P or R kills it.</p><div class="mc-formula">2&times;0.970&times;0.953/1.923 = 0.961</div></div>
 </div>
-
-<div class="callout purple"><strong>Key insight:</strong> F1 is the right summary metric for imbalanced classification. But even F1 can hide important trade-offs. In spam detection, a high-recall low-precision model (catches all spam, blocks some ham) is usually preferable to a low-recall high-precision one (never blocks ham, but misses spam). Choose threshold based on the cost ratio of FP vs FN in your application.</div>
-
+<div class="callout purple"><strong>Key insight:</strong> The harmonic mean in F1 is not arbitrary. For P=0.99, R=0.01: arithmetic mean = 0.50 (suggests decent model); harmonic mean = 0.020 (correctly reveals failure). The harmonic mean is always &le; min(P, R), so a model cannot hide a catastrophic recall by inflating precision, or vice versa.</div>
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://scikit-learn.org/stable/modules/model_evaluation.html" target="_blank">🔗 scikit-learn — Model Evaluation Guide (comprehensive coverage of every metric with visual examples)</a>
+  <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics" target="_blank">scikit-learn &mdash; Classification metrics guide (precision, recall, F1, macro/micro/weighted averaging)</a>
+  <a href="https://dl.acm.org/doi/10.1016/j.patrec.2005.10.010" target="_blank">Fawcett 2006 &mdash; An Introduction to ROC Analysis (Pattern Recognition Letters, definitive tutorial)</a>
 </div>
-
-<div class="cell" id="cell-5">
+<div class="cell" id="run-6-5">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 5 — Compute all classification metrics from a confusion matrix</span>
-    <button class="run-btn" onclick="runCell('cell-5')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; compute all metrics from confusion matrices</span>
+    <button class="run-btn" onclick="runCode('run-6-5')">Run</button>
   </div>
-  <div class="cell-code"><pre>def classification_metrics(tp, fp, fn, tn):
-    accuracy  = (tp + tn) / (tp + fp + fn + tn)
-    precision = tp / (tp + fp) if (tp+fp) > 0 else 0
-    recall    = tp / (tp + fn) if (tp+fn) > 0 else 0
-    f1        = 2*precision*recall/(precision+recall) if (precision+recall) > 0 else 0
-    return accuracy, precision, recall, f1
+  <div class="cell-code"><pre>def metrics(tp, fp, fn, tn):
+    total = tp + fp + fn + tn
+    acc  = (tp + tn) / total
+    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    rec  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1   = 2*prec*rec / (prec+rec) if (prec+rec) > 0 else 0.0
+    return acc, prec, rec, f1
 
-print("=== Scenario 1: Our spam detector ===")
-tp,fp,fn,tn = 712, 22, 35, 4805
-acc,prec,rec,f1 = classification_metrics(tp,fp,fn,tn)
-print(f"  Accuracy:  {acc:.4f}")
-print(f"  Precision: {prec:.4f}")
-print(f"  Recall:    {rec:.4f}")
-print(f"  F1:        {f1:.4f}\n")
+cases = [
+    ("Fine-tuned GPT-2",          712,  22,  35, 4805),
+    ("All-ham baseline",            0,   0, 747, 4827),
+    ("High-recall (aggressive)",  740, 210,   7, 4617),
+    ("High-prec (conservative)",  680,   5,  67, 4822),
+]
 
-print("=== Scenario 2: Always predict ham (naive baseline) ===")
-tp,fp,fn,tn = 0, 0, 747, 4827
-acc,prec,rec,f1 = classification_metrics(tp,fp,fn,tn)
-print(f"  Accuracy:  {acc:.4f}  ← looks decent!")
-print(f"  Precision: {prec:.4f}  ← undefined (no spam predicted)")
-print(f"  Recall:    {rec:.4f}  ← catches 0 spam!")
-print(f"  F1:        {f1:.4f}  ← correctly reveals uselessness")
+print(f"{'Model':<28} {'Acc':>6} {'Prec':>6} {'Rec':>6} {'F1':>6}")
+print("-" * 58)
+for name, tp, fp, fn, tn in cases:
+    acc, prec, rec, f1 = metrics(tp, fp, fn, tn)
+    print(f"{name:<28} {acc:>6.3f} {prec:>6.3f} {rec:>6.3f} {f1:>6.3f}")
 
-print("\nConclusion: never report accuracy alone for imbalanced tasks.")</pre></div>
+print()
+print("Harmonic mean punishes extreme P/R imbalance:")
+print(f"{'P':>6} {'R':>6} {'Arith mean':>12} {'F1 (harmonic)':>14}")
+print("-" * 44)
+for p, r in [(0.99, 0.01), (0.50, 0.50), (0.97, 0.95), (0.80, 0.70)]:
+    arith = (p + r) / 2
+    f1 = 2*p*r/(p+r) if (p+r)>0 else 0
+    print(f"{p:>6.2f} {r:>6.2f} {arith:>12.4f} {f1:>14.4f}")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.6  ROC-AUC                         -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s6">
 <div class="section-label">6.6</div>
 <h2>ROC-AUC</h2>
-
-<p>F1, precision, and recall all depend on a chosen classification threshold (typically 0.5). But the model outputs a probability, not a binary label. The ROC (Receiver Operating Characteristic) curve evaluates the model at <em>every possible threshold</em> simultaneously, giving a complete picture of the precision-recall trade-off that's independent of threshold choice.</p>
-
-<p>At each threshold τ (from 1 down to 0), we classify all examples with probability ≥ τ as positive. We plot the True Positive Rate (TPR = TP/(TP+FN) = Recall) on the Y axis against the False Positive Rate (FPR = FP/(FP+TN)) on the X axis. As τ decreases, we catch more positives (TPR rises) but also flag more negatives as positive (FPR rises). A perfect classifier has a curve that jumps to TPR=1 before FPR rises at all, hugging the top-left corner. A random classifier follows the diagonal (TPR = FPR at every threshold).</p>
-
-<p>AUC (Area Under the Curve) collapses the entire ROC curve to a single number. AUC = 0.5: random. AUC = 1.0: perfect. AUC has a probabilistic interpretation: it equals the probability that the model assigns a higher score to a randomly chosen positive example than to a randomly chosen negative example. AUC = 0.97 means: if you pick one spam and one ham at random, there's a 97% chance the spam gets a higher spam-probability than the ham.</p>
-
-<div class="callout"><strong>Key insight:</strong> AUC measures ranking quality, not calibration. A model that consistently ranks positives above negatives has AUC = 1.0 even if the probabilities are poorly calibrated (e.g., outputting 0.3 for spam and 0.1 for ham — not well-calibrated, but perfectly ranked). For spam filtering where you'll choose a threshold post-deployment, AUC is the most informative single metric.</div>
-
+<p>Precision, recall, and F1 all depend on a threshold (typically 0.5) applied to the model's output probability. But the model produces a score, not a binary label, and the threshold is a deployment decision that should not be baked into model evaluation. The ROC (Receiver Operating Characteristic) curve evaluates the model at every possible threshold simultaneously. The name comes from WWII radar analysis: operators faced the same trade-off between sensitivity (catching real signals) and specificity (ignoring noise), and the ROC curve was developed to compare operator performance independent of their chosen operating point.</p>
+<p>At each threshold &tau; from 1 down to 0, every example with score &ge; &tau; is labelled positive. Plot the True Positive Rate (TPR = TP/(TP+FN) = Recall) on the Y-axis against the False Positive Rate (FPR = FP/(FP+TN)) on the X-axis. As &tau; decreases, TPR rises (we catch more spam) but FPR also rises (we flag more ham). A perfect classifier jumps to TPR=1 before FPR leaves 0, hugging the top-left corner. A random classifier follows the diagonal (TPR = FPR at every threshold, AUC = 0.5). AUC (Area Under the ROC Curve) collapses the entire curve to a single number with a powerful probabilistic interpretation: AUC equals the probability that the model assigns a higher score to a randomly chosen positive example than to a randomly chosen negative example. AUC = 0.97 means: pick one spam and one ham at random; there is a 97% chance the spam gets a higher spam-probability score.</p>
+<p>For severely imbalanced datasets, <strong>PR-AUC</strong> (Precision-Recall AUC) is often more informative than ROC-AUC. The random baseline for PR-AUC equals the class prevalence (0.134 for SMS spam), whereas the random ROC-AUC baseline is always 0.5 regardless of imbalance. A model with ROC-AUC = 0.95 on 1% prevalence data can have PR-AUC as low as 0.20 because the massive number of true negatives inflates the ROC curve. Fine-tuned BERT on IMDb (50/50 split) achieves ROC-AUC &asymp; 0.98; fine-tuned GPT-2 achieves &asymp; 0.96. On SMS spam (imbalanced), PR-AUC is the more honest metric.</p>
+<div class="callout"><strong>Key insight:</strong> AUC measures ranking quality across all thresholds, not calibration at any single threshold. A model that consistently ranks positives above negatives can have AUC = 1.0 even if its probabilities are poorly calibrated. This makes AUC ideal for comparing models; F1 at the chosen deployment threshold is what matters for reporting final performance.</div>
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://dl.acm.org/doi/10.1016/j.patrec.2005.10.010" target="_blank">🔗 Fawcett 2006 — An Introduction to ROC Analysis (the definitive tutorial; Pattern Recognition Letters)</a>
-  <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html" target="_blank">🔗 scikit-learn roc_auc_score — implementation and usage examples</a>
+  <a href="https://dl.acm.org/doi/10.1016/j.patrec.2005.10.010" target="_blank">Fawcett 2006 &mdash; An Introduction to ROC Analysis (Pattern Recognition Letters &mdash; the definitive tutorial)</a>
+  <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html" target="_blank">scikit-learn &mdash; roc_auc_score implementation with imbalanced dataset guidance</a>
+  <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432" target="_blank">Saito &amp; Rehmsmeier 2015 &mdash; The Precision-Recall Plot Is More Informative than the ROC Plot (PLOS ONE)</a>
 </div>
-
-<div class="cell" id="cell-6">
+<div class="cell" id="run-6-6">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 6 — Compute ROC curve and AUC from scratch</span>
-    <button class="run-btn" onclick="runCell('cell-6')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; compute ROC curve and AUC from scratch</span>
+    <button class="run-btn" onclick="runCode('run-6-6')">Run</button>
   </div>
-  <div class="cell-code"><pre>import math
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
 
-# Toy dataset: (predicted_prob_spam, true_label)
+# Simulate model output: (predicted_prob_spam, true_label)
+# Good model: spam scores tend high, ham scores tend low
 predictions = [
-    (0.97, 1), (0.92, 1), (0.89, 1), (0.85, 1), (0.78, 1),
-    (0.72, 1), (0.65, 1), (0.58, 0), (0.54, 1), (0.48, 0),
-    (0.42, 0), (0.38, 0), (0.31, 1), (0.24, 0), (0.18, 0),
-    (0.12, 0), (0.08, 0), (0.05, 0), (0.03, 0), (0.01, 0),
+    (0.98,1),(0.95,1),(0.91,1),(0.88,1),(0.84,1),
+    (0.79,1),(0.74,1),(0.68,1),(0.61,0),(0.57,1),
+    (0.52,0),(0.46,0),(0.41,0),(0.37,1),(0.31,0),
+    (0.26,0),(0.20,0),(0.14,0),(0.08,0),(0.03,0),
 ]
 
 def roc_auc(preds):
-    # Sort by probability descending
-    sorted_preds = sorted(preds, key=lambda x: -x[0])
-    P = sum(1 for _, y in preds if y == 1)
-    N = sum(1 for _, y in preds if y == 0)
-
-    points = [(0.0, 0.0)]
+    preds_s = sorted(preds, key=lambda x: -x[0])  # sort by score descending
+    P = sum(y for _, y in preds)
+    N = len(preds) - P
+    pts = [(0.0, 0.0)]
     tp = fp = 0
-    for prob, label in sorted_preds:
+    for prob, label in preds_s:
         if label == 1: tp += 1
         else:          fp += 1
-        points.append((fp/N, tp/P))  # (FPR, TPR)
+        pts.append((fp/N, tp/P))
+    # Trapezoidal rule for AUC
+    auc = sum((pts[i][0]-pts[i-1][0])*(pts[i][1]+pts[i-1][1])/2
+              for i in range(1, len(pts)))
+    return auc, pts
 
-    # AUC via trapezoid rule
-    auc = sum((points[i][0]-points[i-1][0]) * (points[i][1]+points[i-1][1])/2
-              for i in range(1, len(points)))
-    return auc, points
+def pr_auc(preds):
+    preds_s = sorted(preds, key=lambda x: -x[0])
+    P = sum(y for _, y in preds)
+    pts = []; tp = fp = 0
+    for prob, label in preds_s:
+        if label == 1: tp += 1
+        else:          fp += 1
+        prec = tp/(tp+fp); rec = tp/P
+        pts.append((rec, prec))
+    pts.sort()
+    prauc = sum((pts[i][0]-pts[i-1][0])*(pts[i][1]+pts[i-1][1])/2
+                for i in range(1, len(pts)))
+    return prauc
 
-auc, pts = roc_auc(predictions)
-print(f"AUC = {auc:.4f}  (random = 0.5, perfect = 1.0)\n")
-print("ROC curve sample points (FPR, TPR):")
+roc, pts = roc_auc(predictions)
+pr = pr_auc(predictions)
+prevalence = sum(y for _,y in predictions) / len(predictions)
+
+print(f"ROC-AUC  = {roc:.4f}  (random baseline = 0.500)")
+print(f"PR-AUC   = {pr:.4f}  (random baseline = {prevalence:.3f} = prevalence)")
+print()
+print("ROC curve (selected points):")
+print(f"  {'FPR':>6}  {'TPR':>6}  Bar")
 for fpr, tpr in pts[::4]:
-    bar = "█" * int(tpr * 20)
-    print(f"  FPR={fpr:.2f}  TPR={tpr:.2f}  {bar}")
-# Try adding noise to predictions and see how AUC changes.</pre></div>
+    bar = chr(9608) * int(tpr * 20)
+    print(f"  {fpr:>6.3f}  {tpr:>6.3f}  {bar}")
+
+print()
+print("Interpretation: AUC = probability that model ranks a random")
+print(f"  positive ABOVE a random negative.")
+print(f"  AUC={roc:.3f} means {100*roc:.1f}% chance spam scores above ham.")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.7  Detecting Overfitting            -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s7">
 <div class="section-label">6.7</div>
 <h2>Detecting Overfitting</h2>
-
-<p>Overfitting occurs when a model learns the training data too well — including noise and idiosyncrasies that don't generalise. The tell-tale sign is a divergence between training and validation loss: training loss keeps decreasing, but validation loss plateaus or begins rising. The model has memorised the training set rather than learning transferable patterns. This is especially common when fine-tuning large models on small datasets.</p>
-
-<p>Three factors determine overfitting risk in fine-tuning: (1) <strong>Model capacity vs dataset size</strong>. GPT-2 124M fine-tuned on 500 examples is deeply at risk. Use feature extraction or LoRA instead of full fine-tuning. (2) <strong>Number of epochs</strong>. After 10 epochs on 500 examples, the model has seen each example 10 times. With a learning rate of 1e-4, that's plenty of iterations to overfit. 3 epochs is the standard for text fine-tuning. (3) <strong>Learning rate</strong>. A high LR causes rapid, dramatic weight changes that can both overfit faster and destroy pretrained representations (catastrophic forgetting).</p>
-
-<p>The correct toolset for detecting and fighting overfitting: plot both training and validation loss at every epoch. Add dropout (GPT-2 already has 10% dropout in attention and FFN). Use weight decay (L2 regularisation, AdamW default 0.01). For extreme data scarcity, data augmentation (back-translation, synonym substitution) or retrieval augmentation can help. Never report test set performance until the final model is selected.</p>
-
+<p>Overfitting occurs when a model learns the training data too well &mdash; including its noise and idiosyncrasies &mdash; and fails to generalise. The canonical diagnostic signal is a divergence between training and validation loss: training loss continues to decrease, but validation loss plateaus or begins rising. The model has memorised the training labels rather than learning transferable patterns. In the context of fine-tuning, this is especially dangerous because the pretrained model has millions of parameters that can easily memorise a small fine-tuning dataset.</p>
+<p>Three factors determine overfitting risk. <strong>Model capacity vs dataset size</strong>: GPT-2 (117M params) fine-tuned on 500 examples has 234,000 parameters per training example. The model can trivially memorise the dataset. Feature extraction (training only the 1,538-parameter head) eliminates this risk. <strong>Epoch count</strong>: after 10 epochs on 500 examples, the model has seen each example 10 times. With a learning rate of 1e-4 that is more than sufficient to overfit. The standard for text classification fine-tuning is 2&ndash;5 epochs. <strong>Learning rate</strong>: a high LR (1e-3 for full fine-tuning) causes rapid weight changes that both overfit faster and destroy pretrained representations &mdash; this is <strong>catastrophic forgetting</strong>, where the fine-tuning gradient overwrites the general-purpose representations built during pretraining. Keep the learning rate at 1e-5 to 5e-5 for full fine-tuning.</p>
+<p>The generalisation gap &mdash; val_loss &minus; train_loss &mdash; is a useful scalar summary. A healthy gap is less than 0.1 for most classification tasks. If the gap exceeds 0.2 and continues to grow, overfitting is occurring. Standard countermeasures: dropout (GPT-2 already uses 0.1 throughout), weight decay (AdamW default &lambda;=0.01), label smoothing (&epsilon;=0.1 &mdash; softens one-hot targets from hard 0/1 to 0.05/0.95, preventing the model from becoming overconfident). If both training and validation loss are high, you are underfitting &mdash; the model is not learning at all, usually because the learning rate is too low or the dataset is too small for the chosen strategy.</p>
 <div class="loss-curves">
   <div class="lc lc-good">
-    <h4>✓ Good Fit</h4>
-    <div class="lc-row"><div class="lc-ep">Ep 1</div><div class="lc-t" style="width:72px"></div><span style="color:var(--blue);font-size:10px;"> train 0.72</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:68px"></div><span style="color:var(--accent);font-size:10px;"> val  0.68</span></div>
-    <div class="lc-row"><div class="lc-ep">Ep 2</div><div class="lc-t" style="width:44px"></div><span style="color:var(--blue);font-size:10px;"> train 0.44</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:42px"></div><span style="color:var(--accent);font-size:10px;"> val  0.42</span></div>
-    <div class="lc-row"><div class="lc-ep">Ep 3</div><div class="lc-t" style="width:24px"></div><span style="color:var(--blue);font-size:10px;"> train 0.24</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:25px"></div><span style="color:var(--accent);font-size:10px;"> val  0.25</span></div>
+    <h4>Good Fit</h4>
+    <div class="lc-row"><div class="lc-ep">Ep 1</div><div class="lc-t" style="width:70px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.70</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:67px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.67</span></div>
+    <div class="lc-row"><div class="lc-ep">Ep 2</div><div class="lc-t" style="width:43px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.43</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:41px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.41</span></div>
+    <div class="lc-row"><div class="lc-ep">Ep 3</div><div class="lc-t" style="width:22px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.22</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:24px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.24</span></div>
     <div class="lc-legend"><span><div class="lc-dot" style="background:var(--blue)"></div>Train</span><span><div class="lc-dot" style="background:var(--accent)"></div>Val</span></div>
   </div>
   <div class="lc lc-overfit">
-    <h4>✗ Overfitting</h4>
-    <div class="lc-row"><div class="lc-ep">Ep 1</div><div class="lc-t" style="width:72px"></div><span style="color:var(--blue);font-size:10px;"> train 0.72</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:68px"></div><span style="color:var(--accent);font-size:10px;"> val  0.68</span></div>
-    <div class="lc-row"><div class="lc-ep">Ep 5</div><div class="lc-t" style="width:18px"></div><span style="color:var(--blue);font-size:10px;"> train 0.18</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:78px"></div><span style="color:var(--accent);font-size:10px;"> val  0.78 ↑</span></div>
-    <div class="lc-row"><div class="lc-ep">Ep 8</div><div class="lc-t" style="width:6px"></div><span style="color:var(--blue);font-size:10px;"> train 0.06</span></div>
-    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:110px"></div><span style="color:var(--accent);font-size:10px;"> val  1.10 ↑↑</span></div>
-    <div class="lc-legend"><span><div class="lc-dot" style="background:var(--blue)"></div>Train</span><span><div class="lc-dot" style="background:var(--accent)"></div>Val (diverging)</span></div>
+    <h4>Overfitting</h4>
+    <div class="lc-row"><div class="lc-ep">Ep 1</div><div class="lc-t" style="width:70px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.70</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:67px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.67</span></div>
+    <div class="lc-row"><div class="lc-ep">Ep 2</div><div class="lc-t" style="width:32px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.32</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:55px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.55 &#8593;</span></div>
+    <div class="lc-row"><div class="lc-ep">Ep 3</div><div class="lc-t" style="width:14px"></div><span style="color:var(--blue);font-size:10px;margin-left:4px;">train 0.14</span></div>
+    <div class="lc-row"><div class="lc-ep"></div><div class="lc-v" style="width:72px"></div><span style="color:var(--accent);font-size:10px;margin-left:4px;">val 0.72 &#8593;&#8593;</span></div>
+    <div class="lc-legend"><span><div class="lc-dot" style="background:var(--blue)"></div>Train</span><span><div class="lc-dot" style="background:var(--accent)"></div>Val</span></div>
   </div>
 </div>
-
-<div class="callout amber"><strong>Key insight:</strong> In fine-tuning, overfitting is almost always an epoch problem, not a model size problem. Reduce epochs before reducing model size or adding heavy regularisation. 3 epochs on a typical classification dataset is the most reliable starting point — if validation loss hasn't dropped by epoch 3, the learning rate or data is the problem, not too few epochs.</div>
-
-<div class="cell" id="cell-7">
+<div class="callout amber"><strong>Key insight:</strong> The generalisation gap (val_loss &minus; train_loss) is your primary diagnostic. A growing gap means overfitting. A gap that never closes means underfitting. A gap that stays small and stable means good generalisation. Plot it every epoch, not just at the end.</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/1905.05583" target="_blank">Sun et al. 2019 &mdash; How to Fine-Tune BERT for Text Classification (epoch and LR ablations, Table 2)</a>
+  <a href="https://arxiv.org/abs/1512.00567" target="_blank">Szegedy et al. 2016 &mdash; Rethinking the Inception Architecture (label smoothing, Section 7)</a>
+</div>
+<div class="cell" id="run-6-7">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 7 — Detect the overfitting epoch from simulated curves</span>
-    <button class="run-btn" onclick="runCell('cell-7')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; simulate good fit vs overfitting learning curves</span>
+    <button class="run-btn" onclick="runCode('run-6-7')">Run</button>
   </div>
-  <div class="cell-code"><pre>import math
+  <div class="cell-code"><pre>import math, random
+random.seed(7)
 
-# Simulated training/validation losses (20 epochs)
-train_losses = [0.72, 0.54, 0.38, 0.26, 0.18, 0.12, 0.09, 0.07, 0.05, 0.04,
-                0.03, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.005, 0.004, 0.003]
-val_losses   = [0.68, 0.51, 0.37, 0.32, 0.30, 0.31, 0.34, 0.38, 0.42, 0.47,
-                0.53, 0.59, 0.65, 0.72, 0.79, 0.87, 0.95, 1.03, 1.12, 1.22]
+def good_fit_curve(n_epochs=8):
+    # Training and validation loss track closely
+    curves = []
+    for ep in range(1, n_epochs+1):
+        train = 0.70 * math.exp(-0.45 * ep) + 0.05
+        val   = train + random.gauss(0.02, 0.01)  # val slightly above train
+        curves.append((ep, train, val))
+    return curves
 
-best_epoch = val_losses.index(min(val_losses)) + 1
-best_val   = min(val_losses)
+def overfit_curve(n_epochs=8):
+    # Training keeps falling; validation diverges after epoch 2
+    curves = []
+    for ep in range(1, n_epochs+1):
+        train = 0.70 * math.exp(-0.55 * ep) + 0.02
+        if ep <= 2:
+            val = train + random.gauss(0.03, 0.01)
+        else:
+            val = 0.40 + 0.08 * (ep - 2) + random.gauss(0, 0.01)  # rising!
+        curves.append((ep, train, val))
+    return curves
 
-print(f"{'Epoch':>6}  {'Train Loss':>11}  {'Val Loss':>10}  {'Status'}")
-print("-" * 48)
-for ep, (tl, vl) in enumerate(zip(train_losses, val_losses), 1):
-    status = ""
-    if ep == best_epoch: status = "← BEST"
-    if ep > best_epoch and vl > best_val * 1.05: status = "← overfitting"
-    print(f"{ep:>6}  {tl:>11.3f}  {vl:>10.3f}  {status}")
+def show_curves(name, curves):
+    print(f"\n=== {name} ===")
+    print(f"{'Ep':>3}  {'Train':>7}  {'Val':>7}  {'Gap':>7}  Status")
+    for ep, tr, va in curves:
+        gap = va - tr
+        status = "OVERFIT" if gap > 0.15 else ("ok" if gap < 0.08 else "watch")
+        print(f"{ep:>3}  {tr:>7.4f}  {va:>7.4f}  {gap:>+7.4f}  {status}")
 
-print(f"\nBest epoch: {best_epoch} (val_loss={best_val:.3f})")
-print(f"Should stop at epoch {best_epoch} and restore those weights.")</pre></div>
+show_curves("Good Fit",    good_fit_curve())
+show_curves("Overfitting", overfit_curve())
+
+print()
+print("Healthy generalisation gap: < 0.10")
+print("Overfitting signal:          gap growing each epoch")
+print("Underfitting signal:         both train and val loss remain high")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.8  Early Stopping                  -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s8">
 <div class="section-label">6.8</div>
 <h2>Early Stopping</h2>
-
-<p>Early stopping is the automatic application of the §6.7 insight: monitor validation loss, and stop training when it stops improving. The key parameter is <strong>patience</strong>: how many consecutive epochs without improvement before stopping. Patience = 3 means: if validation loss hasn't improved for 3 consecutive epochs, halt training and restore the weights from the best epoch. This prevents the common mistake of training for a fixed epoch count and returning the final (possibly overfit) model rather than the best one.</p>
-
-<p>The <strong>delta</strong> parameter prevents stopping on noise: val_loss must improve by at least delta to count as an improvement. A common setting is delta = 0.001 — changes smaller than this are treated as flat. Without a delta, tiny fluctuations in validation loss (due to batch sampling randomness) can trigger premature stopping. With patience=3 and delta=0.001, training stops only when val_loss has been genuinely stagnant for 3 consecutive epochs.</p>
-
-<p>Best practices: always checkpoint the model with the lowest validation loss, not the model at the final epoch. Use a separate held-out test set that's never seen during training or validation. The test set is only evaluated once, on the final model — using it for hyperparameter selection invalidates its estimate of generalisation performance.</p>
-
-<div class="callout green"><strong>Key insight:</strong> Early stopping is a form of regularisation. By limiting the number of gradient updates to those that actually improve generalisation, it constrains the effective model complexity without reducing the model size. Combined with a good learning rate and weight decay, it's the simplest and most reliable defence against overfitting in fine-tuning.</div>
-
+<p>Early stopping monitors the validation metric after each epoch and halts training when it stops improving. The mechanism is simple: track the best validation loss seen so far; if the current epoch's validation loss is not better than the best by at least &delta; (a small tolerance like 0.001), increment a patience counter; if the counter reaches the patience limit, stop training and restore the saved checkpoint. The &delta; threshold prevents stopping on noise &mdash; a validation loss of 0.2413 vs 0.2411 is not a meaningful improvement and should not reset the counter.</p>
+<p>Patience is the main hyperparameter. Patience = 2 is aggressive (stop after 2 epochs without improvement); patience = 5 is conservative. For fine-tuning classification models, patience = 3 is a robust default. The saved checkpoint is the model at the epoch with the best validation loss, not the final epoch's weights &mdash; restoring the best checkpoint at the end is critical; without this, you get the overfitted final-epoch weights. <strong>ReduceLROnPlateau</strong> is a gentler alternative: instead of stopping, reduce the learning rate by a factor (typically 0.5) when the validation metric has plateaued for <code>patience</code> epochs. This often squeezes out another 1&ndash;2% improvement before eventually stopping.</p>
+<p>One important rule: never look at the test set until the final model has been selected using the validation set. Using test performance to make training decisions (number of epochs, hyperparameter choices) leaks test-set information into the model selection process, causing optimistically biased performance estimates. The workflow is: train on the training set, tune all decisions on the validation set, report final numbers once on the test set at the very end.</p>
+<div class="callout green"><strong>Key insight:</strong> Early stopping is not just about avoiding overfitting &mdash; it is about finding the sweet spot where the model has learned the task-specific patterns without beginning to memorise the training set's idiosyncrasies. The best checkpoint is almost never the last one.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">early_stopping.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="kw">class</span> <span class="cl">EarlyStopping</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, patience=<span class="nu">3</span>, delta=<span class="nu">0.001</span>):
-        <span class="pr">self</span>.patience    = patience   <span class="lm"># ↑ epochs to wait before stopping</span>
-        <span class="pr">self</span>.delta       = delta      <span class="lm"># ↑ minimum improvement to count as better</span>
-        <span class="pr">self</span>.best_loss   = <span class="bi">float</span>(<span class="st">'inf'</span>)
-        <span class="pr">self</span>.counter     = <span class="nu">0</span>          <span class="lm"># ↑ epochs without improvement</span>
-        <span class="pr">self</span>.best_weights = <span class="kw">None</span>
+<pre><span class="kw">class</span> <span class="cl">EarlyStopping</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, patience=<span class="nu">3</span>, delta=<span class="nu">0.001</span>, mode=<span class="st">"min"</span>):
+        <span class="pr">self</span>.patience = patience      <span class="lm"># &#8593; epochs to wait before stopping</span>
+        <span class="pr">self</span>.delta    = delta          <span class="lm"># &#8593; minimum improvement to count as real progress</span>
+        <span class="pr">self</span>.mode     = mode           <span class="lm"># &#8593; "min" for loss, "max" for accuracy/F1</span>
+        <span class="pr">self</span>.best     = <span class="bi">float</span>(<span class="st">"inf"</span>) <span class="kw">if</span> mode == <span class="st">"min"</span> <span class="kw">else</span> <span class="bu">float</span>(<span class="st">"-inf"</span>)
+        <span class="pr">self</span>.counter  = <span class="nu">0</span>
+        <span class="pr">self</span>.best_epoch = <span class="nu">0</span>
 
-    <span class="kw">def</span> <span class="fn">step</span>(<span class="pr">self</span>, val_loss, model):
-        <span class="kw">if</span> val_loss < <span class="pr">self</span>.best_loss - <span class="pr">self</span>.delta:
-            <span class="pr">self</span>.best_loss    = val_loss
-            <span class="pr">self</span>.counter      = <span class="nu">0</span>         <span class="lm"># ↑ genuine improvement: reset patience counter</span>
-            <span class="pr">self</span>.best_weights = model.<span class="fn">state_dict</span>()  <span class="lm"># ↑ save the best weights</span>
-            <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># don't stop yet</span>
-        <span class="kw">else</span>:
-            <span class="pr">self</span>.counter += <span class="nu">1</span>            <span class="lm"># ↑ no improvement: increment patience counter</span>
-            <span class="kw">if</span> <span class="pr">self</span>.counter >= <span class="pr">self</span>.patience:
-                model.<span class="fn">load_state_dict</span>(<span class="pr">self</span>.best_weights)   <span class="lm"># ↑ restore best weights before returning</span>
-                <span class="kw">return</span> <span class="kw">True</span>  <span class="cm"># stop training</span>
-            <span class="kw">return</span> <span class="kw">False</span>
-</code></pre>
+    <span class="kw">def</span> <span class="fn">step</span>(<span class="pr">self</span>, val_metric, epoch):
+        improved = (
+            val_metric &lt; <span class="pr">self</span>.best - <span class="pr">self</span>.delta  <span class="kw">if</span> <span class="pr">self</span>.mode == <span class="st">"min"</span>
+            <span class="kw">else</span> val_metric &gt; <span class="pr">self</span>.best + <span class="pr">self</span>.delta   <span class="lm"># &#8593; "max" mode</span>
+        )
+        <span class="kw">if</span> improved:
+            <span class="pr">self</span>.best = val_metric
+            <span class="pr">self</span>.counter = <span class="nu">0</span>             <span class="lm"># &#8593; reset counter on genuine improvement</span>
+            <span class="pr">self</span>.best_epoch = epoch
+            <span class="kw">return</span> <span class="kw">False</span>, <span class="kw">True</span>           <span class="lm"># &#8593; (should_stop=False, is_best=True)</span>
+        <span class="pr">self</span>.counter += <span class="nu">1</span>
+        should_stop = <span class="pr">self</span>.counter &gt;= <span class="pr">self</span>.patience  <span class="lm"># &#8593; stop if counter hits patience</span>
+        <span class="kw">return</span> should_stop, <span class="kw">False</span>
+
+<span class="cm"># Usage in training loop</span>
+es = <span class="cl">EarlyStopping</span>(patience=<span class="nu">3</span>, delta=<span class="nu">0.001</span>)
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">1</span>, <span class="nu">21</span>):
+    <span class="cm"># ... train one epoch ...</span>
+    val_loss = evaluate(model, val_loader)   <span class="lm"># &#8593; compute validation loss</span>
+    should_stop, is_best = es.<span class="fn">step</span>(val_loss, epoch)
+    <span class="kw">if</span> is_best:
+        torch.<span class="fn">save</span>(model.state_dict(), <span class="st">"best_model.pt"</span>)  <span class="lm"># &#8593; save checkpoint</span>
+    <span class="kw">if</span> should_stop:
+        <span class="kw">break</span>
+model.<span class="fn">load_state_dict</span>(torch.<span class="fn">load</span>(<span class="st">"best_model.pt"</span>))    <span class="lm"># &#8593; ALWAYS restore best, not final</span></pre>
 </div>
-
-<div class="cell" id="cell-8">
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://page.mi.fu-berlin.de/prechelt/Biblio/stop_tricks1997.pdf" target="_blank">Prechelt 1998 &mdash; Early Stopping &mdash; But When? (the original systematic study of early stopping criteria)</a>
+  <a href="https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html" target="_blank">PyTorch ReduceLROnPlateau &mdash; LR reduction on validation plateau (alternative to hard stopping)</a>
+</div>
+<div class="cell" id="run-6-8">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 8 — Simulate early stopping on a noisy validation curve</span>
-    <button class="run-btn" onclick="runCell('cell-8')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; early stopping with patience and delta</span>
+    <button class="run-btn" onclick="runCode('run-6-8')">Run</button>
   </div>
-  <div class="cell-code"><pre>import math
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
 
 class EarlyStopping:
     def __init__(self, patience=3, delta=0.001):
-        self.patience = patience
-        self.delta    = delta
-        self.best     = float('inf')
-        self.counter  = 0
+        self.patience = patience; self.delta = delta
+        self.best = float("inf"); self.counter = 0; self.best_epoch = 0
+    def step(self, val, ep):
+        if val < self.best - self.delta:
+            self.best = val; self.counter = 0; self.best_epoch = ep
+            return False, True   # (stop, is_best)
+        self.counter += 1
+        return self.counter >= self.patience, False
 
-    def step(self, val_loss):
-        if val_loss < self.best - self.delta:
-            self.best = val_loss
-            self.counter = 0
-            return False, True   # don't stop, is_best
-        else:
-            self.counter += 1
-            return self.counter >= self.patience, False
-
-# Simulated val losses with noise (improves, then plateaus, then diverges)
-import random
-random.seed(7)
-base = [0.80, 0.61, 0.47, 0.38, 0.33, 0.31, 0.30, 0.30, 0.31, 0.33,
-        0.36, 0.40, 0.45, 0.51, 0.58]
-val_losses = [b + random.gauss(0, 0.008) for b in base]
+# Simulate an overfitting run
+base = [0.72, 0.52, 0.38, 0.30, 0.27, 0.26, 0.27, 0.30, 0.34, 0.39]
+val_losses = [b + random.gauss(0, 0.007) for b in base]
 
 es = EarlyStopping(patience=3, delta=0.005)
-print(f"{'Epoch':>6}  {'Val Loss':>10}  {'Counter':>8}  {'Note'}")
-print("-" * 42)
+print(f"{'Epoch':>6}  {'Val Loss':>10}  {'Counter':>8}  {'Best?':>6}  Note")
+print("-" * 50)
 for ep, vl in enumerate(val_losses, 1):
-    stop, is_best = es.step(vl)
-    note = "← BEST" if is_best else (f"patience {es.counter}/3" if es.counter > 0 else "")
-    if stop: note = "← STOP"
-    print(f"{ep:>6}  {vl:>10.4f}  {es.counter:>8}  {note}")
+    stop, is_best = es.step(vl, ep)
+    best_mark = "<-- BEST" if is_best else ""
+    note = f"patience {es.counter}/{es.patience}" if es.counter > 0 else ""
+    if stop: note = "<-- STOP"
+    print(f"{ep:>6}  {vl:>10.4f}  {es.counter:>8}  {best_mark:>6}  {note}")
     if stop:
-        print(f"\nStopped at epoch {ep}. Best val loss: {es.best:.4f}")
+        print(f"
+Stopped at epoch {ep}.")
+        print(f"Best epoch: {es.best_epoch}, best val loss: {es.best:.4f}")
+        print("Would restore checkpoint from epoch", es.best_epoch)
         break</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.9  What Gets Transferred           -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s9">
 <div class="section-label">6.9</div>
 <h2>What Gets Transferred</h2>
-
-<p>Transfer learning is not magic — it is measurable. Tenney et al. (2019) trained linear classifiers on each BERT layer's hidden states and evaluated them on NLP tasks (part-of-speech, named entities, coreference). The results revealed a clear hierarchy: the NLP pipeline is physically encoded in the transformer layers from bottom to top. Early layers encode morphology and part-of-speech; middle layers encode semantic roles and named entities; late layers encode discourse-level patterns and task-specific associations.</p>
-
-<p>This hierarchy has a direct implication for fine-tuning strategy. When transferring to a classification task, the late layers (9–12 in GPT-2) need to change the most — they must redirect from "what comes next in general web text" to "what class does this text belong to." The early layers (1–4) are already doing what classification needs — detecting syntax and morphology — and should be disturbed as little as possible. Middle layers (5–8) are partially task-specific and partially general; they benefit from a small learning rate update.</p>
-
-<p>An important limitation: transfer learning breaks down when the fine-tuning domain is very different from pretraining. A GPT-2 pretrained on English web text fine-tuned on medical radiology reports will struggle because the vocabulary, syntax, and concepts are largely out-of-distribution. In this case, domain-adaptive pretraining — continuing pretraining on the target domain before fine-tuning — often recovers 2–5 F1 points. This was demonstrated by Gururangan et al. (2020) across 8 domains and 4 tasks.</p>
-
-<div class="callout blue"><strong>Key insight:</strong> Tenney et al. found that BERT layers 1–4 are essentially identical to the classical NLP pipeline: tokenisation → POS → parsing → semantics → discourse. This means fine-tuning for any classification task is borrowing 4 free NLP pipeline steps that took decades of NLP research to build. You're paying for them with 300B tokens of pretraining compute — amortised across every user of the pretrained model.</div>
-
+<p>Transfer learning is measurable. Tenney et al. (2019, ICLR, arxiv 1905.05950) trained linear classifiers on the hidden states of each individual BERT layer and evaluated them on a suite of NLP tasks: part-of-speech tagging, chunking, named entity recognition, semantic role labeling, coreference resolution, and others. The results revealed a clear hierarchy that mirrors the classical NLP processing pipeline &mdash; a hierarchy that engineers had developed over decades was independently re-discovered by the model during unsupervised pretraining. Layer 2&ndash;3: morphology and POS tagging peak. Layer 7&ndash;8: named entity recognition peaks (layer 8: 74.4% F1). Layer 10: semantic role labeling peaks (64.4% F1). Layer 12: task-specific and discourse-level patterns.</p>
+<p>This has concrete implications for fine-tuning strategy. When adapting GPT-2 for spam classification, the late layers (9&ndash;12) need the most change: they were optimised for &ldquo;predict next token given general web text&rdquo; and need to redirect toward &ldquo;map this input to a class label.&rdquo; The early layers (1&ndash;4) are already doing exactly what classification needs &mdash; detecting word forms, syntactic roles, and basic semantics &mdash; and should be disturbed as little as possible. This is why discriminative learning rates (lower LR for lower layers) work: they let late layers adapt substantially while keeping early layers nearly frozen.</p>
+<p>Transfer also breaks down when the fine-tuning domain is sufficiently different from pretraining. Gururangan et al. (2020, arxiv 2004.10964) showed that domain-adaptive pretraining &mdash; continuing pretraining on the target domain before task fine-tuning &mdash; recovers 2&ndash;5 F1 points across 8 domains (biomedical, CS, news, reviews) and 4 tasks. The intuition: if the model has never seen clinical radiology reports during pretraining, its early layers have not learned the domain-specific morphology and the late layers cannot build domain-accurate semantic representations. Continued pretraining on unlabeled domain text fills this gap without requiring any additional labels.</p>
+<div class="callout blue"><strong>Key insight:</strong> Tenney et al. found that BERT's layers 1&ndash;4 re-implement the classical NLP pipeline: tokenisation &rarr; POS &rarr; parsing &rarr; semantics &rarr; discourse. This means every fine-tuned classifier gets four NLP pipeline stages for free &mdash; stages that took the NLP community decades to build. You are paying for them with pretraining compute, amortised across all users of the shared pretrained model.</div>
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1905.05950" target="_blank">🔗 Tenney et al. 2019 — BERT Rediscovers the Classical NLP Pipeline (layer-by-layer analysis)</a>
-  <a href="https://arxiv.org/abs/2004.10964" target="_blank">🔗 Gururangan et al. 2020 — Don't Stop Pretraining (domain-adaptive pretraining across 8 domains)</a>
-  <a href="https://aclanthology.org/P19-1356/" target="_blank">🔗 Jawahar et al. 2019 — What Does BERT Learn About the Structure of Language (BERT layer analysis)</a>
+  <a href="https://arxiv.org/abs/1905.05950" target="_blank">Tenney et al. 2019 &mdash; BERT Rediscovers the Classical NLP Pipeline (ICLR 2019, layer-by-layer probing)</a>
+  <a href="https://arxiv.org/abs/2004.10964" target="_blank">Gururangan et al. 2020 &mdash; Don't Stop Pretraining (domain-adaptive pretraining across 8 domains)</a>
+  <a href="https://arxiv.org/abs/1905.06316" target="_blank">Tenney et al. 2019 &mdash; What Do You Learn From Context? Probing for Sentence Structure in Contextualized Word Representations</a>
 </div>
-
-<div class="cell" id="cell-9">
+<div class="cell" id="run-6-9">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 9 — Layer-probing: accuracy of linear classifiers at each layer</span>
-    <button class="run-btn" onclick="runCell('cell-9')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; layer probing results from Tenney et al. 2019</span>
+    <button class="run-btn" onclick="runCode('run-6-9')">Run</button>
   </div>
   <div class="cell-code"><pre># Approximate layer probing results from Tenney et al. 2019
-# These are real results — what each BERT layer knows
-
-layer_probe_data = {
-    "POS tagging":     [82,88,92,93,93,93,92,90,88,86,84,82],  # Layer 1..12
-    "Chunking":        [74,82,87,88,87,86,85,83,81,79,77,74],
-    "Named entities":  [65,72,78,82,83,82,80,79,78,76,74,72],
-    "Semantic roles":  [55,62,68,72,74,74,73,71,70,68,66,63],
-    "Coreference":     [48,54,59,63,65,66,66,65,64,63,62,60],
+# Linear classifier accuracy (%) at each BERT layer
+layer_probes = {
+    "POS tagging":      [82,88,92,93,93,93,92,90,88,86,84,82],
+    "Chunking":         [74,82,87,88,87,86,85,83,81,79,77,74],
+    "Named entities":   [65,72,78,82,83,82,80,79,78,76,74,72],
+    "Semantic roles":   [55,62,68,72,74,74,73,71,70,68,66,63],
+    "Coreference":      [48,54,59,63,65,66,66,65,64,63,62,60],
 }
 
-print("Linear probe accuracy (%) at each layer — Tenney et al. 2019\n")
+print("Linear probe accuracy (%) per BERT layer — Tenney et al. 2019")
+print("'*' marks peak layer for each task
+")
 print(f"{'Task':<20}", end="")
-for i in range(1, 13):
-    print(f" L{i:>2}", end="")
+for i in range(1, 13): print(f" L{i:>2}", end="")
 print()
-print("-" * 70)
-for task, scores in layer_probe_data.items():
+print("-" * 72)
+for task, scores in layer_probes.items():
     best = max(scores)
+    peak_layer = scores.index(best) + 1
     print(f"{task:<20}", end="")
     for s in scores:
-        marker = "!" if s == best else " "
-        print(f"{s:>3}{marker}", end="")
-    print(f"  ← peaks at L{scores.index(best)+1}")
+        mark = "*" if s == best else " "
+        print(f" {s:>2}{mark}", end="")
+    print(f"   peak L{peak_layer}")
 
-print("\n'!' marks each task's peak layer.")
-print("POS peaks early (L4); coreference peaks later (L6-7).")</pre></div>
+print()
+print("Pattern: syntactic tasks (POS, chunking) peak in early layers (L3-L4)")
+print("         semantic tasks (NER, roles)     peak in middle layers (L7-L9)")
+print("         discourse/task                  peaks in late layers (L10-L12)")
+print()
+print("Fine-tuning implication:")
+print("  Freeze L1-L4 (syntax already encoded correctly)")
+print("  Low LR for L5-L8 (adapt semantics carefully)")
+print("  Higher LR for L9-L12 (need most task-specific adaptation)")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
 
-<!-- ════════════════════════════════════════ -->
-<!-- §6.10  Fine-Tuning Best Practices     -->
-<!-- ════════════════════════════════════════ -->
 <section class="section" id="s10">
 <div class="section-label">6.10</div>
 <h2>Fine-Tuning Best Practices</h2>
-
-<p>After five chapters of theory, here are the practical decisions that determine fine-tuning success. These are empirically validated defaults — not rules, but strong priors that hold across most text classification tasks. Treat them as starting points, not constraints.</p>
-
-<p><strong>Learning rate</strong>: 2e-5 to 5e-5 for full fine-tuning; 1e-3 to 1e-4 for classification head only. These are the ranges that win on most benchmarks. Too high (1e-3 for full fine-tuning) causes catastrophic forgetting of pretrained weights. Too low (1e-6) causes slow convergence with no improvement over feature extraction. Use a linear warmup of 6% of total steps before applying cosine decay. <strong>Batch size</strong>: 16 or 32. Smaller batches are noisier but more updates per epoch — often better for small datasets. <strong>Epochs</strong>: 3–5 for most tasks with thousands of examples; 10–20 for very small datasets (200–500 examples) with early stopping enabled.</p>
-
-<p><strong>Data quality dominates</strong>. 1,000 high-quality, consistently-labeled examples outperform 10,000 noisy examples in almost every benchmark. Before adding more data, audit a sample: are the labels consistent? Are there near-duplicates that should be deduplicated? Is the label distribution representative of production? For imbalanced datasets, set class weights in the loss: <code>weight = [1.0, total/(n_positive * 2)]</code> — this upweights the minority class contribution to the gradient. For severely imbalanced data (99/1 ratio), oversample the minority class or use a focal loss.</p>
-
-<div class="callout"><strong>Key insight:</strong> The single most impactful change in most fine-tuning projects is not the model architecture, loss function, or optimizer — it's data quality. Spending 4 hours auditing and cleaning labels typically produces a larger F1 gain than spending 4 hours tuning hyperparameters.</div>
-
+<p><strong>Learning rate</strong> is the single most important hyperparameter for fine-tuning. The safe range for full fine-tuning is 1e-5 to 5e-5; for the classification head alone, 1e-3 to 1e-4. Rates above 1e-4 for full fine-tuning risk catastrophic forgetting within the first epoch. Use a linear warmup for the first 6&ndash;10% of training steps, then linear or cosine decay to zero. The warmup prevents the optimizer from taking large steps when the classification head is still randomly initialised, which would corrupt the backbone weights in the first few iterations. Smith (2017) showed that a learning rate finder &mdash; running one epoch with exponentially increasing LR and plotting loss vs LR &mdash; identifies the right range faster than grid search.</p>
+<p><strong>Batch size</strong>: 16 or 32 is standard for text classification. Smaller batches produce noisier gradients but more updates per epoch, which can help on very small datasets by exposing the model to more parameter update opportunities. Larger batches (64+) require gradient accumulation if memory-constrained but stabilise training when data is abundant. <strong>Max sequence length</strong>: most SMS messages need at most 128 tokens; most product reviews fit in 256; most documents in 512. Truncating to 256 instead of 512 halves the memory and compute cost of attention (which scales O(n&sup2;)). <strong>Data augmentation</strong> for small datasets: back-translation (English &rarr; German &rarr; English with a translation model) generates paraphrases that preserve semantic content. Wei &amp; Zou (2019, arxiv 1901.11196) showed that synonym replacement, random insertion, random swap, and random deletion each independently improve classification performance on small datasets by 0.5&ndash;3.0% F1.</p>
+<p><strong>Ensemble methods</strong>: fine-tuning the same pretrained model five times with different random seeds and taking the majority vote across seeds improves accuracy by 1&ndash;2 points on most benchmarks at the cost of 5&times; inference compute. <strong>Class weights</strong>: for any imbalanced dataset, set <code>CrossEntropyLoss(weight=[...])</code> with weights proportional to the inverse class frequency. This is equivalent to oversampling the minority class and is dramatically easier to implement. <strong>Data quality dominates</strong>: spending four hours cleaning and re-labeling ambiguous examples in your training set typically produces a larger F1 gain than four hours of hyperparameter tuning.</p>
+<div class="callout"><strong>Key insight:</strong> The most impactful change in most real-world fine-tuning projects is not the model, loss function, or optimizer &mdash; it is data quality. 1,000 clean, consistently labeled examples outperform 10,000 noisy examples on nearly every benchmark. Audit a random sample before tuning anything else.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">best_practices.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Fine-tuning recipe that wins on most text classification benchmarks</span>
-
+<pre><span class="cm"># Canonical fine-tuning configuration for text classification</span>
 CONFIG = {
     <span class="cm"># Data</span>
-    <span class="st">"max_length"</span>:      <span class="nu">256</span>,     <span class="lm"># ↑ 256 covers most text; GPT-2 supports 1024</span>
-    <span class="st">"train_split"</span>:     <span class="nu">0.8</span>,     <span class="lm"># ↑ 80% train, 10% val, 10% test</span>
-
-    <span class="cm"># Optimiser</span>
-    <span class="st">"lr"</span>:              <span class="nu">2e-5</span>,    <span class="lm"># ↑ standard for full fine-tuning; 1e-3 for head-only</span>
-    <span class="st">"weight_decay"</span>:    <span class="nu">0.01</span>,   <span class="lm"># ↑ AdamW default; L2 regularisation</span>
-    <span class="st">"warmup_ratio"</span>:    <span class="nu">0.06</span>,   <span class="lm"># ↑ warmup 6% of total steps — prevents early instability</span>
-
+    <span class="st">"max_length"</span>:       <span class="nu">256</span>,      <span class="lm"># &#8593; 256 covers 95%+ of classification inputs</span>
+    <span class="st">"train_split"</span>:      <span class="nu">0.8</span>,      <span class="lm"># &#8593; 80% train / 10% val / 10% test</span>
+    <span class="st">"batch_size"</span>:        <span class="nu">32</span>,      <span class="lm"># &#8593; stable gradients; fits on 4GB GPU</span>
+    <span class="cm"># Optimizer</span>
+    <span class="st">"lr"</span>:              <span class="nu">2e-5</span>,      <span class="lm"># &#8593; safe range: 1e-5 to 5e-5 for full fine-tune</span>
+    <span class="st">"weight_decay"</span>:    <span class="nu">0.01</span>,      <span class="lm"># &#8593; AdamW L2 regularisation</span>
+    <span class="st">"warmup_frac"</span>:     <span class="nu">0.06</span>,      <span class="lm"># &#8593; warm up LR for first 6% of steps</span>
     <span class="cm"># Training</span>
-    <span class="st">"batch_size"</span>:      <span class="nu">32</span>,      <span class="lm"># ↑ 32 is default; reduce to 16 for small datasets</span>
-    <span class="st">"epochs"</span>:          <span class="nu">5</span>,       <span class="lm"># ↑ 3-5 with early stopping patience=2</span>
-    <span class="st">"grad_clip"</span>:       <span class="nu">1.0</span>,    <span class="lm"># ↑ global norm clipping (prevents gradient explosions)</span>
-    <span class="st">"patience"</span>:        <span class="nu">2</span>,       <span class="lm"># ↑ early stopping patience</span>
-    <span class="st">"eval_every"</span>:      <span class="nu">100</span>,    <span class="lm"># ↑ evaluate every 100 steps, not every epoch</span>
+    <span class="st">"epochs"</span>:             <span class="nu">5</span>,      <span class="lm"># &#8593; 3-5 epochs; more risks forgetting</span>
+    <span class="st">"early_stop_patience"</span>:<span class="nu">3</span>,      <span class="lm"># &#8593; stop if no improvement for 3 epochs</span>
+    <span class="st">"dropout"</span>:          <span class="nu">0.1</span>,      <span class="lm"># &#8593; applied before classification head</span>
+    <span class="st">"label_smoothing"</span>:  <span class="nu">0.1</span>,      <span class="lm"># &#8593; softens 0/1 to 0.05/0.95 (prevents overconfidence)</span>
 }
 
-<span class="cm"># Class-weighted loss for imbalanced data</span>
-<span class="cm"># Example: 86.6% ham, 13.4% spam</span>
-<span class="kw">def</span> <span class="fn">class_weights</span>(class_counts):
-    total = <span class="bi">sum</span>(class_counts)
-    n_cls = <span class="bi">len</span>(class_counts)
-    <span class="kw">return</span> [total / (n_cls * c) <span class="kw">for</span> c <span class="kw">in</span> class_counts]   <span class="lm"># ↑ rare classes get higher weight</span>
+<span class="cm"># Warmup + linear decay schedule</span>
+<span class="kw">def</span> <span class="fn">get_lr</span>(step, total_steps, base_lr, warmup_frac):
+    warmup = <span class="bi">int</span>(warmup_frac * total_steps)
+    <span class="kw">if</span> step &lt; warmup:
+        <span class="kw">return</span> base_lr * (step / warmup)     <span class="lm"># &#8593; linear ramp from 0 to base_lr</span>
+    progress = (step - warmup) / (total_steps - warmup)
+    <span class="kw">return</span> base_lr * (<span class="nu">1</span> - progress)          <span class="lm"># &#8593; linear decay from base_lr to 0</span>
 
-weights = <span class="fn">class_weights</span>([<span class="nu">4827</span>, <span class="nu">747</span>])   <span class="lm"># ↑ ham=4827, spam=747</span>
-<span class="cm"># Result: ham weight=0.69, spam weight=4.46 — spam contributes 6.5× more to loss</span>
-</code></pre>
+<span class="cm"># Class weight computation</span>
+<span class="kw">def</span> <span class="fn">class_weights</span>(counts):
+    total = <span class="bi">sum</span>(counts)
+    <span class="kw">return</span> [total / (<span class="bi">len</span>(counts) * c) <span class="kw">for</span> c <span class="kw">in</span> counts]  <span class="lm"># &#8593; inverse frequency</span>
+
+weights = <span class="fn">class_weights</span>([<span class="nu">4827</span>, <span class="nu">747</span>])   <span class="lm"># &#8593; SMS Spam: [0.577, 3.727]</span></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1905.05583" target="_blank">🔗 Sun et al. 2019 — How to Fine-Tune BERT for Text Classification (systematic study of fine-tuning hypers)</a>
-  <a href="https://huggingface.co/docs/transformers/training" target="_blank">🔗 HuggingFace Transformers — Training documentation (complete fine-tuning workflow with Trainer API)</a>
+  <a href="https://arxiv.org/abs/1905.05583" target="_blank">Sun et al. 2019 &mdash; How to Fine-Tune BERT for Text Classification (comprehensive hyperparameter study)</a>
+  <a href="https://arxiv.org/abs/1901.11196" target="_blank">Wei &amp; Zou 2019 &mdash; EDA: Easy Data Augmentation (synonym/insertion/swap/deletion, arxiv 1901.11196)</a>
+  <a href="https://huggingface.co/docs/transformers/training" target="_blank">HuggingFace Transformers &mdash; Training guide (Trainer API, complete fine-tuning workflow)</a>
 </div>
-
-<div class="cell" id="cell-10">
+<div class="cell" id="run-6-10">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 10 — Class weights: compute and verify the rebalancing effect</span>
-    <button class="run-btn" onclick="runCell('cell-10')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; LR schedule + class weights + ensemble math</span>
+    <button class="run-btn" onclick="runCode('run-6-10')">Run</button>
+  </div>
+  <div class="cell-code"><pre>import math, random
+
+# 1. Learning rate schedule (warmup + linear decay)
+def lr_schedule(step, total, base_lr=2e-5, warmup_frac=0.06):
+    warmup = int(warmup_frac * total)
+    if step < warmup:
+        return base_lr * (step / max(1, warmup))
+    progress = (step - warmup) / max(1, total - warmup)
+    return base_lr * (1 - progress)
+
+total_steps = 500
+print("LR schedule (warmup 6% + linear decay):")
+for s in [0, 15, 30, 100, 250, 400, 499]:
+    lr = lr_schedule(s, total_steps)
+    bar = chr(9608) * int(lr / 2e-5 * 20)
+    print(f"  step {s:>4}: {lr:.2e}  {bar}")
+
+# 2. Class weights
+def class_weights(counts):
+    total = sum(counts)
+    return [total / (len(counts) * c) for c in counts]
+
+w = class_weights([4827, 747])
+print(f"
+Class weights: ham={w[0]:.4f}, spam={w[1]:.4f} ({w[1]/w[0]:.1f}x ratio)")
+
+# 3. Ensemble voting simulation
+random.seed(42)
+n_models = 5
+print(f"
+Ensemble of {n_models} models (majority vote):")
+# Single model accuracy baseline
+base_acc = 0.965
+results = []
+for m in range(n_models):
+    random.seed(m * 7)
+    acc = base_acc + random.gauss(0, 0.006)
+    results.append(round(acc, 4))
+    print(f"  Model {m+1}: {acc:.4f}")
+
+# Majority vote: each "model" independently correct with prob base_acc
+# P(majority correct from 5 independent models):
+p = base_acc
+p_majority = sum(
+    math.comb(5, k) * p**k * (1-p)**(5-k)
+    for k in range(3, 6)  # 3 or more correct out of 5
+)
+print(f"
+Single model accuracy:    {base_acc:.4f}")
+print(f"Ensemble (majority vote): {p_majority:.4f}  (+{p_majority-base_acc:.4f})")</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
+
+<section class="section" id="s11">
+<div class="section-label">6.11</div>
+<h2>Multi-Label and Multi-Class Problems</h2>
+<p>Text classification splits into two fundamentally different problem types based on whether the classes are mutually exclusive. <strong>Multi-class</strong> (also called single-label): each input belongs to exactly one class. The correct output layer is <code>Linear(d, C)</code> followed by softmax over all C classes, with cross-entropy loss. The C scores are constrained to sum to 1 (they form a probability distribution), and the highest score is the predicted class. Examples: sentiment (positive / negative / neutral), topic classification (sports / politics / entertainment / technology), spam (spam / ham). <strong>Multi-label</strong>: each input can simultaneously belong to zero, one, or multiple classes. The correct output layer is <code>Linear(d, C)</code> followed by sigmoid applied independently to each of the C outputs, with binary cross-entropy (BCE) computed per class. The C scores are independent probabilities; each is thresholded separately (default: 0.5). Examples: document tagging (a news article may be simultaneously tagged &ldquo;politics&rdquo; AND &ldquo;economy&rdquo;), toxic comment detection (a comment may be simultaneously &ldquo;toxic&rdquo; AND &ldquo;threat&rdquo;).</p>
+<p>The choice of output activation &mdash; softmax vs sigmoid &mdash; encodes your assumptions about class structure. Softmax says: &ldquo;exactly one class is true; the model's confidence in one class should come at the expense of others.&rdquo; Sigmoid says: &ldquo;each class is an independent binary question; confidence in one class tells you nothing about the others.&rdquo; Applying softmax to a multi-label problem will actively hurt performance: the loss function will penalise the model for assigning high probability to two simultaneously correct classes, even when both are genuinely present. Conversely, applying sigmoid to a single-label problem loses the mutual-exclusivity constraint and will produce poorly calibrated probabilities.</p>
+<p>Thresholding in multi-label problems is a deployment decision, not a training decision. The default threshold of 0.5 is rarely optimal. For a multi-label toxic comment classifier, you might lower the threshold to 0.3 to catch more positives (higher recall) at the cost of more false positives. The optimal threshold per class can be found by sweeping the validation set: for each class, compute F1 at every threshold from 0.1 to 0.9 in steps of 0.05 and pick the threshold that maximises F1 on validation. This threshold optimisation adds no additional model training and typically improves macro-F1 by 2&ndash;5 points on multi-label benchmarks.</p>
+<div class="callout purple"><strong>Key insight:</strong> Softmax enforces that scores sum to 1 &mdash; giving confidence to one class takes it from others. Sigmoid treats each class independently. If your classes are mutually exclusive, use softmax + cross-entropy. If multiple classes can be simultaneously true, use sigmoid + binary cross-entropy. Getting this wrong silently degrades your model.</div>
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">multiclass_multilabel.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="cm"># Multi-class: exactly one class per input (mutually exclusive)</span>
+<span class="kw">class</span> <span class="cl">MultiClassHead</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, d=<span class="nu">768</span>, num_classes=<span class="nu">5</span>):
+        <span class="bi">super</span>().__init__()
+        <span class="pr">self</span>.proj = nn.<span class="cl">Linear</span>(d, num_classes)  <span class="lm"># &#8593; 5 mutually exclusive topic classes</span>
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+        logits = <span class="pr">self</span>.proj(x)                  <span class="lm"># &#8593; raw scores; do NOT softmax here</span>
+        <span class="kw">return</span> logits                           <span class="lm"># &#8593; CrossEntropyLoss applies log_softmax internally</span>
+
+loss_mc = nn.<span class="cl">CrossEntropyLoss</span>()              <span class="lm"># &#8593; applies softmax + NLL; expects integer class labels</span>
+
+<span class="cm"># Multi-label: multiple classes can be simultaneously true</span>
+<span class="kw">class</span> <span class="cl">MultiLabelHead</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, d=<span class="nu">768</span>, num_tags=<span class="nu">8</span>):
+        <span class="bi">super</span>().__init__()
+        <span class="pr">self</span>.proj = nn.<span class="cl">Linear</span>(d, num_tags)    <span class="lm"># &#8593; 8 independent binary classifiers</span>
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+        logits = <span class="pr">self</span>.proj(x)                 <span class="lm"># &#8593; raw scores per tag</span>
+        <span class="kw">return</span> logits                          <span class="lm"># &#8593; BCEWithLogitsLoss handles sigmoid internally</span>
+
+loss_ml = nn.<span class="cl">BCEWithLogitsLoss</span>()            <span class="lm"># &#8593; sigmoid + binary cross-entropy; labels are 0/1 floats</span>
+
+<span class="cm"># Threshold sweep: find optimal per-class threshold on validation set</span>
+<span class="kw">def</span> <span class="fn">find_best_threshold</span>(logits, labels, thresholds=None):
+    <span class="kw">if</span> thresholds <span class="kw">is</span> <span class="kw">None</span>:
+        thresholds = [i/<span class="nu">20</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">1</span>, <span class="nu">20</span>)]   <span class="lm"># &#8593; 0.05 to 0.95</span>
+    probs = torch.<span class="fn">sigmoid</span>(logits)               <span class="lm"># &#8593; convert logits to probabilities</span>
+    best_t, best_f1 = <span class="nu">0.5</span>, <span class="nu">0.0</span>
+    <span class="kw">for</span> t <span class="kw">in</span> thresholds:
+        preds = (probs &gt; t).<span class="fn">float</span>()
+        f1 = compute_f1(preds, labels)           <span class="lm"># &#8593; compute macro-F1 at this threshold</span>
+        <span class="kw">if</span> f1 &gt; best_f1: best_t, best_f1 = t, f1
+    <span class="kw">return</span> best_t, best_f1</pre>
+</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/1708.02002" target="_blank">Lin et al. 2017 &mdash; Focal Loss for Dense Object Detection (addresses class imbalance in multi-label settings)</a>
+  <a href="https://huggingface.co/docs/transformers/tasks/sequence_classification" target="_blank">HuggingFace &mdash; Sequence Classification guide (multi-label example with BCEWithLogitsLoss)</a>
+</div>
+<div class="cell" id="run-6-11">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; softmax vs sigmoid outputs compared</span>
+    <button class="run-btn" onclick="runCode('run-6-11')">Run</button>
   </div>
   <div class="cell-code"><pre>import math
 
-def class_weights(counts):
-    total = sum(counts)
-    n = len(counts)
-    return [total / (n * c) for c in counts]
+def softmax(logits):
+    m = max(logits)  # subtract max for numerical stability
+    exps = [math.exp(x - m) for x in logits]
+    total = sum(exps)
+    return [e / total for e in exps]
 
-# Spam dataset
-ham, spam = 4827, 747
-weights = class_weights([ham, spam])
+def sigmoid(x): return 1 / (1 + math.exp(-x))
 
-print("Class weights for imbalanced spam dataset:")
-print(f"  Ham weight:  {weights[0]:.4f}")
-print(f"  Spam weight: {weights[1]:.4f}")
-print(f"  Ratio: spam weight is {weights[1]/weights[0]:.1f}× ham weight\n")
+# Example: article about climate policy
+# Classes: politics, science, economy, sports, entertainment
+logits_multi_class = [2.1, 1.8, 1.2, -0.5, -1.1]
 
-# Effect on effective sample size
-print("Effect on loss computation:")
-print(f"  Unweighted: 1 spam example contributes 1 unit of loss")
-print(f"  Weighted:   1 spam example contributes {weights[1]:.1f} units of loss")
-print(f"  This is equivalent to having {weights[1]:.0f}× more spam examples.\n")
+print("=== Multi-class (softmax) ===")
+print("Logits:", logits_multi_class)
+probs_mc = softmax(logits_multi_class)
+classes = ["politics", "science", "economy", "sports", "entertainment"]
+for cls, p in zip(classes, probs_mc):
+    bar = chr(9608) * int(p * 30)
+    print(f"  {cls:<15} {p:.4f}  {bar}")
+print(f"  Sum = {sum(probs_mc):.6f}  (must = 1.0 for softmax)")
+print(f"  Predicted class: {classes[probs_mc.index(max(probs_mc))]}")
 
-# Different imbalance ratios
-print("Weight ratios at different imbalance levels:")
-for spam_count in [4000, 2000, 747, 300, 100, 50]:
-    total = 5574
-    w = class_weights([total - spam_count, spam_count])
-    pct = 100*spam_count/total
-    print(f"  {spam_count:>5} spam ({pct:>4.1f}%): spam weight = {w[1]:.2f}x")</pre></div>
+print()
+print("=== Multi-label (sigmoid, same logits) ===")
+print("Each class is independent; scores do NOT sum to 1")
+for cls, l in zip(classes, logits_multi_class):
+    p = sigmoid(l)
+    active = "ACTIVE" if p > 0.5 else ""
+    bar = chr(9608) * int(p * 30)
+    print(f"  {cls:<15} {p:.4f}  {bar}  {active}")
+total_sig = sum(sigmoid(l) for l in logits_multi_class)
+print(f"  Sum = {total_sig:.4f}  (can be any value for sigmoid)")
+print()
+print("For a climate-policy article: politics AND science both true.")
+print("Softmax forces a choice; sigmoid allows both = 1 simultaneously.")</pre></div>
   <div class="cell-output"></div>
 </div>
+<hr class="section-divider">
+</section>
 
-<!-- Summary -->
+<section class="section" id="s12">
+<div class="section-label">6.12</div>
+<h2>Catastrophic Forgetting and How to Fight It</h2>
+<p>Catastrophic forgetting occurs when training a neural network on a new task causes it to lose performance on tasks it previously knew. In the fine-tuning context: updating GPT-2's weights on spam classification can, with a high enough learning rate or too many epochs, overwrite the general language representations the model learned during pretraining. The model stops being a good language model and becomes an overfit spam classifier that fails on any text that does not closely resemble its training distribution. The plasticity-stability dilemma is fundamental: the same property (weight updatability) that allows learning also allows forgetting.</p>
+<p>Kirkpatrick et al. (2017, arxiv 1612.00796) proposed <strong>Elastic Weight Consolidation (EWC)</strong>, a principled solution from the continual learning literature. EWC adds a regularisation term to the loss function that penalises large changes to parameters that were important for the previous task. &ldquo;Importance&rdquo; is measured by the diagonal of the Fisher Information Matrix &mdash; which estimates how much the model's output changes in response to each parameter being perturbed. Parameters with high Fisher Information (changing them a lot would hurt Task A performance) receive a high penalty for being modified during Task B fine-tuning. The EWC loss term is: <code>&lambda; &sum;_i F_i (&theta;_i &minus; &theta;*_i)&sup2;</code>, where F_i is the Fisher importance for parameter i, &theta;*_i is the Task A optimal value, and &lambda; controls the regularisation strength. EWC demonstrated that a single neural network could sequentially learn 10 Atari games without forgetting earlier games.</p>
+<p>For practical fine-tuning, EWC is rarely necessary because there are simpler countermeasures. <strong>Small learning rate</strong> (1e-5 to 2e-5) ensures that the optimizer takes small steps, making complete forgetting geometrically impossible in 3&ndash;5 epochs. <strong>Frozen early layers</strong> preserve the general-purpose representations that are most at risk. <strong>Early stopping</strong> prevents the model from training long enough to overfit. <strong>Replay</strong>: mix a small fraction of general pretraining data (e.g., Wikipedia text) into the fine-tuning batches; this provides a gradient signal that pushes back against forgetting. In practice, the combination of lr=2e-5 + frozen early layers + 3 epochs eliminates catastrophic forgetting for most text classification use cases without any explicit EWC regularisation.</p>
+<div class="callout amber"><strong>Key insight:</strong> Catastrophic forgetting is a genuine risk but a solved problem in practice. The solution is simply a small learning rate. At lr=2e-5, even 5 full fine-tuning epochs do not cause measurable degradation on general NLP benchmarks. EWC is valuable for sequential multi-task learning; for single-task fine-tuning, keep the LR small.</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/1612.00796" target="_blank">Kirkpatrick et al. 2017 &mdash; Overcoming Catastrophic Forgetting in Neural Networks (EWC, arxiv 1612.00796)</a>
+  <a href="https://arxiv.org/abs/1904.07551" target="_blank">Pfeiffer et al. 2020 &mdash; AdapterHub: A Framework for Adapting Transformers (adapter layers prevent forgetting)</a>
+  <a href="https://arxiv.org/abs/2302.01399" target="_blank">Luo et al. 2023 &mdash; An Empirical Study of Catastrophic Forgetting in Large Language Models (LLM-specific analysis)</a>
+</div>
+<div class="cell" id="run-6-12">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; EWC penalty: importance-weighted parameter regularisation</span>
+    <button class="run-btn" onclick="runCode('run-6-12')">Run</button>
+  </div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+# Simulate EWC: parameter importance scores (Fisher diagonal approximation)
+# High Fisher = parameter is critical for Task A (pretraining knowledge)
+# Low Fisher  = parameter is task-specific / easily changed
+
+n_params = 12  # simplified: 12 parameter groups (one per layer)
+# Early layers: high Fisher (important for general language)
+# Late layers:  low Fisher  (more task-specific)
+fisher = [0.95, 0.90, 0.82, 0.74, 0.65, 0.55, 0.44, 0.34, 0.24, 0.16, 0.09, 0.04]
+
+# Task A optimal values (pretrained weights)
+theta_star = [random.gauss(0, 1) for _ in range(n_params)]
+
+# Fine-tuning: gradient pushes parameters toward Task B optimum
+# Simulate parameter values after fine-tuning at different LRs
+def ewc_penalty(theta_current, theta_star, fisher, lam=0.4):
+    return lam * sum(f * (tc - ts)**2
+                     for f, tc, ts in zip(fisher, theta_current, theta_star))
+
+print("EWC regularisation penalty at different learning rates:
+")
+print(f"{'LR':>8}  {'Avg drift':>12}  {'EWC penalty':>13}  {'Note'}")
+print("-" * 55)
+for lr_scale in [1.0, 0.5, 0.1, 0.02, 0.005]:
+    # Parameter drift proportional to LR (simplified)
+    random.seed(7)
+    drift = [random.gauss(0, lr_scale) for _ in range(n_params)]
+    theta_new = [ts + d for ts, d in zip(theta_star, drift)]
+    avg_drift = sum(abs(d) for d in drift) / n_params
+    penalty = ewc_penalty(theta_new, theta_star, fisher)
+    note = "catastrophic" if penalty > 1.0 else ("risky" if penalty > 0.2 else "safe")
+    lr_str = f"~{lr_scale*1e-3:.0e}" if lr_scale < 1 else "~1e-3"
+    print(f"{lr_str:>8}  {avg_drift:>12.4f}  {penalty:>13.4f}  {note}")
+
+print()
+print("EWC penalty = lambda * sum(Fisher_i * (theta_i - theta*_i)^2)")
+print("High Fisher params (early layers) penalised heavily for drifting.")
+print("Low  Fisher params (late layers)  can change freely.")</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
+
+<section class="section" id="s13">
+<div class="section-label">6.13</div>
+<h2>Fine-Tuning with Limited Labels</h2>
+<p>Few-shot fine-tuning &mdash; learning from 1 to 100 labeled examples &mdash; is one of the most practically important problems in NLP. Labeling data is expensive, time-consuming, and often requires domain expertise. In many real-world applications, the annotation budget is measured in tens of examples, not thousands. Naive full fine-tuning on 10 examples will overfit catastrophically regardless of learning rate: the model has 117M parameters and 10 gradient signals. Feature extraction (training only the classification head) is much more stable but may not adapt to domain-specific language. The right approach depends on the amount of data and the nature of the task.</p>
+<p><strong>SetFit</strong> (Tunstall et al. 2022, arxiv 2209.11055) is currently the most effective approach for very low-label regimes (8&ndash;64 examples per class). SetFit fine-tunes a sentence embedding model using contrastive learning on sentence pairs: positive pairs (two sentences from the same class) are pushed together in embedding space; negative pairs (sentences from different classes) are pushed apart. This requires only class labels, no task-specific architecture, and converges with as few as 8 labeled examples per class. On 8-shot benchmarks, SetFit with a 110M sentence encoder matches or outperforms GPT-3 (175B) in-context learning. The key insight is that contrastive learning extracts more signal from each example than cross-entropy: a single labeled example generates one positive pair for every other example in the same class, and one negative pair for every example in different classes, producing n&sup2;/2 training pairs from n examples.</p>
+<p><strong>In-context learning</strong> (ICL) is the zero-parameter alternative: include labeled examples in the prompt and ask the model to classify new examples by analogy. GPT-3 with 10 labeled examples in the prompt achieves competitive performance on many classification benchmarks without any weight updates. ICL requires no training infrastructure, no held-out validation set, and can be updated instantaneously by changing the prompt. The trade-off: each inference call includes the full set of examples (10 examples &times; ~50 tokens each = 500 tokens of overhead per query), ICL performance is sensitive to example selection and ordering, and very large models (GPT-3+) are needed for reliable few-shot ICL. For deployments where low latency and low cost per query matter more than annotation savings, few-shot fine-tuning wins; for maximum label efficiency and minimal infrastructure, ICL wins.</p>
+<div class="callout blue"><strong>Key insight:</strong> SetFit with 8 examples per class outperforms GPT-3 175B in-context learning on 7 of 8 few-shot classification benchmarks (Tunstall et al. 2022), using a model 1,590 times smaller. Label efficiency is not just about the number of examples &mdash; it is about the learning algorithm that extracts signal from each example.</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/2209.11055" target="_blank">Tunstall et al. 2022 &mdash; Efficient Few-Shot Learning Without Prompts (SetFit, arxiv 2209.11055)</a>
+  <a href="https://arxiv.org/abs/2005.14165" target="_blank">Brown et al. 2020 &mdash; Language Models are Few-Shot Learners (GPT-3 in-context learning, arxiv 2005.14165)</a>
+  <a href="https://arxiv.org/abs/2202.12040" target="_blank">Min et al. 2022 &mdash; Rethinking the Role of Demonstrations for In-Context Learning (what ICL actually learns)</a>
+</div>
+<div class="cell" id="run-6-13">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; contrastive pair generation (SetFit core idea)</span>
+    <button class="run-btn" onclick="runCode('run-6-13')">Run</button>
+  </div>
+  <div class="cell-code"><pre>import math, random, collections
+random.seed(42)
+
+# SetFit: contrastive pair generation from a tiny labeled dataset
+# Simulate 8 labeled examples per class (typical SetFit setup)
+
+labeled_data = {
+    "spam":     ["free prize", "claim now", "urgent winner", "click here",
+                 "free entry", "limited offer", "act now", "congratulations"],
+    "ham":      ["see you tomorrow", "lunch at 12", "can you call me",
+                 "where are you", "sounds good", "thanks for helping",
+                 "running late", "love you"],
+    "phishing": ["verify account", "password expired", "login required",
+                 "account suspended", "confirm identity", "security alert",
+                 "update details", "bank notice"],
+}
+
+def generate_pairs(data, n_positive_per_class=5, n_negative=20):
+    pairs = []
+    classes = list(data.keys())
+    # Positive pairs: same class
+    for cls, examples in data.items():
+        for _ in range(n_positive_per_class):
+            a, b = random.sample(examples, 2)
+            pairs.append((a, b, 1, f"pos/{cls}"))
+    # Negative pairs: different classes
+    for _ in range(n_negative):
+        c1, c2 = random.sample(classes, 2)
+        a = random.choice(data[c1])
+        b = random.choice(data[c2])
+        pairs.append((a, b, 0, f"neg/{c1}-{c2}"))
+    return pairs
+
+pairs = generate_pairs(labeled_data)
+total_examples = sum(len(v) for v in labeled_data.values())
+print(f"Labeled examples: {total_examples} ({total_examples//3} per class)")
+print(f"Contrastive pairs generated: {len(pairs)}")
+print(f"Pairs per example: {len(pairs)/total_examples:.1f}x signal amplification")
+
+print()
+print("Sample pairs:")
+for a, b, label, kind in random.sample(pairs, 6):
+    lstr = "SAME class" if label == 1 else "DIFF class"
+    print(f"  [{lstr}] '{a[:20]}' <-> '{b[:20]}'  ({kind})")
+
+print()
+# Compare to cross-entropy signal per example
+print("Signal comparison (SetFit vs standard fine-tuning):")
+print(f"  Standard CE:   {total_examples} labeled -> {total_examples} training signals")
+print(f"  SetFit:        {total_examples} labeled -> {len(pairs)} contrastive training signals")
+print(f"  Amplification: {len(pairs)/total_examples:.1f}x more gradient signal per label")</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
+
 <section class="section" id="summary">
 <div class="section-label">Summary</div>
-<h2>Chapter 6 — Key Takeaways</h2>
+<h2>Chapter 6 &mdash; Key Takeaways</h2>
 <table class="sum-table">
   <tr><th>Concept</th><th>Key Number / Fact</th></tr>
-  <tr><td><strong>Transfer learning</strong></td><td>GPT fine-tuned on 2,000 examples beats task-specific model on 100,000. Pretrained knowledge is worth thousands of labels.</td></tr>
-  <tr><td><strong>Classification head</strong></td><td>Linear(768→2) = 1,538 params = 0.0012% of GPT-2. The head finds a direction in the residual stream, not new knowledge.</td></tr>
-  <tr><td><strong>Freezing</strong></td><td>Feature extract: head only. Partial: last 4 blocks + head. Full: all 124M. LLRD: decay factor 0.9 per layer from top.</td></tr>
-  <tr><td><strong>Accuracy trap</strong></td><td>13.4% spam → always-ham baseline is 86.6% accurate. F1, Recall, and AUC are the correct metrics for imbalanced tasks.</td></tr>
-  <tr><td><strong>Precision / Recall</strong></td><td>P = TP/(TP+FP). R = TP/(TP+FN). F1 = harmonic mean. Harmonic mean correctly penalises extreme imbalances.</td></tr>
-  <tr><td><strong>AUC</strong></td><td>Area under ROC curve. 0.5 = random, 1.0 = perfect. Threshold-independent ranking quality. GPT spam: AUC ≈ 0.997.</td></tr>
-  <tr><td><strong>Overfitting</strong></td><td>Train loss ↓ while val loss ↑. Cause: too many epochs, too high LR, model capacity >> data. Fix: early stopping, LR reduction.</td></tr>
-  <tr><td><strong>Early stopping</strong></td><td>Patience=3, delta=0.001. Save best checkpoint. Never report test performance until final model selected.</td></tr>
-  <tr><td><strong>What transfers</strong></td><td>L1–4: POS/syntax. L5–8: semantics/NER. L9–12: task patterns. Change late layers most; leave early layers alone.</td></tr>
-  <tr><td><strong>Best practices</strong></td><td>LR=2e-5, batch=32, epochs=3-5, warmup 6%, weight_decay=0.01, class weights for imbalance. Data quality &gt; hypertuning.</td></tr>
+  <tr><td><strong>Transfer learning</strong></td><td>ULMFiT: 18&times; less data needed vs from scratch. GPT-2 on SST-2: 91.4% fine-tuned vs 85.3% from scratch (+6.1 pts). The pretrained model has already solved syntax, morphology, and semantics.</td></tr>
+  <tr><td><strong>Classification head</strong></td><td>Linear(768, 2) = 1,538 params = 0.001% of GPT-2 (117M). Uses last token position (GPT) or [CLS] token (BERT). 10% dropout before head.</td></tr>
+  <tr><td><strong>Freezing / LLRD</strong></td><td>Feature extract: head only (&lt;1k examples). Partial: unfreeze top 4 blocks (1k&ndash;10k). Full + LLRD (10k+). Decay factor &asymp;2.6&times; per layer from head down.</td></tr>
+  <tr><td><strong>SMS Spam Collection</strong></td><td>5,574 messages; 86.6% ham / 13.4% spam. All-ham baseline: 86.6% accuracy, F1=0.000. Fine-tuned GPT-2: F1&asymp;0.97&ndash;0.99. Use class weights (ham:0.58, spam:3.73).</td></tr>
+  <tr><td><strong>Precision / Recall / F1</strong></td><td>P = TP/(TP+FP). R = TP/(TP+FN). F1 = harmonic mean = 2PR/(P+R). Harmonic mean &le; min(P,R), correctly penalising extreme imbalances.</td></tr>
+  <tr><td><strong>ROC-AUC</strong></td><td>AUC = P(random positive scores above random negative). 0.5=random, 1.0=perfect. GPT-2 on SMS Spam: AUC&asymp;0.997. Use PR-AUC for severely imbalanced datasets (random baseline = prevalence, not 0.5).</td></tr>
+  <tr><td><strong>Overfitting</strong></td><td>Signal: val_loss rising while train_loss falls. Generalisation gap &gt;0.1 and growing = overfitting. Fix: lr&darr;, epochs&darr;, freeze more layers, weight decay, label smoothing (&epsilon;=0.1).</td></tr>
+  <tr><td><strong>Early stopping</strong></td><td>Patience=3, delta=0.001. Always save and restore best checkpoint. Never use test set until final model selected.</td></tr>
+  <tr><td><strong>What transfers</strong></td><td>Tenney 2019: L1&ndash;4 = POS/syntax, L5&ndash;8 = semantics/NER (peaks at L8), L9&ndash;12 = task patterns. Change late layers most; minimise early layer disturbance.</td></tr>
+  <tr><td><strong>Best practices</strong></td><td>lr=2e-5, batch=32, epochs=3&ndash;5, warmup 6%, weight_decay=0.01, max_length=256. Ensemble 5 seeds: +1&ndash;2% accuracy. Data quality &gt; hypertuning.</td></tr>
+  <tr><td><strong>Multi-label</strong></td><td>Sigmoid + BCEWithLogitsLoss (each class independent). Softmax + CrossEntropyLoss (mutually exclusive). Threshold sweep on val set improves macro-F1 by 2&ndash;5 points.</td></tr>
+  <tr><td><strong>Catastrophic forgetting</strong></td><td>EWC (Kirkpatrick 2017): penalise changes to Fisher-important parameters (&lambda;&sum;F_i(&theta;_i&minus;&theta;*_i)&sup2;). In practice: lr=2e-5 + frozen early layers + 3 epochs is sufficient.</td></tr>
+  <tr><td><strong>Few-shot fine-tuning</strong></td><td>SetFit (Tunstall 2022): 8 examples/class beats GPT-3 175B ICL on 7/8 benchmarks. Contrastive pairs amplify signal n&sup2;/2. ICL: zero parameters, but needs large model + 500+ tokens overhead/query.</td></tr>
 </table>
 </section>
 
 <nav class="ch-nav">
-  <a href="chapter5.html"><span class="cnd">← Chapter 5</span><span class="cnt">Pretraining on Unlabeled Data</span></a>
-  <a href="chapter7.html" style="text-align:right;"><span class="cnd">Chapter 7 →</span><span class="cnt">Fine-Tuning to Follow Instructions</span></a>
+  <a href="chapter5.html"><span class="cnd">&larr; Chapter 5</span><span class="cnt">Pretraining on Unlabeled Data</span></a>
+  <a href="chapter7.html" style="text-align:right;"><span class="cnd">Chapter 7 &rarr;</span><span class="cnt">Fine-Tuning to Follow Instructions</span></a>
 </nav>
 
 </div><!-- /container -->
-
 <script>
-async function runCell(id){
-  const cell=document.getElementById(id);
-  const code=cell.querySelector('.cell-code pre').textContent;
-  const out=cell.querySelector('.cell-output');
-  const btn=cell.querySelector('.run-btn');
-  if(!window.pyodide){out.textContent='Python runtime still loading — try again in a moment.';return;}
-  btn.disabled=true;out.className='cell-output running';out.textContent='Running...';
-  try{
-    window.pyodide.runPython('import sys,io;sys.stdout=io.StringIO()');
+async function runCode(id) {
+  const cell = document.getElementById(id);
+  const code = cell.querySelector('.cell-code pre').textContent;
+  const out  = cell.querySelector('.cell-output');
+  const btn  = cell.querySelector('.run-btn');
+  if (!window.pyodide) {
+    out.textContent = 'Python runtime still loading — try again in a moment.';
+    return;
+  }
+  btn.disabled = true;
+  out.className = 'cell-output running';
+  out.textContent = 'Running…';
+  try {
+    window.pyodide.runPython('import sys, io; sys.stdout = io.StringIO()');
     await window.pyodide.runPythonAsync(code);
-    const r=window.pyodide.runPython('sys.stdout.getvalue()');
-    out.className='cell-output';out.textContent=r||'(no output)';
-  }catch(e){out.className='cell-output error';out.textContent='Error: '+e.message;}
-  btn.disabled=false;
+    const r = window.pyodide.runPython('sys.stdout.getvalue()');
+    out.className = 'cell-output';
+    out.textContent = r || '(no output)';
+  } catch(e) {
+    out.className = 'cell-output error';
+    out.textContent = 'Error: ' + e.message;
+  }
+  btn.disabled = false;
 }
-function copyCode(btn){
-  const pre=btn.closest('.code-block').querySelector('pre');
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
   navigator.clipboard.writeText(pre.textContent);
-  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
 }
 </script>
 <script>
-(async()=>{
-  try{
-    const p=await loadPyodide();window.pyodide=p;
-    document.getElementById('pyodide-status').textContent='✓ Python runtime ready — click ▶ Run on any cell.';
-    setTimeout(()=>{const s=document.getElementById('pyodide-status');if(s)s.style.display='none';},2000);
-  }catch(e){document.getElementById('pyodide-status').textContent='Python runtime unavailable — view code only.';}
+(async () => {
+  try {
+    const p = await loadPyodide();
+    window.pyodide = p;
+    document.getElementById('pyodide-status').textContent =
+      '✓ Python runtime ready — click Run on any cell.';
+    setTimeout(() => {
+      const s = document.getElementById('pyodide-status');
+      if (s) s.style.display = 'none';
+    }, 2500);
+  } catch(e) {
+    document.getElementById('pyodide-status').textContent =
+      'Python runtime unavailable — view code only.';
+  }
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+
+<div class="container">
+  <div class="continue-bar" style="margin-top:40px;margin-bottom:20px;">
+    <a href="chapter5.html" class="continue-btn prev">
+      <span class="continue-chapter">&larr; Chapter 5</span>
+      Pretraining
+    </a>
+    <a href="chapter7.html" class="continue-btn next">
+      <span class="continue-chapter">Chapter 7 &rarr;</span>
+      Instruction Following
+    </a>
+  </div>
+</div>
 </body>
 </html>

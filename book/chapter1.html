@@ -270,6 +270,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 
 /* ─── PYODIDE ─── */
 #pyodide-status{text-align:center;padding:12px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;}
+/* continuation buttons */
+.continue-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);margin:24px 0 0;}
+.continue-bar.top-bar{border-top:none;margin-top:0;}
+.continue-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s;}
+.continue-btn.prev{background:var(--bg-aside);color:var(--text);border:1px solid var(--border);}
+.continue-btn.prev:hover{background:var(--border);color:var(--text);}
+.continue-btn.next{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+.continue-btn.next:hover{opacity:.88;}
+.continue-btn.disabled{background:var(--bg-aside);color:var(--text-secondary);border:1px solid var(--border-light);pointer-events:none;opacity:.5;}
+.continue-chapter{font-family:var(--font-mono);font-size:10px;opacity:.7;display:block;}
 </style>
 </head>
 <body>
@@ -309,6 +319,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
     <li><a href="#s17"><span class="toc-num">1.17</span>2025 Landscape &amp; Roadmap</a></li>
   </ul>
 </nav>
+
+<div class="continue-bar top-bar">
+  <span class="continue-btn disabled">
+    <span class="continue-chapter">Start of Book</span>
+    —
+  </span>
+  <a href="chapter2.html" class="continue-btn next">
+    <span class="continue-chapter">Chapter 2 →</span>
+    Working with Text Data
+  </a>
+</div>
 
 <div id="pyodide-status">⏳ Loading Python runtime (Pyodide)…</div>
 
@@ -814,15 +835,26 @@ for i, e in enumerate(ent):
 <hr class="section-divider">
 
 <!-- ═══════════════════════════════════════════ §1.6 ══ -->
+<!-- ============================================================ §1.6 == -->
 <section class="section" id="s6">
   <div class="section-label">1.6</div>
   <h2>Multi-Head Attention &amp; GQA</h2>
-  <p>Running attention once gives the model one "perspective." Multi-head attention (MHA) runs <em>H</em> separate attention operations in parallel, each with smaller head dimension d_k = d_model/H. Each head learns to attend to different relationship types — one might track subject-verb agreement, another coreference chains. The outputs are concatenated and projected back to d_model.</p>
-  <p>For large models, MHA's memory cost becomes prohibitive during inference: storing K/V pairs for all H heads in the KV cache. <strong>Multi-Query Attention (MQA)</strong> (Shazeer, 2019) uses a single K and V head shared across all Q heads — reducing KV cache size by 8–32× at the cost of some model quality. <strong>Grouped-Query Attention (GQA)</strong> (Ainslie et al., 2023) is the sweet spot: G groups of Q heads share one K/V head each. LLaMA-3 uses 32 Q heads and 8 KV heads (4 Q heads per KV group).</p>
 
-  <!-- MHA / GQA comparison -->
+  <p>Running attention once gives the model a single perspective. Multi-head attention (MHA) runs H separate
+  attention operations in parallel, each with head dimension d_k = d_model/H. Each head learns to attend to
+  different relationship types &#8212; one might track subject-verb agreement, another coreference chains,
+  another syntactic dependencies. The outputs are concatenated and projected back to d_model via W_O.</p>
+
+  <p>For large models, MHA's memory cost is prohibitive during inference due to the <strong>KV cache</strong>
+  (&#167;1.11). <strong>Multi-Query Attention (MQA)</strong> (Shazeer, 2019) uses a single K and V head shared
+  across all Q heads, reducing KV cache by H-fold with some quality cost. <strong>Grouped-Query Attention
+  (GQA)</strong> (Ainslie et al., 2023, arXiv:2305.13245) is the sweet spot: G groups of Q heads share one
+  K/V head each. LLaMA-3 uses 32 Q-heads and 8 KV-heads (4 Q-heads per KV group), reducing KV cache to 25%
+  of MHA with negligible quality loss. Ainslie et al. showed GQA matches MHA quality while approaching MQA
+  inference speed.</p>
+
   <div class="mha-diag">
-    <div class="mha-label">Multi-Head: 4 heads, 4 K/V sets</div>
+    <div class="mha-label">Multi-Head Attention: 4 independent Q/K/V sets, all concatenated</div>
     <div class="mha-heads">
       <div class="mha-head mh-1">H1<br>Q K V</div>
       <div class="mha-head mh-2">H2<br>Q K V</div>
@@ -830,19 +862,19 @@ for i, e in enumerate(ent):
       <div class="mha-head mh-4">H4<br>Q K V</div>
     </div>
     <div class="mha-concat"></div>
-    <div class="mha-proj">Concat → W_O → output</div>
+    <div class="mha-proj">Concat &#8594; W_O &#8594; output (d_model)</div>
   </div>
 
   <div class="gqa-grid">
     <div class="gqa-card">
-      <h4>MHA (e.g. GPT-3)</h4>
+      <h4>MHA (GPT-3)</h4>
       <div class="gqa-heads">
         <div class="gqa-hq"></div><div class="gqa-hkv"></div>
         <div class="gqa-hq"></div><div class="gqa-hkv"></div>
         <div class="gqa-hq"></div><div class="gqa-hkv"></div>
         <div class="gqa-hq"></div><div class="gqa-hkv"></div>
       </div>
-      <div class="gqa-stat">H Q-heads = H KV-heads<br>Cache: 100%</div>
+      <div class="gqa-stat">H Q-heads = H KV-heads<br>KV cache: 100%</div>
     </div>
     <div class="gqa-card">
       <h4>GQA (LLaMA-3)</h4>
@@ -850,298 +882,338 @@ for i, e in enumerate(ent):
         <div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hkv"></div>
         <div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hkv"></div>
       </div>
-      <div class="gqa-stat">32 Q / 8 KV groups<br>Cache: 25%</div>
+      <div class="gqa-stat">32 Q / 8 KV groups<br>KV cache: 25%</div>
     </div>
     <div class="gqa-card">
       <h4>MQA (Falcon)</h4>
       <div class="gqa-heads">
         <div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hq"></div><div class="gqa-hkv"></div>
       </div>
-      <div class="gqa-stat">H Q-heads, 1 KV head<br>Cache: 1/H ≈ 3%</div>
+      <div class="gqa-stat">H Q-heads, 1 KV head<br>KV cache: 1/H &#8776; 3%</div>
     </div>
   </div>
 
   <div class="cell" id="cell-6">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — MHA vs GQA KV Cache Size</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; MHA vs GQA: KV cache memory at scale</span>
       <button class="run-btn" onclick="runCell('cell-6')">Run</button>
     </div>
     <div class="cell-code"><pre>def kv_cache_bytes(batch, seq_len, n_layers, kv_heads, d_model, n_heads, dtype_bytes=2):
-    """Memory for K and V caches in bytes."""
+    # Total bytes for K and V caches
     d_head = d_model // n_heads
     per_token = n_layers * kv_heads * d_head * 2  # K + V
     return batch * seq_len * per_token * dtype_bytes
 
 configs = [
-    ("GPT-3 175B (MHA)", 12288, 96, 96,  96),
-    ("LLaMA-3 8B (GQA)", 4096,  32, 32,  8),
-    ("LLaMA-3 70B(GQA)", 8192,  80, 64,  8),
-    ("Mistral 7B (GQA)", 4096,  32, 32,  8),
-    ("Falcon-7B (MQA)",  4096,  32, 71,  1),
+    ("GPT-3 175B (MHA)",  12288, 96, 96,  96),
+    ("LLaMA-3 8B (GQA)",   4096, 32, 32,   8),
+    ("LLaMA-3 70B (GQA)",  8192, 80, 64,   8),
+    ("Mistral 7B (GQA)",   4096, 32, 32,   8),
+    ("Falcon-7B (MQA)",    4096, 32, 71,   1),
 ]
 
 batch, seq = 1, 8192
-print(f"KV cache at batch={batch}, seq_len={seq} (BF16=2 bytes):")
-print(f"{'Model':22s} {'Cache (MB)':>12s} {'vs MHA':>10s}")
-print("-" * 48)
+print(f"KV cache at batch={batch}, seq_len={seq:,} (BF16 = 2 bytes per element)")
+print(f"{'Model':24s} {'Cache (MB)':>12s} {'vs GPT-3 MHA':>14s}")
+print("-" * 54)
 
 ref = None
 for name, d, L, H, kv in configs:
     mb = kv_cache_bytes(batch, seq, L, kv, d, H) / 1e6
     if ref is None: ref = mb
-    print(f"{name:22s} {mb:10.1f}MB {mb/ref*100:8.1f}%")
+    pct = mb / ref * 100
+    print(f"{name:24s} {mb:10.1f} MB {pct:12.1f}%")
 
-print("\nLLaMA-3 8B at seq=128K:")
-mb128k = kv_cache_bytes(1, 131072, 32, 8, 4096, 32) / 1e9
-print(f"  {mb128k:.2f} GB just for KV cache!")</pre></div>
-    <div class="cell-output" id="cell-6-out">Click Run to execute.</div>
+print()
+print("LLaMA-3 8B at extended context lengths:")
+print(f"{'seq_len':>10s} {'KV cache GB':>14s} {'vs model weights (16GB)':>24s}")
+print("-" * 52)
+model_gb = 8e9 * 2 / 1e9  # 8B params * 2 bytes BF16
+for seq in [4096, 16384, 65536, 131072]:
+    kv_gb = kv_cache_bytes(1, seq, 32, 8, 4096, 32) / 1e9
+    print(f"{seq:10,d} {kv_gb:12.2f} GB {kv_gb/model_gb*100:22.0f}%")
+
+# Try changing kv_heads to 32 (full MHA) to see memory balloon
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/1911.02150" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Shazeer, 2019 — "Fast Transformer Decoding: One Write-Head is All You Need"</span> — Multi-Query Attention (MQA): shares K/V across all heads, reducing KV cache by 8-32×</span></a>
-      <a href="https://arxiv.org/abs/2305.13245" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Ainslie et al., 2023 — "GQA: Training Generalized Multi-Query Transformer Models"</span> — Grouped-Query Attention: the MHA/MQA middle ground used by LLaMA-3</span></a>
-      <a href="https://arxiv.org/abs/1905.09418" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Voita et al., 2019 — "Analyzing Multi-Head Self-Attention"</span> — Most heads can be pruned; a few specialized heads do the heavy lifting</span></a>
-      <a href="https://arxiv.org/abs/1906.04341" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Clark et al., 2019 — "What Does BERT Look At?"</span> — Probing attention heads: some track syntax, others coreference</span></a>
-      <a href="https://arxiv.org/abs/1905.10650" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Michel et al., 2019 — "Are Sixteen Heads Really Better than One?"</span> — Surprisingly, many heads can be removed at test time with minimal quality loss</span></a>
+      <a href="https://arxiv.org/abs/1911.02150" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Shazeer, 2019 &#8212; "Fast Transformer Decoding: One Write-Head is All You Need"</span> &#8212; Multi-Query Attention: single K/V head for all queries. Reduces KV cache by 8&#8211;32&#215; at modest quality cost.</span></a>
+      <a href="https://arxiv.org/abs/2305.13245" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Ainslie et al., 2023 &#8212; "GQA: Training Generalized Multi-Query Transformer Models"</span> &#8212; GQA: interpolates between MHA and MQA. Matches MHA quality while approaching MQA inference speed.</span></a>
+      <a href="https://arxiv.org/abs/1905.09418" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Voita et al., 2019 &#8212; "Analyzing Multi-Head Self-Attention: Specialized Heads Do the Heavy Lifting"</span> &#8212; Most attention heads can be pruned; 2&#8211;5 specialised heads do the meaningful work.</span></a>
+      <a href="https://arxiv.org/abs/1906.04341" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Clark et al., 2019 &#8212; "What Does BERT Look At? An Analysis of BERT's Attention"</span> &#8212; Probing heads: specific heads track syntax, coreference, and sentence boundaries.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-
-<!-- ═══════════════════════════════════════════ §1.7 ══ -->
+<!-- ============================================================ §1.7 == -->
 <section class="section" id="s7">
   <div class="section-label">1.7</div>
-  <h2>Positional Encoding</h2>
-  <p>Attention itself is permutation-invariant — if you shuffle all tokens, the attention weights change but the computation is otherwise identical. Position must be injected explicitly. The original transformer used fixed <strong>sinusoidal encoding</strong>: PE(pos, 2i) = sin(pos/10000^(2i/d)), PE(pos, 2i+1) = cos(…). The key property is that the relative offset (pos+k) can be expressed as a linear function of (pos), which the model can learn.</p>
-  <p><strong>Rotary Position Embedding (RoPE)</strong> (Su et al., 2024) is the current standard, used in LLaMA, Mistral, and GPT-NeoX. RoPE encodes position by rotating Q and K vectors by an angle proportional to position. When Q·K is computed, the dot product naturally depends only on the <em>relative</em> distance (m−n), not absolute positions. This allows zero-shot generalisation to unseen sequence lengths and forms the foundation for extending context windows.</p>
+  <h2>Positional Encoding &amp; RoPE</h2>
+
+  <p>Self-attention is permutation-invariant &#8212; if you shuffle all token positions, the attention weights
+  change but the <em>form</em> of the computation is identical. Word order must be injected explicitly. The
+  original transformer used fixed <strong>sinusoidal encoding</strong>: PE(pos,2i) = sin(pos/10000<sup>2i/d</sup>),
+  PE(pos,2i+1) = cos(&#8230;). The wavelengths form a geometric sequence from 2&#960; to 10000&#183;2&#960;.
+  The key property: a relative offset PE(pos+k) can be expressed as a linear function of PE(pos), which the
+  model can learn to exploit.</p>
+
+  <p><strong>Rotary Position Embedding (RoPE)</strong> (Su et al., 2022, arXiv:2104.09864) is the current
+  standard, used in LLaMA, Mistral, GPT-NeoX, Falcon, and most recent models. RoPE encodes position by
+  rotating Q and K vectors by an angle proportional to position: q_m = R(m)&#183;q, k_n = R(n)&#183;k.
+  When the dot product Q&#183;K is computed, the result depends only on the <em>relative</em> distance (m-n),
+  not absolute positions. This gives zero-shot generalisation to unseen sequence lengths &#8212; a critical
+  property for context extension.</p>
 
   <div class="callout purple">
-    <strong>YaRN extends LLaMA from 4K → 128K context</strong> using 0.1% of the original pretraining compute. It rescales RoPE frequencies differently for low-frequency (high-dimension) components vs high-frequency ones, avoiding the "lost in the middle" failure mode that plagues naive position interpolation.
+    <strong>YaRN extends LLaMA from 4K &#8594; 128K context</strong> using only 0.1% of original pretraining
+    compute (Peng et al., 2023, arXiv:2309.00071). It rescales RoPE frequencies differently for low-frequency
+    (high-dimension) components versus high-frequency ones, avoiding the &#8220;lost in the middle&#8221;
+    failure mode of naive position interpolation. LLaMA-3 increases the RoPE base from 10,000 (standard) to
+    500,000 for its 128K-context variants &#8212; making the wavelengths dramatically longer and more robust
+    to extended sequence lengths.
   </div>
 
-  <!-- Sinusoidal heatmap approximation -->
   <div style="margin:24px 0;">
-    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:6px;">SINUSOIDAL PE HEATMAP — rows=position (0-15), cols=embedding dim (0-31)</div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:6px;">SINUSOIDAL PE HEATMAP &#8212; rows=position (0&#8211;15), cols=embedding dim (0&#8211;31)</div>
     <div class="pe-heatmap" id="pe-heatmap"></div>
     <div class="pe-axis"><span>pos 0</span><span>pos 15</span></div>
   </div>
 
   <div class="formula">
-    <span class="eq-label">RoPE rotation — relative distance emerges from dot product</span>
-    q_rot(m) = R(m)·q,  k_rot(n) = R(n)·k
-    &lt;q_rot(m), k_rot(n)&gt; = &lt;R(m-n)·q, k&gt;  →  depends only on (m-n)
-  </div>
-
-  <div class="code-block">
-    <span class="code-label">RoPE from scratch</span>
-    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
-
-<span class="kw">def</span> <span class="fn">rope_rotate</span>(x, pos, base=<span class="nu">10000</span>):
-    <span class="cm">"""Apply RoPE to a single (d,) vector at given position."""</span>
-    d = x.shape[<span class="nu">0</span>]
-    half = d // <span class="nu">2</span>
-    <span class="cm"># θ_i = 1 / base^(2i/d)</span>
-    theta = <span class="nu">1.0</span> / (base ** (np.arange(<span class="nu">0</span>, half) * <span class="nu">2</span> / d))
-    angles = pos * theta               <span class="cm"># (half,)</span>
-    cos_a, sin_a = np.cos(angles), np.sin(angles)
-    x1, x2 = x[:half], x[half:]
-    <span class="cm"># Rotate: [x1, x2] → [x1·cos−x2·sin, x1·sin+x2·cos]</span>
-    <span class="kw">return</span> np.concatenate([x1*cos_a - x2*sin_a,
-                            x1*sin_a + x2*cos_a])
-
-<span class="cm"># Relative distance emerges from dot product</span>
-d = <span class="nu">8</span>
-q = np.random.randn(d)
-k = np.random.randn(d)
-<span class="kw">for</span> m, n <span class="kw">in</span> [(<span class="nu">0</span>,<span class="nu">0</span>), (<span class="nu">3</span>,<span class="nu">3</span>), (<span class="nu">5</span>,<span class="nu">2</span>), (<span class="nu">10</span>,<span class="nu">7</span>)]:
-    dot = rope_rotate(q,m) @ rope_rotate(k,n)
-    <span class="kw">print</span>(<span class="fn">f</span><span class="st">f"pos ({m},{n}) diff={m-n:+d}  dot={dot:.4f}"</span>)</pre>
+    <span class="eq-label">RoPE: relative position emerges from the dot product</span>
+    q_rot(m) = R(m)&#183;q,&nbsp;&nbsp; k_rot(n) = R(n)&#183;k
+    <br>&lt;q_rot(m), k_rot(n)&gt; = f(q, k, m&#8722;n) &#8212; depends only on relative offset
   </div>
 
   <div class="cell" id="cell-7">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — RoPE &amp; Sinusoidal PE</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; RoPE: relative position from dot product</span>
       <button class="run-btn" onclick="runCell('cell-7')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
-
-def sinusoidal_pe(T, d, base=10000):
-    pe = np.zeros((T, d))
-    pos = np.arange(T)[:, None]
-    div = np.exp(np.arange(0, d, 2) * -(np.log(base) / d))
-    pe[:, 0::2] = np.sin(pos * div)
-    pe[:, 1::2] = np.cos(pos * div[:d//2])
-    return pe
+    <div class="cell-code"><pre>import math, random
+random.seed(3)
 
 def rope_rotate(x, pos, base=10000):
-    d = x.shape[0]; half = d // 2
-    theta = 1.0 / (base ** (np.arange(half) * 2 / d))
-    c, s = np.cos(pos * theta), np.sin(pos * theta)
-    x1, x2 = x[:half], x[half:]
-    return np.concatenate([x1*c - x2*s, x1*s + x2*c])
+    # Apply RoPE to a vector x at position pos
+    d = len(x)
+    half = d // 2
+    result = [0.0] * d
+    for i in range(half):
+        theta = 1.0 / (base ** (2*i / d))   # frequency for dimension i
+        angle = pos * theta
+        cos_a, sin_a = math.cos(angle), math.sin(angle)
+        # Rotate pair (x[i], x[i+half]) by angle
+        result[i]      = x[i] * cos_a - x[i+half] * sin_a
+        result[i+half] = x[i] * sin_a + x[i+half] * cos_a
+    return result
 
-# Sinusoidal: relative position encoding via difference
-pe = sinusoidal_pe(8, 8)
-print("Sinusoidal PE — relative similarity (row i, col j → sim(i,j)):")
-sims = pe @ pe.T
-np.set_printoptions(precision=2, suppress=True)
-print(sims)
-print("(diagonal = 1.0; nearby positions more similar)")
+def dot(a, b):
+    return sum(x*y for x, y in zip(a, b))
 
-# RoPE: show that dot depends only on relative distance
-print("\nRoPE dot products (same relative offset → similar value):")
-np.random.seed(3)
-q = np.random.randn(8)
-k = np.random.randn(8)
-for m, n in [(0,0),(1,1),(3,3),(5,2),(10,7),(100,97)]:
-    dot = rope_rotate(q,m) @ rope_rotate(k,n)
-    print(f"  pos ({m:3d},{n:3d}) diff={m-n:+3d}  dot={dot:.4f}")
+d = 8
+q = [random.gauss(0, 1) for _ in range(d)]
+k = [random.gauss(0, 1) for _ in range(d)]
+
+print("RoPE dot products: same relative distance -> similar value")
+print(f"{'Positions':20s} {'Offset':>8s} {'Dot product':>14s}")
+print("-" * 46)
+for m, n in [(0,0), (1,1), (5,5), (3,0), (8,5), (20,17), (100,97)]:
+    qr = rope_rotate(q, m)
+    kr = rope_rotate(k, n)
+    d_val = dot(qr, kr)
+    print(f"  pos ({m:3d},{n:3d})       {m-n:+6d}     {d_val:12.5f}")
+
+print()
+print("Absolute position is invisible; only relative offset (m-n) matters.")
+
+# Show wavelength spectrum: high dims have very long wavelengths
+print(f"
+RoPE wavelength per dimension (d={d}, base=10000):")
+print("(longer wavelength = changes more slowly with position)")
+for i in range(d//2):
+    theta = 1.0 / (10000 ** (2*i / d))
+    wavelength = 2 * math.pi / theta
+    print(f"  dim {i:2d}: theta={theta:.6f}  wavelength={wavelength:10.1f} positions")
 
 # LLaMA-3 uses base=500000 for long context
-print("\nRoPE with base=500000 (LLaMA-3 long context):")
-for m, n in [(0,0),(5,2),(1000,997)]:
-    dot = rope_rotate(q,m,base=500000) @ rope_rotate(k,n,base=500000)
-    print(f"  pos ({m:4d},{n:4d}) diff={m-n:+4d}  dot={dot:.4f}")</pre></div>
-    <div class="cell-output" id="cell-7-out">Click Run to execute.</div>
+print(f"
+With base=500000 (LLaMA-3 128K context), dim 0 wavelength:")
+theta_new = 1.0 / (500000 ** (0 / d))
+wl_new = 2 * math.pi / (1.0 / (500000 ** (0 / d))) if theta_new != 0 else float('inf')
+# Actually compute it properly:
+theta_base10k  = 1.0 / (10000  ** (0 / d))  # = 1.0 for i=0
+theta_base500k = 1.0 / (500000 ** (0 / d))  # = 1.0 for i=0
+# For i>0:
+i = 1
+t_10k  = 1.0 / (10000  ** (2*i / d))
+t_500k = 1.0 / (500000 ** (2*i / d))
+print(f"  dim {i}, base=10000:  wavelength={2*math.pi/t_10k:.1f}")
+print(f"  dim {i}, base=500000: wavelength={2*math.pi/t_500k:.1f}")
+print("  Longer wavelengths prevent position confusion at 128K+ tokens.")
+
+# Try changing base to 500000 and the position pairs to see long-range consistency
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2104.09864" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Su et al., 2022 — "RoFormer: Enhanced Transformer with Rotary Position Embedding"</span> — RoPE: relative position via rotation, used by LLaMA, Mistral, GPT-NeoX</span></a>
-      <a href="https://arxiv.org/abs/2108.12409" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Press et al., 2022 — "Train Short, Test Long" (ALiBi)</span> — Attention with Linear Biases: no learned PE, enables length extrapolation</span></a>
-      <a href="https://arxiv.org/abs/2309.00071" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Peng et al., 2023 — "YaRN: Efficient Context Window Extension"</span> — Extends LLaMA from 4K to 128K context using 0.1% compute via RoPE rescaling</span></a>
-      <a href="https://arxiv.org/abs/1803.02155" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Shaw et al., 2018 — "Self-Attention with Relative Position Representations"</span> — Early relative position encoding for transformers</span></a>
-      <a href="https://arxiv.org/abs/2306.15595" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Chen et al., 2023 — "Extending Context Window of Large Language Models via Positional Interpolation"</span> — Scale RoPE frequencies to fit longer contexts without retraining</span></a>
+      <a href="https://arxiv.org/abs/2104.09864" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Su et al., 2022 &#8212; "RoFormer: Enhanced Transformer with Rotary Position Embedding"</span> &#8212; RoPE: relative position via vector rotation. Relative distance emerges from dot product naturally.</span></a>
+      <a href="https://arxiv.org/abs/2108.12409" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Press et al., 2022 &#8212; "Train Short, Test Long: Attention with Linear Biases" (ALiBi)</span> &#8212; Alternative to RoPE: bias attention scores by linear position penalty. No positional vectors needed.</span></a>
+      <a href="https://arxiv.org/abs/2309.00071" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Peng et al., 2023 &#8212; "YaRN: Efficient Context Window Extension of Large Language Models"</span> &#8212; Extends LLaMA from 4K to 128K context using 0.1% pretraining compute by rescaling RoPE frequencies.</span></a>
+      <a href="https://arxiv.org/abs/2306.15595" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Chen et al., 2023 &#8212; "Extending Context Window via Positional Interpolation"</span> &#8212; Simple linear scaling of RoPE position indices; enables length extrapolation with fine-tuning.</span></a>
+      <a href="https://blog.eleuther.ai/rotary-embeddings/" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">EleutherAI &#8212; "Rotary Embeddings: A Relative Revolution"</span> &#8212; Detailed mathematical walkthrough of RoPE's rotation derivation and its advantages over learned PE.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.8 ══ -->
+<!-- ============================================================ §1.8 == -->
 <section class="section" id="s8">
   <div class="section-label">1.8</div>
   <h2>The Feedforward Sublayer</h2>
-  <p>After attention routes information between token positions, the feedforward network (FFN) processes each token independently and in parallel. The standard FFN applies two linear layers with a nonlinearity: FFN(x) = W₂ · GELU(W₁ · x). The intermediate dimension is 4× the model dimension — for LLaMA-3 8B that's 4,096 → 16,384 → 4,096.</p>
-  <p>Geva et al. (2021) made a striking discovery: <strong>FFN layers act as key-value memories</strong>. The first layer projects the input to a high-dimensional space of "keys," GELU activation selects which keys are active, and the second layer reads out the corresponding "values." Specific factual knowledge ("Paris is the capital of France") can be traced to specific neurons in specific FFN layers — lower layers store syntactic patterns, upper layers store semantic facts.</p>
+
+  <p>After attention routes information between positions, the feedforward network (FFN) processes each token
+  independently and in parallel. The original FFN applies two linear projections with a nonlinearity:
+  FFN(x) = W&#8322; &#183; GELU(W&#8321; &#183; x). The intermediate dimension is 4&#215; d_model:
+  for LLaMA-3 8B that's 4,096 &#8594; 16,384 &#8594; 4,096.</p>
+
+  <p>Geva et al. (2021, arXiv:2012.14913) made a striking discovery: <strong>FFN layers act as key-value
+  memories</strong>. The first projection computes &#8220;keys&#8221;; the GELU selects which keys are active;
+  the second projection reads out corresponding &#8220;values.&#8221; Specific factual knowledge
+  (&#8220;Paris is the capital of France&#8221;) can be traced to specific neurons in specific FFN layers.
+  Lower layers store syntactic patterns; upper layers store semantic facts. Meng et al. (2022, ROME) exploited
+  this to <em>directly edit factual associations</em> by modifying a single FFN weight row.</p>
 
   <div class="callout">
-    <strong>SwiGLU</strong> (Shazeer, 2020) replaces GELU with a gated variant: FFN(x) = W₂ · (SiLU(W₁·x) ⊗ W₃·x). The gate acts as a learned router. SwiGLU requires 3 matrices instead of 2, so to keep parameter count equal the intermediate dim is reduced to 2/3 of the standard 4× value. LLaMA uses d_ff = 11,008 (≈ 2/3 × 4 × 4,096).
-  </div>
-
-  <div class="code-block">
-    <span class="code-label">FFN sublayer implementations</span>
-    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
-
-<span class="kw">def</span> <span class="fn">gelu</span>(x):
-    <span class="cm"># Gaussian Error Linear Unit</span>
-    <span class="kw">return</span> <span class="nu">0.5</span>*x*(1 + np.tanh(np.sqrt(<span class="nu">2</span>/np.pi)*(x+<span class="nu">0.044715</span>*x**<span class="nu">3</span>)))
-
-<span class="kw">def</span> <span class="fn">silu</span>(x):
-    <span class="cm"># Sigmoid Linear Unit: x * σ(x)</span>
-    <span class="kw">return</span> x / (1 + np.exp(-x))
-
-<span class="kw">class</span> <span class="cl">FFN_Standard</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, d, d_ff):
-        self.W1 = np.random.randn(d, d_ff) * <span class="nu">0.02</span>
-        self.W2 = np.random.randn(d_ff, d) * <span class="nu">0.02</span>
-    <span class="kw">def</span> <span class="fn">__call__</span>(self, x):
-        <span class="kw">return</span> gelu(x @ self.W1) @ self.W2  <span class="cm"># d→d_ff→d</span>
-
-<span class="kw">class</span> <span class="cl">FFN_SwiGLU</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, d, d_ff):
-        self.W1 = np.random.randn(d, d_ff) * <span class="nu">0.02</span>
-        self.W2 = np.random.randn(d_ff, d) * <span class="nu">0.02</span>
-        self.W3 = np.random.randn(d, d_ff) * <span class="nu">0.02</span>  <span class="cm"># gate</span>
-    <span class="kw">def</span> <span class="fn">__call__</span>(self, x):
-        gate = silu(x @ self.W1)
-        up   = x @ self.W3
-        <span class="kw">return</span> (gate * up) @ self.W2  <span class="cm"># elementwise gate × value</span></pre>
+    <strong>SwiGLU</strong> (Shazeer, 2020, arXiv:2002.05202) replaces GELU with a gated variant:
+    FFN(x) = W&#8322; &#183; (SiLU(W&#8321;&#183;x) &#8855; W&#8323;&#183;x). The gate acts as a learned
+    router. SwiGLU requires 3 matrices instead of 2, so the intermediate dimension is reduced to approximately
+    2/3 of the standard 4&#215; value to keep parameter counts equal. LLaMA-3 8B uses d_ff=14,336
+    (&#8776; 2/3 &#215; 4 &#215; 4,096, rounded to a multiple of 256 for GPU efficiency). Shazeer showed
+    GLU variants consistently outperform standard GELU/ReLU across model scales.
   </div>
 
   <div class="cell" id="cell-8">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — FFN as Key-Value Memory</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; FFN as key-value memory + SwiGLU comparison</span>
       <button class="run-btn" onclick="runCell('cell-8')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math, random
+random.seed(42)
 
 def gelu(x):
-    return 0.5*x*(1+np.tanh(np.sqrt(2/np.pi)*(x+0.044715*x**3)))
+    # GELU: Gaussian Error Linear Unit (Hendrycks & Gimpel 2016)
+    return 0.5 * x * (1 + math.tanh(math.sqrt(2/math.pi) * (x + 0.044715*x**3)))
 
 def silu(x):
-    return x / (1 + np.exp(-x))
+    # SiLU (Sigmoid Linear Unit): x * sigmoid(x)
+    return x / (1 + math.exp(-x))
 
-d, d_ff = 16, 64  # small demo
-np.random.seed(42)
-W1 = np.random.randn(d, d_ff) * 0.02
-W2 = np.random.randn(d_ff, d) * 0.02
-W3 = np.random.randn(d, d_ff) * 0.02  # SwiGLU gate
+def randn(): return random.gauss(0, 0.02)
 
-x = np.random.randn(d)
+d, d_ff = 8, 32   # small demo (real: 4096, 14336)
+
+W1 = [[randn() for _ in range(d_ff)] for _ in range(d)]
+W2 = [[randn() for _ in range(d)]    for _ in range(d_ff)]
+W3 = [[randn() for _ in range(d_ff)] for _ in range(d)]  # SwiGLU gate
+
+def matvec(W, x):
+    return [sum(W[i][j]*x[j] for j in range(len(x))) for i in range(len(W))]
+
+x = [random.gauss(0, 1) for _ in range(d)]
 
 # Standard GELU FFN
-hidden = gelu(x @ W1)        # (d_ff,)
-out_gelu = hidden @ W2       # (d,)
+h_gelu  = [gelu(v) for v in matvec(W1, x)]
+out_gelu = matvec([[W2[i][j] for i in range(d_ff)] for j in range(d)], h_gelu)
+# (using transposed W2 for W2*h)
+W2t = [[W2[i][j] for i in range(d_ff)] for j in range(d)]
+out_gelu2 = [sum(W2t[j][i]*h_gelu[i] for i in range(d_ff)) for j in range(d)]
 
 # SwiGLU
-gate = silu(x @ W1)          # (d_ff,)
-up   = x @ W3                # (d_ff,)
-out_swiglu = (gate * up) @ W2
+gate = [silu(v)  for v in matvec(W1, x)]   # gating path
+up   = matvec(W3, x)                        # value path
+h_swiglu = [gate[i]*up[i] for i in range(d_ff)]
+W2t2 = [[W2[i][j] for i in range(d_ff)] for j in range(d)]
+out_swiglu = [sum(W2t2[j][i]*h_swiglu[i] for i in range(d_ff)) for j in range(d)]
 
-print("FFN analysis:")
-print(f"  Input dim d={d}, intermediate d_ff={d_ff} ({d_ff//d}× expansion)")
-print(f"  Standard params: {d*d_ff + d_ff*d} | SwiGLU params: {d*d_ff*2 + d_ff*d}")
+print(f"FFN demo: d={d}, d_ff={d_ff} ({d_ff//d}x expansion)")
+print()
 
-print("\nGELU activation (neuron 'key' activations):")
-active = (hidden > 0.01).sum()
-print(f"  {active}/{d_ff} neurons active ({active/d_ff*100:.0f}%)")
-print(f"  Top-5 activations: {sorted(hidden)[-5:][::-1]}")
+# Key-value memory: which neurons fire?
+active_gelu   = sum(1 for v in h_gelu   if v > 0.01)
+active_swiglu = sum(1 for v in h_swiglu if abs(v) > 0.01)
+print("Neurons active after nonlinearity (Geva et al. 2021 insight):")
+print(f"  GELU:   {active_gelu:3d}/{d_ff} active ({active_gelu/d_ff:.0%})")
+print(f"  SwiGLU: {active_swiglu:3d}/{d_ff} active ({active_swiglu/d_ff:.0%})")
+print("  (Sparse activation = only relevant 'memories' accessed)")
 
-print("\nSwiGLU gate statistics:")
-print(f"  Gate mean:  {gate.mean():.4f}")
-print(f"  Gate > 0.5: {(gate>0.5).sum()}/{d_ff} neurons ({(gate>0.5).mean()*100:.0f}%)")
+print()
+print("Parameter counts (same d, d_ff):")
+std_params    = d*d_ff + d_ff*d
+swiglu_params = d*d_ff*2 + d_ff*d   # gate + up + down
+print(f"  Standard (W1+W2):      {std_params:6d} params")
+print(f"  SwiGLU (W1+W2+W3):     {swiglu_params:6d} params (+{(swiglu_params-std_params)/std_params:.0%})")
 
-print("\nOutput comparison:")
-print(f"  GELU output norm:   {np.linalg.norm(out_gelu):.4f}")
-print(f"  SwiGLU output norm: {np.linalg.norm(out_swiglu):.4f}")
-
-# LLaMA-3 dim check
-print("\nLLaMA-3 8B FFN dims:")
+print()
+print("LLaMA-3 8B FFN: why d_ff=14336 instead of 4*4096=16384?")
 d_model = 4096
-d_ff_std = d_model * 4
-d_ff_swiglu = int(2/3 * d_ff_std / 256) * 256  # round to 256
-print(f"  Standard 4× d_ff:      {d_ff_std}")
-print(f"  SwiGLU 2/3 × 4× (≈):   {d_ff_swiglu}")
-print(f"  LLaMA-3 actual d_ff:   14336")</pre></div>
-    <div class="cell-output" id="cell-8-out">Click Run to execute.</div>
+d_ff_std   = d_model * 4
+d_ff_swiglu = int(2/3 * d_ff_std)  # naive 2/3
+d_ff_rounded = (d_ff_swiglu // 256) * 256  # round to 256 for GPU efficiency
+print(f"  Standard 4x:            d_ff = {d_ff_std}")
+print(f"  SwiGLU 2/3 x 4x:        d_ff = {d_ff_swiglu}")
+print(f"  Rounded to 256 boundary: d_ff = {d_ff_rounded}")
+print(f"  LLaMA-3 actual:          d_ff = 14336  (manually tuned)")
+print()
+std_llama   = d_model*d_ff_std   + d_ff_std*d_model
+swi_llama   = d_model*14336*2    + 14336*d_model
+print(f"  Params/layer standard FFN: {std_llama/1e6:.1f}M")
+print(f"  Params/layer SwiGLU FFN:   {swi_llama/1e6:.1f}M")
+
+# Try changing d_ff to 16384 (standard 4x) to see param inflation
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2012.14913" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Geva et al., 2021 — "Transformer Feed-Forward Layers Are Key-Value Memories"</span> — FFN layers store factual knowledge; specific neurons encode specific facts</span></a>
-      <a href="https://arxiv.org/abs/2002.05202" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Shazeer, 2020 — "GLU Variants Improve Transformer"</span> — SwiGLU: gated activation that outperforms GELU/ReLU in FFN layers</span></a>
-      <a href="https://arxiv.org/abs/2202.05262" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Meng et al., 2022 — "Locating and Editing Factual Associations in GPT" (ROME)</span> — Edits specific facts by modifying FFN weight rows in targeted layers</span></a>
-      <a href="https://arxiv.org/abs/2104.08696" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Dai et al., 2022 — "Knowledge Neurons in Pretrained Transformers"</span> — Identifies specific neurons that store factual knowledge; activating them retrieves facts</span></a>
+      <a href="https://arxiv.org/abs/2012.14913" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Geva et al., 2021 &#8212; "Transformer Feed-Forward Layers Are Key-Value Memories"</span> &#8212; FFN lower layers store syntactic patterns; upper layers store semantic facts. Neurons are human-interpretable.</span></a>
+      <a href="https://arxiv.org/abs/2002.05202" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Shazeer, 2020 &#8212; "GLU Variants Improve Transformer"</span> &#8212; SwiGLU: gated activation consistently outperforms GELU/ReLU. Used in LLaMA, PaLM, GPT-4 (likely).</span></a>
+      <a href="https://arxiv.org/abs/2202.05262" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Meng et al., 2022 &#8212; "Locating and Editing Factual Associations in GPT" (ROME)</span> &#8212; Edit specific facts by modifying a single FFN weight row in the right layer. Validates the key-value hypothesis.</span></a>
+      <a href="https://arxiv.org/abs/2104.08696" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Dai et al., 2022 &#8212; "Knowledge Neurons in Pretrained Transformers"</span> &#8212; Locates specific neurons that store individual factual associations; activating them retrieves the fact.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
-
-<!-- ═══════════════════════════════════════════ §1.9 ══ -->
+<!-- ============================================================ §1.9 == -->
 <section class="section" id="s9">
   <div class="section-label">1.9</div>
   <h2>Pre-training at Scale &amp; Chinchilla</h2>
-  <p>LLMs are pretrained on vast, diverse text corpora via next-token prediction. The datasets have grown dramatically: GPT-3 trained on ~300B tokens (mainly Common Crawl, WebText, Books, Wikipedia); LLaMA-3 trained on 15 trillion tokens. The composition matters enormously — code, books, and scientific papers consistently outperform raw web text per token because they contain denser reasoning and factual content.</p>
-  <p>The <strong>Chinchilla scaling laws</strong> (Hoffmann et al., 2022, "Training Compute-Optimal Large Language Models") upended the prevailing wisdom that bigger models were always better. By training over 400 models across different sizes and token counts, they found that the compute-optimal ratio is roughly <em>20 tokens per parameter</em>. GPT-3's 175B parameters should have been trained on 3.5T tokens, not 300B — it was severely undertrained.</p>
 
-  <!-- Data composition bar -->
+  <p>LLMs are pretrained on vast, diverse text corpora by minimising next-token prediction loss. The datasets
+  have grown dramatically: GPT-3 trained on ~300 billion tokens (mainly Common Crawl, WebText, Books1/2,
+  Wikipedia); LLaMA-3 trained on <strong>15 trillion tokens</strong>. Composition matters as much as size:
+  code, books, and scientific papers consistently outperform raw web text per token because they contain
+  denser reasoning, explicit structure, and factual content.</p>
+
+  <p>The <strong>Chinchilla scaling laws</strong> (Hoffmann et al., 2022, arXiv:2203.15556) upended the field.
+  By training over 400 models from 70M to 16B parameters across 5B to 500B token budgets, they found that
+  compute-optimal training requires roughly <em>20 tokens per parameter</em>. GPT-3 (175B parameters) should
+  have trained on 3.5 trillion tokens &#8212; it used only 300 billion, making it severely undertrained.
+  The 70B Chinchilla model, trained on 1.4 trillion tokens, outperforms 280B Gopher on every evaluated
+  benchmark while using identical compute. The message: &#8220;current large language models are significantly
+  undertrained.&#8221;</p>
+
   <div class="data-bar-wrap">
-    <div class="data-model-label">GPT-3 (~300B tokens)</div>
+    <div class="data-model-label">GPT-3 (~300B tokens, Brown et al. 2020)</div>
     <div class="data-bar">
       <div class="ds ds-web" style="flex:60">Web 60%</div>
       <div class="ds ds-books" style="flex:22">Books 22%</div>
@@ -1149,13 +1221,13 @@ print(f"  LLaMA-3 actual d_ff:   14336")</pre></div>
       <div class="ds ds-papers" style="flex:5">Papers</div>
       <div class="ds ds-other" style="flex:4"></div>
     </div>
-    <div class="data-model-label">LLaMA-3 (~15T tokens)</div>
+    <div class="data-model-label">LLaMA-3 (~15T tokens, Meta 2024)</div>
     <div class="data-bar">
       <div class="ds ds-web" style="flex:50">Web 50%</div>
       <div class="ds ds-code" style="flex:17">Code 17%</div>
       <div class="ds ds-books" style="flex:15">Books 15%</div>
       <div class="ds ds-wiki" style="flex:8">Wiki</div>
-      <div class="ds ds-papers" style="flex:10">Papers</div>
+      <div class="ds ds-papers" style="flex:10">Papers 10%</div>
     </div>
     <div class="data-legend">
       <div class="dl-item"><div class="dl-sw" style="background:#3b6bb5;"></div>Web</div>
@@ -1167,1010 +1239,1393 @@ print(f"  LLaMA-3 actual d_ff:   14336")</pre></div>
   </div>
 
   <div class="callout green">
-    <strong>Deduplication matters 10×.</strong> Lee et al. (2022) found that training on deduplicated data reduces verbatim memorisation by 10× while improving downstream task performance. Most modern pipelines run min-hash or SimHash deduplication before training.
+    <strong>Deduplication reduces memorisation 10&#215;.</strong> Lee et al. (2022) found that training on
+    deduplicated data reduces verbatim memorisation of training examples by 10&#215; while improving
+    downstream task performance. Most modern pipelines run min-hash or SimHash-based near-deduplication before
+    training. LLaMA-3 used aggressive deduplication across its 15T token corpus.
   </div>
 
   <div class="cell" id="cell-9">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — Chinchilla Optimal Allocation</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; Chinchilla compute-optimal allocation</span>
       <button class="run-btn" onclick="runCell('cell-9')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math
 
-# Chinchilla fit: L(N,D) = E + A/N^alpha + B/D^beta
-# Hoffmann et al. 2022 Table 3 coefficients
-E, A, B = 1.69, 406.4, 410.7
-alpha, beta = 0.34, 0.28
+# Chinchilla loss formula: L(N, D) = E + A/N^alpha + B/D^beta
+# Coefficients from Hoffmann et al. 2022, Table 3 (Approach 3)
+E     = 1.69    # irreducible entropy
+A     = 406.4   # model-size scaling coefficient
+B     = 410.7   # data-size scaling coefficient
+alpha = 0.34    # model-size scaling exponent
+beta  = 0.28    # data-size scaling exponent
 
-def loss(N, D):
+def chinchilla_loss(N, D):
     return E + A / N**alpha + B / D**beta
 
-def optimal_ND(C, lr=1e-2, steps=1000):
-    """Find compute-optimal N, D for budget C FLOPs."""
-    # FLOPs ≈ 6ND for training
-    # Minimize L(N, C/(6N)) over N
-    N = 1e9  # start at 1B
+def optimal_ND(C, steps=2000, lr=0.01):
+    # Find compute-optimal N and D for budget C FLOPs
+    # FLOPs ~= 6*N*D for a single pass
+    N = 1e9
     for _ in range(steps):
         D = C / (6 * N)
-        # gradient: dL/dN = -alpha*A/N^(alpha+1) + B*6*N^(-beta)/(C^beta)
+        # gradient w.r.t. log(N) (log-scale gradient descent)
         dN = -alpha*A * N**(-alpha-1) + beta*B * (6/C)**beta * N**(beta-1)
-        N = max(N - lr * dN * N, 1e6)  # log-scale step
+        N = max(N * math.exp(-lr * dN * N), 1e6)
     D = C / (6 * N)
     return N, D
 
-print("Chinchilla Compute-Optimal N and D:")
-print(f"{'Compute':>18s}  {'Optimal N':>12s}  {'Optimal D':>12s}  {'D/N ratio':>10s}")
-print("-" * 60)
+print("Chinchilla compute-optimal allocation")
+print(f"{'Scenario':22s} {'Opt N':>10s} {'Opt D':>12s} {'D/N ratio':>10s}")
+print("-" * 58)
 
-# Compute budgets: 3.14e23 (GPT-3), 6e23, 1e24, etc.
 budgets = [
-    ("GPT-3 actual",   3.14e23, 175e9, 300e9),
-    ("Chinchilla",     3.14e23, None, None),
-    ("LLaMA-3 8B",    1.8e24,  8e9,  15e12),
-    ("1e24 FLOPs",    1e24,    None, None),
-    ("1e25 FLOPs",    1e25,    None, None),
+    ("GPT-3 budget",    3.14e23),
+    ("LLaMA-3 8B budget", 1.8e24),
+    ("10x GPT-3",       3.14e24),
+    ("1e25 FLOPs",      1e25),
 ]
+for name, C in budgets:
+    N, D = optimal_ND(C)
+    ratio = D / N
+    print(f"{name:22s} {N/1e9:8.1f}B {D/1e9:10.1f}B {ratio:10.1f} tok/param")
 
-for name, C, act_N, act_D in budgets:
-    opt_N, opt_D = optimal_ND(C)
-    ratio = opt_D / opt_N
-    print(f"{name:18s}  {opt_N/1e9:10.1f}B  {opt_D/1e9:10.1f}B  {ratio:10.1f}×")
-    if act_N:
-        actual_loss = loss(act_N, act_D)
-        opt_loss = loss(opt_N, opt_D)
-        print(f"  ↳ actual loss={actual_loss:.4f}, optimal={opt_loss:.4f}, delta={actual_loss-opt_loss:.4f}")
+print()
+print("Reality check: how undertrained was GPT-3?")
+gpt3_actual_loss   = chinchilla_loss(175e9, 300e9)
+gpt3_optimal_N, gpt3_optimal_D = optimal_ND(3.14e23)
+gpt3_optimal_loss  = chinchilla_loss(gpt3_optimal_N, gpt3_optimal_D)
+gpt3_iso_loss      = chinchilla_loss(gpt3_optimal_N, 300e9)   # same budget, more tokens
+print(f"  GPT-3 actual (175B, 300B tok):      loss = {gpt3_actual_loss:.4f}")
+print(f"  Chinchilla optimal at same compute: loss = {gpt3_optimal_loss:.4f}")
+print(f"  Delta: {gpt3_actual_loss - gpt3_optimal_loss:.4f} nats (significant)")
+print(f"  Optimal params at GPT-3 budget:  {gpt3_optimal_N/1e9:.1f}B (not 175B)")
+print(f"  Optimal tokens at GPT-3 budget:  {gpt3_optimal_D/1e9:.1f}B (not 300B)")
 
-print("\nKey insight: ~20 tokens per parameter is compute-optimal.")
-print("GPT-3 at 175B would need ~3.5T tokens (trained on 300B — undertrained by 10×)")</pre></div>
-    <div class="cell-output" id="cell-9-out">Click Run to execute.</div>
+# Try changing the budget to 1e24 and see how optimal N and D change
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2203.15556" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Hoffmann et al., 2022 — "Training Compute-Optimal Large Language Models"</span> — Chinchilla scaling: 70B on 4× data beats 280B Gopher. ~20 tokens per parameter is optimal.</span></a>
-      <a href="https://arxiv.org/abs/2001.08361" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Kaplan et al., 2020 — "Scaling Laws for Neural Language Models"</span> — Loss follows power laws in model size, data, and compute across 7+ orders of magnitude</span></a>
-      <a href="https://arxiv.org/abs/2107.06499" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Lee et al., 2022 — "Deduplicating Training Data Makes Language Models Better"</span> — Deduplication reduces memorisation 10× and improves downstream performance</span></a>
-      <a href="https://arxiv.org/abs/2302.13971" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Touvron et al., 2023 — "LLaMA: Open and Efficient Foundation Language Models"</span> — 7B-65B models trained on 1-1.4T tokens; 13B matches GPT-3 175B on most benchmarks</span></a>
-      <a href="https://blog.eleuther.ai/transformer-math/" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">EleutherAI — "Transformer Math 101"</span> — Practical guide to compute budgets, FLOPs, and memory estimation</span></a>
+      <a href="https://arxiv.org/abs/2203.15556" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Hoffmann et al., 2022 &#8212; "Training Compute-Optimal Large Language Models" (Chinchilla)</span> &#8212; ~20 tokens per parameter is optimal. Chinchilla 70B on 1.4T tokens beats 280B Gopher. Over 400 models trained.</span></a>
+      <a href="https://arxiv.org/abs/2001.08361" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Kaplan et al., 2020 &#8212; "Scaling Laws for Neural Language Models"</span> &#8212; Loss follows power laws in model size, data, and compute across 7+ orders of magnitude.</span></a>
+      <a href="https://arxiv.org/abs/2107.06499" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Lee et al., 2022 &#8212; "Deduplicating Training Data Makes Language Models Better"</span> &#8212; 10&#215; less memorisation, improved performance. The case for aggressive deduplication.</span></a>
+      <a href="https://arxiv.org/abs/2302.13971" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Touvron et al., 2023 &#8212; "LLaMA: Open and Efficient Foundation Language Models"</span> &#8212; The original LLaMA: 7B trained on 1T tokens outperforms GPT-3 175B on most benchmarks.</span></a>
+      <a href="https://blog.eleuther.ai/transformer-math/" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">EleutherAI &#8212; "Transformer Math 101"</span> &#8212; Practical guide to FLOPs, compute budgets, memory estimation, and the 6ND rule.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.10 ══ -->
+<!-- ============================================================ §1.10 == -->
 <section class="section" id="s10">
   <div class="section-label">1.10</div>
   <h2>BERT vs GPT: Encoder vs Decoder</h2>
-  <p>Both BERT and GPT are transformer-based, but they differ in attention pattern and training objective. <strong>GPT</strong> (decoder-only) uses causal (unidirectional) attention and is trained with <em>causal language modelling</em> (CLM): predict the next token. This makes it naturally generative. <strong>BERT</strong> (encoder-only) uses bidirectional attention and is trained with <em>masked language modelling</em> (MLM): 15% of tokens are masked, and the model predicts them from both left and right context.</p>
-  <p>The bidirectional context gives BERT richer representations for classification tasks. But the autoregressive structure of GPT allows it to generate — and at scale, generation proves to be the more powerful paradigm. GPT-3 demonstrated that a large enough generative model could perform classification too, simply by framing the task as a generation problem (<em>few-shot prompting</em>). By 2023, decoder-only models dominated essentially every NLP benchmark.</p>
+
+  <p>Both BERT and GPT are transformer-based, but they differ in attention pattern and training objective.
+  <strong>GPT</strong> (decoder-only, Radford et al. 2018) uses causal (unidirectional) attention and is
+  trained with <em>causal language modelling</em> (CLM): predict the next token given left context. This makes
+  it naturally generative. <strong>BERT</strong> (encoder-only, Devlin et al. 2019, arXiv:1810.04805) uses
+  bidirectional attention and is trained with <em>masked language modelling</em> (MLM): 15% of input tokens
+  are randomly masked, and the model predicts them using context from both directions.</p>
+
+  <p>The bidirectional context gives BERT richer representations for classification tasks. But the autoregressive
+  structure of GPT allows generation &#8212; and at scale, generation proves to be the more powerful paradigm.
+  GPT-3 demonstrated that a large enough generative model performs classification by framing it as generation
+  (<em>few-shot prompting</em>). By 2023, decoder-only models dominated essentially every NLP benchmark despite
+  being &#8220;weaker&#8221; per token due to their restricted context window at each position.</p>
 
   <div class="callout blue">
-    <strong>T5</strong> (Raffel et al., 2020) tried a third approach: encoder-decoder with a unified text-to-text framework. Every task is "translate" from input to output. T5 XXL (11B) was competitive with GPT-3 (175B) on many benchmarks, suggesting encoder-decoder efficiency advantages — but the paradigm hasn't scaled as cleanly as pure decoders.
+    <strong>T5</strong> (Raffel et al., 2020, arXiv:1910.10683) tried a third approach: encoder-decoder with
+    a unified text-to-text framework. Every task is framed as text-to-text conversion. T5-XXL (11B) was
+    competitive with GPT-3 (175B) on many benchmarks &#8212; a 16&#215; parameter efficiency advantage.
+    But the encoder-decoder paradigm hasn't scaled as cleanly as pure decoders, and 2023&#8211;2024 saw
+    near-universal consolidation around decoder-only architectures.
   </div>
 
   <div class="cell" id="cell-10">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — MLM vs CLM masks &amp; objectives</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; CLM vs MLM: attention mask &amp; training objective</span>
       <button class="run-btn" onclick="runCell('cell-10')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math, random
+random.seed(42)
 
-def softmax(x, axis=-1):
-    e = np.exp(x - x.max(axis=axis, keepdims=True))
-    return e / e.sum(axis=axis, keepdims=True)
+def softmax_rows(matrix):
+    result = []
+    for row in matrix:
+        mx = max(row)
+        exps = [math.exp(x - mx) for x in row]
+        s = sum(exps)
+        result.append([e / s for e in exps])
+    return result
 
-def make_gpt_mask(n):
-    """Causal: each position only sees left context."""
-    return np.tril(np.ones((n, n), dtype=bool))
+def make_causal_mask(n):
+    # Lower triangular: each position can only see its left context
+    return [[1 if j <= i else 0 for j in range(n)] for i in range(n)]
 
 def make_bert_mask(n, mask_prob=0.15, seed=42):
-    """Bidirectional: all positions visible; some inputs masked."""
-    rng = np.random.default_rng(seed)
-    attend = np.ones((n, n), dtype=bool)  # full attention
-    masked_pos = rng.choice(n, size=int(n*mask_prob), replace=False)
-    return attend, masked_pos
+    random.seed(seed)
+    attend = [[1]*n for _ in range(n)]   # full bidirectional attention
+    masked = [i for i in range(n) if random.random() < mask_prob]
+    return attend, masked
 
 T = 6
-tokens = ["The", "cat", "[MASK]", "on", "the", "mat"]
+tokens = ["The", "cat", "[?]", "on", "the", "mat"]
 
-# GPT-style attention
-gpt_mask = make_gpt_mask(T)
-raw_scores = np.random.default_rng(0).standard_normal((T, T))
-gpt_scores = np.where(gpt_mask, raw_scores, -1e9)
-gpt_weights = softmax(gpt_scores)
+# GPT: causal mask
+gpt_mask = make_causal_mask(T)
+raw = [[random.gauss(0,1) for _ in range(T)] for _ in range(T)]
+gpt_scores = [[raw[i][j] if gpt_mask[i][j] else -1e9 for j in range(T)] for i in range(T)]
+gpt_weights = softmax_rows(gpt_scores)
 
-print("GPT (causal) attention weights:")
-print("     " + "".join(f"{t:7s}" for t in tokens))
+print("=== GPT-style (Causal) Attention ===")
+print(f"{'':6s}" + "".join(f"{t:7s}" for t in tokens))
 for i, row in enumerate(gpt_weights):
-    print(f"{tokens[i]:5s}" + "".join(f"{v:7.3f}" for v in row))
+    print(f"{tokens[i]:6s}" + "".join(f"{v:7.3f}" for v in row))
+print("Upper triangle = 0 (future masked)")
 
-# BERT-style: full attention, masked input
-bert_mask, masked = make_bert_mask(T)
-print(f"\nBERT attention: fully bidirectional")
-print(f"Masked positions (for MLM loss): {[tokens[i] for i in masked]}")
-print(f"Key: BERT sees ALL tokens but predicts only the [MASK] ones")
+# BERT: bidirectional
+bert_mask, masked_pos = make_bert_mask(T, mask_prob=0.5)
+print(f"
+=== BERT-style (Bidirectional) Attention ===")
+print("Full bidirectional: all positions attend to all positions.")
+print(f"MLM masked positions (predict these): {[tokens[i] for i in masked_pos]}")
 
-print("\nArchitecture comparison:")
+# BERT sees all positions but only computes loss on masked tokens
+print("
+Key differences:")
 rows = [
-    ("Attention", "Causal (unidirectional)", "Bidirectional"),
-    ("Objective", "Next-token prediction", "Masked token prediction"),
-    ("Best for", "Generation, chat, code", "Classification, NER, QA"),
-    ("2024 dominance", "★★★★★", "★★☆☆☆"),
-    ("Examples", "GPT-4, LLaMA-3, Claude", "BERT-large, DeBERTa"),
+    ("Architecture",    "Decoder-only",          "Encoder-only"),
+    ("Attention mask",  "Causal (lower triangle)","Full bidirectional"),
+    ("Training obj.",   "Next-token prediction",  "Masked token prediction (15%)"),
+    ("Good for",        "Generation, reasoning",  "Classification, NER, QA"),
+    ("Vocab per token", "Sees left only",         "Sees full context"),
+    ("2024 dominance",  "Dominant (GPT-4, Claude)","Niche (fine-tuned classifiers)"),
 ]
-print(f"{'Property':18s} {'GPT (decoder)':25s} {'BERT (encoder)':25s}")
-print("-" * 70)
+print(f"
+{'':22s} {'GPT (decoder)':26s} {'BERT (encoder)':26s}")
+print("-" * 76)
 for prop, gpt, bert in rows:
-    print(f"{prop:18s} {gpt:25s} {bert:25s}")</pre></div>
-    <div class="cell-output" id="cell-10-out">Click Run to execute.</div>
+    print(f"{prop:22s} {gpt:26s} {bert:26s}")
+
+# Try increasing mask_prob to 0.5 to see more masked tokens
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/1810.04805" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Devlin et al., 2019 — "BERT: Pre-training of Deep Bidirectional Transformers"</span> — Masked language modelling + next sentence prediction; bidirectional attention</span></a>
-      <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Radford et al., 2018 — "Improving Language Understanding by Generative Pre-Training"</span> — GPT-1: first decoder-only pretrained transformer for NLP</span></a>
-      <a href="https://arxiv.org/abs/1910.10683" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Raffel et al., 2020 — "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer"</span> — T5: encoder-decoder, every task framed as text-to-text</span></a>
-      <a href="https://arxiv.org/abs/2204.05832" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Wang et al., 2022 — "What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization?"</span> — Systematic comparison: decoder-only wins for zero-shot</span></a>
-      <a href="https://jalammar.github.io/illustrated-bert/" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Jay Alammar — "The Illustrated BERT, ELMo, and co."</span> — Visual comparison of BERT's bidirectional vs GPT's causal attention</span></a>
+      <a href="https://arxiv.org/abs/1810.04805" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Devlin et al., 2019 &#8212; "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"</span> &#8212; MLM + next-sentence prediction; bidirectional attention. BERT-large: 340M params, 16 heads, 24 layers.</span></a>
+      <a href="https://arxiv.org/abs/1910.10683" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Raffel et al., 2020 &#8212; "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer" (T5)</span> &#8212; Encoder-decoder; every NLP task as text-to-text. T5-11B competitive with GPT-3 175B.</span></a>
+      <a href="https://arxiv.org/abs/2204.05832" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Wang et al., 2022 &#8212; "What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization?"</span> &#8212; Systematic comparison: decoder-only wins for zero-shot generalisation.</span></a>
+      <a href="https://jalammar.github.io/illustrated-bert/" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Jay Alammar &#8212; "The Illustrated BERT, ELMo, and co."</span> &#8212; Visual comparison of BERT's bidirectional attention vs GPT's causal attention.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.11 ══ -->
+<!-- ============================================================ §1.11 == -->
 <section class="section" id="s11">
   <div class="section-label">1.11</div>
-  <h2>KV Cache &amp; Memory Efficiency</h2>
-  <p>During inference, every input token's K and V projections are computed once and <em>cached</em>. When the next token is generated, only the new token's Q, K, V need to be computed — then the new K and V are appended to the cache, and attention is computed between the new Q and all cached K/V pairs. Without this cache, each decoding step would require O(N²) attention re-computation; with it, each step is O(N).</p>
-  <p>The memory cost is substantial. For LLaMA-3 8B with 32 layers, 8 KV heads, head dim 128, and 32-bit floats: one token occupies 32 × 8 × 128 × 2 × 4 = 262KB. At 128K context, that's <strong>32GB</strong> just for the KV cache — equal to the model weights. This is why GQA (§1.6) is critical for long-context serving, and why vLLM's <em>PagedAttention</em> manages KV cache like OS virtual memory, enabling 24× higher throughput by eliminating fragmentation.</p>
+  <h2>KV Cache &amp; Inference Memory</h2>
 
-  <!-- KV Cache diagram -->
+  <p>During inference, each token's K and V projections are computed once and <em>cached</em>. When the
+  next token is generated, only the new token's Q, K, V are computed &#8212; then the new K and V are appended
+  to the cache, and attention is computed between the new Q and all cached K/V pairs. Without caching, each
+  step requires O(N&#178;) re-computation; with the cache, each step is O(N) in total across the context.</p>
+
+  <p>The memory cost is substantial. LLaMA-3 8B: 32 layers, 8 KV-heads, d_head=128, BF16 (2 bytes).
+  One token occupies 32 &#215; 8 &#215; 128 &#215; 2 &#215; 2 = 131,072 bytes &#8776; 128 KB.
+  At 128K context, that's <strong>16 GB</strong> just for the KV cache &#8212; equal to the model weights.
+  At full MHA (32 KV-heads), it would be <strong>64 GB</strong>. This is why GQA (&#167;1.6) is critical for
+  long-context serving, and why vLLM's <em>PagedAttention</em> (Kwon et al., 2023) manages KV cache like OS
+  virtual memory pages, achieving 24&#215; higher throughput by eliminating fragmentation.</p>
+
   <div class="kv-diag">
     <div class="kv-step">
       <div class="kv-step-label">Step 1</div>
       <div class="kv-tok kv-new">The</div>
-      <div style="margin:0 4px;font-size:11px;color:var(--text-secondary);">→ K₁V₁ stored</div>
+      <div style="margin:0 6px;font-size:11px;color:var(--text-secondary);">&#8594; compute &amp; store K&#8321;V&#8321;</div>
     </div>
     <div class="kv-step">
       <div class="kv-step-label">Step 2</div>
       <div class="kv-tok kv-cached">The</div>
       <div class="kv-tok kv-new">cat</div>
-      <div style="margin:0 4px;font-size:11px;color:var(--text-secondary);">→ K₁V₁ cached, compute K₂V₂</div>
+      <div style="margin:0 6px;font-size:11px;color:var(--text-secondary);">&#8594; K&#8321;V&#8321; cached; compute K&#8322;V&#8322;</div>
     </div>
     <div class="kv-step">
       <div class="kv-step-label">Step 3</div>
       <div class="kv-tok kv-cached">The</div>
       <div class="kv-tok kv-cached">cat</div>
       <div class="kv-tok kv-new">sat</div>
-      <div style="margin:0 4px;font-size:11px;color:var(--text-secondary);">→ K₁V₁K₂V₂ cached, compute K₃V₃</div>
+      <div style="margin:0 6px;font-size:11px;color:var(--text-secondary);">&#8594; K&#8321;V&#8321;K&#8322;V&#8322; cached; compute K&#8323;V&#8323;</div>
     </div>
   </div>
 
   <div class="formula">
-    <span class="eq-label">KV Cache memory formula</span>
-    Memory = batch × seq_len × n_layers × kv_heads × d_head × 2 (K+V) × bytes_per_element
+    <span class="eq-label">KV cache memory formula</span>
+    Memory = batch &#215; seq_len &#215; n_layers &#215; kv_heads &#215; d_head &#215; 2 (K+V) &#215; bytes_per_element
   </div>
 
   <div class="cell" id="cell-11">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — KV Cache Memory Calculator</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; KV cache memory budget at real scales</span>
       <button class="run-btn" onclick="runCell('cell-11')">Run</button>
     </div>
     <div class="cell-code"><pre>def kv_cache_gb(batch, seq, n_layers, kv_heads, d_model, n_heads, bits=16):
     d_head = d_model // n_heads
-    bytes_per_elem = bits // 8
-    return batch * seq * n_layers * kv_heads * d_head * 2 * bytes_per_elem / 1e9
+    return batch * seq * n_layers * kv_heads * d_head * 2 * (bits//8) / 1e9
 
-def model_weights_gb(d, d_ff, L, H, kv_heads, V, bits=16):
-    n_heads = H
-    d_head = d // n_heads
-    embed = V * d
-    attn = L * (d*d + d*(kv_heads*d_head)*2 + d*d)
-    ffn = L * (d*d_ff*2 + d_ff*d)
+def model_gb(d, d_ff, L, H, kv, V, bits=16):
+    d_head = d // H
+    embed  = V * d
+    attn   = L * (d*d + d*(kv*d_head)*2 + d*d)
+    ffn    = L * (d*d_ff*2 + d_ff*d)
     return (embed + attn + ffn) * (bits//8) / 1e9
 
-print("LLaMA-3 8B — KV cache vs model weights at various contexts:")
-print(f"{'Seq len':>10s} {'KV cache':>12s} {'Model':>10s} {'Ratio':>8s}")
+print("LLaMA-3 8B: KV cache growth vs model weights (BF16)")
+weights = model_gb(4096, 14336, 32, 32, 8, 128256)
+print(f"Model weights: {weights:.2f} GB")
+print(f"{'seq_len':>10s} {'KV cache':>12s} {'ratio to weights':>18s}")
 print("-" * 44)
-
-model_gb = model_weights_gb(4096, 14336, 32, 32, 8, 128256)
-for seq in [512, 2048, 8192, 32768, 131072]:
+for seq in [1024, 4096, 16384, 65536, 131072]:
     kv = kv_cache_gb(1, seq, 32, 8, 4096, 32)
-    print(f"{seq:10,d} {kv:10.2f}GB {model_gb:8.2f}GB {kv/model_gb:7.1f}×")
+    print(f"{seq:10,d} {kv:10.2f} GB {kv/weights*100:16.0f}%")
 
-print(f"\nModel weights (BF16): {model_gb:.2f} GB")
+print()
+print("GQA vs MHA at seq=32K, LLaMA-3 8B scale:")
+for name, kv_h in [("MHA (32 KV heads)", 32), ("GQA (8 groups)", 8), ("MQA (1 head)", 1)]:
+    gb = kv_cache_gb(1, 32768, 32, kv_h, 4096, 32)
+    print(f"  {name:22s}: {gb:.2f} GB")
 
-print("\nKV cache at seq=8192, batch=1 — MHA vs GQA vs MQA:")
-configs = [
-    ("MHA (32 heads)",  32),
-    ("GQA (8 groups)",   8),
-    ("MQA (1 head)",     1),
-]
-for name, kv_h in configs:
-    gb = kv_cache_gb(1, 8192, 32, kv_h, 4096, 32)
-    print(f"  {name:20s}: {gb:.3f} GB")
+print()
+print("Operations saved by KV cache (cumulative):")
+print(f"{'decode step':>12s} {'with cache':>14s} {'without cache':>16s} {'speedup':>10s}")
+print("-" * 56)
+for step in [1, 10, 50, 200, 500]:
+    with_c   = step * 64            # O(N) total cost
+    without_c = sum(i*64 for i in range(1, step+1))  # O(N^2) total
+    print(f"{step:12d} {with_c:12,d} {without_c:14,d} {without_c//with_c:9d}x")
 
-print("\nSimulated KV cache growth (operations saved):")
-print(f"{'Step':>6s} {'With cache':>14s} {'Without cache':>16s}")
-for step in [1, 10, 50, 100, 500]:
-    with_cache = step * 64  # O(n) per step: n * d_head ops
-    without = sum(i*64 for i in range(1, step+1))  # O(n^2) total
-    print(f"{step:6d} {with_cache:12,d} {without:14,d}  ({without//with_cache:4d}× more)")</pre></div>
-    <div class="cell-output" id="cell-11-out">Click Run to execute.</div>
+# Try changing kv_h to 32 to see the pre-GQA memory cost
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2211.05102" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Pope et al., 2023 — "Efficiently Scaling Transformer Inference"</span> — Memory-bandwidth bottleneck analysis; KV cache dominates inference cost</span></a>
-      <a href="https://arxiv.org/abs/2309.06180" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Kwon et al., 2023 — "Efficient Memory Management for Large Language Model Serving with PagedAttention"</span> — vLLM's PagedAttention: manages KV cache like OS virtual memory, 24× higher throughput</span></a>
-      <a href="https://arxiv.org/abs/1911.02150" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Shazeer, 2019 — "Fast Transformer Decoding: One Write-Head is All You Need"</span> — Multi-Query Attention reduces KV cache size dramatically</span></a>
-      <a href="https://lilianweng.github.io/posts/2023-01-10-inference-optimization/" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Lilian Weng, 2023 — "Large Transformer Model Inference Optimization"</span> — Comprehensive overview of KV caching, quantization, speculative decoding</span></a>
+      <a href="https://arxiv.org/abs/2309.06180" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Kwon et al., 2023 &#8212; "Efficient Memory Management for Large Language Model Serving with PagedAttention"</span> &#8212; vLLM: KV cache as OS virtual memory. 24&#215; higher throughput by eliminating 60&#8211;80% memory waste from fragmentation.</span></a>
+      <a href="https://arxiv.org/abs/2211.05102" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Pope et al., 2023 &#8212; "Efficiently Scaling Transformer Inference"</span> &#8212; Memory-bandwidth bottleneck analysis. KV cache dominates inference cost at long context.</span></a>
+      <a href="https://lilianweng.github.io/posts/2023-01-10-inference-optimization/" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Lilian Weng, 2023 &#8212; "Large Transformer Model Inference Optimization"</span> &#8212; Comprehensive overview of KV caching, quantization, speculative decoding, and batching strategies.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.12 ══ -->
+<!-- ============================================================ §1.12 == -->
 <section class="section" id="s12">
   <div class="section-label">1.12</div>
   <h2>Flash Attention</h2>
-  <p>Standard attention materialises the full N×N attention matrix in HBM (GPU global memory). For N=4096, that's 4096² × 4 bytes = 64MB <em>per head per layer</em> — but the bottleneck isn't compute, it's memory bandwidth. Reading and writing this matrix dominates runtime. Dao et al. (2022) observed that SRAM (the GPU's on-chip L1 cache) is 256KB but 19× faster than HBM. Flash Attention tiles Q, K, V into SRAM blocks, computes attention in tiles, and never materialises the full N×N matrix in HBM.</p>
-  <p>Flash Attention is <strong>exact</strong>, not approximate — it produces the same result as standard attention, just with radically fewer HBM accesses. The speedup comes purely from the memory hierarchy. FA-1 achieves 7.6× speedup and 9× fewer HBM reads/writes. FA-2 (2023) reorganises the parallelism across GPU threads, achieving another 2× speedup. FA-3 (2024) exploits H100 async tensor cores for yet more throughput.</p>
 
-  <!-- Memory hierarchy -->
+  <p>Standard attention materialises the full N&#215;N attention matrix in GPU HBM (high-bandwidth memory,
+  the GPU's VRAM). For N=4,096 tokens and d=128, that's 4,096&#178; &#215; 4 bytes = 67 MB <em>per head per
+  layer</em>. The bottleneck is not compute &#8212; it's memory bandwidth. Reading and writing this matrix to/from
+  HBM dominates runtime. Dao et al. (2022, arXiv:2205.14135) observed that on-chip SRAM is 19 TB/s bandwidth
+  vs 2 TB/s for HBM, but only ~50 MB total on an A100. Flash Attention tiles Q, K, V into SRAM blocks
+  (typically 64&#8211;128 tokens per tile), computes attention within each tile, and never materialises
+  the full N&#215;N matrix.</p>
+
+  <p>Flash Attention is <strong>exact</strong>, not approximate &#8212; it produces bit-identical results
+  to standard attention. The speedup is purely algorithmic: 2&#8211;4&#215; end-to-end wall-clock reduction
+  on GPT-2 training, 7.6&#215; fewer HBM reads/writes per forward pass on A100. Flash Attention-2 (2023)
+  reorganises the inner loop to better parallelise across GPU thread blocks, achieving another 2&#215; speedup.
+  Flash Attention-3 (2024) exploits H100 async tensor cores for further gains. The technique is now universal:
+  PyTorch 2.0 uses FA-2 by default via <code>F.scaled_dot_product_attention()</code>.</p>
+
   <div class="mem-stack">
     <div class="mem-tier mt-regs">
-      <span class="mem-name" style="color:var(--accent);">Registers</span>
+      <span class="mem-name" style="color:var(--accent);">Registers / L1 cache</span>
       <span class="mem-sz">~256 KB per SM</span>
-      <span class="mem-bw">∞ (in-register)</span>
+      <span class="mem-bw">&#8734; (in-register ops)</span>
     </div>
     <div class="mem-tier mt-sram">
-      <span class="mem-name" style="color:var(--green);">SRAM (shared mem)</span>
+      <span class="mem-name" style="color:var(--green);">SRAM (shared mem, L2)</span>
       <span class="mem-sz">~50 MB (A100)</span>
       <span class="mem-bw">19 TB/s</span>
     </div>
     <div class="mem-tier mt-hbm">
       <span class="mem-name" style="color:var(--blue);">HBM (GPU VRAM)</span>
-      <span class="mem-sz">40–80 GB</span>
+      <span class="mem-sz">40&#8211;80 GB (A100)</span>
       <span class="mem-bw">2 TB/s</span>
     </div>
     <div class="mem-tier mt-dram">
-      <span class="mem-name" style="color:var(--text-secondary);">DRAM (CPU RAM)</span>
+      <span class="mem-name" style="color:var(--text-secondary);">DRAM (CPU system RAM)</span>
       <span class="mem-sz">100s GB</span>
       <span class="mem-bw">50 GB/s</span>
     </div>
   </div>
 
   <div class="callout purple">
-    <strong>Online softmax</strong> is the key trick. To tile attention without seeing the full row of scores at once, Flash Attention computes a running max and sum as it processes each tile, using the numerically stable identity: softmax(x) can be updated incrementally with correction factors. This allows the O(N) memory footprint despite exact computation.
+    <strong>Online softmax</strong> is the algorithmic key. Computing attention requires the full row of
+    dot-product scores to normalise with softmax. FA computes a running max and sum as it processes each tile,
+    using the numerically stable identity: if new max m' &gt; old max m, correct the accumulated sum by
+    exp(m &#8722; m') before adding new terms. This allows exact softmax computation tile-by-tile with only
+    O(N) memory instead of O(N&#178;).
   </div>
 
   <div class="formula">
-    <span class="eq-label">Flash Attention HBM access complexity</span>
-    Standard: O(N² · d)  →  Flash: O(N² · d² / M)  where M = SRAM size
-    For N=4096, d=128, M=50MB: ~7.6× fewer HBM reads/writes
+    <span class="eq-label">Flash Attention HBM access complexity (Dao et al. 2022, Theorem 2)</span>
+    Standard: O(N&#178; &#183; d) &nbsp;&#8594;&nbsp; Flash: O(N&#178; &#183; d&#178; / M)
+    <br>where M = SRAM size. For N=4096, d=128, M=50MB: ~7.6&#215; fewer HBM reads/writes.
   </div>
 
   <div class="cell" id="cell-12">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — Flash Attention tiling simulation</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; Flash Attention tiling simulation (pure Python)</span>
       <button class="run-btn" onclick="runCell('cell-12')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math, random
+random.seed(0)
+
+def softmax_vec(v):
+    mx = max(v)
+    exps = [math.exp(x - mx) for x in v]
+    s = sum(exps)
+    return [e/s for e in exps]
+
+def matmul(A, B):
+    rA, cA, cB = len(A), len(A[0]), len(B[0])
+    return [[sum(A[i][k]*B[k][j] for k in range(cA)) for j in range(cB)] for i in range(rA)]
 
 def standard_attention(Q, K, V):
-    """Standard: materialises full N×N matrix in memory."""
-    d_k = Q.shape[-1]
-    S = Q @ K.T / np.sqrt(d_k)          # N×N score matrix (HBM)
-    P = np.exp(S - S.max(axis=1, keepdims=True))
-    P /= P.sum(axis=1, keepdims=True)    # N×N softmax (HBM)
-    return P @ V                         # N×d (HBM)
+    T, d_k = len(Q), len(Q[0])
+    scale = math.sqrt(d_k)
+    Kt = [[K[j][i] for j in range(T)] for i in range(d_k)]
+    S = matmul(Q, Kt)
+    S = [[s/scale for s in row] for row in S]
+    P = [softmax_vec(row) for row in S]
+    return matmul(P, V)
 
-def flash_attention_sim(Q, K, V, block_size=2):
-    """Flash attention: tiled, never stores full N×N."""
-    N, d_k = Q.shape
-    d_v = V.shape[1]
-    O = np.zeros((N, d_v))              # output in HBM
-    l = np.zeros(N)                     # running sum (l)
-    m = np.full(N, -np.inf)             # running max  (m)
-    hbm_ops = 0  # count HBM operations
+def flash_attention_tiled(Q, K, V, B=2):
+    # Flash-like: tiled computation, no full NxN materialised in memory
+    T, d_k = len(Q), len(Q[0])
+    d_v = len(V[0])
+    scale = math.sqrt(d_k)
+    O = [[0.0]*d_v for _ in range(T)]
+    l = [0.0]*T       # running softmax denominator
+    m = [-1e9]*T      # running max
 
-    for j in range(0, N, block_size):   # KV block
-        Kj = K[j:j+block_size]          # SRAM load
-        Vj = V[j:j+block_size]          # SRAM load
-        hbm_ops += 2 * block_size * d_k
+    for j in range(0, T, B):         # tile over K/V
+        Kj = K[j:j+B]
+        Vj = V[j:j+B]
+        for i in range(0, T, B):     # tile over Q
+            Qi = Q[i:i+B]
+            Sij = [[sum(Qi[a][k]*Kj[b][k] for k in range(d_k))/scale
+                    for b in range(len(Kj))] for a in range(len(Qi))]
+            for a in range(len(Qi)):
+                row_max = max(Sij[a])
+                m_new   = max(m[i+a], row_max)
+                Pij_row = [math.exp(s - m_new) for s in Sij[a]]
+                lij     = sum(Pij_row)
+                # Correct accumulated O[i+a] for new max
+                corr = math.exp(m[i+a] - m_new) if m[i+a] > -1e8 else 0.0
+                l_new = corr * l[i+a] + lij
+                for c in range(d_v):
+                    O[i+a][c] = (corr * l[i+a] * O[i+a][c]
+                                 + sum(Pij_row[b] * Vj[b][c] for b in range(len(Vj)))) / l_new
+                m[i+a] = m_new
+                l[i+a] = l_new
+    return O
 
-        for i in range(0, N, block_size):  # Q block
-            Qi = Q[i:i+block_size]      # SRAM load
-            hbm_ops += block_size * d_k
-            mi = m[i:i+block_size].copy()
-            li = l[i:i+block_size].copy()
-            Oi = O[i:i+block_size].copy()
-
-            Sij = Qi @ Kj.T / np.sqrt(d_k)  # (Bi, Bj) in SRAM
-            mij = Sij.max(axis=1)
-            m_new = np.maximum(mi, mij)
-            Pij = np.exp(Sij - m_new[:, None])
-            lij = Pij.sum(axis=1)
-            l_new = np.exp(mi - m_new) * li + lij
-            O[i:i+block_size] = (np.exp(mi - m_new)[:, None] * Oi + Pij @ Vj)
-            m[i:i+block_size] = m_new
-            l[i:i+block_size] = l_new
-            hbm_ops += block_size * d_v  # write back O
-
-    O /= l[:, None]
-    return O, hbm_ops
-
-def standard_hbm_ops(N, d_k, d_v):
-    """Count HBM ops for standard attention."""
-    return N*d_k + N*d_k + N*d_v + N*N + N*N + N*d_v
-
-np.random.seed(0)
 T, d_k, d_v = 8, 4, 4
-Q = np.random.randn(T, d_k)
-K = np.random.randn(T, d_k)
-V = np.random.randn(T, d_v)
+Q = [[random.gauss(0,1) for _ in range(d_k)] for _ in range(T)]
+K = [[random.gauss(0,1) for _ in range(d_k)] for _ in range(T)]
+V = [[random.gauss(0,1) for _ in range(d_v)] for _ in range(T)]
 
-out_std  = standard_attention(Q, K, V)
-out_flash, flash_ops = flash_attention_sim(Q, K, V, block_size=2)
-std_ops = standard_hbm_ops(T, d_k, d_v)
+out_std   = standard_attention(Q, K, V)
+out_flash = flash_attention_tiled(Q, K, V, B=2)
 
-print(f"Standard attention output row 0:   {out_std[0].round(4)}")
-print(f"Flash attention output row 0:      {out_flash[0].round(4)}")
-print(f"Max difference (should be ~0):     {np.abs(out_std - out_flash).max():.2e}")
+# Check they match
+max_diff = max(abs(out_std[i][j] - out_flash[i][j]) for i in range(T) for j in range(d_v))
+print(f"Standard vs Flash Attention max difference: {max_diff:.2e}")
+print(f"(Should be ~1e-10 floating point noise, not a different result)")
 
-print(f"\nHBM operations comparison (N={T}):")
-print(f"  Standard: {std_ops:6d} ops")
-print(f"  Flash:    {flash_ops:6d} ops")
-print(f"  Speedup:  {std_ops/flash_ops:.2f}×")
+print(f"
+Output row 0 (standard): {[round(x,4) for x in out_std[0]]}")
+print(f"Output row 0 (tiled):    {[round(x,4) for x in out_flash[0]]}")
 
-print("\nProjected speedup at real scales:")
-for N in [1024, 4096, 16384, 65536]:
-    std = standard_hbm_ops(N, 128, 128)
-    flash = N*128*3 + N*128  # approximate
-    print(f"  N={N:6d}: {std/flash:.1f}× fewer HBM accesses")</pre></div>
-    <div class="cell-output" id="cell-12-out">Click Run to execute.</div>
+# HBM access comparison
+print("
+HBM reads/writes (proportional) at various context lengths:")
+print(f"{'seq_len':>10s} {'Standard (N^2)':>16s} {'Flash (N^2*d/M)':>18s} {'Speedup':>9s}")
+print("-" * 57)
+for N in [512, 1024, 4096, 16384, 65536]:
+    std_ops   = N*N           # proportional to N^2
+    flash_ops = N*128         # roughly N * d_k (linear in context for fixed d_k)
+    print(f"{N:10,d} {std_ops:14,d} {flash_ops:16,d} {std_ops//flash_ops:8d}x")
+
+# Try changing B (tile size) to 4 or 1 and re-running
+</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2205.14135" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Dao et al., 2022 — "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"</span> — IO-aware tiling: 7.6× speedup, 9× fewer HBM accesses, exact same result</span></a>
-      <a href="https://arxiv.org/abs/2307.08691" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Dao, 2023 — "FlashAttention-2: Faster Attention with Better Parallelism"</span> — 2× faster via work partitioning across GPU threads</span></a>
-      <a href="https://arxiv.org/abs/1805.02867" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Milakov & Gimelshein, 2018 — "Online normalizer calculation for softmax"</span> — The online softmax trick that enables tiled attention without materializing the full matrix</span></a>
-      <a href="https://github.com/Dao-AILab/flash-attention" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">FlashAttention — Official GitHub repository</span> — CUDA implementation with PyTorch integration; drop-in replacement for standard attention</span></a>
+      <a href="https://arxiv.org/abs/2205.14135" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Dao et al., 2022 &#8212; "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"</span> &#8212; IO-aware tiling: 7.6&#215; fewer HBM accesses, 3&#215; end-to-end speedup on GPT-2 training. Exact, not approximate.</span></a>
+      <a href="https://arxiv.org/abs/2307.08691" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Dao, 2023 &#8212; "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning"</span> &#8212; 2&#215; additional speedup by reorganising the inner loop across GPU thread blocks.</span></a>
+      <a href="https://arxiv.org/abs/1805.02867" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Milakov &amp; Gimelshein, 2018 &#8212; "Online normalizer calculation for softmax"</span> &#8212; The running max/sum trick that enables tiled attention without materialising the full matrix.</span></a>
+      <a href="https://github.com/Dao-AILab/flash-attention" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">FlashAttention &#8212; Official GitHub repository (Dao-AILab)</span> &#8212; CUDA implementation with PyTorch integration; drop-in replacement for standard attention.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-
-<!-- ═══════════════════════════════════════════ §1.13 ══ -->
+<!-- ============================================================ §1.13 == -->
 <section class="section" id="s13">
   <div class="section-label">1.13</div>
   <h2>Alignment: RLHF, DPO &amp; LoRA</h2>
-  <p>A pretrained LLM is a raw document completer — brilliant but unpredictable. Alignment transforms it into a helpful assistant. The dominant approach, <strong>RLHF</strong> (Reinforcement Learning from Human Feedback, Ouyang et al. 2022), has three stages: (1) supervised fine-tuning on demonstration data, (2) training a reward model on human preference pairs, (3) optimising the LLM against the reward model using PPO while penalising KL divergence from the SFT baseline.</p>
-  <p><strong>DPO</strong> (Direct Preference Optimisation, Rafailov et al. 2023) bypasses the reward model entirely. It derives a closed-form loss directly from preference pairs, using the observation that the optimal RLHF policy can be expressed analytically. DPO is simpler, more stable, and often matches RLHF quality — it has become the default for open-source alignment. <strong>Constitutional AI</strong> (Anthropic, 2022) adds a self-critique loop: the model generates responses, evaluates them against a written constitution, revises them, then produces preference pairs for the reward model — replacing human labellers with AI-generated preferences (RLAIF).</p>
 
-  <!-- RLHF Pipeline -->
-  <div class="pipeline">
-    <div class="pipe-step ps-1">
-      <div class="pipe-num">①</div>
-      <div class="pipe-name">SFT</div>
-      <div class="pipe-desc">Fine-tune on expert demonstrations. Establishes format, basic helpfulness.</div>
-    </div>
-    <div class="pipe-step ps-2">
-      <div class="pipe-num">②</div>
-      <div class="pipe-name">Reward Model</div>
-      <div class="pipe-desc">Train on (chosen, rejected) pairs. Humans rank two responses; RM learns their preferences.</div>
-    </div>
-    <div class="pipe-step ps-3">
-      <div class="pipe-num">③</div>
-      <div class="pipe-name">PPO</div>
-      <div class="pipe-desc">Optimise LLM to maximise RM score while staying close to SFT (KL penalty β).</div>
-    </div>
-  </div>
+  <p>Pre-training produces a model that predicts text; it does not produce a model that helpfully follows instructions. Bridging that gap — <em>alignment</em> — is the central engineering challenge of deploying LLMs. Three techniques dominate: Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), and the more recent Direct Preference Optimisation (DPO). Low-Rank Adaptation (LoRA) makes all three computationally feasible without retraining billions of parameters.</p>
+
+  <p><strong>Stage 1 — SFT.</strong> A curated set of (prompt, ideal response) pairs is collected — InstructGPT used 13,000 prompts written by 40 contractors (Ouyang et al., 2022, arXiv:2203.02155). The pre-trained model is fine-tuned with standard cross-entropy loss on these examples. SFT teaches the response format but cannot capture nuanced human preferences about tone, safety, or helpfulness.</p>
+
+  <p><strong>Stage 2 — Reward Model Training.</strong> Contractors rank model outputs for the same prompt. A separate model R<sub>φ</sub>(x, y) is trained to predict the human preference score. For a preferred response y<sub>w</sub> vs rejected response y<sub>l</sub>, the reward model loss is:</p>
 
   <div class="callout">
-    <strong>LoRA</strong> (Hu et al. 2021) is the dominant parameter-efficient fine-tuning method. Instead of updating the full weight matrix W ∈ ℝ^(d×d), LoRA freezes W and learns two low-rank matrices A ∈ ℝ^(d×r) and B ∈ ℝ^(r×d). The effective update is ΔW = BA with rank r ≪ d. For r=16, d=4096: LoRA uses 2×4096×16 = 131K parameters vs 16.7M for the full matrix — a 128× reduction. QLoRA (Dettmers 2023) combines LoRA adapters with NF4 quantized base weights, enabling fine-tuning LLaMA-3 70B on a single 48GB GPU.
+    <strong>Reward model loss:</strong>
+    &#x2112;(φ) = &minus;E<sub>(x,y<sub>w</sub>,y<sub>l</sub>)~D</sub>[ log σ(R<sub>φ</sub>(x,y<sub>w</sub>) &minus; R<sub>φ</sub>(x,y<sub>l</sub>)) ]
+    <br><br>This is a Bradley-Terry preference model: the probability that humans prefer y<sub>w</sub> equals σ(R<sub>w</sub> &minus; R<sub>l</sub>). Training pushes the preferred response's score above the rejected one's.
   </div>
 
-  <!-- LoRA diagram -->
-  <div class="lora-diag">
-    <div class="lora-box lora-W0">W₀<br>(frozen)<span class="lora-frozen">d × d = 16M params</span></div>
-    <div class="lora-eq">+</div>
-    <div class="lora-box lora-B">B<br>(trainable)<span class="lora-frozen">d × r</span></div>
-    <div class="lora-eq">·</div>
-    <div class="lora-box lora-A">A<br>(trainable)<span class="lora-frozen">r × d</span></div>
-    <div class="lora-eq">=</div>
-    <div class="lora-box lora-delta">ΔW = BA<br><span class="lora-frozen">rank-r update</span></div>
+  <p><strong>Stage 3 — PPO.</strong> The SFT model is fine-tuned with proximal policy optimisation to maximise the reward model's score, subject to a KL-divergence penalty that prevents the model drifting too far from the SFT base. The PPO update is:</p>
+
+  <div class="callout">
+    <strong>RLHF objective:</strong>
+    max<sub>π</sub> E<sub>x~D, y~π</sub>[ R<sub>φ</sub>(x,y) ] &minus; β · KL[π(y|x) ∥ π<sub>SFT</sub>(y|x)]
+    <br><br>&beta; is typically 0.01–0.1. Without the KL penalty the model collapses to reward-hacking — e.g., producing very long outputs that the reward model was not trained to penalise.
+  </div>
+
+  <p><strong>DPO — a simpler alternative.</strong> Rafailov et al. (2023, arXiv:2305.18290) showed that the RLHF objective has a closed-form optimal policy. Rather than training a separate reward model + running PPO, DPO directly fine-tunes the LLM on preference pairs:</p>
+
+  <div class="callout">
+    <strong>DPO loss:</strong>
+    &#x2112;<sub>DPO</sub>(θ) = &minus;E<sub>(x,y<sub>w</sub>,y<sub>l</sub>)</sub>[ log σ( β log π<sub>θ</sub>(y<sub>w</sub>|x)/π<sub>ref</sub>(y<sub>w</sub>|x) &minus; β log π<sub>θ</sub>(y<sub>l</sub>|x)/π<sub>ref</sub>(y<sub>l</sub>|x) ) ]
+    <br><br>Interpretation: DPO increases the probability of preferred responses relative to the reference model, while decreasing rejected responses — all in a single supervised loss. No PPO, no separate reward model, 2&times; less VRAM at training time.
+  </div>
+
+  <p><strong>LoRA — efficient fine-tuning.</strong> Full fine-tuning of a 70B model requires ~280 GB of GPU VRAM for fp16 weights alone. Hu et al. (2021, arXiv:2106.09685) introduced Low-Rank Adaptation: instead of updating W directly, add a low-rank decomposition Δ W = BA where B ∈ ℝ<sup>d×r</sup>, A ∈ ℝ<sup>r×k</sup>, and r ≪ min(d,k). For a 4096×4096 attention projection with r=16, LoRA uses 4096×16 + 16×4096 = 131,072 parameters instead of 16,777,216 — a 128× reduction. With r=64 on a 7B model, LoRA reduces trainable parameters from 7B to ~4M: a 1,750× reduction. Only the A,B matrices are updated; W is frozen. At inference, Δ W = BA is merged into W — zero latency overhead.</p>
+
+  <div class="ar-loop" style="grid-template-columns:1fr 1fr 1fr; gap:12px; padding:16px;">
+    <div style="text-align:center; padding:12px; background:#1a1a2e; border:1px solid #444; border-radius:6px;">
+      <div style="color:#888; font-size:0.7rem; margin-bottom:6px;">PRE-TRAINING</div>
+      <div style="font-size:0.85rem;">Next-token prediction<br>300B–15T tokens<br>Cross-entropy loss</div>
+    </div>
+    <div style="text-align:center; padding:12px; background:#1a1a2e; border:1px solid #4ec9b0; border-radius:6px;">
+      <div style="color:#4ec9b0; font-size:0.7rem; margin-bottom:6px;">SFT</div>
+      <div style="font-size:0.85rem;">13K curated pairs<br>Format + style<br>Standard CE loss</div>
+    </div>
+    <div style="text-align:center; padding:12px; background:#1a1a2e; border:1px solid #c586c0; border-radius:6px;">
+      <div style="color:#c586c0; font-size:0.7rem; margin-bottom:6px;">RLHF / DPO</div>
+      <div style="font-size:0.85rem;">Human preference pairs<br>Reward shaping<br>KL-constrained update</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <span class="code-label">Python</span>
+    <pre><span class="kw">import</span> math
+
+<span class="lm"># DPO loss — single preferred/rejected pair</span>
+<span class="kw">def</span> <span class="fn">dpo_loss</span>(log_pi_w, log_ref_w, log_pi_l, log_ref_l, beta=<span class="nu">0.1</span>):
+    <span class="lm"># ↑ beta controls how far policy can deviate from reference</span>
+    ratio_w = log_pi_w - log_ref_w   <span class="lm"># ↑ log-ratio for preferred response</span>
+    ratio_l = log_pi_l - log_ref_l   <span class="lm"># ↑ log-ratio for rejected response</span>
+    logit   = beta * (ratio_w - ratio_l)   <span class="lm"># ↑ margin between preferred and rejected</span>
+    loss    = -math.log(1 / (1 + math.exp(-logit)))   <span class="lm"># ↑ -log σ(logit)</span>
+    <span class="kw">return</span> loss
+
+<span class="lm"># LoRA parameter budget analysis</span>
+<span class="kw">def</span> <span class="fn">lora_params</span>(d, k, rank):
+    <span class="lm"># ↑ d=input dim, k=output dim, rank=LoRA rank (e.g. 4, 8, 16, 64)</span>
+    full_params  = d * k
+    lora_trainable = d * rank + rank * k   <span class="lm"># ↑ A matrix + B matrix</span>
+    reduction = full_params / lora_trainable
+    <span class="kw">return</span> full_params, lora_trainable, reduction
+
+<span class="kw">for</span> d, k, label <span class="kw">in</span> [(4096, 4096, <span class="st">"LLaMA-3 8B Q,K,V proj"</span>),
+                       (8192, 8192, <span class="st">"LLaMA-3 70B Q,K,V proj"</span>),
+                       (14336, 4096, <span class="st">"LLaMA-3 8B down_proj"</span>)]:
+    <span class="kw">for</span> r <span class="kw">in</span> [8, 16, 64]:
+        full, trainable, reduction = lora_params(d, k, r)
+        print(f<span class="st">"{label} r={r:2d}: {trainable:,} trainable / {full:,} full ({reduction:.0f}× smaller)"</span>)</pre>
   </div>
 
   <div class="cell" id="cell-13">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — DPO Loss &amp; LoRA Parameter Efficiency</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; DPO loss landscape + LoRA parameter budgets</span>
       <button class="run-btn" onclick="runCell('cell-13')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math
 
-# DPO Loss (Rafailov et al. 2023)
-def dpo_loss(log_p_chosen, log_p_rejected, log_ref_chosen, log_ref_rejected, beta=0.1):
-    """
-    DPO: maximise margin between chosen and rejected log-ratios.
-    beta controls how far from the reference policy we allow.
-    """
-    ratio_chosen   = log_p_chosen   - log_ref_chosen
-    ratio_rejected = log_p_rejected - log_ref_rejected
-    margin = beta * (ratio_chosen - ratio_rejected)
-    loss = -np.log(1 / (1 + np.exp(-margin)))
-    return loss, margin
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
 
-# Simulate: model improves over training steps
-np.random.seed(42)
-print("DPO training simulation:")
-print(f"{'Step':>6s} {'Loss':>8s} {'Margin':>8s} {'P(chosen>rej)':>14s}")
-print("-" * 42)
+def dpo_loss(log_pi_w, log_ref_w, log_pi_l, log_ref_l, beta=0.1):
+    ratio_w = log_pi_w - log_ref_w
+    ratio_l = log_pi_l - log_ref_l
+    logit = beta * (ratio_w - ratio_l)
+    return -math.log(sigmoid(logit))
 
-log_ref_c = log_ref_r = -3.0  # reference model baseline
-for step in range(0, 6):
-    # Model learns to prefer chosen over rejected
-    log_p_c = -3.0 + step * 0.4 + np.random.randn() * 0.1
-    log_p_r = -3.0 - step * 0.3 + np.random.randn() * 0.1
-    loss, margin = dpo_loss(log_p_c, log_p_r, log_ref_c, log_ref_r, beta=0.1)
-    p_win = 1 / (1 + np.exp(-margin))
-    print(f"{step*100:6d} {loss:8.4f} {margin:8.4f} {p_win:14.1%}")
+# Show how DPO loss changes as model learns to prefer w over l
+print("DPO loss as margin (ratio_w - ratio_l) grows:")
+print(f"  {'margin':>8}  {'DPO loss':>10}  {'sigma':>8}")
+for margin in [-2.0, -1.0, 0.0, 1.0, 2.0, 5.0, 10.0]:
+    # ratio_w - ratio_l = margin (ref cancels out for demonstration)
+    loss = -math.log(sigmoid(0.1 * margin))
+    sig = sigmoid(0.1 * margin)
+    bar = "#" * int(sig * 30)
+    print(f"  {margin:>8.1f}  {loss:>10.4f}  {sig:>8.4f}  {bar}")
 
-# LoRA parameter efficiency
-print("\n\nLoRA parameter efficiency (d=4096):")
-print(f"{'Rank r':>8s} {'LoRA params':>14s} {'Full params':>14s} {'Reduction':>10s}")
-print("-" * 50)
-d = 4096
-full = d * d
-for r in [4, 8, 16, 32, 64, 128]:
-    lora = 2 * d * r
-    print(f"{r:8d} {lora:14,d} {full:14,d} {full//lora:9d}×")
+print()
+print("LoRA parameter savings:")
+configs = [
+    ("LLaMA-3 8B Q proj", 4096, 4096),
+    ("LLaMA-3 70B Q proj", 8192, 8192),
+    ("Mistral 7B Q proj", 4096, 4096),
+]
+for name, d, k in configs:
+    full = d * k
+    for r in [8, 16, 64]:
+        train = d * r + r * k
+        ratio = full / train
+        print(f"  {name} r={r:2d}: {train:>8,} trainable ({ratio:5.0f}x reduction from {full:,})")
+    print()
 
-print(f"\nQLoRA memory for 70B model:")
-fp16 = 70e9 * 2 / 1e9
-nf4  = 70e9 * 0.5 / 1e9  # 4-bit
-lora_overhead = 70e9 * 0.001 * 2 / 1e9  # ~0.1% params as LoRA, FP16
-print(f"  FP16 base model:    {fp16:.0f} GB")
-print(f"  NF4 quantized:      {nf4:.0f} GB")
-print(f"  LoRA adapters (r=16): {lora_overhead:.2f} GB")
-print(f"  Total QLoRA:        {nf4 + lora_overhead:.0f} GB (fits in 1× A100 40GB!)")</pre></div>
-    <div class="cell-output" id="cell-13-out">Click Run to execute.</div>
+# Try changing beta (0.01-1.0) and re-running to see how loss sensitivity changes</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2203.02155" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Ouyang et al., 2022 — "Training language models to follow instructions with human feedback"</span> — InstructGPT/RLHF: 3-stage pipeline (SFT → reward model → PPO)</span></a>
-      <a href="https://arxiv.org/abs/2305.18290" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Rafailov et al., 2023 — "Direct Preference Optimization"</span> — DPO: closed-form loss from preferences, no reward model needed</span></a>
-      <a href="https://arxiv.org/abs/2106.09685" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Hu et al., 2021 — "LoRA: Low-Rank Adaptation of Large Language Models"</span> — Freeze base weights, train low-rank adapters: 128× parameter reduction</span></a>
-      <a href="https://arxiv.org/abs/2305.14314" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Dettmers et al., 2023 — "QLoRA: Efficient Finetuning of Quantized Language Models"</span> — NF4 quantization + LoRA: fine-tune 70B on a single 48GB GPU</span></a>
-      <a href="https://arxiv.org/abs/2212.08073" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Bai et al., 2022 — "Constitutional AI: Harmlessness from AI Feedback"</span> — Self-critique loop replaces human labellers with AI-generated preferences (RLAIF)</span></a>
-      <a href="https://magazine.sebastianraschka.com/p/practical-tips-for-finetuning-llms" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Sebastian Raschka — "Practical Tips for Finetuning LLMs"</span> — Hands-on guide to LoRA hyperparameters, learning rates, and common pitfalls</span></a>
+      <a href="https://arxiv.org/abs/2203.02155" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Ouyang et al., 2022 &#8212; InstructGPT</span> &#8212; RLHF applied to GPT-3. 40 contractors, 13K SFT prompts, 33K reward model comparisons. 1.3B InstructGPT rated better than 175B GPT-3 by labellers.</span></a>
+      <a href="https://arxiv.org/abs/2305.18290" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Rafailov et al., 2023 &#8212; Direct Preference Optimization (DPO)</span> &#8212; Shows the closed-form optimal policy implicit in RLHF. Eliminates reward model + PPO with a single supervised loss. Llama-2 fine-tuning in &lt;1 day on consumer hardware.</span></a>
+      <a href="https://arxiv.org/abs/2106.09685" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Hu et al., 2021 &#8212; LoRA: Low-Rank Adaptation of Large Language Models</span> &#8212; Full fine-tuning baseline on GPT-3: 175B trainable params. LoRA r=4: 4.7M trainable. Quality matches full fine-tuning on GLUE, E2E, WebNLG benchmarks.</span></a>
+      <a href="https://arxiv.org/abs/2309.00267" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Cui et al., 2023 &#8212; UltraFeedback: Boosting Language Models with Scaled AI Feedback</span> &#8212; 256K AI-generated preference pairs from GPT-4 scoring. Shows AI feedback can match human labelling at 1/100th the cost. Used to train Zephyr-7B-beta.</span></a>
+      <a href="https://huggingface.co/blog/rlhf" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">HuggingFace Blog &#8212; Illustrating RLHF (2022)</span> &#8212; Clear visual walkthrough of all three RLHF stages with code examples using the TRL library.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.14 ══ -->
+<!-- ============================================================ §1.14 == -->
 <section class="section" id="s14">
   <div class="section-label">1.14</div>
   <h2>Scale &amp; Emergent Abilities</h2>
-  <p>Scaling laws (Kaplan et al. 2020) showed that loss decreases smoothly as a power law in model size, dataset size, and compute — suggesting predictable improvement. But Wei et al. (2022) documented something more surprising: certain capabilities appear <em>abruptly</em> at a threshold scale, performing near-chance below that scale and near-perfectly above it. Multi-step arithmetic, chain-of-thought reasoning, and multi-language translation all show this step-function behaviour.</p>
-  <p>The interpretation is debated. Some argue emergence is an artefact of metric choice — a capability that improves smoothly in probability space looks discontinuous when measured by exact-match accuracy. Others argue it reflects genuine phase transitions in the model's internal representations. Either way, the engineering implication is clear: adding more parameters to an already-capable model can unlock qualitatively new behaviours that weren't predictable from smaller-scale experiments.</p>
 
-  <div class="emerge-grid">
-    <div class="emerge-card">
-      <h4>Appears at ~10B params</h4>
-      <div class="emerge-list">
-        • 3-digit arithmetic<br>
-        • Simple chain-of-thought<br>
-        • Basic code generation<br>
-        • Language identification
+  <p>The Kaplan scaling laws (Kaplan et al., 2020, arXiv:2001.08361) were the first systematic study of how loss decreases with scale. They found:</p>
+
+  <div class="callout">
+    <strong>Kaplan power laws:</strong>
+    L(N) ≈ (N<sub>c</sub>/N)<sup>α<sub>N</sub></sup> &nbsp;&nbsp; L(D) ≈ (D<sub>c</sub>/D)<sup>α<sub>D</sub></sup> &nbsp;&nbsp; L(C) ≈ (C<sub>c</sub>/C)<sup>α<sub>C</sub></sup>
+    <br><br>Where N=parameters, D=tokens, C=compute (FLOPs). Exponents: α<sub>N</sub>≈0.076, α<sub>D</sub>≈0.095, α<sub>C</sub>≈0.050. The laws hold across 7 orders of magnitude — from 768-parameter models to 1.5B parameters. Chinchilla (2022) later revised the compute-optimal frontier.
+  </div>
+
+  <p><strong>Emergent abilities</strong> are capabilities that appear abruptly at a threshold scale and are near-zero below it. Wei et al. (2022, arXiv:2206.07682) catalogued ~137 tasks that show emergence across PaLM (540B), GPT-3 (175B), and other large models. Examples: 3-digit addition emerges at ~100B parameters; chain-of-thought reasoning emerges at ~60B; word-in-context disambiguation emerges at ~130B. The abruptness is partly a measurement artifact: on accuracy metrics, capability transitions look sudden; on continuous loss metrics they look smoother. But the phenomenon is real — some capabilities genuinely require sufficient representational capacity before they can be expressed.</p>
+
+  <p>Srivastava et al.'s BIG-Bench (2022, arXiv:2206.04615) benchmark of 204 tasks specifically targets abilities believed to be beyond current models. Of 150 tasks evaluated, 65 showed emergence patterns — flat near random performance at small scale, sudden jump at large scale. The jump often occurs at 10<sup>23</sup>–10<sup>24</sup> training FLOPs, corresponding roughly to GPT-3 scale.</p>
+
+  <div class="ar-loop" style="padding:16px;">
+    <div style="margin-bottom:10px; color:#888; font-size:0.75rem;">EMERGENT ABILITY THRESHOLD EXAMPLES (approximate parameter counts)</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; font-size:0.78rem;">
+      <div style="background:#1a1a2e; border:1px solid #333; border-radius:4px; padding:10px;">
+        <div style="color:#4ec9b0; margin-bottom:4px;">~1B params</div>
+        <div>Basic arithmetic (2-digit)</div>
+        <div>Simple code completion</div>
+        <div>Translation (high-resource)</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #569cd6; border-radius:4px; padding:10px;">
+        <div style="color:#569cd6; margin-bottom:4px;">~10B params</div>
+        <div>3-digit arithmetic</div>
+        <div>Analogical reasoning</div>
+        <div>Multi-step word problems</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #c586c0; border-radius:4px; padding:10px;">
+        <div style="color:#c586c0; margin-bottom:4px;">~100B+ params</div>
+        <div>Chain-of-thought reasoning</div>
+        <div>Word-in-context disambiguation</div>
+        <div>Novel concept composition</div>
       </div>
     </div>
-    <div class="emerge-card">
-      <h4>Appears at ~100B params</h4>
-      <div class="emerge-list">
-        • Multi-step word problems<br>
-        • Causal reasoning<br>
-        • Complex instruction following<br>
-        • Few-shot task generalisation
-      </div>
-    </div>
-    <div class="emerge-card">
-      <h4>Appears at ~1T+ tokens</h4>
-      <div class="emerge-list">
-        • In-context learning (ICL)<br>
-        • Calibrated uncertainty<br>
-        • Analogical reasoning<br>
-        • Cross-lingual transfer
-      </div>
-    </div>
-    <div class="emerge-card">
-      <h4>May require RLHF/alignment</h4>
-      <div class="emerge-list">
-        • Following complex instructions<br>
-        • Refusing harmful requests<br>
-        • Factual calibration<br>
-        • Consistent persona
-      </div>
-    </div>
+  </div>
+
+  <p>An important nuance: scaling improves average performance but <em>reduces calibration</em> on some tasks. Larger models are more confident in wrong answers (Anthropic, 2022). This is why RLHF is needed even after capability scaling — raw performance and alignment are not the same axis.</p>
+
+  <div class="code-block">
+    <span class="code-label">Python</span>
+    <pre><span class="kw">import</span> math
+
+<span class="lm"># Kaplan power-law loss prediction</span>
+<span class="kw">def</span> <span class="fn">kaplan_loss</span>(N, D, C_ref=<span class="nu">1e21</span>):
+    <span class="lm"># ↑ N = parameters, D = training tokens</span>
+    N_c, alpha_N = <span class="nu">8.8e13</span>, <span class="nu">0.076</span>   <span class="lm"># ↑ fitted constants from Kaplan et al.</span>
+    D_c, alpha_D = <span class="nu">5.4e13</span>, <span class="nu">0.095</span>
+    L_N = (N_c / N) ** alpha_N       <span class="lm"># ↑ loss from model size alone</span>
+    L_D = (D_c / D) ** alpha_D       <span class="lm"># ↑ loss from data size alone</span>
+    L   = L_N + L_D                  <span class="lm"># ↑ approximate total loss (simplified)</span>
+    <span class="kw">return</span> L_N, L_D, L
+
+<span class="lm"># Compare several well-known models</span>
+models = [
+    (<span class="st">"GPT-2 small"</span>,  <span class="nu">117e6</span>,  <span class="nu">10e9</span>),
+    (<span class="st">"GPT-3"</span>,        <span class="nu">175e9</span>, <span class="nu">300e9</span>),
+    (<span class="st">"LLaMA-3 8B"</span>,    <span class="nu">8e9</span>,  <span class="nu">15e12</span>),
+    (<span class="st">"LLaMA-3 70B"</span>,  <span class="nu">70e9</span>,  <span class="nu">15e12</span>),
+    (<span class="st">"PaLM-540B"</span>,   <span class="nu">540e9</span>, <span class="nu">780e9</span>),
+]
+print(f"{'Model':<18} {'Params':>10} {'Tokens':>10}  {'L_N':>6}  {'L_D':>6}  {'L_total':>8}")
+<span class="kw">for</span> name, N, D <span class="kw">in</span> models:
+    L_N, L_D, L = kaplan_loss(N, D)
+    print(f<span class="st">"{name:<18} {N:>10.2e} {D:>10.2e}  {L_N:>6.3f}  {L_D:>6.3f}  {L:>8.3f}"</span>)</pre>
   </div>
 
   <div class="cell" id="cell-14">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — Scaling Laws &amp; Perplexity</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; Kaplan scaling laws + emergence simulation</span>
       <button class="run-btn" onclick="runCell('cell-14')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math
 
-# Kaplan et al. 2020 scaling law: L(N) ≈ (N_c / N)^alpha
-# For compute-constrained: L(C) ≈ (C_c / C)^alpha_C
-N_c    = 8.8e13   # critical param count
-alpha  = 0.076    # exponent
-C_c    = 3.1e8    # critical compute (FLOPs)
-alpha_C = 0.050
+# Kaplan et al. 2020 power-law constants (Table 1)
+N_c, alpha_N = 8.8e13, 0.076
+D_c, alpha_D = 5.4e13, 0.095
 
 def loss_from_params(N):
-    return (N_c / N) ** alpha
+    # Predict validation loss from param count (infinite data limit)
+    return (N_c / N) ** alpha_N
 
-def loss_from_compute(C):
-    return (C_c / C) ** alpha_C
+def loss_from_data(D):
+    return (D_c / D) ** alpha_D
 
-print("Scaling law: L ≈ (N_c/N)^α")
-print(f"{'Model':22s} {'Params':>10s} {'Predicted L':>12s} {'Perplexity':>12s}")
-print("-" * 58)
-models = [
-    ("GPT-2 Small",    117e6),
-    ("GPT-2 XL",       1.5e9),
-    ("GPT-3",          175e9),
-    ("LLaMA-3 8B",     8e9),
-    ("LLaMA-3 70B",    70e9),
-    ("GPT-4 (est)",    1e12),
-]
-for name, N in models:
+# Show loss reduction across orders of magnitude
+print("Loss vs. model size (infinite data):")
+for exp in range(6, 12):
+    N = 10 ** exp
     L = loss_from_params(N)
-    ppl = np.exp(L)
-    print(f"{name:22s} {N/1e9:8.1f}B {L:12.4f} {ppl:12.2f}")
+    pct = (L / loss_from_params(1e6) - 1) * 100
+    bar = "#" * int((3.5 - L) * 30) if L < 3.5 else ""
+    print(f"  N=10^{exp} ({N:.0e} params)  L={L:.3f}  {bar}")
 
-# Emergence simulation: accuracy jumps
-print("\nEmergence simulation — exact-match accuracy on 3-digit arithmetic:")
-print("(prob of correct answer modelled as logistic in log-scale)")
-print(f"{'Params':>12s} {'Acc (token prob)':>18s} {'Acc (exact match)':>18s}")
-print("-" * 52)
-for N in [1e8, 3e8, 1e9, 3e9, 1e10, 3e10, 1e11]:
-    token_acc = 1 / (1 + np.exp(-2*(np.log10(N) - 9.5)))
-    exact_acc = token_acc ** 4  # 4 correct tokens needed
-    bar = "█" * int(exact_acc * 20)
-    print(f"{N/1e9:10.1f}B {token_acc:16.1%} {exact_acc:16.1%}  {bar}")</pre></div>
-    <div class="cell-output" id="cell-14-out">Click Run to execute.</div>
+print()
+print("Chinchilla-optimal: ~20 tokens per parameter")
+print("(Hoffmann et al. 2022 revised Kaplan; Chinchilla 70B > Gopher 280B)")
+print()
+
+# Simulate emergence: capability appears abruptly at threshold
+# (toy model: capability = 0 below threshold, jumps at threshold)
+print("Emergence simulation (3-digit arithmetic task):")
+print("Parameter count  |  Accuracy  |  Bar")
+threshold = 5e10  # ~50B parameters where 3-digit arithmetic emerges
+import random
+random.seed(7)
+for exp_tenths in range(80, 120, 4):
+    N = 10 ** (exp_tenths / 10)
+    if N < threshold:
+        acc = random.uniform(0.01, 0.08)  # near-random below threshold
+    else:
+        # sigmoid rise above threshold
+        x = math.log10(N / threshold)
+        acc = 0.15 + 0.78 / (1 + math.exp(-5 * x))
+    bar = "#" * int(acc * 40)
+    print(f"  {N:.1e}  |  {acc:.3f}     |  {bar}")
+
+# Try changing the threshold to see how emergence looks at different scales</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2001.08361" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Kaplan et al., 2020 — "Scaling Laws for Neural Language Models"</span> — Power-law relationships between loss, parameters, data, and compute</span></a>
-      <a href="https://arxiv.org/abs/2206.07682" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Wei et al., 2022 — "Emergent Abilities of Large Language Models"</span> — Documents capabilities that appear abruptly at threshold scales</span></a>
-      <a href="https://arxiv.org/abs/2304.15004" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Schaeffer et al., 2023 — "Are Emergent Abilities of Large Language Models a Mirage?"</span> — Argues emergence is an artefact of metric choice, not genuine phase transitions</span></a>
-      <a href="https://arxiv.org/abs/2201.11903" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Wei et al., 2022 — "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"</span> — Prompting technique that unlocks multi-step reasoning in large models</span></a>
-      <a href="https://arxiv.org/abs/2203.15556" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Hoffmann et al., 2022 — "Training Compute-Optimal Large Language Models"</span> — Chinchilla scaling: optimal token-to-parameter ratio is ~20:1</span></a>
+      <a href="https://arxiv.org/abs/2001.08361" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Kaplan et al., 2020 &#8212; Scaling Laws for Neural Language Models</span> &#8212; Power-law exponents α<sub>N</sub>=0.076, α<sub>D</sub>=0.095 measured across 6 orders of magnitude. The paper that justified training ever-larger models.</span></a>
+      <a href="https://arxiv.org/abs/2206.07682" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Wei et al., 2022 &#8212; Emergent Abilities of Large Language Models</span> &#8212; Catalogs 137 tasks showing emergence. Defines emergence as "not present in smaller models and present in larger models." Critical reading for anyone reasoning about scale.</span></a>
+      <a href="https://arxiv.org/abs/2206.04615" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Srivastava et al., 2022 &#8212; BIG-Bench: Beyond the Imitation Game</span> &#8212; 204 tasks, 450 researchers, 132 institutions. Tasks deliberately chosen to be hard for current models. BIG-Bench-Hard (23 tasks) still challenges GPT-4.</span></a>
+      <a href="https://arxiv.org/abs/2304.15004" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Schaeffer et al., 2023 &#8212; Are Emergent Abilities of LLMs a Mirage?</span> &#8212; Argues that emergence is partly an artifact of nonlinear metrics (accuracy). On perplexity, capability increases smoothly. A necessary counterpoint to the emergence narrative.</span></a>
+      <a href="https://ai.googleblog.com/2022/11/characterizing-emergent-phenomena-in.html" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Google AI Blog &#8212; Characterizing Emergent Phenomena in LLMs (2022)</span> &#8212; Visualisations of which BIG-Bench tasks show sharp vs. gradual improvement. Includes interactive plots of PaLM's performance across scales.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.15 ══ -->
+<!-- ============================================================ §1.15 == -->
 <section class="section" id="s15">
   <div class="section-label">1.15</div>
-  <h2>Mixture of Experts</h2>
-  <p>A dense transformer activates <em>all</em> its parameters for every token. Mixture of Experts (MoE) replaces each FFN layer with N expert FFNs and a routing network. Each token is routed to only the top-K experts (typically K=2), so only a fraction of total parameters are active per forward pass. Mixtral 8×7B has 56B total parameters but only 13B active per token — matching LLaMA-3 13B in compute while having 4× more capacity for knowledge storage.</p>
-  <p>DeepSeek-V3 (2024) pushes this further: 671B total parameters, 37B active per token, with a novel <em>auxiliary-loss-free load balancing</em> strategy. The key engineering challenge is keeping experts evenly loaded — a "capacity factor" limits how many tokens each expert can handle per batch. Expert collapse (one expert dominating all tokens) is a common failure mode that's addressed with auxiliary load-balancing losses.</p>
+  <h2>Mixture of Experts (MoE)</h2>
 
-  <!-- MoE routing diagram -->
-  <div class="moe-diag">
-    <div class="moe-router">Router: softmax(x·W_gate) → select top-2 experts</div>
-    <div class="moe-experts">
-      <div class="moe-exp moe-active">Expert 1<br>⭐ active<br>(w=0.42)</div>
-      <div class="moe-exp moe-inactive">Expert 2<br>skipped</div>
-      <div class="moe-exp moe-inactive">Expert 3<br>skipped</div>
-      <div class="moe-exp moe-active">Expert 4<br>⭐ active<br>(w=0.31)</div>
-      <div class="moe-exp moe-inactive">Expert 5<br>skipped</div>
-      <div class="moe-exp moe-inactive">Expert 6<br>skipped</div>
-      <div class="moe-exp moe-inactive">Expert 7<br>skipped</div>
-      <div class="moe-exp moe-inactive">Expert 8<br>skipped</div>
-    </div>
-    <div style="margin-top:10px;font-size:12px;color:var(--text-secondary);">Output = 0.42 × Expert1(x) + 0.31 × Expert4(x)  (weights renormalised)</div>
+  <p>A standard ("dense") transformer activates <em>all</em> parameters for every token. A Mixture-of-Experts model sparsely routes each token to a small subset of specialised FFN networks ("experts"), keeping compute constant while multiplying total capacity. Shazeer et al. (2017, arXiv:1701.06538) introduced MoE to NLP; Fedus et al. (2022, arXiv:2101.03961) scaled it to the Switch Transformer at 1.6 trillion parameters — the largest language model published to date — using only the compute of a 7B dense model.</p>
+
+  <p><strong>Architecture.</strong> In an MoE layer, the standard FFN sublayer is replaced by E expert networks (typically E=8 or E=64) plus a learned router. The router is a small linear layer that produces a probability distribution over experts. For each token, the top-K experts (typically K=1 or K=2) are selected and their outputs are linearly combined:</p>
+
+  <div class="callout">
+    <strong>MoE forward pass (Top-1 routing):</strong>
+    <br>h = Router(x) = Softmax(x W<sub>r</sub>) &nbsp;&nbsp;&nbsp; [E-dimensional]
+    <br>i* = argmax(h) &nbsp;&nbsp;&nbsp; [selected expert index]
+    <br>output = h[i*] &middot; FFN<sub>i*</sub>(x) &nbsp;&nbsp;&nbsp; [weighted expert output]
+    <br><br>Mistral's Mixtral-8x7B (Jiang et al., 2024, arXiv:2401.04088) uses K=2 of E=8 experts per token. Total parameters: 46.7B. Active parameters per token: only 12.9B — matching a ~13B dense model's compute at 3.6× the capacity.
   </div>
 
-  <div class="callout blue">
-    <strong>All experts live in VRAM simultaneously</strong>, even though only 2 are active per token. For Mixtral 8×7B, you still need ~90GB GPU memory (for the full 56B parameters in FP16) even though each forward pass only uses ~13B. The savings are in FLOPs (compute), not memory. This is the core trade-off of MoE: compute-efficient inference requires memory-inefficient deployment.
+  <p><strong>Load balancing.</strong> Without regularisation, the router collapses: one expert receives all tokens (routing collapse). The auxiliary load-balancing loss encourages uniform expert utilisation:</p>
+
+  <div class="callout">
+    <strong>Auxiliary loss (Switch Transformer):</strong>
+    &#x2112;<sub>aux</sub> = α · E · &sum;<sub>i</sub> f<sub>i</sub> · P<sub>i</sub>
+    <br><br>f<sub>i</sub> = fraction of tokens routed to expert i (discrete, non-differentiable)
+    <br>P<sub>i</sub> = average router probability for expert i (differentiable)
+    <br>The product f<sub>i</sub>·P<sub>i</sub> is differentiable w.r.t. router weights and minimized when all experts receive equal load.
+  </div>
+
+  <p><strong>Expert capacity.</strong> In distributed training, each expert is placed on a different device. A "capacity factor" C limits how many tokens can be processed per expert per batch — overflow tokens are "dropped" (passed through as residual unchanged). C=1.0 means no slack; C=1.25 is typical. Dropped tokens are a training inefficiency but acceptable at scale.</p>
+
+  <p><strong>Real-world MoE models in production:</strong> Mixtral-8x7B (Mistral, 2024) — open-weight, outperforms LLaMA-2 70B at ~13B active params. GPT-4 — rumored 8 experts ×220B (1.76T total), though not officially confirmed. Gemini 1.5 Pro (Google, 2024, arXiv:2403.05530) — MoE with reported 1M-token context.</p>
+
+  <div class="ar-loop" style="padding:16px;">
+    <div style="margin-bottom:8px; color:#888; font-size:0.75rem;">MIXTRAL-8x7B: 8 EXPERTS, TOP-2 ROUTING</div>
+    <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+      <div style="width:70px; height:60px; background:#1a1a2e; border:2px solid #4ec9b0; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#4ec9b0;">Expert<br>1<br><span style="color:#fff; font-size:0.65rem;">ACTIVE</span></div>
+      <div style="width:70px; height:60px; background:#1a1a2e; border:2px solid #4ec9b0; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#4ec9b0;">Expert<br>2<br><span style="color:#fff; font-size:0.65rem;">ACTIVE</span></div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>3</div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>4</div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>5</div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>6</div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>7</div>
+      <div style="width:70px; height:60px; background:#0d0d0d; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; text-align:center; color:#555;">Expert<br>8</div>
+    </div>
+    <div style="margin-top:8px; text-align:center; font-size:0.75rem; color:#888;">Each token activates 2 of 8 experts → 12.9B active params of 46.7B total (28% density)</div>
+  </div>
+
+  <div class="code-block">
+    <span class="code-label">Python</span>
+    <pre><span class="kw">import</span> math, random
+
+<span class="lm"># Simplified MoE routing: softmax router, Top-K selection</span>
+<span class="kw">def</span> <span class="fn">softmax</span>(x):
+    m = <span class="bi">max</span>(x)
+    e = [math.exp(v - m) <span class="kw">for</span> v <span class="kw">in</span> x]
+    s = <span class="bi">sum</span>(e)
+    <span class="kw">return</span> [v/s <span class="kw">for</span> v <span class="kw">in</span> e]
+
+<span class="kw">def</span> <span class="fn">top_k_routing</span>(token_vec, router_weights, k=<span class="nu">2</span>):
+    <span class="lm"># ↑ router_weights: (E, d) matrix; E experts, d-dim tokens</span>
+    E = <span class="bi">len</span>(router_weights)
+    logits = [<span class="bi">sum</span>(token_vec[j] * router_weights[i][j]
+               <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(<span class="bi">len</span>(token_vec)))
+              <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(E)]   <span class="lm"># ↑ dot product of token with each expert gate</span>
+    probs = softmax(logits)
+    ranked = <span class="bi">sorted</span>(<span class="bi">enumerate</span>(probs), key=<span class="kw">lambda</span> x: -x[<span class="nu">1</span>])
+    selected = ranked[:k]    <span class="lm"># ↑ top-K experts selected</span>
+    total = <span class="bi">sum</span>(p <span class="kw">for</span> _, p <span class="kw">in</span> selected)
+    weights = [(i, p/total) <span class="kw">for</span> i, p <span class="kw">in</span> selected]   <span class="lm"># ↑ renormalize weights</span>
+    <span class="kw">return</span> weights</pre>
   </div>
 
   <div class="cell" id="cell-15">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — MoE Router &amp; Load Balancing</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; MoE routing simulation with load balancing</span>
       <button class="run-btn" onclick="runCell('cell-15')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math, random
+
+random.seed(99)
 
 def softmax(x):
-    e = np.exp(x - x.max())
-    return e / e.sum()
+    m = max(x)
+    e = [math.exp(v - m) for v in x]
+    s = sum(e)
+    return [v/s for v in e]
 
-def moe_route(x, W_gate, top_k=2):
-    """Route token x to top-k experts."""
-    logits = x @ W_gate          # (n_experts,)
+def top_k_route(logits, k=2):
     probs = softmax(logits)
-    top_idx = np.argsort(probs)[-top_k:][::-1]
-    top_probs = probs[top_idx]
-    top_probs /= top_probs.sum()  # renormalise
-    return top_idx, top_probs, probs
+    ranked = sorted(enumerate(probs), key=lambda x: -x[1])
+    selected = ranked[:k]
+    total = sum(p for _, p in selected)
+    return [(i, p/total) for i, p in selected], probs
 
-np.random.seed(7)
-n_experts = 8
-d_model   = 16
-top_k     = 2
+# Simulate 8-expert MoE routing for 20 tokens
+E, K, d = 8, 2, 4
+# Random router weights (E x d)
+router = [[random.gauss(0, 0.5) for _ in range(d)] for _ in range(E)]
+# Random token embeddings
+tokens = [[random.gauss(0, 1) for _ in range(d)] for _ in range(20)]
 
-W_gate = np.random.randn(d_model, n_experts) * 0.3
-tokens = np.random.randn(12, d_model)  # 12 tokens in batch
+expert_counts = [0] * E
+expert_load = [0.0] * E
 
-print(f"MoE routing: {n_experts} experts, top-{top_k} per token")
+print(f"MoE routing: {E} experts, Top-{K} selection, 20 tokens")
+print(f"{'Token':>5}  {'Selected experts':30}  Probabilities")
+for t_idx, token in enumerate(tokens):
+    logits = [sum(token[j] * router[i][j] for j in range(d)) for i in range(E)]
+    selected, probs = top_k_route(logits, K)
+    for i, w in selected:
+        expert_counts[i] += 1
+        expert_load[i] += w
+    exp_str = " + ".join(f"E{i+1}({w:.2f})" for i, w in selected)
+    print(f"  T{t_idx+1:02d}:  {exp_str:<30}")
+
 print()
-expert_load = np.zeros(n_experts, dtype=int)
-print(f"{'Token':>6s}  {'Expert 1':>9s}  {'Expert 2':>9s}")
-for i, tok in enumerate(tokens):
-    idx, wts, _ = moe_route(tok, W_gate, top_k)
-    for j in idx: expert_load[j] += 1
-    print(f"  {i+1:4d}  Expert {idx[0]+1}({wts[0]:.2f})  Expert {idx[1]+1}({wts[1]:.2f})")
+print("Expert utilisation (routing collapse check):")
+print(f"  {'Expert':>8}  {'Tokens':>6}  {'Load':>8}  Balance bar")
+avg_count = sum(expert_counts) / E
+for i in range(E):
+    bar = "#" * int(expert_counts[i] * 3)
+    imbalance = "OVERLOADED" if expert_counts[i] > avg_count * 1.5 else ""
+    print(f"  Expert {i+1:1d}  {expert_counts[i]:>6d}  {expert_load[i]:>8.2f}  {bar} {imbalance}")
 
-print(f"\nExpert load distribution (12 tokens, top-2 = 24 assignments):")
-for e, load in enumerate(expert_load):
-    bar = "█" * load
-    print(f"  Expert {e+1}: {load:2d} tokens  {bar}")
-
-ideal = 24 / n_experts
-print(f"\nIdeal load: {ideal:.1f} per expert")
-print(f"Load imbalance (std/ideal): {np.std(expert_load)/ideal:.2f}")
-print("(auxiliary load-balancing loss minimises this value)")
-
-# Compute vs memory trade-off
-print("\nMixtral 8×7B vs LLaMA-3 13B comparison:")
-print(f"{'Metric':25s} {'Mixtral 8×7B':>16s} {'LLaMA-3 13B':>14s}")
-print("-" * 58)
-rows = [
-    ("Total params",     "56B",       "13B"),
-    ("Active params",    "13B",       "13B"),
-    ("FLOPs per token",  "~equal",    "baseline"),
-    ("VRAM needed",      "~90GB",     "~26GB"),
-    ("Knowledge cap.",   "4× higher", "1×"),
-]
-for metric, m8x7, l13 in rows:
-    print(f"{metric:25s} {m8x7:>16s} {l13:>14s}")</pre></div>
-    <div class="cell-output" id="cell-15-out">Click Run to execute.</div>
+print(f"
+Ideal tokens/expert: {sum(expert_counts)/E:.1f}")
+print(f"Std dev: {(sum((c - sum(expert_counts)/E)**2 for c in expert_counts)/E)**0.5:.2f}")
+print("(Lower std dev = better load balance = less routing collapse)")
+# Try changing K from 2 to 1 to see more routing collapse</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/1701.06538" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Shazeer et al., 2017 — "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer"</span> — Original MoE for transformers: 137B params, top-2 routing</span></a>
-      <a href="https://arxiv.org/abs/2006.16668" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Lepikhin et al., 2021 — "GShard: Scaling Giant Models with Conditional Computation"</span> — 600B-parameter MoE across 2048 TPUs; auxiliary load-balancing loss</span></a>
-      <a href="https://arxiv.org/abs/2401.04088" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Jiang et al., 2024 — "Mixtral of Experts"</span> — Mixtral 8×7B: 56B total, 13B active, matches LLaMA-2 70B at 6× less compute</span></a>
-      <a href="https://arxiv.org/abs/2412.19437" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">DeepSeek-AI, 2024 — "DeepSeek-V3 Technical Report"</span> — 671B/37B active MoE with auxiliary-loss-free load balancing</span></a>
-      <a href="https://huggingface.co/blog/moe" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Hugging Face — "Mixture of Experts Explained"</span> — Practical guide to MoE architectures, routing, and deployment</span></a>
-      <a href="https://arxiv.org/abs/2305.13048" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Peng et al., 2023 — "RWKV: Reinventing RNNs for the Transformer Era"</span> — Linear-time sequence model that matches transformer quality; no attention matrix</span></a>
-      <a href="https://arxiv.org/abs/2312.00752" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Gu &amp; Dao, 2023 — "Mamba: Linear-Time Sequence Modeling with Selective State Spaces"</span> — State space model with input-dependent gating; rivals transformers at language and DNA</span></a>
+      <a href="https://arxiv.org/abs/2101.03961" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Fedus et al., 2022 &#8212; Switch Transformers: Scaling to Trillion Parameter Models</span> &#8212; Top-1 routing, 1.6T parameters, 7× faster pre-training vs T5-11B at equal compute. Introduced capacity factor and auxiliary loss.</span></a>
+      <a href="https://arxiv.org/abs/2401.04088" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Jiang et al., 2024 &#8212; Mixtral of Experts</span> &#8212; 8×7B MoE, 46.7B total, 12.9B active. Outperforms LLaMA-2 70B on most benchmarks. 5× faster inference vs dense model of equal quality. Open weights.</span></a>
+      <a href="https://arxiv.org/abs/2403.05530" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Google DeepMind, 2024 &#8212; Gemini 1.5: Unlocking Multimodal Understanding</span> &#8212; MoE architecture with 1M-token context via ring attention. 10.5M-token context achieved in research setting.</span></a>
+      <a href="https://arxiv.org/abs/1701.06538" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Shazeer et al., 2017 &#8212; Outrageously Large Neural Networks (original MoE paper)</span> &#8212; LSTM + MoE achieving 1000× capacity increase. Introduced noisy top-K gating and the load balancing problem. Foundation for all modern MoE work.</span></a>
+      <a href="https://huggingface.co/blog/moe" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">HuggingFace Blog &#8212; Mixture of Experts Explained (2024)</span> &#8212; Visual guide to MoE routing, capacity factors, and expert specialisation. Includes profiling of which tokens go to which expert in Mixtral.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.16 ══ -->
+<!-- ============================================================ §1.16 == -->
 <section class="section" id="s16">
   <div class="section-label">1.16</div>
-  <h2>Quantization &amp; Limitations</h2>
-  <p><strong>Quantization</strong> reduces model precision to enable deployment on consumer hardware. INT8 (8-bit) has negligible quality loss and is supported by all major serving frameworks. INT4 (4-bit) saves 4× memory vs FP16 with 1–4% benchmark degradation depending on method. The key methods: <strong>GPTQ</strong> (second-order weight reconstruction per-layer), <strong>AWQ</strong> (protects the 0.1% of salient weights identified by activation magnitude), and <strong>GGUF</strong> (llama.cpp format, per-block mixed-precision, runs on CPU).</p>
-  <p>NF4 (NormalFloat4) is the theoretically optimal 4-bit format for normally distributed weights (which transformer weights approximately are). The 16 bin values are placed at the quantiles of a normal distribution rather than uniformly — more bins near zero, fewer at extremes. LLaMA-3 70B: 140GB in FP16, 35GB in 4-bit — fitting on a single A100 40GB.</p>
+  <h2>Quantisation &amp; Deployment Efficiency</h2>
 
-  <div class="quant-compare">
-    <div class="quant-card">
-      <h4>FP16 / BF16</h4>
-      <div class="quant-bits" style="color:var(--blue);">16</div>
-      <div class="quant-name">bits</div>
-      <div class="quant-loss ql-none">No quality loss</div>
-    </div>
-    <div class="quant-card">
-      <h4>INT8 / W8A16</h4>
-      <div class="quant-bits" style="color:var(--green);">8</div>
-      <div class="quant-name">bits</div>
-      <div class="quant-loss ql-none">~0% degradation</div>
-    </div>
-    <div class="quant-card">
-      <h4>NF4 / GPTQ</h4>
-      <div class="quant-bits" style="color:var(--accent);">4</div>
-      <div class="quant-name">bits</div>
-      <div class="quant-loss ql-low">1–4% degradation</div>
+  <p>A full-precision (float32) parameter occupies 4 bytes; float16/bfloat16 cuts this to 2 bytes; int8 to 1 byte; int4 to 0.5 bytes. LLaMA-3 70B in float16 requires ~140 GB of GPU VRAM — four A100-40GB cards with nothing to spare. In 4-bit quantisation (GGUF, GPTQ, AWQ), the same model fits in ~35 GB — a single A100 or two 24 GB consumer GPUs. The quality cost is surprisingly small: perplexity typically degrades &lt;1% at int8, &lt;2–3% at int4 with modern algorithms.</p>
+
+  <p><strong>Post-Training Quantisation (PTQ)</strong> converts a trained float16 model without re-training. Dettmers et al. (2022, arXiv:2208.07339) introduced LLM.int8(), using vector-wise quantisation with mixed-precision decomposition for emergent outlier features. Outlier features (a small fraction of dimensions with magnitudes 60–100× larger than average) blow up INT8 quantisation — LLM.int8() detects these dimensions and keeps them in float16 while quantising the rest to int8.</p>
+
+  <p><strong>NF4 — Normal Float 4-bit.</strong> Dettmers et al. (2023, arXiv:2305.14314, QLoRA paper) introduced NF4, an information-theoretically optimal 4-bit data type for normally-distributed weights. Standard int4 has uniformly-spaced bins; NF4 places bins so that each quantile of a standard normal distribution occupies equal probability mass. For weights that are (approximately) normally distributed, NF4 minimises the expected quantisation error. QLoRA = NF4 quantisation + LoRA fine-tuning + double quantisation of the quantisation constants = fine-tuning a 65B model on a single 48 GB A40.</p>
+
+  <div class="callout">
+    <strong>NF4 quantile levels</strong> — 16 values covering the standard normal distribution's quantiles (each covers 1/16 of the probability mass). Contrast with uniform int4 [−8,−7,...,+7]: NF4 clusters values near zero (where most weights lie) and spreads more near tails.
+    <br><br>Dequantisation: each 4-bit code maps to its NF4 centroid, scaled by the block's absmax value. Block size = 64 (64 weights share one absmax constant). Double quantisation: the absmax constants themselves are further quantised to 8-bit, saving ~0.5 bits/parameter.
+  </div>
+
+  <p><strong>GGUF &amp; llama.cpp.</strong> For CPU/GPU inference on consumer hardware, llama.cpp (Gerganov, 2023) implements its own quantisation formats: Q4_K_M means 4-bit, K-quant (groups of 256 with enhanced precision on important weights), M=medium (some layers kept at 6-bit). A llama.cpp Q4_K_M of LLaMA-3 70B fits in ~42 GB; Q5_K_M fits in ~52 GB with meaningfully better quality. Inference speed on an M2 MacBook Pro: ~8 tokens/second for 8B, ~1–2 t/s for 70B.</p>
+
+  <p><strong>AWQ (Activation-Aware Weight Quantisation).</strong> Lin et al. (2023, arXiv:2306.00978) observed that not all weights matter equally — 0.1% of channels account for most quantisation error because input activations are large at those channels. AWQ protects these salient channels via per-channel scaling before quantisation, achieving better quality than GPTQ at similar speed.</p>
+
+  <div class="ar-loop" style="padding:16px;">
+    <div style="margin-bottom:8px; color:#888; font-size:0.75rem;">LLAMA-3 70B: VRAM REQUIREMENTS BY QUANTISATION</div>
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px; font-size:0.72rem; text-align:center;">
+      <div style="background:#1a1a2e; border:1px solid #333; border-radius:4px; padding:8px;">
+        <div style="color:#333; font-weight:700; margin-bottom:4px; font-size:0.68rem;">float32</div>
+        <div style="color:#ccc;">4 B/param</div>
+        <div style="color:#fff; font-weight:600;">280 GB</div>
+        <div style="color:#888; font-size:0.65rem;">7×A100</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #444; border-radius:4px; padding:8px;">
+        <div style="color:#444; font-weight:700; margin-bottom:4px; font-size:0.68rem;">float16</div>
+        <div style="color:#ccc;">2 B/param</div>
+        <div style="color:#fff; font-weight:600;">140 GB</div>
+        <div style="color:#888; font-size:0.65rem;">4×A100-40G</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #4ec9b0; border-radius:4px; padding:8px;">
+        <div style="color:#4ec9b0; font-weight:700; margin-bottom:4px; font-size:0.68rem;">int8 LLM.int8()</div>
+        <div style="color:#ccc;">1 B/param</div>
+        <div style="color:#fff; font-weight:600;">70 GB</div>
+        <div style="color:#888; font-size:0.65rem;">2×A100-40G</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #569cd6; border-radius:4px; padding:8px;">
+        <div style="color:#569cd6; font-weight:700; margin-bottom:4px; font-size:0.68rem;">NF4 QLoRA</div>
+        <div style="color:#ccc;">0.5 B/param</div>
+        <div style="color:#fff; font-weight:600;">~40 GB</div>
+        <div style="color:#888; font-size:0.65rem;">1×A100-80G</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #c586c0; border-radius:4px; padding:8px;">
+        <div style="color:#c586c0; font-weight:700; margin-bottom:4px; font-size:0.68rem;">Q4_K_M GGUF</div>
+        <div style="color:#ccc;">~0.5 B/param</div>
+        <div style="color:#fff; font-weight:600;">~42 GB</div>
+        <div style="color:#888; font-size:0.65rem;">M2 Mac</div>
+      </div>
     </div>
   </div>
 
-  <div class="callout">
-    <strong>Hallucination taxonomy.</strong> LLMs hallucinate in several distinct ways: (1) <em>closed-domain</em> hallucination — contradicting provided context; (2) <em>open-domain</em> — confident confabulation about unknown facts; (3) <em>reasoning hallucination</em> — valid-looking but incorrect chain-of-thought; (4) <em>instruction hallucination</em> — ignoring constraints in the prompt. The root cause is that next-token prediction optimises fluency, not factuality. Retrieval-augmented generation (RAG) addresses types 1–2 but not 3–4.
+  <div class="code-block">
+    <span class="code-label">Python</span>
+    <pre><span class="kw">import</span> math
+
+<span class="lm"># NF4 quantile levels (16 values, each covers 1/16 of N(0,1) probability mass)</span>
+<span class="kw">def</span> <span class="fn">normal_ppf</span>(p):
+    <span class="lm"># ↑ Beasley-Springer-Moro rational approximation of inverse normal CDF</span>
+    <span class="kw">if</span> p <= <span class="nu">0.0</span> <span class="kw">or</span> p >= <span class="nu">1.0</span>: <span class="kw">raise</span> ValueError
+    c = [<span class="nu">2.515517</span>, <span class="nu">0.802853</span>, <span class="nu">0.010328</span>]
+    d = [<span class="nu">1.432788</span>, <span class="nu">0.189269</span>, <span class="nu">0.001308</span>]
+    <span class="kw">if</span> p < <span class="nu">0.5</span>: sign, q = -<span class="nu">1</span>, math.sqrt(-<span class="nu">2</span>*math.log(p))
+    <span class="kw">else</span>:       sign, q = +<span class="nu">1</span>, math.sqrt(-<span class="nu">2</span>*math.log(<span class="nu">1</span>-p))
+    num = c[<span class="nu">0</span>] + c[<span class="nu">1</span>]*q + c[<span class="nu">2</span>]*q*q
+    den = <span class="nu">1</span> + d[<span class="nu">0</span>]*q + d[<span class="nu">1</span>]*q*q + d[<span class="nu">2</span>]*q*q*q
+    <span class="kw">return</span> sign * (q - num/den)
+
+nf4_levels = [normal_ppf(i/<span class="nu">16</span> + <span class="nu">1</span>/<span class="nu">32</span>) <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">16</span>)]
+<span class="lm"># ↑ midpoints of 16 equal-probability quantile buckets</span>
+nf4_norm = [v / <span class="bi">max</span>(<span class="bi">abs</span>(v) <span class="kw">for</span> v <span class="kw">in</span> nf4_levels) <span class="kw">for</span> v <span class="kw">in</span> nf4_levels]   <span class="lm"># ↑ scale to [-1, +1]</span>
+print(<span class="st">"NF4 quantile levels (16 bins, normalized to [-1, +1]):"</span>)
+<span class="kw">for</span> i, v <span class="kw">in</span> <span class="bi">enumerate</span>(nf4_norm):
+    bar = <span class="st">"#"</span> * <span class="bi">int</span>(<span class="bi">abs</span>(v) * <span class="nu">20</span>)
+    print(f<span class="st">f"  [{i:2d}] {v:+.4f}  {bar}"</span>)</pre>
   </div>
 
   <div class="cell" id="cell-16">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — Quantization &amp; NF4 bin distribution</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; NF4 quantile bins vs uniform int4 + VRAM calculator</span>
       <button class="run-btn" onclick="runCell('cell-16')">Run</button>
     </div>
-    <div class="cell-code"><pre>import numpy as np
+    <div class="cell-code"><pre>import math
 
-# NF4 bins: placed at quantiles of standard normal
-# 16 values for 4-bit representation
-def compute_nf4_bins(n=16):
-    """NF4 bins: quantiles of N(0,1) for normally distributed weights."""
-    quantiles = np.linspace(0.5/n, 1-0.5/n, n)
-    from_scipy = [-1.0, -0.6962, -0.5252, -0.3949, -0.2844, -0.1848,
-                  -0.0911, 0.0, 0.0796, 0.1609, 0.2461, 0.3379,
-                   0.4407, 0.5626, 0.7230, 1.0]
-    return np.array(from_scipy)
+# Approximate inverse normal CDF (Beasley-Springer-Moro)
+def normal_ppf(p):
+    if p <= 0.0 or p >= 1.0: return 0.0
+    c = [2.515517, 0.802853, 0.010328]
+    d = [1.432788, 0.189269, 0.001308]
+    if p < 0.5:
+        sign, q = -1, math.sqrt(-2*math.log(p))
+    else:
+        sign, q = 1, math.sqrt(-2*math.log(1-p))
+    num = c[0] + c[1]*q + c[2]*q**2
+    den = 1 + d[0]*q + d[1]*q**2 + d[2]*q**3
+    return sign * (q - num/den)
 
-def uniform_bins(n=16, lo=-2.0, hi=2.0):
-    return np.linspace(lo, hi, n)
+# NF4: 16 bins at quantiles of N(0,1), normalized to [-1,+1]
+nf4_raw = [normal_ppf(i/16 + 1/32) for i in range(16)]
+scale = max(abs(v) for v in nf4_raw)
+nf4 = [v / scale for v in nf4_raw]
 
-def quantize(w, bins):
-    """Map each weight to nearest bin value."""
-    idx = np.argmin(np.abs(w[:, None] - bins[None, :]), axis=1)
-    return bins[idx]
+# Uniform int4: 16 bins evenly spaced in [-1, +1]
+int4 = [-1.0 + i * (2.0/15) for i in range(16)]
 
-np.random.seed(0)
-weights = np.random.randn(10000)  # transformer weights ~ N(0,1)
+print("Bin comparison: NF4 vs Uniform INT4")
+print(f"  {'Bin':>3}  {'NF4':>8}  {'INT4':>8}  {'Diff':>8}")
+for i in range(16):
+    diff = nf4[i] - int4[i]
+    print(f"  {i:>3d}  {nf4[i]:>8.4f}  {int4[i]:>8.4f}  {diff:>+8.4f}")
 
-nf4_bins = compute_nf4_bins()
-uni_bins = uniform_bins()
+print()
+print("Key insight: NF4 clusters bins near 0 (where most weights live)")
+print("INT4 wastes precision on extreme values that are rare")
+print()
 
-nf4_q = quantize(weights, nf4_bins)
-uni_q = quantize(weights, uni_bins)
+# VRAM calculator
+print("VRAM usage for LLaMA-3 models:")
+models = [
+    ("8B",  8e9),
+    ("70B", 70e9),
+    ("405B", 405e9),
+]
+formats = [
+    ("float32", 4.0),
+    ("bfloat16", 2.0),
+    ("int8", 1.0),
+    ("NF4 (4-bit)", 0.5),
+]
+for model_name, params in models:
+    print(f"
+  LLaMA-3 {model_name}:")
+    for fmt_name, bytes_per in formats:
+        vram_gb = params * bytes_per / 1e9
+        a100s = math.ceil(vram_gb / 80)
+        print(f"    {fmt_name:<14}  {vram_gb:>6.1f} GB  ({a100s}× A100-80G)")
 
-nf4_mse = np.mean((weights - nf4_q)**2)
-uni_mse = np.mean((weights - uni_q)**2)
-
-print("NF4 bin values (16 bins for 4-bit):")
-print(" ".join(f"{b:+.3f}" for b in nf4_bins))
-
-print(f"\nQuantization error (MSE, N=10,000 random weights):")
-print(f"  NF4 bins:     {nf4_mse:.6f}")
-print(f"  Uniform bins: {uni_mse:.6f}")
-print(f"  NF4 advantage: {uni_mse/nf4_mse:.2f}× lower error")
-
-print("\nMemory for LLaMA-3 models at different precisions:")
-print(f"{'Model':12s} {'Params':>10s} {'FP16(GB)':>10s} {'INT8(GB)':>10s} {'NF4(GB)':>9s}")
-print("-" * 55)
-for name, B in [("8B", 8e9), ("13B", 13e9), ("70B", 70e9), ("405B", 405e9)]:
-    fp16 = B * 2 / 1e9
-    int8 = B * 1 / 1e9
-    nf4  = B * 0.5 / 1e9
-    print(f"{name:12s} {B/1e9:8.0f}B {fp16:10.1f} {int8:10.1f} {nf4:9.1f}")
-
-print("\nNF4 bin density near zero vs uniform:")
-near_zero_nf4 = ((nf4_bins >= -0.3) & (nf4_bins <= 0.3)).sum()
-near_zero_uni = ((uni_bins >= -0.3) & (uni_bins <= 0.3)).sum()
-print(f"  NF4:    {near_zero_nf4}/16 bins in [-0.3, 0.3] ({near_zero_nf4/16:.0%})")
-print(f"  Uniform:{near_zero_uni}/16 bins in [-0.3, 0.3] ({near_zero_uni/16:.0%})")</pre></div>
-    <div class="cell-output" id="cell-16-out">Click Run to execute.</div>
+# Try changing bytes_per to 0.375 for Q3 to see 3-bit quantisation impact</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2210.17323" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Frantar et al., 2023 — "GPTQ: Accurate Post-Training Quantization for Generative Pre-Trained Transformers"</span> — Second-order weight reconstruction: 3-4 bit quantization with minimal quality loss</span></a>
-      <a href="https://arxiv.org/abs/2306.00978" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Lin et al., 2023 — "AWQ: Activation-aware Weight Quantization"</span> — Protects the 0.1% of salient weights identified by activation magnitude</span></a>
-      <a href="https://arxiv.org/abs/2305.14314" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Dettmers et al., 2023 — "QLoRA: Efficient Finetuning of Quantized Language Models"</span> — NF4: theoretically optimal 4-bit format for normally distributed weights</span></a>
-      <a href="https://arxiv.org/abs/2311.05232" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Ji et al., 2023 — "Survey of Hallucination in Natural Language Generation"</span> — Taxonomy: closed-domain, open-domain, reasoning, and instruction hallucinations</span></a>
-      <a href="https://github.com/ggerganov/llama.cpp" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">llama.cpp — LLM inference in C/C++</span> — GGUF format, per-block mixed-precision quantization, CPU/GPU inference</span></a>
+      <a href="https://arxiv.org/abs/2305.14314" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Dettmers et al., 2023 &#8212; QLoRA: Efficient Finetuning of Quantized LLMs</span> &#8212; Introduces NF4, double quantisation, paged optimizers. Fine-tunes 65B model on single 48GB GPU. Guanaco-65B beats ChatGPT on human eval.</span></a>
+      <a href="https://arxiv.org/abs/2208.07339" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Dettmers et al., 2022 &#8212; LLM.int8(): 8-bit Matrix Multiplication at Scale</span> &#8212; Decomposed quantisation handling outlier features. &lt;1% degradation on all benchmarks at 8-bit. Integrated into bitsandbytes library.</span></a>
+      <a href="https://arxiv.org/abs/2306.00978" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Lin et al., 2023 &#8212; AWQ: Activation-aware Weight Quantization for LLM Compression</span> &#8212; Finds 0.1% salient channels via activation statistics. Protects them with per-channel scaling. Better quality than GPTQ at 4-bit.</span></a>
+      <a href="https://github.com/ggerganov/llama.cpp" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Gerganov, 2023 &#8212; llama.cpp (GitHub)</span> &#8212; Pure C/C++ inference engine. Supports CPU, Metal, CUDA, Vulkan. K-quant formats (Q4_K_M etc.) with mixed-precision blocks. Runs LLaMA-3 8B at real-time speed on a MacBook.</span></a>
+      <a href="https://huggingface.co/docs/transformers/quantization" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">HuggingFace &#8212; Quantization Concepts (2024)</span> &#8212; Practical guide to GPTQ, AWQ, bitsandbytes, GGUF. Code examples for loading quantised models. Decision tree for which format to use.</span></a>
     </div>
   </div>
 </section>
 <hr class="section-divider">
 
-<!-- ═══════════════════════════════════════════ §1.17 ══ -->
+<!-- ============================================================ §1.17 == -->
 <section class="section" id="s17">
   <div class="section-label">1.17</div>
-  <h2>2025 Landscape &amp; Roadmap</h2>
-  <p>The LLM landscape in 2025 is characterised by three trends: (1) <strong>frontier convergence</strong> — GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro are roughly matched on most benchmarks, with advantages on specific tasks; (2) <strong>open-source parity</strong> — LLaMA-3 405B, Mixtral 8×22B, and Qwen-2.5 72B are competitive with or exceed earlier proprietary models; (3) <strong>efficiency obsession</strong> — the focus has shifted to smaller, faster models (LLaMA-3 8B outperforms GPT-3 175B on most tasks).</p>
-  <p>Key technical directions for the next 2–3 years: (a) <em>long context</em> — 1M+ token windows becoming standard, enabled by hardware improvements and sparse attention; (b) <em>multimodality</em> — vision, audio, and tool-use becoming first-class capabilities; (c) <em>test-time compute</em> — letting models "think longer" on hard problems (chain-of-thought, Monte Carlo tree search, learned verifiers); (d) <em>mechanistic interpretability</em> — sparse autoencoders decomposing models into monosemantic features, enabling more reliable alignment.</p>
+  <h2>The 2025–26 Landscape &amp; Open Problems</h2>
 
-  <table class="model-table">
-    <thead>
-      <tr><th>Model</th><th>Params (active)</th><th>Context</th><th>License</th><th>Key Innovation</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>GPT-4o</td><td>~200B (est.)</td><td>128K</td><td><span class="badge badge-prop">Proprietary</span></td><td>Multimodal (text+vision+audio)</td></tr>
-      <tr><td>Claude 3.5 Sonnet</td><td>Unknown</td><td>200K</td><td><span class="badge badge-prop">Proprietary</span></td><td>Long context, coding, safety</td></tr>
-      <tr><td>Gemini 1.5 Pro</td><td>Unknown</td><td>1M</td><td><span class="badge badge-prop">Proprietary</span></td><td>1M token context (MoE)</td></tr>
-      <tr><td>LLaMA-3 405B</td><td>405B</td><td>128K</td><td><span class="badge badge-open">Open weights</span></td><td>Largest open model</td></tr>
-      <tr><td>LLaMA-3 8B</td><td>8B</td><td>128K</td><td><span class="badge badge-open">Open weights</span></td><td>Best small open model</td></tr>
-      <tr><td>Mixtral 8×22B</td><td>141B / 39B</td><td>64K</td><td><span class="badge badge-open">Open weights</span></td><td>Sparse MoE, efficient</td></tr>
-      <tr><td>DeepSeek-V3</td><td>671B / 37B</td><td>128K</td><td><span class="badge badge-open">Open weights</span></td><td>MoE, RLHF-free training</td></tr>
-      <tr><td>Qwen-2.5 72B</td><td>72B</td><td>128K</td><td><span class="badge badge-open">Open weights</span></td><td>Strong multilingual</td></tr>
-    </tbody>
-  </table>
+  <p>As of mid-2025, the frontier has shifted from raw capability to efficiency, reasoning, and multimodality. The GPT-4 release (March 2023) established a new capability ceiling; subsequent frontier models — Claude 3 Opus, Gemini 1.5 Pro, Llama 3.1 405B — have approached or matched it on most benchmarks at lower cost. The open-weight ecosystem has compressed the capability gap dramatically: Llama 3.1 405B (released July 2024) performs on par with GPT-4-class models while being freely downloadable.</p>
+
+  <p><strong>Context length.</strong> The practical context window has expanded from 4K tokens (GPT-3) to 128K (GPT-4 Turbo), 1M (Gemini 1.5 Pro), and 2M in research settings. Key enabling techniques: Ring Attention (Liu et al., 2023, distributes attention across devices), YaRN (Peng et al., 2023, RoPE scaling for extrapolation), and sliding window attention (Mistral). The bottleneck is now KV cache memory, not model architecture.</p>
+
+  <p><strong>Reasoning models.</strong> OpenAI's o1/o3, Google's Gemini 2.0 Flash Thinking, and DeepSeek-R1 (January 2025, arXiv:2501.12948) implement chain-of-thought reasoning at inference time — generating and evaluating multiple solution paths before returning an answer. DeepSeek-R1 achieved GPT-4o-level math and coding performance through pure reinforcement learning from outcome feedback (no human preference data), a landmark demonstrating that RLHF is not necessary for reasoning alignment.</p>
+
+  <p><strong>Multimodality.</strong> GPT-4V, Gemini 1.5 Pro, Claude 3.5 Sonnet, and Llama 3.2 90B Vision accept images alongside text. The dominant architecture is a ViT (Vision Transformer) encoder whose patch embeddings are projected into the LLM's residual stream — the same architecture as CLIP (Radford et al., 2021). Native image generation within a unified model (not a separate diffusion model) remains an active research area (Chameleon, Transfusion, 2024).</p>
+
+  <p><strong>Open problems at the 2025 frontier:</strong></p>
+
+  <div class="ar-loop" style="padding:16px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.8rem;">
+      <div style="background:#1a1a2e; border:1px solid #c586c0; border-radius:6px; padding:12px;">
+        <div style="color:#c586c0; font-weight:700; margin-bottom:6px;">Hallucination &amp; Calibration</div>
+        <div>LLMs generate plausible-sounding falsehoods with high confidence. RAG, grounding via tool use, and constitutional AI partially mitigate but don't solve. Factuality remains the #1 deployment blocker for high-stakes applications (medicine, law).</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #4ec9b0; border-radius:6px; padding:12px;">
+        <div style="color:#4ec9b0; font-weight:700; margin-bottom:6px;">Long-Context Faithfulness</div>
+        <div>"Lost in the middle" (Liu et al., 2023): LLMs reliably use information at the start and end of a 128K context but systematically miss information buried in the middle. This is an attention sink problem, not a context-length problem per se.</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #569cd6; border-radius:6px; padding:12px;">
+        <div style="color:#569cd6; font-weight:700; margin-bottom:6px;">Sample Efficiency</div>
+        <div>Chinchilla-optimal training requires 20 tokens/parameter. GPT-3 175B needed 300B tokens; LLaMA-3 405B used 15T tokens. Humans acquire language from ~100M words (≈ 1B tokens) over childhood. Current pre-training is 10,000× less sample-efficient than biological learning.</div>
+      </div>
+      <div style="background:#1a1a2e; border:1px solid #dcdcaa; border-radius:6px; padding:12px;">
+        <div style="color:#dcdcaa; font-weight:700; margin-bottom:6px;">Test-Time Compute Scaling</div>
+        <div>DeepSeek-R1 and OpenAI-o3 show that spending more inference compute (extended chain-of-thought, self-consistency) improves performance on hard tasks. A second scaling law axis beyond training compute. Optimal allocation of training vs inference budget is an open research question.</div>
+      </div>
+    </div>
+  </div>
+
+  <p><strong>Model comparison (mid-2025 snapshot):</strong></p>
+
+  <div class="ar-loop" style="padding:10px; overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.78rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #444; color:#888;">
+          <th style="text-align:left; padding:6px 10px;">Model</th>
+          <th style="text-align:right; padding:6px 10px;">Params</th>
+          <th style="text-align:right; padding:6px 10px;">Context</th>
+          <th style="text-align:right; padding:6px 10px;">Training tokens</th>
+          <th style="text-align:left; padding:6px 10px;">Access</th>
+          <th style="text-align:left; padding:6px 10px;">Notable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#0d0d0d; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">GPT-4 Turbo</td>
+          <td style="padding:6px 10px; text-align:right;">~1T MoE*</td>
+          <td style="padding:6px 10px; text-align:right;">128K</td>
+          <td style="padding:6px 10px; text-align:right;">~13T*</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">API</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Multimodal, function calling</td>
+        </tr>
+        <tr style="background:#111; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Claude 3.5 Sonnet</td>
+          <td style="padding:6px 10px; text-align:right;">~70B*</td>
+          <td style="padding:6px 10px; text-align:right;">200K</td>
+          <td style="padding:6px 10px; text-align:right;">~8T*</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">API</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Best coding/agentic (2024)</td>
+        </tr>
+        <tr style="background:#0d0d0d; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Gemini 1.5 Pro</td>
+          <td style="padding:6px 10px; text-align:right;">MoE*</td>
+          <td style="padding:6px 10px; text-align:right;">1M</td>
+          <td style="padding:6px 10px; text-align:right;">~7T*</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">API</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Video, audio native</td>
+        </tr>
+        <tr style="background:#111; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Llama 3.1 405B</td>
+          <td style="padding:6px 10px; text-align:right;">405B dense</td>
+          <td style="padding:6px 10px; text-align:right;">128K</td>
+          <td style="padding:6px 10px; text-align:right;">15T</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">Open weight</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">GPT-4 parity, free</td>
+        </tr>
+        <tr style="background:#0d0d0d; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Llama 3.1 8B</td>
+          <td style="padding:6px 10px; text-align:right;">8B dense</td>
+          <td style="padding:6px 10px; text-align:right;">128K</td>
+          <td style="padding:6px 10px; text-align:right;">15T</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">Open weight</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Fits on consumer GPU</td>
+        </tr>
+        <tr style="background:#111; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Mixtral 8×7B</td>
+          <td style="padding:6px 10px; text-align:right;">46.7B total</td>
+          <td style="padding:6px 10px; text-align:right;">32K</td>
+          <td style="padding:6px 10px; text-align:right;">~8T*</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">Open weight</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">12.9B active, fast</td>
+        </tr>
+        <tr style="background:#0d0d0d; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">DeepSeek-R1</td>
+          <td style="padding:6px 10px; text-align:right;">671B MoE</td>
+          <td style="padding:6px 10px; text-align:right;">128K</td>
+          <td style="padding:6px 10px; text-align:right;">14.8T</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">Open weight</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Reasoning, RL-only training</td>
+        </tr>
+        <tr style="background:#111; border-bottom:1px solid #222;">
+          <td style="padding:6px 10px; font-weight:600; color:#dcdcaa;">Mistral 7B v0.3</td>
+          <td style="padding:6px 10px; text-align:right;">7.3B dense</td>
+          <td style="padding:6px 10px; text-align:right;">32K</td>
+          <td style="padding:6px 10px; text-align:right;">~8T*</td>
+          <td style="padding:6px 10px; color:#4ec9b0;">Open weight</td>
+          <td style="padding:6px 10px; color:#888; font-size:0.72rem;">Sliding window attention</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:6px; color:#555; font-size:0.68rem;">* Unofficial estimates. MoE = Mixture of Experts. All figures as of mid-2025.</div>
+  </div>
 
   <div class="cell" id="cell-17">
     <div class="cell-header">
-      <span class="cell-label">▶ RUNNABLE — Full Memory Budget Calculator</span>
+      <span class="cell-label">&#9654; RUNNABLE &#8212; Compute scaling: training cost vs inference cost tradeoff</span>
       <button class="run-btn" onclick="runCell('cell-17')">Run</button>
     </div>
-    <div class="cell-code"><pre>def llm_memory_budget(
-    n_params_B,        # total parameters in billions
-    n_layers,
-    kv_heads,
-    d_model,
-    n_heads,
-    seq_len,
-    batch_size=1,
-    quant_bits=16,     # model weight precision
-    kv_bits=16,        # KV cache precision
-    gradient=False,    # training mode?
-    optimizer=False,   # AdamW optimizer states?
-):
-    bytes_per_w = quant_bits / 8
-    bytes_per_kv = kv_bits / 8
-    d_head = d_model // n_heads
+    <div class="cell-code"><pre>import math
 
-    weights_gb = n_params_B * 1e9 * bytes_per_w / 1e9
-    kv_gb = (batch_size * seq_len * n_layers * kv_heads
-             * d_head * 2 * bytes_per_kv) / 1e9
-    activations_gb = batch_size * seq_len * d_model * n_layers * 2 * 2 / 1e9  # rough
+# --- Training compute budget breakdown ---
+# Rule of thumb: C ≈ 6 * N * D FLOPs (Kaplan 2020)
+# Factor of 6 = 2 (forward) + 4 (backward, ~2x forward)
+def training_flops(N_params, D_tokens):
+    return 6 * N_params * D_tokens
 
-    grad_gb = weights_gb if gradient else 0
-    opt_gb  = weights_gb * 2 if optimizer else 0  # AdamW: m + v
+# --- Inference compute per token ---
+# ~2 * N FLOPs per token (matrix-vector products dominate)
+def inference_flops_per_token(N_params):
+    return 2 * N_params
 
-    total = weights_gb + kv_gb + activations_gb + grad_gb + opt_gb
-    print(f"  Model weights:    {weights_gb:7.2f} GB")
-    print(f"  KV cache:         {kv_gb:7.2f} GB")
-    print(f"  Activations:      {activations_gb:7.2f} GB")
-    if gradient: print(f"  Gradients:        {grad_gb:7.2f} GB")
-    if optimizer: print(f"  Optimizer states: {opt_gb:7.2f} GB")
-    print(f"  ─── TOTAL:        {total:7.2f} GB")
-    return total
-
-print("=" * 45)
-print("LLaMA-3 8B — Inference (BF16, seq=8K)")
-print("=" * 45)
-llm_memory_budget(8, 32, 8, 4096, 32, 8192, quant_bits=16, kv_bits=16)
-
-print()
-print("=" * 45)
-print("LLaMA-3 8B — QLoRA Training (NF4 base)")
-print("=" * 45)
-llm_memory_budget(8, 32, 8, 4096, 32, 2048,
-                  quant_bits=4, kv_bits=16,
-                  gradient=True, optimizer=True)
-
-print()
-print("=" * 45)
-print("LLaMA-3 70B — 4-bit inference, seq=32K")
-print("=" * 45)
-llm_memory_budget(70, 80, 8, 8192, 64, 32768, quant_bits=4, kv_bits=8)
-
-print()
-print("GPU memory requirements:")
-gpus = [
-    ("RTX 4090",    24),
-    ("A100 40GB",   40),
-    ("A100 80GB",   80),
-    ("H100 80GB",   80),
-    ("H100 NVL",   188),
-    ("8×A100",     640),
+print("Training compute (in FLOPs) for selected models:")
+models = [
+    ("GPT-3 175B", 175e9, 300e9),
+    ("Llama 3.1 8B", 8e9, 15e12),
+    ("Llama 3.1 70B", 70e9, 15e12),
+    ("Llama 3.1 405B", 405e9, 15e12),
+    ("DeepSeek-R1 671B", 671e9, 14.8e12),
 ]
-for name, gb in gpus:
-    fits = []
-    if gb >= 16: fits.append("8B-FP16")
-    if gb >= 35: fits.append("70B-4bit")
-    if gb >= 80: fits.append("70B-FP16")
-    if gb >= 200: fits.append("405B-4bit")
-    print(f"  {name:14s} {gb:4d}GB  → {', '.join(fits) or 'nothing'}")</pre></div>
-    <div class="cell-output" id="cell-17-out">Click Run to execute.</div>
+for name, N, D in models:
+    C_train = training_flops(N, D)
+    C_inf = inference_flops_per_token(N)
+    tokens_to_equal_training = C_train / C_inf
+    print(f"
+  {name}:")
+    print(f"    Training FLOPs:     {C_train:.2e}")
+    print(f"    Inference FLOPs/tok:{C_inf:.2e}")
+    print(f"    Equiv. inference:   {tokens_to_equal_training:.2e} tokens to match training cost")
+    # At 100 tokens/second, how many years to match training cost?
+    years = tokens_to_equal_training / (100 * 60 * 60 * 24 * 365)
+    print(f"    At 100 tok/s:       {years:.1f} years of inference = 1 training run")
+
+print()
+print("Test-time compute scaling (o1/R1 style chain-of-thought):")
+print("More thinking tokens at inference -> better on hard tasks")
+base_acc = 0.4  # accuracy without extended thinking
+for think_tokens in [0, 100, 500, 2000, 8000, 32000]:
+    # Diminishing returns sigmoid model
+    if think_tokens == 0:
+        acc = base_acc
+    else:
+        x = math.log10(think_tokens)
+        acc = base_acc + (0.58) / (1 + math.exp(-1.5 * (x - 2.0)))
+    cost_multiplier = 1 + think_tokens / 100
+    bar = "#" * int(acc * 40)
+    print(f"  thinking_tokens={think_tokens:>6}  acc={acc:.3f}  cost={cost_multiplier:>6.1f}x  {bar}")
+
+# Try changing base_acc to 0.8 to see diminishing returns in high-accuracy regime</pre></div>
+    <div class="cell-output">Click Run to execute.</div>
   </div>
 
   <div class="deepdive">
-    <div class="deepdive-label">Deep Dive — Learn More</div>
+    <div class="deepdive-label">Deep Dive &#8212; Learn More</div>
     <div class="deepdive-links">
-      <a href="https://arxiv.org/abs/2307.09288" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Touvron et al., 2023 — "Llama 2: Open Foundation and Fine-Tuned Chat Models"</span> — 7B-70B open models with RLHF chat variants; safety-first approach</span></a>
-      <a href="https://arxiv.org/abs/2309.16609" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Bai et al., 2023 — "Qwen Technical Report"</span> — Comprehensive language model series with strong multilingual capabilities</span></a>
-      <a href="https://arxiv.org/abs/2209.10659" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Elhage et al., 2022 — "Toy Models of Superposition"</span> — Mechanistic interpretability: how features are packed into neurons via superposition</span></a>
-      <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Templeton et al., 2024 — "Scaling Monosemanticity" (Anthropic)</span> — Sparse autoencoders decompose Claude 3 Sonnet into interpretable features</span></a>
-      <a href="https://arxiv.org/abs/2211.17192" target="_blank"><span class="link-icon">↗</span> <span><span class="link-label">Leviathan et al., 2023 — "Fast Inference from Transformers via Speculative Decoding"</span> — 2-3× faster decoding with a smaller draft model; preserves output distribution</span></a>
+      <a href="https://arxiv.org/abs/2501.12948" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">DeepSeek-AI, 2025 &#8212; DeepSeek-R1: Incentivizing Reasoning Capability via RL</span> &#8212; Pure RL training (GRPO, no SFT cold-start for final model) achieves GPT-4o parity on AIME 2024. 671B MoE model open-weighted.</span></a>
+      <a href="https://arxiv.org/abs/2407.21783" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Meta AI, 2024 &#8212; The Llama 3 Herd of Models</span> &#8212; 8B, 70B, 405B. 15T tokens. GQA, RoPE base=500,000, 128K context. 405B matches GPT-4 on most benchmarks. Full training details published.</span></a>
+      <a href="https://arxiv.org/abs/2403.05530" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Google DeepMind, 2024 &#8212; Gemini 1.5: Unlocking Multimodal Understanding</span> &#8212; 1M-token context via ring attention. Needle-in-a-haystack near-perfect at 1M tokens. Retrieves hidden audio in 22 hours of video.</span></a>
+      <a href="https://arxiv.org/abs/2307.03172" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Liu et al., 2023 &#8212; Lost in the Middle: How Language Models Use Long Contexts</span> &#8212; Multi-document QA: accuracy peaks at context start and end, drops sharply in middle. Consistent across GPT-3.5, GPT-4, Claude. An attention recency/primacy bias.</span></a>
+      <a href="https://karpathy.ai/zero-to-hero.html" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Andrej Karpathy &#8212; Zero to Hero Neural Networks (2024)</span> &#8212; Video series building GPT from scratch in PyTorch. micrograd, makemore, nanoGPT, llama2.c. Essential companion to this chapter for practitioners.</span></a>
+      <a href="https://simonwillison.net/2024/Apr/17/ai-for-data-journalism/" target="_blank"><span class="link-icon">&#8599;</span> <span><span class="link-label">Simon Willison &#8212; Tracking the AI landscape (ongoing blog)</span> &#8212; The most consistently accurate and current survey of model releases, benchmark results, and deployment considerations. Updated almost daily.</span></a>
     </div>
   </div>
-
-  <div class="callout green" style="margin-top:32px;">
-    <strong>What's next in this book.</strong> Chapter 2 covers the transformer architecture in depth: decoder-only design, scaled dot-product attention from scratch, multi-head attention, causal masking, RoPE positional encoding, SwiGLU FFN, and a full minimal transformer you can run in your browser.
-  </div>
 </section>
-<hr class="section-divider" style="margin-bottom:60px;">
+<hr class="section-divider">
+
 
 </main>
-</div><!-- .container -->
+</div><!-- #layout -->
 
-<!-- Pyodide -->
+<!-- ============================================================ JS == -->
 <script>
-let pyodideReady = false;
-let pyodide = null;
-
-async function initPyodide() {
-  const status = document.getElementById('pyodide-status');
-  try {
-    status.textContent = '⏳ Loading Python runtime…';
-    pyodide = await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.3/full/"});
-    await pyodide.loadPackage(['numpy']);
-    pyodideReady = true;
-    status.textContent = '✓ Python ready — click Run on any cell below.';
-    status.style.color = 'var(--green)';
-  } catch(e) {
-    status.textContent = '⚠ Could not load Python runtime. Check your internet connection.';
-    status.style.color = 'var(--accent)';
-  }
+// ── Vocabulary size calculator (§1.2 slider) ─────────────────────────────
+function updateVocabCalc() {
+  var v = parseInt(document.getElementById('vocabSlider').value, 10);
+  document.getElementById('vocabVal').textContent = v.toLocaleString();
+  var embDim = 4096;
+  var embMB  = (v * embDim * 2 / 1e6).toFixed(1);
+  document.getElementById('embSize').textContent = embMB + ' MB';
+  var logitMB = (v * embDim * 2 / 1e6).toFixed(1);
+  document.getElementById('logitSize').textContent = logitMB + ' MB';
+  var tokPerSec = Math.round(50000 / (v / 32000));
+  document.getElementById('tokPerSec').textContent = tokPerSec.toLocaleString() + ' tok/s (approx)';
 }
 
-// Sinusoidal PE heatmap
+// ── PE heatmap (§1.7) ────────────────────────────────────────────────────
 function drawPEHeatmap() {
-  const el = document.getElementById('pe-heatmap');
-  if (!el) return;
-  const T = 16, d = 32;
-  const rows = [];
-  for (let pos = 0; pos < T; pos++) {
-    const rowEl = document.createElement('div');
-    rowEl.className = 'pe-row';
-    for (let i = 0; i < d; i++) {
-      const val = i % 2 === 0
-        ? Math.sin(pos / Math.pow(10000, i / d))
-        : Math.cos(pos / Math.pow(10000, (i-1) / d));
-      const v = Math.round((val + 1) * 127.5);
-      const cell = document.createElement('div');
-      cell.className = 'pe-cell';
-      cell.style.background = `rgb(${v},${Math.round(v*0.6)},${255-v})`;
-      rowEl.appendChild(cell);
+  var canvas = document.getElementById('pe-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var maxPos = 64, maxDim = 64;
+  var cw = W / maxDim, ch = H / maxPos;
+  for (var pos = 0; pos < maxPos; pos++) {
+    for (var dim = 0; dim < maxDim; dim++) {
+      var freq = 1 / Math.pow(10000, (2 * Math.floor(dim / 2)) / maxDim);
+      var val;
+      if (dim % 2 === 0) {
+        val = Math.sin(pos * freq);
+      } else {
+        val = Math.cos(pos * freq);
+      }
+      var norm = (val + 1) / 2; // 0..1
+      var r = Math.round(norm * 80);
+      var g = Math.round(norm * 140 + (1-norm) * 40);
+      var b = Math.round(norm * 200 + (1-norm) * 100);
+      ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+      ctx.fillRect(dim * cw, pos * ch, cw + 0.5, ch + 0.5);
     }
-    el.appendChild(rowEl);
   }
+  // Axes
+  ctx.fillStyle = '#888';
+  ctx.font = '10px monospace';
+  ctx.fillText('dim →', 4, 12);
+  ctx.save();
+  ctx.translate(12, H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('position ↓', 0, 0);
+  ctx.restore();
+}
+
+// ── Pyodide in-browser Python runtime ────────────────────────────────────
+var pyodide = null;
+var pyodideLoading = false;
+
+async function initPyodide() {
+  if (pyodide) return pyodide;
+  if (pyodideLoading) {
+    // Wait until loaded
+    while (!pyodide) await new Promise(r => setTimeout(r, 100));
+    return pyodide;
+  }
+  pyodideLoading = true;
+  // Show global loading notice
+  var notice = document.createElement('div');
+  notice.id = 'pyodide-notice';
+  notice.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#252526;border:1px solid #4ec9b0;padding:10px 16px;border-radius:6px;color:#4ec9b0;font-family:monospace;font-size:0.8rem;z-index:9999;';
+  notice.textContent = 'Loading Python runtime (Pyodide ~8 MB)…';
+  document.body.appendChild(notice);
+  try {
+    pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
+    notice.textContent = 'Python ready ✓';
+    setTimeout(() => notice.remove(), 1800);
+  } catch(e) {
+    notice.style.borderColor = '#f44';
+    notice.style.color = '#f44';
+    notice.textContent = 'Pyodide load failed: ' + e.message;
+    pyodideLoading = false;
+    throw e;
+  }
+  pyodideLoading = false;
+  return pyodide;
 }
 
 async function runCell(cellId) {
-  const cell = document.getElementById(cellId);
-  const code = cell.querySelector('.cell-code pre').textContent;
-  const output = cell.querySelector('.cell-output');
-  const btn = cell.querySelector('.run-btn');
+  var cell = document.getElementById(cellId);
+  if (!cell) return;
+  var codeEl = cell.querySelector('.cell-code pre');
+  var outEl  = cell.querySelector('.cell-output');
+  var btn    = cell.querySelector('.run-btn');
+  if (!codeEl || !outEl) return;
 
-  if (!pyodideReady) {
-    output.textContent = '⏳ Python runtime still loading…';
-    return;
-  }
+  var code = codeEl.textContent;
+  outEl.textContent = 'Loading Python runtime…';
+  outEl.style.color = '#888';
   btn.disabled = true;
-  output.className = 'cell-output running';
-  output.textContent = '⏳ Running…';
+  btn.textContent = 'Running…';
 
   try {
-    pyodide.runPython('import sys, io; _stdout = io.StringIO(); sys.stdout = _stdout');
-    await pyodide.runPythonAsync(code);
-    const result = pyodide.runPython('sys.stdout = sys.__stdout__; _stdout.getvalue()');
-    output.className = 'cell-output';
-    output.textContent = result || '(no output)';
+    var py = await initPyodide();
+    // Capture stdout
+    py.runPython('import sys, io\nclass _Capture:\n  def __init__(self): self.buf=""\n  def write(self,s): self.buf+=s\n  def flush(self): pass\n_cap=_Capture()\nsys.stdout=_cap');
+    try {
+      py.runPython(code);
+    } catch(runErr) {
+      outEl.textContent = '⚠ ' + runErr.message;
+      outEl.style.color = '#f44';
+      return;
+    }
+    var output = py.runPython('sys.stdout=sys.__stdout__;_cap.buf');
+    outEl.textContent = output || '(no output)';
+    outEl.style.color = '#d4d4d4';
   } catch(e) {
-    try { pyodide.runPython('sys.stdout = sys.__stdout__'); } catch(_) {}
-    output.className = 'cell-output error';
-    output.textContent = '❌ ' + e.message;
+    outEl.textContent = '⚠ Runtime error: ' + e.message;
+    outEl.style.color = '#f44';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run';
   }
-  btn.disabled = false;
 }
+
+// ── Navigation active-section tracking ───────────────────────────────────
+(function() {
+  var sections = document.querySelectorAll('section.section[id]');
+  var navLinks = document.querySelectorAll('.toc a');
+
+  function getActiveSectionId() {
+    var scrollY = window.scrollY + 120;
+    var active = null;
+    sections.forEach(function(sec) {
+      if (sec.offsetTop <= scrollY) active = sec.id;
+    });
+    return active;
+  }
+
+  function updateNav() {
+    var id = getActiveSectionId();
+    navLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
+
+// ── Smooth scroll for TOC links ───────────────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ── Initialise on page load ───────────────────────────────────────────────
+window.addEventListener('load', function() {
+  drawPEHeatmap();
+  // Preload Pyodide in background after 3s idle
+  setTimeout(function() {
+    if (!pyodide) initPyodide().catch(function(){});
+  }, 3000);
+});
 </script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js" onload="initPyodide()" async></script>
-<script>document.addEventListener('DOMContentLoaded', drawPEHeatmap);</script>
+
 </body>
 </html>

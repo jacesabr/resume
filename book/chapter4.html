@@ -79,13 +79,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .cell-code pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.68;color:var(--text-code);white-space:pre-wrap;}
 .cell-output{padding:14px 18px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;color:#444;background:#fff;border-top:1px solid var(--border);white-space:pre-wrap;min-height:28px;}
 .cell-output.running{color:var(--accent);}.cell-output.error{color:#c0392b;}
-.ch-nav{display:flex;justify-content:space-between;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:20px;}
-.ch-nav a{text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:3px;}
-.ch-nav a:hover{color:var(--accent);}
-.cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
-.cnt{font-size:15px;font-weight:500;}
 #pyodide-status{text-align:center;padding:13px;background:var(--bg-aside);border-radius:8px;font-size:13px;color:var(--text-secondary);margin:20px 0;border:1px solid var(--border);}
-/* Chapter-specific */
+.continue-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);margin:24px 0 0;}
+.continue-bar.top-bar{border-top:none;margin-top:0;}
+.continue-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s;}
+.continue-btn.prev{background:var(--bg-aside);color:var(--text);border:1px solid var(--border);}
+.continue-btn.prev:hover{background:var(--border);color:var(--text);}
+.continue-btn.next{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+.continue-btn.next:hover{opacity:.88;}
+.continue-btn.disabled{background:var(--bg-aside);color:var(--text-secondary);border:1px solid var(--border-light);pointer-events:none;opacity:.5;}
+.continue-chapter{font-family:var(--font-mono);font-size:10px;opacity:.7;display:block;}
 .arch-flow{display:flex;flex-direction:column;gap:5px;margin:22px 0;}
 .af-row{display:flex;align-items:center;gap:10px;}
 .af-box{flex:1;border-radius:7px;padding:10px 16px;text-align:center;font-size:13px;font-weight:500;}
@@ -98,8 +101,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .gelu-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
 .gc{border:1px solid var(--border);border-radius:8px;padding:14px;}
 .gc h4{font-family:var(--font-mono);font-size:12px;font-weight:700;margin-bottom:8px;}
-.gc-relu h4{color:var(--blue);}
-.gc-gelu h4{color:var(--accent);}
+.gc-relu h4{color:var(--blue);}.gc-gelu h4{color:var(--accent);}
 .gc p{font-size:12.5px;color:var(--text-secondary);line-height:1.55;margin-bottom:8px;}
 .gc-formula{font-family:var(--font-mono);font-size:11px;background:var(--bg-aside);padding:5px 10px;border-radius:4px;color:var(--text-secondary);}
 .block-diag{border:2px solid var(--border);border-radius:10px;padding:20px;margin:22px 0;}
@@ -116,8 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .param-table td{padding:8px 14px;border-bottom:1px solid var(--border-light);font-family:var(--font-mono);font-size:12px;vertical-align:top;}
 .param-table tr:hover td{background:var(--accent-light);}
 .ptd-name{color:var(--text);font-family:var(--font-sans);font-weight:500;}
-.ptd-shape{color:var(--blue);}
-.ptd-count{color:var(--accent);font-weight:600;}
+.ptd-shape{color:var(--blue);}.ptd-count{color:var(--accent);font-weight:600;}
 .wt-diag{display:flex;align-items:center;gap:14px;margin:22px 0;flex-wrap:wrap;}
 .wt-box{border-radius:8px;padding:14px 20px;text-align:center;font-family:var(--font-mono);font-size:12px;}
 .wt-emb{background:var(--purple-light);border:2px solid var(--purple);color:var(--purple);}
@@ -129,35 +130,45 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .gl-n{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--accent);min-width:30px;flex-shrink:0;}
 .gl-body h4{font-size:13.5px;font-weight:600;margin-bottom:2px;}
 .gl-body p{font-size:12.5px;color:var(--text-secondary);margin:0;}
+.stream-diag{border:2px solid var(--border);border-radius:10px;padding:20px;margin:22px 0;}
+.stream-diag-title{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:14px;}
+.stream-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.stream-lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);min-width:72px;text-align:right;}
+.stream-bar{flex:1;height:26px;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:500;}
+.sb-in{background:var(--bg-code);color:var(--text-code);}
+.sb-emb{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple);}
+.sb-blk{background:rgba(59,107,181,.10);border:1px solid var(--blue);color:var(--blue);}
+.sb-out{background:var(--accent-light);border:1px solid var(--accent);color:var(--accent);}
+.attn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0;}
+.ag-card{border:1px solid var(--border);border-radius:8px;padding:14px;}
+.ag-card h4{font-family:var(--font-mono);font-size:12px;font-weight:700;margin-bottom:6px;color:var(--blue);}
+.ag-card p{font-size:12.5px;color:var(--text-secondary);line-height:1.55;margin:0;}
 </style>
 </head>
 <body>
-
 <nav class="topnav">
   <div class="container">
-    <span class="topnav-title">Practical LLMs</span>
+    <span class="topnav-title">Building With LLMs</span>
     <div class="topnav-links">
-      <a href="chapter3.html">← Ch 3</a>
+      <a href="chapter3.html">&larr; Ch 3</a>
       <a href="index.html">Index</a>
-      <a href="chapter5.html">Ch 5 →</a>
+      <a href="chapter5.html">Ch 5 &rarr;</a>
     </div>
   </div>
 </nav>
-
 <div class="container">
 <header class="chapter-header">
   <div class="chapter-label">Chapter 4</div>
   <h1>Implementing a GPT Model</h1>
-  <p>Every component from chapters 1–3 assembled into a complete, runnable GPT-2. Layer by layer, function by function — until 124 million parameters are breathing.</p>
+  <p>Every component from chapters 1&ndash;3 assembled into a complete, runnable GPT-2. Layer by layer, function by function &mdash; until 124 million parameters are breathing. From LayerNorm to weight tying to the residual stream, this is the full architecture with nothing hidden.</p>
   <div class="chapter-meta">
-    <span>🏗️ 10 sections</span>
-    <span>⚙️ 10 runnable cells</span>
-    <span>🎨 6 CSS diagrams</span>
-    <span>📐 GPT-2 (124M) built from scratch</span>
-    <span>📚 Radford + He + Hendrycks + Elhage</span>
+    <span>13 sections</span>
+    <span>13 runnable cells</span>
+    <span>7 CSS diagrams</span>
+    <span>GPT-2 (124M) from scratch</span>
+    <span>Ba &bull; He &bull; Hendrycks &bull; Elhage &bull; Geva</span>
   </div>
 </header>
-
 <nav class="toc">
   <h3>Contents</h3>
   <div class="toc-grid">
@@ -167,487 +178,460 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
       <li><a href="#s3"><span class="toc-num">4.3</span>The FeedForward Sublayer</a></li>
       <li><a href="#s4"><span class="toc-num">4.4</span>Shortcut Connections</a></li>
       <li><a href="#s5"><span class="toc-num">4.5</span>The Transformer Block</a></li>
-    </ul>
-    <ul class="toc-list">
       <li><a href="#s6"><span class="toc-num">4.6</span>Stacking Blocks</a></li>
       <li><a href="#s7"><span class="toc-num">4.7</span>The Full GPT Model</a></li>
+    </ul>
+    <ul class="toc-list">
       <li><a href="#s8"><span class="toc-num">4.8</span>Weight Tying</a></li>
       <li><a href="#s9"><span class="toc-num">4.9</span>Counting Parameters</a></li>
       <li><a href="#s10"><span class="toc-num">4.10</span>Generating Text</a></li>
+      <li><a href="#s11"><span class="toc-num">4.11</span>The Residual Stream View</a></li>
+      <li><a href="#s12"><span class="toc-num">4.12</span>Attention Head Patterns</a></li>
+      <li><a href="#s13"><span class="toc-num">4.13</span>A Complete Parameter Audit</a></li>
     </ul>
   </div>
 </nav>
+<div class="continue-bar top-bar">
+  <a href="chapter3.html" class="continue-btn prev"><span class="continue-chapter">&larr; Chapter 3</span>The Transformer Architecture</a>
+  <a href="chapter5.html" class="continue-btn next"><span class="continue-chapter">Chapter 5 &rarr;</span>Pretraining</a>
+</div>
+<div id="pyodide-status">Loading Python runtime &mdash; runnable cells will be ready in a moment.</div>
 
-<div id="pyodide-status">⏳ Loading Python runtime — runnable cells will be ready in a moment.</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.1  Layer Normalisation              -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s1">
 <div class="section-label">4.1</div>
 <h2>Layer Normalisation</h2>
-
-<p>Before any attention or feedforward operation, GPT-2 normalises the residual stream. This is not optional housekeeping — without it, training a 12-layer transformer with a constant learning rate would fail. Activations grow as they accumulate across residual additions; without normalisation the variance compounds multiplicatively through each layer, and gradients either explode or vanish before reaching the early layers.</p>
-
-<p>The original Transformer used <strong>post-norm</strong> — applying LayerNorm after the residual addition. GPT-2 switched to <strong>pre-norm</strong>: normalise the input before passing it to attention or FFN, then add the residual. This small change dramatically improves training stability. The gradient of the residual bypass is always 1.0; pre-norm means the normalised input is always well-conditioned before the matrix multiplications, regardless of how the residual has accumulated.</p>
-
-<p>The formula: given an input vector <strong>x</strong> of dimension d, subtract its mean and divide by its standard deviation, then apply learned scale γ and bias β. Both γ and β are initialised to 1 and 0 respectively, so initially LayerNorm is an identity function. Training adjusts them to allow different dimensions to have different typical magnitudes. The constant ε = 1e-5 prevents division by zero when all elements are identical.</p>
-
+<p>Before any attention or feedforward operation touches the residual stream, GPT-2 normalises it. This is not optional housekeeping &mdash; without normalisation, training a 12-layer transformer at a constant learning rate would fail within the first thousand steps. Activations accumulate across residual additions; their variance compounds multiplicatively through each block. By layer 12, a poorly conditioned stream carries values in the hundreds, sending gradients into overflow before reaching early layers.</p>
+<p>Ba, Kiros, and Hinton introduced Layer Normalisation in 2016 (arXiv&nbsp;1607.06450). Unlike Batch Normalisation, which normalises across the <em>batch</em> dimension and breaks for sequences of variable length or batch&nbsp;size&nbsp;1 at inference, LayerNorm normalises across the <em>feature</em> dimension &mdash; the d_model embedding dimension. Each token&rsquo;s 768-dimensional vector is normalised independently of every other token and example. This makes LayerNorm ideal for autoregressive language modelling where inference batch size is often 1.</p>
+<p>The formula subtracts the mean of the feature vector and divides by its standard deviation, then applies two learned per-dimension parameters: scale &gamma; (initialised&nbsp;to&nbsp;1) and shift &beta; (initialised&nbsp;to&nbsp;0). At training start, LayerNorm is an exact identity. The constant &epsilon;&nbsp;=&nbsp;1e-5 prevents division by zero when all features are equal. GPT-2 uses <strong>Pre-LN</strong>: normalise <em>before</em> the sublayer, add the raw residual <em>after</em>. Xiong et al.&nbsp;2020 (arXiv&nbsp;2002.04745) proved Pre-LN converges 40% faster than Post-LN and tolerates 3&times; larger learning rates. RMSNorm (Zhang &amp; Sennrich 2019, arXiv&nbsp;1910.07467) removes mean-centering entirely; it is 7% faster and used in LLaMA, T5, and Gemma.</p>
 <div class="formula">
-  <span class="eq-label">LAYER NORMALISATION</span>
-  LN(x) = γ · (x − μ) / √(σ² + ε)  +  β
-  <span class="eq-note">μ = mean(x),  σ² = variance(x),  γ and β are learned per-dimension,  ε = 1e-5</span>
+  <span class="eq-label">LAYER NORMALISATION &mdash; Ba et al. 2016 (arXiv 1607.06450)</span>
+  LN(x) = &gamma; &middot; (x &minus; &mu;) / &radic;(&sigma;&sup2; + &epsilon;) + &beta;
+  <span class="eq-note">&mu; = mean over d_model features &nbsp;|&nbsp; &sigma;&sup2; = variance &nbsp;|&nbsp; &gamma;,&beta; &isin; &#8477;<sup>d</sup> learned &nbsp;|&nbsp; &epsilon; = 1e-5</span>
 </div>
-
-<div class="callout green"><strong>Key insight:</strong> Pre-norm (normalise before sublayer) is strictly better than post-norm for deep transformers. Pre-norm creates a "clean" gradient highway through the residual stream — the gradient of the shortcut path is exactly 1.0 at every layer.</div>
-
+<div class="callout green"><strong>Pre-LN vs Post-LN:</strong> Pre-LN (GPT-2) normalises the input before the sublayer; the raw residual is added after. Post-LN (Vaswani 2017) normalises after the residual addition. Pre-LN gives a gradient highway &mdash; the bypass gradient is always 1.0, so early layers always receive a usable signal regardless of depth. Convergence is 40% faster and warmup requirements are lower (Xiong et al. 2020).</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">layer_norm.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="kw">import</span> math
 
 <span class="kw">class</span> <span class="cl">LayerNorm</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, emb_dim, eps=<span class="nu">1e-5</span>):
-        <span class="pr">self</span>.eps = eps
-        <span class="pr">self</span>.scale = [<span class="nu">1.0</span>] * emb_dim   <span class="lm"># ↑ γ: learned scale, initialised to 1 (identity)</span>
-        <span class="pr">self</span>.shift = [<span class="nu">0.0</span>] * emb_dim   <span class="lm"># ↑ β: learned bias, initialised to 0 (identity)</span>
+        <span class="pr">self</span>.eps   = eps
+        <span class="pr">self</span>.scale = [<span class="nu">1.0</span>] * emb_dim  <span class="lm"># &#8593; gamma: init=1 so LN is identity at training start</span>
+        <span class="pr">self</span>.shift = [<span class="nu">0.0</span>] * emb_dim  <span class="lm"># &#8593; beta: init=0 so LN is identity at training start</span>
 
     <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
-        <span class="cm"># x is a list of floats (one token's embedding)</span>
-        n = <span class="bi">len</span>(x)
-        mean = <span class="bi">sum</span>(x) / n                        <span class="lm"># ↑ μ: mean across embedding dimension</span>
-        var  = <span class="bi">sum</span>((v - mean)**<span class="nu">2</span> <span class="kw">for</span> v <span class="kw">in</span> x) / n  <span class="lm"># ↑ σ²: variance across embedding dimension</span>
-        std  = math.<span class="fn">sqrt</span>(var + <span class="pr">self</span>.eps)          <span class="lm"># ↑ add ε before sqrt to avoid division by 0</span>
-        norm = [(v - mean) / std <span class="kw">for</span> v <span class="kw">in</span> x]     <span class="lm"># ↑ normalise: zero mean, unit variance</span>
-        <span class="kw">return</span> [<span class="pr">self</span>.scale[i] * norm[i] + <span class="pr">self</span>.shift[i]
-                <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(n)]              <span class="lm"># ↑ apply γ and β (affine transform)</span>
+        <span class="cm"># x: list of floats, length emb_dim (one token's 768-dim embedding vector)</span>
+        n    = <span class="bi">len</span>(x)
+        mean = <span class="bi">sum</span>(x) / n                          <span class="lm"># &#8593; mu: mean across feature dim (NOT batch dim)</span>
+        var  = <span class="bi">sum</span>((v - mean)**<span class="nu">2</span> <span class="kw">for</span> v <span class="kw">in</span> x) / n  <span class="lm"># &#8593; sigma^2: variance across 768 features</span>
+        std  = math.<span class="fn">sqrt</span>(var + <span class="pr">self</span>.eps)            <span class="lm"># &#8593; add epsilon BEFORE sqrt: prevents div-by-zero</span>
+        norm = [(v - mean) / std <span class="kw">for</span> v <span class="kw">in</span> x]       <span class="lm"># &#8593; zero-mean, unit-variance across feature dim</span>
+        <span class="kw">return</span> [<span class="pr">self</span>.scale[i]*norm[i] + <span class="pr">self</span>.shift[i]
+                <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(n)]              <span class="lm"># &#8593; affine: gamma * x_norm + beta (both learned)</span>
+
+<span class="cm"># RMSNorm (Zhang &amp; Sennrich 2019, arXiv 1910.07467) -- used in LLaMA, T5, Gemma</span>
+<span class="kw">class</span> <span class="cl">RMSNorm</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, emb_dim, eps=<span class="nu">1e-5</span>):
+        <span class="pr">self</span>.eps   = eps
+        <span class="pr">self</span>.scale = [<span class="nu">1.0</span>] * emb_dim  <span class="lm"># &#8593; only gamma -- no beta; simpler, 7% faster than LayerNorm</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
+        n   = <span class="bi">len</span>(x)
+        rms = math.<span class="fn">sqrt</span>(<span class="bi">sum</span>(v**<span class="nu">2</span> <span class="kw">for</span> v <span class="kw">in</span> x) / n + <span class="pr">self</span>.eps)  <span class="lm"># &#8593; root mean square; no centering</span>
+        <span class="kw">return</span> [<span class="pr">self</span>.scale[i] * x[i] / rms <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(n)]    <span class="lm"># &#8593; scale by gamma/RMS only</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1607.06450" target="_blank">🔗 Ba et al. 2016 — Layer Normalisation (the original paper; section 3 has the exact formula)</a>
-  <a href="https://arxiv.org/abs/2002.04745" target="_blank">🔗 Xiong et al. 2020 — On Layer Normalisation in the Transformer Architecture (pre-norm vs post-norm analysis)</a>
+  <a href="https://arxiv.org/abs/1607.06450" target="_blank">Ba, Kiros &amp; Hinton 2016 &mdash; Layer Normalization (arXiv 1607.06450): original paper; Section 3 has the formula and batch-size independence proof</a>
+  <a href="https://arxiv.org/abs/2002.04745" target="_blank">Xiong et al. 2020 &mdash; On Layer Normalization in the Transformer (arXiv 2002.04745): Theorem 2 proves Pre-LN gradient bound; 40% faster convergence experiments in Section 4</a>
+  <a href="https://arxiv.org/abs/1910.07467" target="_blank">Zhang &amp; Sennrich 2019 &mdash; Root Mean Square Layer Normalization (arXiv 1910.07467): RMSNorm; adopted by LLaMA-1/2/3, T5, Gemma, Mistral</a>
 </div>
-
-<div class="cell" id="cell-1">
+<div class="cell" id="run-4-1">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 1 — Verify LayerNorm produces mean≈0, std≈1</span>
-    <button class="run-btn" onclick="runCell('cell-1')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; verify LayerNorm produces mean=0, std=1</span>
+    <button class="run-btn" onclick="runCode('run-4-1')">Run</button>
   </div>
   <div class="cell-code"><pre>import math
 
 def layer_norm(x, eps=1e-5):
-    n = len(x)
+    n    = len(x)
     mean = sum(x) / n
-    var = sum((v - mean)**2 for v in x) / n
-    std = math.sqrt(var + eps)
+    var  = sum((v - mean)**2 for v in x) / n
+    std  = math.sqrt(var + eps)
     return [(v - mean) / std for v in x]
 
+def rms_norm(x, eps=1e-5):
+    n   = len(x)
+    rms = math.sqrt(sum(v**2 for v in x) / n + eps)
+    return [v / rms for v in x]
+
 raw = [0.3, -1.4, 2.8, 0.1, -0.6, 1.2, -2.1, 0.8]
-normed = layer_norm(raw)
+ln  = layer_norm(raw)
+rms = rms_norm(raw)
 
-mean_out = sum(normed) / len(normed)
-std_out  = math.sqrt(sum((v - mean_out)**2 for v in normed) / len(normed))
+def stats(v):
+    n = len(v); m = sum(v)/n
+    s = math.sqrt(sum((x-m)**2 for x in v)/n)
+    return m, s
 
-print(f"Input:  {[round(v,2) for v in raw]}")
-print(f"Output: {[round(v,2) for v in normed]}")
-print(f"Mean after LN:  {mean_out:.6f}  (should be ≈ 0)")
-print(f"Std  after LN:  {std_out:.6f}  (should be ≈ 1)")
-# Try changing raw values above and re-running.</pre></div>
+lm, ls = stats(ln)
+rm, rs = stats(rms)
+
+print(f"Input:     {[round(v,2) for v in raw]}")
+print(f"LayerNorm: {[round(v,2) for v in ln]}")
+print(f"  mean={lm:.6f}  std={ls:.6f}  (target: ~0 and ~1)")
+print()
+print(f"RMSNorm:   {[round(v,2) for v in rms]}")
+print(f"  mean={rm:.6f}  std={rs:.6f}  (mean not forced to 0)")
+print()
+print("LayerNorm centers+scales; RMSNorm only scales (7% faster).")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.2  The GELU Activation             -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s2">
 <div class="section-label">4.2</div>
 <h2>The GELU Activation</h2>
-
-<p>Every position in the FeedForward sublayer passes through a nonlinear activation function. Without it, stacking linear layers is mathematically equivalent to one linear layer — the entire transformer would be a fancy linear regression. GPT-2 uses <strong>GELU</strong> (Gaussian Error Linear Unit) rather than the older ReLU.</p>
-
-<p>ReLU is a hard gate: anything negative becomes exactly 0. This creates dead neurons — units that can never recover once their output becomes zero for a given input, because the gradient is also zero at those points. GELU softens the gate: rather than hard-clipping negative values, it multiplies each input by the probability that it is positive under a Gaussian distribution. Negative inputs are heavily suppressed but not completely silenced. The function is smooth and differentiable everywhere — gradients flow even for negative values, which preserves learning signal through deep stacks.</p>
-
-<p>The exact formula involves the Gaussian CDF Φ, approximated with tanh for fast computation. The approximation error is negligible in practice. A concrete comparison: GELU(-1) ≈ -0.159, while ReLU(-1) = 0. That small negative output means the neuron still participates, weakly, and can recover if gradients shift.</p>
-
+<p>Without a nonlinear activation function, stacking linear layers collapses to a single linear transformation regardless of depth. A 12-layer transformer without nonlinearity would be mathematically equivalent to one matrix multiplication &mdash; no representational hierarchy, no capacity to approximate complex functions. Nonlinearity is the mechanism by which depth provides exponentially more expressive power than width alone.</p>
+<p>GPT-2 uses GELU &mdash; Gaussian Error Linear Unit &mdash; introduced by Hendrycks and Gimpel in 2016 (arXiv&nbsp;1606.08415). The defining idea is a <em>probabilistic gate</em>: GELU(x) = x &times; &Phi;(x), where &Phi; is the Gaussian CDF. For large positive x, &Phi;(x)&rarr;1 and GELU(x)&rarr;x. For large negative x, &Phi;(x)&rarr;0 and GELU(x)&rarr;0. The transition is smooth and differentiable everywhere. Compare to ReLU(x)&nbsp;=&nbsp;max(0,x): a hard gate whose gradient is exactly 0 for all negative inputs. Once a ReLU neuron goes negative it receives zero gradient and cannot recover &mdash; the &ldquo;dying ReLU&rdquo; problem. GELU(-1)&asymp;-0.159, not 0; the neuron still participates weakly and can recover via that nonzero gradient.</p>
+<p>The exact GELU requires the Gaussian CDF, computed with a tanh approximation in GPT-2 (error &lt;&nbsp;0.0005 across practical inputs). SwiGLU (Shazeer 2020, arXiv&nbsp;2002.05202) goes further: the FFN up-projection is doubled, one half is passed through swish(x)&nbsp;=&nbsp;x&sdot;&sigma;(x), and gates the other half elementwise. SwiGLU consistently outperforms plain GELU at matched parameter counts and is used in LLaMA-2, LLaMA-3, and PaLM, with inner dimension 8/3&times;d_model instead of 4&times; to keep totals equivalent.</p>
 <div class="formula">
-  <span class="eq-label">GELU ACTIVATION</span>
-  GELU(x) = x · Φ(x) ≈ 0.5x · (1 + tanh(√(2/π) · (x + 0.044715x³)))
-  <span class="eq-note">Φ(x) = Gaussian CDF = P(X ≤ x) where X ~ N(0,1).  The tanh form is GPT-2's fast approximation.</span>
+  <span class="eq-label">GELU ACTIVATION &mdash; Hendrycks &amp; Gimpel 2016 (arXiv 1606.08415)</span>
+  GELU(x) = x &middot; &Phi;(x) &asymp; 0.5x &middot; (1 + tanh(&radic;(2/&pi;) &middot; (x + 0.044715x&sup3;)))
+  <span class="eq-note">&Phi;(x) = Gaussian CDF. &nbsp; GELU(0)=0 &nbsp; GELU(-1)&asymp;-0.159 &nbsp; GELU(1)&asymp;0.841 &nbsp; GELU(+&infin;)&rarr;+&infin;</span>
 </div>
-
 <div class="gelu-cards">
-  <div class="gc gc-relu">
-    <h4>ReLU(x)</h4>
-    <p>Hard gate: max(0, x). Zero and gradient-zero for all negative inputs. Simple but causes dead neurons. Used in earlier models (GPT-1 used GELU but many contemporaries used ReLU).</p>
-    <div class="gc-formula">f(x) = max(0, x)</div>
-  </div>
-  <div class="gc gc-gelu">
-    <h4>GELU(x)</h4>
-    <p>Smooth probabilistic gate. Negative values suppressed but not zeroed — small gradient allows recovery. Matches the output distribution of stochastic depth regularisation.</p>
-    <div class="gc-formula">f(x) ≈ 0.5x(1 + tanh(0.7978(x + 0.044715x³)))</div>
-  </div>
+  <div class="gc gc-relu"><h4>ReLU(x) = max(0, x)</h4><p>Hard gate. Gradient is exactly 0 for all negative inputs. &ldquo;Dying ReLU&rdquo;: once a neuron goes negative it receives no gradient and cannot recover. Simple and fast but brittle in very deep networks at high learning rates.</p><div class="gc-formula">ReLU(-1) = 0.000 &nbsp; ReLU(1) = 1.000</div></div>
+  <div class="gc gc-gelu"><h4>GELU(x) = x &middot; &Phi;(x)</h4><p>Smooth probabilistic gate. Negative values suppressed but not zeroed &mdash; gradient flows for recovery. Always differentiable. Used in GPT-2, GPT-3, BERT, Mistral. LLaMA-2/3 uses SwiGLU variant.</p><div class="gc-formula">GELU(-1) &asymp; -0.159 &nbsp; GELU(1) &asymp; 0.841</div></div>
 </div>
-
-<div class="callout"><strong>Key insight:</strong> GELU is the standard activation in every major language model: BERT, GPT-2, GPT-3, LLaMA, Mistral. The smooth gate allows gradients to flow even for slightly negative pre-activations, enabling learning signal to penetrate dozens of layers.</div>
-
+<div class="callout"><strong>SwiGLU (LLaMA-2, LLaMA-3, PaLM):</strong> Instead of W<sub>2</sub>&thinsp;GELU(W<sub>1</sub>x), SwiGLU computes (W<sub>1</sub>x) &odot; swish(W<sub>3</sub>x). A third matrix W<sub>3</sub> acts as a learned gate. Consistently outperforms plain GELU across model sizes; inner dim is 8/3&times;d_model instead of 4&times; to keep parameter counts matched.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">gelu.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">activations.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="kw">import</span> math
 
 <span class="kw">def</span> <span class="fn">gelu</span>(x):
-    <span class="cm"># GPT-2's exact tanh approximation of GELU</span>
-    inner = math.<span class="fn">sqrt</span>(<span class="nu">2.0</span> / math.pi) * (x + <span class="nu">0.044715</span> * x**<span class="nu">3</span>)  <span class="lm"># ↑ polynomial inside tanh</span>
-    <span class="kw">return</span> <span class="nu">0.5</span> * x * (<span class="nu">1.0</span> + math.<span class="fn">tanh</span>(inner))               <span class="lm"># ↑ x times probability x is positive</span>
+    <span class="cm"># GPT-2 tanh approximation of GELU (Hendrycks &amp; Gimpel 2016)</span>
+    inner = math.<span class="fn">sqrt</span>(<span class="nu">2.0</span>/math.pi) * (x + <span class="nu">0.044715</span>*x**<span class="nu">3</span>)  <span class="lm"># &#8593; polynomial approx of Gaussian CDF argument</span>
+    <span class="kw">return</span> <span class="nu">0.5</span> * x * (<span class="nu">1.0</span> + math.<span class="fn">tanh</span>(inner))             <span class="lm"># &#8593; x * P(Gaussian &lt;= x): smooth probabilistic gate</span>
 
 <span class="kw">def</span> <span class="fn">relu</span>(x):
-    <span class="kw">return</span> <span class="bi">max</span>(<span class="nu">0.0</span>, x)   <span class="lm"># ↑ hard gate: negative inputs silenced completely</span>
+    <span class="kw">return</span> <span class="bi">max</span>(<span class="nu">0.0</span>, x)  <span class="lm"># &#8593; hard gate: negative inputs silenced, gradient = 0 there (dying ReLU risk)</span>
+
+<span class="kw">def</span> <span class="fn">swish</span>(x):
+    <span class="cm"># Used inside SwiGLU (Shazeer 2020, LLaMA-2)</span>
+    <span class="kw">return</span> x / (<span class="nu">1.0</span> + math.<span class="fn">exp</span>(-x))  <span class="lm"># &#8593; x * sigmoid(x): smooth gate, always differentiable</span>
+
+<span class="kw">def</span> <span class="fn">gelu_grad</span>(x):
+    <span class="cm"># d/dx GELU(x) = Phi(x) + x * phi(x)  (product rule: d/dx [x * Phi(x)])</span>
+    cdf = <span class="nu">0.5</span>*(<span class="nu">1.0</span>+math.<span class="fn">tanh</span>(math.<span class="fn">sqrt</span>(<span class="nu">2.0</span>/math.pi)*(x+<span class="nu">0.044715</span>*x**<span class="nu">3</span>)))
+    pdf = math.<span class="fn">exp</span>(-x**<span class="nu">2</span>/<span class="nu">2</span>) / math.<span class="fn">sqrt</span>(<span class="nu">2</span>*math.pi)
+    <span class="kw">return</span> cdf + x*pdf  <span class="lm"># &#8593; nonzero even for negative x -- no dying neuron problem</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1606.08415" target="_blank">🔗 Hendrycks &amp; Gimpel 2016 — Gaussian Error Linear Units (the GELU paper)</a>
-  <a href="https://paperswithcode.com/method/gelu" target="_blank">🔗 Papers With Code — GELU: comparisons across architectures and tasks</a>
+  <a href="https://arxiv.org/abs/1606.08415" target="_blank">Hendrycks &amp; Gimpel 2016 &mdash; Gaussian Error Linear Units (arXiv 1606.08415): original GELU paper; Table 1 shows GELU outperforming ReLU and ELU on MNIST and TIMIT</a>
+  <a href="https://arxiv.org/abs/2002.05202" target="_blank">Shazeer 2020 &mdash; GLU Variants Improve Transformer (arXiv 2002.05202): SwiGLU, GeGLU, ReGLU benchmarks; SwiGLU adopted in LLaMA-2, PaLM; Section 2 has all formulations</a>
+  <a href="https://paperswithcode.com/method/gelu" target="_blank">Papers With Code &mdash; GELU: architecture-by-architecture comparison table</a>
 </div>
-
-<div class="cell" id="cell-2">
+<div class="cell" id="run-4-2">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 2 — Compare GELU vs ReLU numerically</span>
-    <button class="run-btn" onclick="runCell('cell-2')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; GELU vs ReLU: values and gradients</span>
+    <button class="run-btn" onclick="runCode('run-4-2')">Run</button>
   </div>
   <div class="cell-code"><pre>import math
 
 def gelu(x):
-    inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * x**3)
+    inner = math.sqrt(2.0/math.pi) * (x + 0.044715*x**3)
     return 0.5 * x * (1.0 + math.tanh(inner))
 
-def relu(x):
-    return max(0.0, x)
+def relu(x): return max(0.0, x)
 
-print(f"{'x':>6}  {'GELU(x)':>10}  {'ReLU(x)':>10}  {'Diff':>10}")
-print("-" * 42)
+def gelu_grad(x):
+    cdf = 0.5*(1.0+math.tanh(math.sqrt(2.0/math.pi)*(x+0.044715*x**3)))
+    pdf = math.exp(-x**2/2)/math.sqrt(2*math.pi)
+    return cdf + x*pdf
+
+def relu_grad(x): return 1.0 if x > 0 else 0.0
+
+print(f"{'x':>6}  {'GELU':>9}  {'ReLU':>9}  {'GELU grad':>10}  {'ReLU grad':>10}")
+print("-" * 52)
 for x in [-3, -2, -1, -0.5, 0, 0.5, 1, 2, 3]:
-    g = gelu(x)
-    r = relu(x)
-    print(f"{x:>6.1f}  {g:>10.4f}  {r:>10.4f}  {g-r:>10.4f}")
-# Notice: GELU allows small negative output for x < 0, ReLU is always 0 there.</pre></div>
+    print(f"{x:>6.1f}  {gelu(x):>9.4f}  {relu(x):>9.4f}  {gelu_grad(x):>10.4f}  {relu_grad(x):>10.4f}")
+print()
+print("GELU(-1) = -0.159  (not 0!)  -- gradient path stays open")
+print("ReLU(-1) =  0.000  -- gradient = 0, neuron cannot recover")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.3  The FeedForward Sublayer         -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s3">
 <div class="section-label">4.3</div>
 <h2>The FeedForward Sublayer</h2>
-
-<p>Each transformer block contains two sublayers: multi-head attention and a position-wise feedforward network. The feedforward network (FFN) is architecturally simple — two linear projections with a nonlinearity between them — but it contains the majority of the parameters in the entire model. In GPT-2, 67% of parameters live in FFN layers.</p>
-
-<p>The design is: Linear(d_model → 4·d_model) → GELU → Linear(4·d_model → d_model). The expansion factor of 4× is a convention from the original "Attention Is All You Need" paper (Vaswani et al. 2017) and has been retained essentially unchanged in every transformer since. Recent work suggests 8/3× (used in LLaMA's SwiGLU variant) is slightly better, but 4× remains standard. The intermediate dimension is often called d_ff or d_inner.</p>
-
-<p>Why expand then contract? The expansion creates a higher-dimensional space where the model can perform nonlinear feature interactions that attention cannot. Attention routes information between positions; FFN transforms the information at each position independently. Mechanistic interpretability research (Elhage et al. 2021) suggests FFN layers act like key-value memory stores — patterns in the first weight matrix "key" into factual associations stored in the second matrix's "values."</p>
-
-<div class="callout blue"><strong>Key insight:</strong> For GPT-2 124M with d_model=768: each FFN layer has 2 × 768 × 3072 = 4,718,592 parameters. With 12 blocks, FFN alone accounts for ~56.6M parameters. The attention Q,K,V,O projections add only ~28.3M. The FFN is where knowledge is stored; attention is where it's routed.</div>
-
+<p>Each transformer block contains two sublayers. Multi-head attention handles <em>communication</em> between positions &mdash; reading from multiple positions to update any one position. The FeedForward Network (FFN) handles <em>computation</em> within each position &mdash; transforming each token&rsquo;s representation independently, with no information crossing between positions. The division of labour is clean: attention routes information; FFN processes it.</p>
+<p>The FFN is a two-layer MLP: a linear projection expanding by 4&times;, GELU applied elementwise, then a second projection contracting back to d_model. For GPT-2 small (d_model&nbsp;=&nbsp;768): the expansion produces 3,072-dimensional intermediate vectors, GELU is applied across all 3,072 values, and the contraction returns to 768 dimensions. The 4&times; expansion factor traces directly to Vaswani et al.&nbsp;2017, Section&nbsp;3.3 of &ldquo;Attention Is All You Need,&rdquo; and has proven so reliable that virtually every subsequent transformer kept it. Cybenko&rsquo;s 1989 universal approximation theorem guarantees that a two-layer MLP with sufficient width can approximate any continuous function; 4&times; is wide enough in practice.</p>
+<p>The FFN applies the <em>same</em> weight matrices W<sub>1</sub> and W<sub>2</sub> to every token position &mdash; this is what &ldquo;position-wise&rdquo; means. Geva et al.&nbsp;2021 (arXiv&nbsp;2012.14913) showed that FFN layers function as <em>key-value memory stores</em>: each row of W<sub>1</sub> is a &ldquo;key&rdquo; pattern detector; when a key strongly matches the input, the corresponding row of W<sub>2</sub> is retrieved as the &ldquo;value.&rdquo; Factual knowledge (e.g. &ldquo;Paris is the capital of France&rdquo;) is stored in specific W<sub>2</sub> rows and can be located by targeted weight editing.</p>
+<div class="callout blue"><strong>Parameter dominance:</strong> GPT-2 small: W<sub>1</sub> = 768&times;3072 = 2,359,296 + 3,072 biases; W<sub>2</sub> = 3072&times;768 = 2,359,296 + 768 biases. Total per FFN: 4,722,432. Across 12 blocks: 56,669,184 &mdash; <strong>45.6%</strong> of the entire model. Attention QKV+O projections hold only 28.5%. The FFN is where GPT-2 stores most of its knowledge.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">feedforward.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="kw">class</span> <span class="cl">FeedForward</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, emb_dim):
-        d_ff = <span class="nu">4</span> * emb_dim  <span class="lm"># ↑ 4× expansion: convention from Vaswani et al. 2017</span>
-        <span class="cm"># In PyTorch: nn.Linear(emb_dim, d_ff) and nn.Linear(d_ff, emb_dim)</span>
-        <span class="pr">self</span>.d_model = emb_dim
-        <span class="pr">self</span>.d_ff = d_ff
-        <span class="cm"># Weights W1 shape: (emb_dim, d_ff), W2 shape: (d_ff, emb_dim)</span>
+<pre><code><span class="kw">import</span> math
+
+<span class="kw">def</span> <span class="fn">gelu</span>(x):
+    inner = math.<span class="fn">sqrt</span>(<span class="nu">2.0</span>/math.pi) * (x + <span class="nu">0.044715</span>*x**<span class="nu">3</span>)
+    <span class="kw">return</span> <span class="nu">0.5</span> * x * (<span class="nu">1.0</span> + math.<span class="fn">tanh</span>(inner))
+
+<span class="kw">class</span> <span class="cl">FeedForward</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, d_model, expansion=<span class="nu">4</span>):
+        <span class="pr">self</span>.d  = d_model
+        <span class="pr">self</span>.dh = expansion * d_model  <span class="lm"># &#8593; d_ff = 4*d: Vaswani 2017 convention kept by all GPT variants</span>
+        <span class="cm"># W1: (d_model, d_ff)  -- up-projection: each row is a "key" pattern detector</span>
+        <span class="cm"># W2: (d_ff, d_model)  -- down-projection: each row is a "value" to retrieve</span>
 
     <span class="kw">def</span> <span class="fn">param_count</span>(<span class="pr">self</span>):
-        <span class="cm"># Each Linear has weight + bias</span>
-        w1 = <span class="pr">self</span>.d_model * <span class="pr">self</span>.d_ff   <span class="lm"># ↑ up-projection: d_model → 4·d_model</span>
-        b1 = <span class="pr">self</span>.d_ff
-        w2 = <span class="pr">self</span>.d_ff * <span class="pr">self</span>.d_model   <span class="lm"># ↑ down-projection: 4·d_model → d_model</span>
-        b2 = <span class="pr">self</span>.d_model
-        <span class="kw">return</span> w1 + b1 + w2 + b2       <span class="lm"># ↑ total params in this FFN sublayer</span>
+        d, h = <span class="pr">self</span>.d, <span class="pr">self</span>.dh
+        <span class="kw">return</span> {<span class="st">"W1"</span>: d*h, <span class="st">"b1"</span>: h, <span class="st">"W2"</span>: h*d, <span class="st">"b2"</span>: d, <span class="st">"total"</span>: d*h+h+h*d+d}
 
-<span class="cm"># In full PyTorch:</span>
-<span class="cm"># class FeedForward(nn.Module):</span>
-<span class="cm">#     def __init__(self, emb_dim):</span>
-<span class="cm">#         self.layers = nn.Sequential(</span>
-<span class="cm">#             nn.Linear(emb_dim, 4*emb_dim),</span>
-<span class="cm">#             nn.GELU(),</span>
-<span class="cm">#             nn.Linear(4*emb_dim, emb_dim),</span>
-<span class="cm">#             nn.Dropout(0.1),</span>
-<span class="cm">#         )</span>
+    <span class="kw">def</span> <span class="fn">forward_1token</span>(<span class="pr">self</span>, x, W1, b1, W2, b2):
+        <span class="cm"># x: one token's d_model-dim vector -- no cross-token communication here</span>
+        h = [<span class="fn">gelu</span>(<span class="bi">sum</span>(x[j]*W1[i][j] <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(<span class="pr">self</span>.d)) + b1[i])
+             <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="pr">self</span>.dh)]  <span class="lm"># &#8593; 4x wider: each neuron detects a different feature pattern</span>
+        <span class="kw">return</span> [<span class="bi">sum</span>(h[i]*W2[j][i] <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="pr">self</span>.dh)) + b2[j]
+                <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(<span class="pr">self</span>.d)]  <span class="lm"># &#8593; read out "values" for activated key neurons (Geva 2021)</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/2012.14913" target="_blank">🔗 Geva et al. 2021 — Transformer Feed-Forward Layers Are Key-Value Memories (FFNs store factual knowledge)</a>
-  <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html" target="_blank">🔗 Anthropic — In-context Learning and Induction Heads (mechanistic view of transformer components)</a>
+  <a href="https://arxiv.org/abs/2012.14913" target="_blank">Geva et al. 2021 &mdash; Transformer Feed-Forward Layers Are Key-Value Memories (arXiv 2012.14913): FFN rows as pattern-fact pairs; Section 3 has neuron-by-neuron inspection</a>
+  <a href="https://arxiv.org/abs/2202.05262" target="_blank">Geva et al. 2022 &mdash; Transformer FFN Layers Build Predictions by Promoting Concepts (arXiv 2202.05262): how FFN layers boost specific output vocabulary tokens</a>
+  <a href="https://arxiv.org/abs/1706.03762" target="_blank">Vaswani et al. 2017 &mdash; Attention Is All You Need (arXiv 1706.03762): Section 3.3 introduces the 4&times; FFN expansion</a>
 </div>
-
-<div class="cell" id="cell-3">
+<div class="cell" id="run-4-3">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 3 — Count FFN parameters for different GPT sizes</span>
-    <button class="run-btn" onclick="runCell('cell-3')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; FFN parameter counts across GPT-2 and LLaMA sizes</span>
+    <button class="run-btn" onclick="runCode('run-4-3')">Run</button>
   </div>
-  <div class="cell-code"><pre>configs = {
-    "GPT-2 small  (124M)": {"d_model": 768,  "n_layers": 12},
-    "GPT-2 medium (355M)": {"d_model": 1024, "n_layers": 24},
-    "GPT-2 large  (774M)": {"d_model": 1280, "n_layers": 36},
-    "GPT-3        (175B)": {"d_model": 12288, "n_layers": 96},
-}
-
-print(f"{'Model':<26}  {'FFN/block':>12}  {'Total FFN':>14}  {'% of total*':>12}")
-print("-" * 68)
-for name, cfg in configs.items():
-    d, n = cfg["d_model"], cfg["n_layers"]
-    d_ff = 4 * d
-    per_block = 2 * d * d_ff + d_ff + d  # W1 + b1 + W2 + b2
-    total_ffn = per_block * n
-    # Rough total: embeddings + attn + ffn (approximate)
-    total_approx = 50257*d + 1024*d + n*(4*d*d + 8*d*d)
-    pct = 100 * total_ffn / total_approx if total_approx > 0 else 0
-    print(f"{name:<26}  {per_block:>12,}  {total_ffn:>14,}  {pct:>11.1f}%")
-# * approximate — actual totals account for all components</pre></div>
+  <div class="cell-code"><pre>models = [
+    ("GPT-2 small",  768,   12, 4),
+    ("GPT-2 medium", 1024,  24, 4),
+    ("GPT-2 large",  1280,  36, 4),
+    ("GPT-2 XL",     1600,  48, 4),
+    ("LLaMA-2 7B",   4096,  32, 8/3),
+]
+print(f"{'Model':<16}  {'d_model':>8}  {'d_ff':>8}  {'FFN/block':>12}  {'Total FFN':>14}")
+print("-" * 66)
+for name, d, n, exp in models:
+    d_ff = int(exp * d)
+    per  = d*d_ff + d_ff + d_ff*d + d  # W1+b1+W2+b2
+    if exp != 4: per += d*d_ff         # SwiGLU adds W3
+    total = per * n
+    print(f"{name:<16}  {d:>8,}  {d_ff:>8,}  {per:>12,}  {total:>14,}")
+print()
+print("FFN holds ~45% of GPT-2 params -- this is where factual knowledge lives.")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.4  Shortcut Connections            -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s4">
 <div class="section-label">4.4</div>
 <h2>Shortcut Connections</h2>
-
-<p>A transformer without residual connections would be essentially untrainable beyond 4–5 layers. The reason is the vanishing gradient problem: during backpropagation, the gradient must pass through every matrix multiplication. Each multiplication can shrink or grow the gradient — and over 12 layers, the effect compounds. By the time gradients reach the first layer, they can be 10⁻¹² of their original magnitude, carrying essentially no useful information.</p>
-
-<p>Residual connections, introduced by He et al. in 2016 for image recognition (ResNets), solve this with a bypass: instead of transforming x to F(x), each block computes x + F(x). The gradient of the bypass is always exactly 1.0 — it passes through unchanged. The model therefore always has a gradient highway from output to input, regardless of depth. Each block only needs to learn a "correction" δ to the residual stream, not a complete new representation. This means early layers see gradients comparable in magnitude to the last layer.</p>
-
-<p>GPT-2's forward pass for one block: x₁ = x₀ + Attn(LN(x₀)), then x₂ = x₁ + FFN(LN(x₁)). The two additions are the residual connections. Note the pre-norm pattern: LayerNorm is applied before the sublayer, and the raw (un-normalised) residual is added back. This preserves the identity function in the residual stream.</p>
-
-<div class="callout purple"><strong>Key insight:</strong> Residual connections are why transformers can be trained to 96 layers (GPT-3) or 200+ layers (modern MoEs) at all. Without them, gradient signal would vanish in the first 10 layers. The shortcut turns deep networks into ensembles of shallower networks — if an early block learns nothing useful, its contribution approaches zero and the bypass handles the signal.</div>
-
+<p>A transformer without residual connections would be untrainable beyond 4&ndash;6 layers. The cause is the vanishing gradient problem: during backpropagation, each gradient must pass through every matrix multiplication in sequence. With a shrinkage factor of 0.9 per layer: 0.9&sup1;&sup2;&asymp;0.28 at 12 layers; 0.9&sup9;&sup6;&asymp;0.000006 at GPT-3&rsquo;s 96 layers. Early layers receive essentially zero gradient and learn nothing while late layers overfit. The model is effectively shallow regardless of its stated depth.</p>
+<p>He et al. introduced residual connections in 2016 for image recognition (arXiv&nbsp;1512.03385, ResNets), enabling training of 100-layer and even 1,000-layer networks that were previously impossible. The mechanism: each block computes F(x) and returns x&nbsp;+&nbsp;F(x) rather than just F(x). The gradient of the bypass term x with respect to the output x&nbsp;+&nbsp;F(x) is always exactly 1.0 &mdash; it flows through the addition unchanged. Total gradient at any layer is therefore (1&nbsp;+&nbsp;&part;F/&part;x) &times; upstream, guaranteeing a minimum of the upstream gradient regardless of what &part;F/&part;x does. No matter how many layers follow, there is always a gradient highway from output to input.</p>
+<p>A second benefit: at initialisation with small weights, F(x)&asymp;0, so x&nbsp;+&nbsp;F(x)&asymp;x. The entire block stack begins as an identity function. Each block learns to add a small <em>correction</em> rather than a full new representation. Elhage et al.&nbsp;2021 (transformer-circuits.pub) formalised this as the <strong>residual stream view</strong>: all layers share one stream of shape (B,&nbsp;T,&nbsp;d_model), each reading from it and writing back an additive update (covered in depth in &sect;4.11).</p>
+<div class="callout purple"><strong>Gradient highway:</strong> &part;L/&part;x = &part;L/&part;(x+F(x)) &times; (1&nbsp;+&nbsp;&part;F/&part;x). The &ldquo;1&rdquo; guarantees a minimum gradient of &part;L/&part;(x+F(x)) regardless of &part;F/&part;x. This single term is why GPT-3 (96 layers) and LLaMA-3 (80 layers) are trainable without specialised gradient clipping or layer-by-layer learning rate schedules.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">residual.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Residual connection pattern — appears twice in every transformer block</span>
+<pre><code><span class="cm"># Pre-LN residual pattern -- appears twice per transformer block in GPT-2</span>
 
-<span class="kw">def</span> <span class="fn">transformer_block_forward</span>(x, attn, ffn, ln1, ln2):
-    <span class="cm"># First sublayer: pre-norm + attention + residual</span>
-    x = x + <span class="fn">attn</span>(<span class="fn">ln1</span>(x))  <span class="lm"># ↑ add residual: gradient highway bypasses attn</span>
+<span class="kw">def</span> <span class="fn">block_forward</span>(x, attn, ffn, ln1, ln2):
+    x = x + <span class="fn">attn</span>(<span class="fn">ln1</span>(x))  <span class="lm"># &#8593; residual 1: bypass x has gradient 1.0 -- always flows unchanged</span>
+    x = x + <span class="fn">ffn</span>(<span class="fn">ln2</span>(x))   <span class="lm"># &#8593; residual 2: same gradient highway guarantee for the FFN path</span>
+    <span class="kw">return</span> x               <span class="lm"># &#8593; residual stream enriched with two additive corrections from this block</span>
 
-    <span class="cm"># Second sublayer: pre-norm + feedforward + residual</span>
-    x = x + <span class="fn">ffn</span>(<span class="fn">ln2</span>(x))   <span class="lm"># ↑ add residual: gradient highway bypasses FFN</span>
-
-    <span class="kw">return</span> x  <span class="lm"># ↑ residual stream enriched with corrections from both sublayers</span>
-
-<span class="cm"># Mathematical intuition:</span>
-<span class="cm"># If Attn(LN(x)) ≈ 0, then x + 0 = x — block passes signal through unchanged.</span>
-<span class="cm"># The block only needs to learn what to ADD, not what to output from scratch.</span>
+<span class="cm"># Backprop gradient through residual 1:</span>
+<span class="cm">#   dL/dx_in = dL/dx_out * (1 + dAttn/dx_in)</span>
+<span class="cm">#   The "1 +" term is the bypass -- minimum gradient is always dL/dx_out.</span>
+<span class="cm">#</span>
+<span class="cm"># At initialisation (small weights):</span>
+<span class="cm">#   attn(ln1(x)) ~= 0  and  ffn(ln2(x)) ~= 0</span>
+<span class="cm">#   => full block stack starts as identity: output ~= input</span>
+<span class="cm"># Each block learns to ADD a correction, not replace the signal from scratch.</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1512.03385" target="_blank">🔗 He et al. 2016 — Deep Residual Learning for Image Recognition (original ResNet paper, section 2)</a>
-  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">🔗 Elhage et al. 2021 — A Mathematical Framework for Transformer Circuits (residual stream formalism)</a>
+  <a href="https://arxiv.org/abs/1512.03385" target="_blank">He et al. 2016 &mdash; Deep Residual Learning for Image Recognition (arXiv 1512.03385): the ResNet paper; Section 2 has the skip connection formulation; experiments reach 1,202 layers</a>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">Elhage et al. 2021 &mdash; A Mathematical Framework for Transformer Circuits (transformer-circuits.pub): Section 2 formalises the residual stream as a shared communication bus</a>
+  <a href="https://arxiv.org/abs/2002.04745" target="_blank">Xiong et al. 2020 &mdash; On Layer Normalization in the Transformer (arXiv 2002.04745): Appendix A proves Pre-LN gradient norms are bounded while Post-LN can explode with depth</a>
 </div>
-
-<div class="cell" id="cell-4">
+<div class="cell" id="run-4-4">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 4 — Demonstrate vanishing gradient with and without residuals</span>
-    <button class="run-btn" onclick="runCell('cell-4')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; gradient magnitude through N layers, with vs without residuals</span>
+    <button class="run-btn" onclick="runCode('run-4-4')">Run</button>
   </div>
-  <div class="cell-code"><pre>import math, random
-random.seed(42)
-
-# Simulate gradient flow through N layers
-# Without residual: grad multiplied by weight norms at each layer
-# With residual: grad is sum (bypass always 1.0)
-
-def simulate_grad(n_layers, weight_scale=0.9, use_residual=True):
+  <div class="cell-code"><pre>def grad_flow(n_layers, w_scale=0.9, use_residual=True):
     grad = 1.0
     for _ in range(n_layers):
-        layer_grad = weight_scale  # simplified: grad shrinks by weight_scale each layer
         if use_residual:
-            grad = grad * 1.0 + grad * layer_grad  # bypass (1.0) + sublayer
-            grad /= 2  # normalise for fair comparison
+            # bypass=1.0, sublayer shrinks by w_scale; /2 for fair magnitude comparison
+            grad = grad * (1.0 + w_scale) / 2.0
         else:
-            grad = grad * layer_grad
+            grad = grad * w_scale
     return grad
 
-print(f"{'Layers':<10}  {'No Residual':>14}  {'With Residual':>14}")
-print("-" * 42)
+print(f"{'Layers':>8}  {'No Residual':>14}  {'With Residual':>15}  {'Improvement':>12}")
+print("-" * 56)
 for n in [1, 4, 8, 12, 24, 48, 96]:
-    no_res = simulate_grad(n, use_residual=False)
-    res    = simulate_grad(n, use_residual=True)
-    print(f"{n:<10}  {no_res:>14.6f}  {res:>14.6f}")
-# With residual, gradient stays above 0.5 even at 96 layers.</pre></div>
+    nr = grad_flow(n, use_residual=False)
+    wr = grad_flow(n, use_residual=True)
+    imp = f"{wr/nr:.0f}x" if nr > 1e-20 else ">>1000x"
+    print(f"{n:>8}  {nr:>14.8f}  {wr:>15.6f}  {imp:>12}")
+print()
+print("At 96 layers without residuals: gradient essentially zero.")
+print("With residuals: stays close to 1.0 -- this is what makes GPT-3 trainable.")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.5  The Transformer Block            -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s5">
 <div class="section-label">4.5</div>
 <h2>The Transformer Block</h2>
-
-<p>A transformer block combines everything from chapters 3 and 4 into one reusable unit: two LayerNorms, multi-head causal attention, a feedforward sublayer, two residual connections, and dropout for regularisation. This block is the atom of the GPT architecture — the full model is 12 identical copies of it stacked vertically, each with independently learned weights.</p>
-
-<p>The data path through one block: the residual stream enters with shape (batch, seq_len, d_model). It passes through LayerNorm₁, then multi-head attention — which mixes information across positions. The attention output is added back to the original residual (first shortcut). The result passes through LayerNorm₂, then the FeedForward network — which transforms each position independently. The FFN output is added back again (second shortcut). The block's output has the same shape as its input, making blocks trivially stackable.</p>
-
-<p>For GPT-2 small, one block's parameters: 2 LayerNorms (2×768×2 = 3,072), attention (768×3×768 for QKV + 768×768 for O = 2,359,296), FFN (768×3072×2 = 4,718,592, plus biases). Total per block: ~7,086,336. Times 12 blocks: ~85M of GPT-2's 124M total parameters.</p>
-
+<p>One transformer block assembles LayerNorm, multi-head causal self-attention, FeedForward, and two residual connections into a single reusable unit. The block takes a tensor of shape (batch_size, seq_len, d_model) and returns a tensor of the same shape. This shape invariance is what makes blocks trivially stackable &mdash; block N+1 receives precisely the same typed input that block N received, with no glue layers between them.</p>
+<p>The forward pass through one block follows a strict order: (1) LayerNorm1 normalises each token&rsquo;s 768-dim vector; (2) multi-head causal self-attention mixes information across positions &mdash; the only place in the block where tokens communicate; (3) attention output is added back to the pre-norm residual (skip&nbsp;1); (4) LayerNorm2 normalises the updated residual stream; (5) FeedForward processes each position independently with 4&times; expansion; (6) FFN output is added back (skip&nbsp;2). The block is complete.</p>
+<p>For GPT-2 small, each block has 7,087,872 parameters: two LayerNorms (3,072), QKV projection (1,771,776), output projection (590,592), FFN (4,722,432). Twelve blocks account for 85&nbsp;million of GPT-2&rsquo;s 124&nbsp;million total parameters. Blocks are architecturally identical but have independently learned weights. Early blocks tend to learn syntactic patterns (part-of-speech, named entity boundaries); middle blocks learn semantic associations; late blocks specialise in task-specific next-token distributions. This functional hierarchy emerges from training, not from any architectural difference between blocks.</p>
 <div class="block-diag">
-  <div class="block-diag-title">Transformer Block — Data Flow</div>
-  <div class="bd-row"><div class="bd-box" style="background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:12px;">Input x — shape (batch, seq, 768)</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div><div style="font-size:12px;color:var(--text-secondary);padding-left:4px;">First residual block</div></div>
-  <div class="bd-row"><div class="bd-box bd-ln">LayerNorm₁  (pre-norm)</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div></div>
-  <div class="bd-row"><div class="bd-box bd-attn">Multi-Head Causal Self-Attention  (12 heads × 64 dim)</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div></div>
-  <div class="bd-row"><div class="bd-box bd-add">x = x + attn_output  ← residual connection ①</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div><div style="font-size:12px;color:var(--text-secondary);padding-left:4px;">Second residual block</div></div>
-  <div class="bd-row"><div class="bd-box bd-ln">LayerNorm₂  (pre-norm)</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div></div>
-  <div class="bd-row"><div class="bd-box bd-ff">FeedForward  (768 → 3072 → 768, GELU)</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div></div>
-  <div class="bd-row"><div class="bd-box bd-add">x = x + ffn_output  ← residual connection ②</div></div>
-  <div class="bd-row"><div class="bd-arr">↓</div></div>
-  <div class="bd-row"><div class="bd-box" style="background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:12px;">Output — same shape (batch, seq, 768), richer representation</div></div>
+  <div class="block-diag-title">Transformer Block &mdash; GPT-2 Small (d=768, heads=12)</div>
+  <div class="bd-row"><div class="bd-box" style="background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:12px;">Residual stream in &mdash; (B, T, 768), carries all previous layer information</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div><div style="font-size:12px;color:var(--text-secondary);padding-left:4px;">Pre-LN: normalise BEFORE sublayer</div></div>
+  <div class="bd-row"><div class="bd-box bd-ln">LayerNorm 1 &nbsp; [2&times;768 = 1,536 params] &mdash; per-token feature normalisation</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div></div>
+  <div class="bd-row"><div class="bd-box bd-attn">Multi-Head Causal Self-Attention &mdash; 12 heads &times; 64 dim, causal mask &nbsp; [2.36M params]</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div></div>
+  <div class="bd-row"><div class="bd-box bd-add">x = x + attn_output &nbsp; &larr; residual 1: gradient highway, bypass gradient is always 1.0</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div><div style="font-size:12px;color:var(--text-secondary);padding-left:4px;">Pre-LN: normalise BEFORE FFN</div></div>
+  <div class="bd-row"><div class="bd-box bd-ln">LayerNorm 2 &nbsp; [2&times;768 = 1,536 params]</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div></div>
+  <div class="bd-row"><div class="bd-box bd-ff">FeedForward &mdash; 768 &rarr; 3,072 &rarr; 768, GELU, per-token, no cross-position talk &nbsp; [4.72M params]</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div></div>
+  <div class="bd-row"><div class="bd-box bd-add">x = x + ffn_output &nbsp; &larr; residual 2: gradient highway, bypass gradient is always 1.0</div></div>
+  <div class="bd-row"><div class="bd-arr">&#8595;</div></div>
+  <div class="bd-row"><div class="bd-box" style="background:var(--bg-code);color:var(--text-code);font-family:var(--font-mono);font-size:12px;">Residual stream out &mdash; (B, T, 768), richer representation &mdash; 7.09M params total</div></div>
 </div>
-
-<div class="callout amber"><strong>Key insight:</strong> The block is stateless with respect to position — it sees all positions equally in the residual stream. Position information enters only once (via positional embeddings at the very start) and propagates through all blocks via the residual stream. Each block refines the representation, not the position encoding.</div>
-
+<div class="callout amber"><strong>Division of labour:</strong> Attention is the only place information crosses position boundaries &mdash; token at position i can read from 0&hellip;i-1. FFN processes each position in isolation. Alternating attention&rarr;FFN layers create a computation pattern: mix information globally (attention), then process each position&rsquo;s resulting representation locally (FFN). This interleaving produces a representation hierarchy that grows richer with depth.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">transformer_block.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Full transformer block (PyTorch-style pseudocode)</span>
-<span class="kw">class</span> <span class="cl">TransformerBlock</span>:
+<pre><code><span class="kw">class</span> <span class="cl">TransformerBlock</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, emb_dim, n_heads, drop_rate=<span class="nu">0.1</span>):
-        <span class="pr">self</span>.ln1  = <span class="cl">LayerNorm</span>(emb_dim)         <span class="lm"># ↑ pre-norm before attention</span>
-        <span class="pr">self</span>.attn = <span class="cl">MultiHeadAttention</span>(emb_dim, n_heads)  <span class="lm"># ↑ causal self-attention</span>
-        <span class="pr">self</span>.ln2  = <span class="cl">LayerNorm</span>(emb_dim)         <span class="lm"># ↑ pre-norm before feedforward</span>
-        <span class="pr">self</span>.ff   = <span class="cl">FeedForward</span>(emb_dim)       <span class="lm"># ↑ position-wise FFN (4× expansion)</span>
-        <span class="pr">self</span>.drop = drop_rate                  <span class="lm"># ↑ dropout rate (0.1 for GPT-2)</span>
+        <span class="pr">self</span>.ln1  = <span class="cl">LayerNorm</span>(emb_dim)                       <span class="lm"># &#8593; pre-norm 1: applied before attention</span>
+        <span class="pr">self</span>.attn = <span class="cl">MultiHeadCausalAttention</span>(emb_dim, n_heads)  <span class="lm"># &#8593; 12 heads x 64 dim, causal mask</span>
+        <span class="pr">self</span>.ln2  = <span class="cl">LayerNorm</span>(emb_dim)                       <span class="lm"># &#8593; pre-norm 2: applied before FFN</span>
+        <span class="pr">self</span>.ff   = <span class="cl">FeedForward</span>(emb_dim)                     <span class="lm"># &#8593; 4x expansion, GELU, per-token</span>
+        <span class="pr">self</span>.drop = drop_rate                                <span class="lm"># &#8593; dropout 0.1 for regularisation</span>
 
     <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
-        <span class="cm"># First sublayer: attention with pre-norm and residual</span>
-        x = x + <span class="fn">dropout</span>(<span class="pr">self</span>.attn.<span class="fn">forward</span>(<span class="pr">self</span>.ln1.<span class="fn">forward</span>(x)), <span class="pr">self</span>.drop)
-        <span class="lm"># ↑ add residual: x unchanged if attn output is 0</span>
-
-        <span class="cm"># Second sublayer: FFN with pre-norm and residual</span>
-        x = x + <span class="fn">dropout</span>(<span class="pr">self</span>.ff.<span class="fn">forward</span>(<span class="pr">self</span>.ln2.<span class="fn">forward</span>(x)), <span class="pr">self</span>.drop)
-        <span class="lm"># ↑ add residual: each position refined independently by FFN</span>
-        <span class="kw">return</span> x
+        x = x + <span class="fn">dropout</span>(<span class="pr">self</span>.attn(<span class="pr">self</span>.ln1(x)), <span class="pr">self</span>.drop)
+        <span class="lm"># &#8593; residual 1: x passes through unchanged if attn learns nothing useful</span>
+        x = x + <span class="fn">dropout</span>(<span class="pr">self</span>.ff(<span class="pr">self</span>.ln2(x)), <span class="pr">self</span>.drop)
+        <span class="lm"># &#8593; residual 2: x passes through unchanged if FFN learns nothing useful</span>
+        <span class="kw">return</span> x  <span class="lm"># &#8593; same shape (B, T, d_model) -- ready for the next block</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank">🔗 Radford et al. 2019 — GPT-2 paper (Appendix B has exact architecture specifications)</a>
-  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">🔗 Karpathy nanoGPT — model.py (the cleanest minimal transformer block implementation)</a>
+  <a href="https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank">Radford et al. 2019 &mdash; Language Models are Unsupervised Multitask Learners (GPT-2 paper): Appendix B has the exact block architecture and pre-norm specification</a>
+  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">Karpathy nanoGPT &mdash; model.py Block class (lines 60&ndash;100): cleanest minimal implementation; 50 lines of pure PyTorch</a>
+  <a href="https://arxiv.org/abs/1905.05950" target="_blank">Tenney et al. 2019 &mdash; BERT Rediscovers the Classical NLP Pipeline (arXiv 1905.05950): probing shows early blocks learn syntax, late blocks semantics</a>
 </div>
-
-<div class="cell" id="cell-5">
+<div class="cell" id="run-4-5">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 5 — Count parameters in one transformer block</span>
-    <button class="run-btn" onclick="runCell('cell-5')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; exact parameter breakdown for one GPT-2 block</span>
+    <button class="run-btn" onclick="runCode('run-4-5')">Run</button>
   </div>
-  <div class="cell-code"><pre>def block_params(emb_dim, n_heads):
-    d_ff = 4 * emb_dim
-    d_head = emb_dim // n_heads
-
-    ln1    = emb_dim * 2                  # scale + shift
-    ln2    = emb_dim * 2
-    qkv    = 3 * emb_dim * emb_dim + 3 * emb_dim  # W_QKV + bias
-    out_pr = emb_dim * emb_dim + emb_dim           # W_O + bias
-    ff1    = emb_dim * d_ff + d_ff                 # W1 + b1
-    ff2    = d_ff * emb_dim + emb_dim              # W2 + b2
-
-    total = ln1 + qkv + out_pr + ln2 + ff1 + ff2
-    return {
-        "LayerNorm×2": ln1 + ln2,
-        "Attention (QKV+O)": qkv + out_pr,
-        "FeedForward": ff1 + ff2,
-        "Total": total,
+  <div class="cell-code"><pre>def block_breakdown(d=768, h=12):
+    dff = 4 * d
+    parts = {
+        "LayerNorm 1 (scale+shift)": 2*d,
+        "Attn QKV weights":          3*d*d,
+        "Attn QKV biases":           3*d,
+        "Attn output weight":        d*d,
+        "Attn output bias":          d,
+        "LayerNorm 2 (scale+shift)": 2*d,
+        "FFN W1 weight":             d*dff,
+        "FFN W1 bias":               dff,
+        "FFN W2 weight":             dff*d,
+        "FFN W2 bias":               d,
     }
+    total = sum(parts.values())
+    attn = sum(v for k,v in parts.items() if "Attn" in k)
+    ffn  = sum(v for k,v in parts.items() if "FFN" in k)
+    ln   = sum(v for k,v in parts.items() if "LayerNorm" in k)
+    print(f"GPT-2 block  d={d}  heads={h}  d_ff={dff}")
+    print()
+    for k, v in parts.items():
+        print(f"  {k:<32}  {v:>10,}")
+    print("  " + "-"*46)
+    print(f"  {'TOTAL':<32}  {total:>10,}  ({total/1e6:.3f}M)")
+    print()
+    print(f"  Attention: {attn:,} ({100*attn/total:.1f}%)")
+    print(f"  FFN:       {ffn:,} ({100*ffn/total:.1f}%)")
+    print(f"  LayerNorm: {ln:,} ({100*ln/total:.2f}%)")
+    print(f"  12 blocks: {12*total:,} ({12*total/1e6:.2f}M)")
 
-params = block_params(emb_dim=768, n_heads=12)
-for name, count in params.items():
-    print(f"  {name:<22}: {count:>10,}  ({count/1e6:.3f}M)")
-
-print(f"\n  GPT-2 has 12 blocks → {12 * params['Total']:,} block params ({12*params['Total']/1e6:.1f}M)")</pre></div>
+block_breakdown()</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.6  Stacking Blocks                 -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s6">
 <div class="section-label">4.6</div>
 <h2>Stacking Blocks</h2>
-
-<p>The GPT architecture stacks N identical transformer blocks, each with its own independent weights. GPT-2 small uses 12 blocks, medium uses 24, large uses 36, XL uses 48. The residual stream — a tensor of shape (batch_size, seq_len, d_model) — flows through each block in sequence. Each block reads from the stream, computes a correction, and writes it back via the residual addition.</p>
-
-<p>The blocks are not actually identical in function even though they share the same architecture. Each has randomly initialised, independently learned weights. Early blocks (1–4) tend to learn syntactic patterns: part-of-speech, named entity boundaries, punctuation structure. Middle blocks (5–8) tend to encode semantic associations and coreference. Late blocks (9–12) tend to specialise in task-specific patterns and the probability distribution over next tokens. This hierarchy emerges from training, not design.</p>
-
-<p>In PyTorch, the standard idiom is nn.ModuleList — not a Python list. The difference matters: nn.ModuleList registers all contained modules as sub-modules of the parent, so their parameters appear in model.parameters() for the optimizer. A Python list of modules would be invisible to PyTorch's parameter tracking, and none of those parameters would be updated during training.</p>
-
-<div class="callout"><strong>Key insight:</strong> Doubling the number of blocks roughly doubles performance (measured by perplexity loss) for the same compute budget — up to a point. This is the depth scaling law. GPT-3's 96 layers and LLaMA-3's 80 layers exploit this. But width (d_model) also matters: GPT-3 chose d_model=12,288, which is 16× GPT-2's 768.</div>
-
+<p>The GPT architecture stacks N identical transformer blocks sequentially. GPT-2 small uses 12, medium 24, large 36, XL 48. The residual stream &mdash; a tensor of shape (batch, seq_len, d_model) &mdash; flows through each block in order. Each block reads the current stream, computes two additive updates (from attention and FFN), and writes them back via the residual additions. The next block receives the enriched stream as its input.</p>
+<p>The blocks are architecturally identical but they are not identical in function. Each block has its own independently initialised and trained weight matrices. Empirically, early blocks (layers 1&ndash;4) learn syntactic patterns: part-of-speech transitions, named entity boundaries, punctuation structure. Middle blocks (layers 5&ndash;8) encode semantic associations, coreference, and world knowledge. Late blocks (layers 9&ndash;12) specialise in distributional next-token patterns for the specific training domain. This hierarchy emerges from training; it is not hardcoded. Levine et al.&nbsp;2020 showed that for a fixed parameter budget, deeper models (more blocks) generally outperform wider models (larger d_model), making depth a preferred scaling axis.</p>
+<p>In PyTorch, stacking blocks uses nn.ModuleList rather than a Python list. The distinction is critical: nn.ModuleList registers every contained module as a named submodule of the parent, causing their parameters to appear in model.parameters() and be tracked by the optimiser. A plain Python list of modules is invisible to PyTorch&rsquo;s parameter tracking &mdash; none of those parameters would be updated during training. Gradient checkpointing (Chen et al.&nbsp;2016) is used during training of large models to trade compute for memory: activations are discarded during the forward pass and recomputed during backprop, saving ~60% of activation memory at the cost of ~33% more compute.</p>
+<div class="callout"><strong>Depth scaling law:</strong> For the same total parameter budget, deeper models (more blocks) consistently outperform wider models (larger d_model). GPT-3&rsquo;s 96 layers and LLaMA-2&rsquo;s 80 layers exploit this. The Chinchilla scaling laws (Hoffmann et al.&nbsp;2022) quantify the optimal depth/width ratio for a given compute budget, but depth is almost always favoured over raw width increase.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">block_stack.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="cm"># Block stack in PyTorch-style pseudocode</span>
 <span class="kw">class</span> <span class="cl">BlockStack</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, n_layers, emb_dim, n_heads):
-        <span class="cm"># ModuleList: all blocks tracked as named submodules</span>
+        <span class="cm"># nn.ModuleList: all blocks registered as named submodules -- parameters tracked</span>
         <span class="pr">self</span>.blocks = [
             <span class="cl">TransformerBlock</span>(emb_dim, n_heads)
-            <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(n_layers)
-        ]                                         <span class="lm"># ↑ n_layers independent blocks, each ~7M params</span>
+            <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(n_layers)  <span class="lm"># &#8593; N independent blocks, same architecture, different weights</span>
+        ]
 
     <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
-        <span class="kw">for</span> block <span class="kw">in</span> <span class="pr">self</span>.blocks:
-            x = block.<span class="fn">forward</span>(x)              <span class="lm"># ↑ each block enriches the residual stream</span>
-        <span class="kw">return</span> x                               <span class="lm"># ↑ final residual stream after all 12 blocks</span>
+        <span class="kw">for</span> i, block <span class="kw">in</span> <span class="bi">enumerate</span>(<span class="pr">self</span>.blocks):
+            x = block.<span class="fn">forward</span>(x)  <span class="lm"># &#8593; each block enriches the residual stream (B, T, d_model)</span>
+        <span class="kw">return</span> x                  <span class="lm"># &#8593; final residual stream after all N blocks</span>
 
-<span class="cm"># GPT-2 small: 12 blocks × 7,086,336 params = 85,036,032 block parameters</span>
-<span class="cm"># These are 68% of GPT-2's total 124M parameters</span>
+<span class="cm"># GPT-2 small: 12 blocks x 7,087,872 params = 85,054,464 block parameters</span>
+<span class="cm"># Gradient checkpointing: trade 33% extra compute for 60% less activation memory</span>
+<span class="cm"># (recompute activations during backward instead of storing them from forward)</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1905.05950" target="_blank">🔗 Tenney et al. 2019 — BERT Rediscovers the Classical NLP Pipeline (what each layer learns)</a>
-  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank">🔗 Jay Alammar — The Illustrated GPT-2 (visual walkthrough of the complete architecture)</a>
+  <a href="https://arxiv.org/abs/2001.08361" target="_blank">Kaplan et al. 2020 &mdash; Scaling Laws for Neural Language Models (arXiv 2001.08361): power-law relationships between compute, parameters, and data; Section 7 shows depth vs width tradeoffs</a>
+  <a href="https://arxiv.org/abs/1905.05950" target="_blank">Tenney et al. 2019 &mdash; BERT Rediscovers the Classical NLP Pipeline (arXiv 1905.05950): probing each layer of a 12-block BERT; syntax in early layers, semantics in late layers</a>
+  <a href="https://arxiv.org/abs/1604.06174" target="_blank">Chen et al. 2016 &mdash; Training Deep Nets with Sublinear Memory Cost (arXiv 1604.06174): gradient checkpointing; saves 60% activation memory at 33% extra compute cost</a>
 </div>
-
-<div class="cell" id="cell-6">
+<div class="cell" id="run-4-6">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 6 — GPT-2 family: parameter growth by depth and width</span>
-    <button class="run-btn" onclick="runCell('cell-6')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; GPT-2 family parameter growth by depth and width</span>
+    <button class="run-btn" onclick="runCode('run-4-6')">Run</button>
   </div>
-  <div class="cell-code"><pre>def gpt2_params(n_layers, d_model, n_heads, vocab=50257, ctx=1024):
-    d_ff = 4 * d_model
-    emb = vocab * d_model + ctx * d_model          # token + position embeddings
-    per_block = (2*2*d_model +                     # 2 LayerNorms
-                 3*d_model*d_model + 3*d_model +   # QKV proj + bias
-                 d_model*d_model + d_model +        # O proj + bias
-                 d_model*d_ff + d_ff +              # FFN W1 + b1
-                 d_ff*d_model + d_model)            # FFN W2 + b2
-    total = emb + n_layers * per_block + 2*d_model # + final LN (no lm_head: tied)
-    return total
+  <div class="cell-code"><pre>def gpt2_params(n_layers, d, n_heads, vocab=50257, ctx=1024):
+    dff = 4 * d
+    emb   = vocab*d + ctx*d                 # token + position embeddings
+    per_b = (2*2*d +                        # LN x2
+             3*d*d + 3*d +                  # QKV weight + bias
+             d*d + d +                      # O proj weight + bias
+             d*dff + dff +                  # FFN W1 + b1
+             dff*d + d)                     # FFN W2 + b2
+    final_ln = 2*d                          # final LayerNorm before lm_head
+    total = emb + n_layers*per_b + final_ln # lm_head is weight-tied (0 extra)
+    return total, emb, n_layers*per_b
 
 models = [
     ("GPT-2 small",  12, 768,  12),
@@ -655,416 +639,654 @@ models = [
     ("GPT-2 large",  36, 1280, 20),
     ("GPT-2 XL",     48, 1600, 25),
 ]
-
-print(f"{'Model':<16}  {'Layers':>6}  {'d_model':>8}  {'Total Params':>14}")
-print("-" * 50)
+print(f"{'Model':<16}  {'Layers':>6}  {'d_model':>8}  {'Total':>12}  {'Embedding':>12}  {'Blocks':>12}")
+print("-" * 74)
 for name, n, d, h in models:
-    p = gpt2_params(n, d, h)
-    print(f"{name:<16}  {n:>6}  {d:>8}  {p:>14,}  ({p/1e6:.0f}M)")</pre></div>
+    tot, emb, blk = gpt2_params(n, d, h)
+    print(f"{name:<16}  {n:>6}  {d:>8}  {tot:>12,}  {emb:>12,}  {blk:>12,}")
+print()
+print("Blocks grow as O(n_layers * d^2); embedding grows as O(vocab * d).")</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.7  The Full GPT Model              -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s7">
 <div class="section-label">4.7</div>
 <h2>The Full GPT Model</h2>
-
-<p>Assembling the complete model is anticlimactic after the component work — the pieces click together without surprises. The forward pass is: token embedding lookup → position embedding lookup → add both → dropout → 12 transformer blocks → final LayerNorm → LM head (linear to vocab size). The input is a sequence of token IDs; the output is logits over the 50,257-token vocabulary for every position.</p>
-
-<p>Token embeddings convert integer token IDs into d_model-dimensional vectors. Each ID is a row index into a (vocab_size × d_model) weight matrix. This is a lookup table, not a multiplication — fast and exactly equivalent to one-hot encoding × weight matrix, but stored as a direct table. Position embeddings are identical in structure: a (context_len × d_model) matrix, where each row encodes one position. GPT-2 uses learned position embeddings, not the sinusoidal ones from the original Transformer.</p>
-
-<p>The final LayerNorm (after all blocks, before the LM head) is present in GPT-2 but absent from the original Transformer. It stabilises the residual stream before the final projection. Without it, the raw residual stream variance can be large, making the pre-softmax logits unstable. The LM head is a Linear(d_model, vocab_size) with no bias — its weight matrix is tied to the token embedding matrix (see §4.8).</p>
-
+<p>Assembling the complete model is almost anticlimactic after the component work &mdash; the pieces click together without surprises. The forward pass is: token embedding lookup + position embedding lookup &rarr; add + dropout &rarr; N transformer blocks &rarr; final LayerNorm &rarr; LM head linear projection to vocabulary size. Input is a sequence of integer token IDs; output is logits over the 50,257-token vocabulary for every position in the sequence.</p>
+<p>Token embeddings convert integer token IDs into d_model-dimensional vectors via a simple lookup table &mdash; a (vocab_size &times; d_model) weight matrix where each row corresponds to one token. This is exactly equivalent to one-hot encoding multiplied by the weight matrix, but stored as a direct table for efficiency. Position embeddings are identical in structure: a (context_len &times; d_model) matrix where each row encodes one position index. GPT-2 uses learned position embeddings, not the sinusoidal ones from the original Transformer. Both embedding tables are added elementwise to form the initial residual stream; this is the only point in the entire model where position information enters.</p>
+<p>The final LayerNorm appears after all transformer blocks but before the LM head. This &ldquo;output norm&rdquo; is present in GPT-2 (Pre-LN models add it explicitly) but absent from the original Post-LN Transformer. Without it, the raw residual stream variance after 12 blocks can be large, making the pre-softmax logits numerically unstable. The LM head is a Linear(d_model, vocab_size) with no bias; in GPT-2 its weight matrix is tied to the token embedding matrix (see &sect;4.8), adding zero additional parameters.</p>
 <div class="arch-flow">
-  <div class="af-row"><div class="af-box af-raw">Token IDs — shape (batch, seq_len), dtype int64</div></div>
-  <div class="af-row"><div class="af-arr">↓</div><div style="font-size:12px;color:var(--text-secondary);padding-left:8px;">Embedding lookup → (batch, seq, 768)</div></div>
-  <div class="af-row"><div class="af-box af-emb">Token Embedding  [50,257 × 768 = 38.6M]  +  Position Embedding  [1,024 × 768 = 0.79M]</div></div>
-  <div class="af-row"><div class="af-arr">↓</div><div style="font-size:12px;color:var(--text-secondary);padding-left:8px;">Element-wise addition + dropout(0.1)</div></div>
-  <div class="af-row"><div class="af-box af-block">Transformer Block 1  →  Block 2  →  …  →  Block 12  (×12, each 7.1M params)</div></div>
-  <div class="af-row"><div class="af-arr">↓</div></div>
-  <div class="af-row"><div class="af-box af-norm">Final LayerNorm  (2 × 768 params)</div></div>
-  <div class="af-row"><div class="af-arr">↓</div></div>
-  <div class="af-row"><div class="af-box af-lmh">LM Head: Linear(768 → 50,257)  — weights tied to token embedding, 0 extra params</div></div>
-  <div class="af-row"><div class="af-arr">↓</div></div>
-  <div class="af-row"><div class="af-box af-raw">Logits — shape (batch, seq_len, 50,257)</div></div>
+  <div class="af-row"><div class="af-box af-raw">Token IDs &mdash; (batch, seq_len), dtype int64, values in [0, 50256]</div></div>
+  <div class="af-row"><div class="af-arr">&#8595;</div><div style="font-size:12px;color:var(--text-secondary);padding-left:8px;">Row lookup in embedding table &rarr; (batch, seq, 768)</div></div>
+  <div class="af-row"><div class="af-box af-emb">Token Embedding [50,257 &times; 768 = 38.6M]&nbsp;&nbsp;+&nbsp;&nbsp;Position Embedding [1,024 &times; 768 = 0.79M]</div></div>
+  <div class="af-row"><div class="af-arr">&#8595;</div><div style="font-size:12px;color:var(--text-secondary);padding-left:8px;">Element-wise sum, then dropout(0.1)</div></div>
+  <div class="af-row"><div class="af-box af-block">Transformer Block 1 &rarr; Block 2 &rarr; &hellip; &rarr; Block 12 &nbsp; (&times;12, each 7.09M params)</div></div>
+  <div class="af-row"><div class="af-arr">&#8595;</div></div>
+  <div class="af-row"><div class="af-box af-norm">Final LayerNorm &nbsp; [2 &times; 768 = 1,536 params]</div></div>
+  <div class="af-row"><div class="af-arr">&#8595;</div></div>
+  <div class="af-row"><div class="af-box af-lmh">LM Head: Linear(768 &rarr; 50,257), no bias &mdash; weight tied to token embedding (0 extra params)</div></div>
+  <div class="af-row"><div class="af-arr">&#8595;</div></div>
+  <div class="af-row"><div class="af-box af-raw">Logits &mdash; (batch, seq_len, 50,257): raw score for each vocabulary token at each position</div></div>
 </div>
-
-<div class="callout blue"><strong>Key insight:</strong> The total parameter count is dominated by two things: the 38.6M token embedding matrix, and the 12 transformer blocks at 85M total. Together they account for ~124M of GPT-2 small's parameters. The position embedding and final LN add less than 1M each.</div>
-
+<div class="callout blue"><strong>What dominates the parameter count:</strong> Token embedding 38.6M (31%) + 12 transformer blocks 85M (68%) = 123.6M. Everything else &mdash; position embedding 0.79M, final LayerNorm 1,536, LM head 0 (tied) &mdash; is negligible. The model is essentially two things: an embedding table and a stack of 12 blocks.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">gpt_model.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># GPT-2 architecture — configuration for 124M ("small")</span>
-GPT_CONFIG = {
-    <span class="st">"vocab_size"</span>:  <span class="nu">50257</span>,  <span class="lm"># ↑ GPT-2 BPE vocabulary: 50,000 merges + 256 byte tokens + &lt;|endoftext|&gt;</span>
-    <span class="st">"context_len"</span>: <span class="nu">1024</span>,   <span class="lm"># ↑ maximum sequence length (context window)</span>
-    <span class="st">"emb_dim"</span>:     <span class="nu">768</span>,    <span class="lm"># ↑ residual stream dimensionality (d_model)</span>
-    <span class="st">"n_heads"</span>:     <span class="nu">12</span>,     <span class="lm"># ↑ attention heads: each sees 768/12 = 64 dims</span>
-    <span class="st">"n_layers"</span>:    <span class="nu">12</span>,     <span class="lm"># ↑ transformer blocks stacked vertically</span>
-    <span class="st">"drop_rate"</span>:   <span class="nu">0.1</span>,   <span class="lm"># ↑ dropout on embeddings, attention, FFN outputs</span>
+<pre><code><span class="cm"># GPT-2 small configuration (124M parameters)</span>
+GPT2_SMALL = {
+    <span class="st">"vocab_size"</span>:  <span class="nu">50257</span>,  <span class="lm"># &#8593; BPE vocabulary: 50k merges + 256 byte tokens + &lt;|endoftext|&gt;</span>
+    <span class="st">"context_len"</span>: <span class="nu">1024</span>,   <span class="lm"># &#8593; maximum sequence length (context window)</span>
+    <span class="st">"emb_dim"</span>:     <span class="nu">768</span>,    <span class="lm"># &#8593; d_model: residual stream dimensionality</span>
+    <span class="st">"n_heads"</span>:     <span class="nu">12</span>,     <span class="lm"># &#8593; attention heads; each head sees 768/12 = 64 dims</span>
+    <span class="st">"n_layers"</span>:    <span class="nu">12</span>,     <span class="lm"># &#8593; number of transformer blocks stacked</span>
+    <span class="st">"drop_rate"</span>:   <span class="nu">0.1</span>,   <span class="lm"># &#8593; dropout on embeddings, attention weights, FFN outputs</span>
 }
 
 <span class="kw">class</span> <span class="cl">GPTModel</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, cfg):
-        <span class="pr">self</span>.tok_emb = <span class="cl">Embedding</span>(cfg[<span class="st">"vocab_size"</span>],  cfg[<span class="st">"emb_dim"</span>])  <span class="lm"># ↑ token ID → vector</span>
-        <span class="pr">self</span>.pos_emb = <span class="cl">Embedding</span>(cfg[<span class="st">"context_len"</span>], cfg[<span class="st">"emb_dim"</span>])  <span class="lm"># ↑ position → vector</span>
+        <span class="pr">self</span>.tok_emb = <span class="cl">Embedding</span>(cfg[<span class="st">"vocab_size"</span>],  cfg[<span class="st">"emb_dim"</span>])  <span class="lm"># &#8593; token ID -> 768-dim vector</span>
+        <span class="pr">self</span>.pos_emb = <span class="cl">Embedding</span>(cfg[<span class="st">"context_len"</span>], cfg[<span class="st">"emb_dim"</span>])  <span class="lm"># &#8593; position 0..1023 -> 768-dim vector</span>
         <span class="pr">self</span>.drop    = <span class="cl">Dropout</span>(cfg[<span class="st">"drop_rate"</span>])
-        <span class="pr">self</span>.blocks  = [
-            <span class="cl">TransformerBlock</span>(cfg[<span class="st">"emb_dim"</span>], cfg[<span class="st">"n_heads"</span>])
-            <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(cfg[<span class="st">"n_layers"</span>])   <span class="lm"># ↑ n_layers identical-architecture blocks</span>
-        ]
-        <span class="pr">self</span>.final_norm = <span class="cl">LayerNorm</span>(cfg[<span class="st">"emb_dim"</span>])  <span class="lm"># ↑ final norm before LM head</span>
-        <span class="pr">self</span>.lm_head    = <span class="cl">Linear</span>(cfg[<span class="st">"emb_dim"</span>], cfg[<span class="st">"vocab_size"</span>], bias=<span class="kw">False</span>)  <span class="lm"># ↑ project to vocab</span>
-        <span class="cm"># Weight tying: lm_head.weight = tok_emb.weight (see §4.8)</span>
+        <span class="pr">self</span>.blocks  = [<span class="cl">TransformerBlock</span>(cfg[<span class="st">"emb_dim"</span>], cfg[<span class="st">"n_heads"</span>])
+                        <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(cfg[<span class="st">"n_layers"</span>])]  <span class="lm"># &#8593; 12 blocks, independent weights</span>
+        <span class="pr">self</span>.norm    = <span class="cl">LayerNorm</span>(cfg[<span class="st">"emb_dim"</span>])             <span class="lm"># &#8593; final output norm before LM head</span>
+        <span class="pr">self</span>.lm_head = <span class="cl">Linear</span>(cfg[<span class="st">"emb_dim"</span>], cfg[<span class="st">"vocab_size"</span>], bias=<span class="kw">False</span>)
+        <span class="pr">self</span>.lm_head.weight = <span class="pr">self</span>.tok_emb.weight  <span class="lm"># &#8593; weight tying: saves 38.6M params (see s4.8)</span>
 
     <span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, token_ids):
-        positions = <span class="bi">range</span>(<span class="bi">len</span>(token_ids[<span class="nu">0</span>]))     <span class="lm"># ↑ [0, 1, 2, ..., seq_len-1]</span>
-        x = <span class="pr">self</span>.tok_emb.<span class="fn">forward</span>(token_ids) + <span class="pr">self</span>.pos_emb.<span class="fn">forward</span>(positions)
-        <span class="lm"># ↑ token meaning + position: both (batch, seq, 768), summed elementwise</span>
-        x = <span class="pr">self</span>.drop.<span class="fn">forward</span>(x)
+        T   = <span class="bi">len</span>(token_ids[<span class="nu">0</span>])                         <span class="lm"># &#8593; sequence length</span>
+        pos = <span class="bi">list</span>(<span class="bi">range</span>(T))                              <span class="lm"># &#8593; position indices [0, 1, ..., T-1]</span>
+        x   = <span class="pr">self</span>.tok_emb(token_ids) + <span class="pr">self</span>.pos_emb(pos)  <span class="lm"># &#8593; token meaning + position: both (B,T,768)</span>
+        x   = <span class="pr">self</span>.drop(x)
         <span class="kw">for</span> block <span class="kw">in</span> <span class="pr">self</span>.blocks:
-            x = block.<span class="fn">forward</span>(x)               <span class="lm"># ↑ residual stream enriched 12 times</span>
-        x = <span class="pr">self</span>.final_norm.<span class="fn">forward</span>(x)
-        logits = <span class="pr">self</span>.lm_head.<span class="fn">forward</span>(x)        <span class="lm"># ↑ (batch, seq, 50257): raw scores per token</span>
+            x = block(x)                                   <span class="lm"># &#8593; residual stream enriched N times</span>
+        x      = <span class="pr">self</span>.norm(x)                             <span class="lm"># &#8593; output norm: stabilise before projection</span>
+        logits = <span class="pr">self</span>.lm_head(x)                          <span class="lm"># &#8593; (B, T, 50257): raw score per vocab token</span>
         <span class="kw">return</span> logits
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">🔗 Karpathy nanoGPT model.py — GPT class (lines 80–180): the canonical reference implementation</a>
-  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank">🔗 Jay Alammar — The Illustrated GPT-2: visual walkthrough of every forward pass step</a>
+  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">Karpathy nanoGPT &mdash; model.py GPT class (lines 80&ndash;180): the canonical minimal reference; 100 lines of PyTorch that match OpenAI's weights exactly</a>
+  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank">Jay Alammar &mdash; The Illustrated GPT-2: visual walkthrough of every step in the forward pass with annotated diagrams</a>
 </div>
-
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.8  Weight Tying                    -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s8">
 <div class="section-label">4.8</div>
 <h2>Weight Tying</h2>
-
-<p>GPT-2's LM head — the final Linear layer that maps from d_model to vocab_size — shares its weight matrix with the token embedding layer. In PyTorch: <code>lm_head.weight = tok_emb.weight</code>. This single line eliminates 38.6 million parameters (50,257 × 768 × 4 bytes = 147 MB) from the model. It's not just a memory optimisation — it improves the model by enforcing a geometric consistency.</p>
-
-<p>The intuition: if "king" is embedded as a vector e_king, then predicting "king" as the next token should give a high score when the current representation is close to e_king. The score is computed as h · W_lm^T, where h is the hidden state. If W_lm = W_emb (tied), then the score for token i is h · e_i — the dot product of the hidden state with the token embedding. Tokens whose meanings are close in embedding space get similar prediction scores, which is exactly what you want. Separate matrices would need to learn this consistency independently.</p>
-
-<p>Weight tying was introduced by Press and Wolf (2017) and is now standard in virtually every language model: BERT, GPT-2, GPT-3, LLaMA, Mistral, Llama-3. It improves perplexity by ~1–2 points on standard benchmarks while halving the embedding memory footprint. During training, gradients flow into the shared matrix from both the embedding and the LM head — the embedding gets training signal from two directions simultaneously.</p>
-
+<p>GPT-2&rsquo;s LM head &mdash; the final Linear(768, 50257) projection &mdash; shares its weight matrix with the token embedding table. In PyTorch: <code>self.lm_head.weight = self.tok_emb.weight</code>. This single assignment eliminates 50,257&nbsp;&times;&nbsp;768 = 38,597,376 parameters from the model &mdash; nearly 147&nbsp;MB at float32. It is not merely a memory optimisation; it improves model quality by enforcing a geometric consistency that two separate matrices would need to learn independently.</p>
+<p>The intuition: the score for predicting token t at some position is computed as h &middot; W_lm[t], where h is the position&rsquo;s residual stream after the final LayerNorm. If W_lm is tied to the token embedding W_emb, then W_lm[t] = W_emb[t] &mdash; the embedding vector for token t. The score is therefore h &middot; W_emb[t]: the dot product between the current representation and token t&rsquo;s embedding. Tokens whose embeddings are geometrically close to h score highest. This is exactly the right inductive bias: &ldquo;predict the tokens whose learned representation is most similar to the current state.&rdquo; Without tying, the LM head could learn a completely different geometry from the embeddings, which would be redundant and harmful.</p>
+<p>Press and Wolf introduced weight tying in 2017 (arXiv&nbsp;1608.05859) and measured a ~1.4 perplexity improvement on Penn Treebank. Since then it has become standard in virtually every language model: BERT, GPT-2, GPT-3, OPT, and Falcon all use it. LLaMA notably does <em>not</em> &mdash; it uses a separate unshared lm_head, sacrificing the parameter saving in exchange for more expressive freedom in the output projection. Gradients flow into the tied matrix from both directions during training: the embedding receives signal from the embedding loss path and the LM head loss path simultaneously, providing more diverse gradient signal than an untied matrix would receive.</p>
 <div class="wt-diag">
-  <div class="wt-box wt-emb">Token Embedding<br><span style="font-size:18px;font-weight:700;">W_emb</span><br><span class="wt-sub">50,257 × 768<br>38.6M parameters</span></div>
+  <div class="wt-box wt-emb">Token Embedding<br><span style="font-size:18px;font-weight:700;">W_emb</span><br><span class="wt-sub">50,257 &times; 768<br>38.6M parameters</span></div>
   <div class="wt-eq">=</div>
-  <div class="wt-box wt-lm">LM Head<br><span style="font-size:18px;font-weight:700;">W_lm</span><br><span class="wt-sub">768 × 50,257<br>transposed — 0 extra params</span></div>
-  <div style="font-size:13px;color:var(--text-secondary);max-width:220px;padding-left:10px;">Same memory address, same values, gradients accumulate from both directions during training.</div>
+  <div class="wt-box wt-lm">LM Head<br><span style="font-size:18px;font-weight:700;">W_lm</span><br><span class="wt-sub">768 &times; 50,257 (transposed)<br>0 extra parameters</span></div>
+  <div style="font-size:13px;color:var(--text-secondary);max-width:200px;padding-left:12px;">Same memory address. Gradients accumulate from both embedding lookup and output prediction during training.</div>
 </div>
-
-<div class="callout green"><strong>Key insight:</strong> Weight tying is a 147 MB memory saving that also improves the model. Without it, the LM head and token embedding could learn inconsistent representations of the same vocabulary. Tying forces them to agree on where each word lives in vector space.</div>
-
+<div class="callout green"><strong>Weight tying:</strong> Saves 38.6M parameters (147MB at float32), improves perplexity by ~1.4 points, and enforces geometric consistency between input embeddings and output predictions. One line of code: <code>lm_head.weight = tok_emb.weight</code>. Used in GPT-2, GPT-3, BERT, OPT, Falcon. LLaMA uses a separate head.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">weight_tying.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-<pre><code><span class="cm"># Weight tying — the actual PyTorch line is one assignment</span>
+<pre><code><span class="cm"># In PyTorch, weight tying is one assignment:</span>
 <span class="kw">class</span> <span class="cl">GPTModel</span>(nn.<span class="cl">Module</span>):
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, cfg):
-        <span class="pr">self</span>.tok_emb = nn.<span class="cl">Embedding</span>(cfg.vocab_size, cfg.emb_dim)
-        <span class="cm"># ... (other layers) ...</span>
+        <span class="pr">self</span>.tok_emb = nn.<span class="cl">Embedding</span>(cfg.vocab_size, cfg.emb_dim)  <span class="lm"># &#8593; token ID -> vector</span>
         <span class="pr">self</span>.lm_head = nn.<span class="cl">Linear</span>(cfg.emb_dim, cfg.vocab_size, bias=<span class="kw">False</span>)
+        <span class="pr">self</span>.lm_head.weight = <span class="pr">self</span>.tok_emb.weight  <span class="lm"># &#8593; ONE LINE: 38.6M params saved, perplexity improved</span>
+        <span class="cm"># lm_head.weight and tok_emb.weight now point to the same tensor in memory.</span>
+        <span class="cm"># During backward: grad from output loss + grad from embedding loss both accumulate here.</span>
 
-        <span class="cm"># Weight tying: point lm_head at the same data as tok_emb</span>
-        <span class="pr">self</span>.lm_head.weight = <span class="pr">self</span>.tok_emb.weight  <span class="lm"># ↑ one line, 38.6M params saved</span>
-        <span class="cm"># Both now share the same underlying storage.</span>
-        <span class="cm"># lm_head.weight is W_emb^T (PyTorch Linear uses W^T internally).</span>
+<span class="cm"># Verification (in PyTorch):</span>
+<span class="cm"># model.lm_head.weight.data_ptr() == model.tok_emb.weight.data_ptr()  # True</span>
+<span class="cm"># model.lm_head.weight is model.tok_emb.weight                         # True</span>
 
-<span class="cm"># Verification:</span>
-<span class="cm"># model.lm_head.weight.data_ptr() == model.tok_emb.weight.data_ptr()  → True</span>
-<span class="cm"># The two variables point to the same memory — no copy exists.</span>
+<span class="cm"># Scoring token t at position i:
+#   score_t = h_i . W_emb[t]   (dot product of hidden state with token t's embedding)</span>
+<span class="cm"># Tokens geometrically close to h_i in embedding space get high scores.</span>
+<span class="cm"># This is exactly the right inductive bias -- no separate geometry to learn.</span>
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1608.05859" target="_blank">🔗 Press &amp; Wolf 2017 — Using the Output Embedding to Improve Language Models (the weight tying paper)</a>
+  <a href="https://arxiv.org/abs/1608.05859" target="_blank">Press &amp; Wolf 2017 &mdash; Using the Output Embedding to Improve Language Models (arXiv 1608.05859): the weight tying paper; Table 1 shows ~1.4 PPL improvement on Penn Treebank</a>
+  <a href="https://paperswithcode.com/method/weight-tying" target="_blank">Papers With Code &mdash; Weight Tying: list of models using and not using tied weights</a>
 </div>
-
-<div class="cell" id="cell-7">
+<div class="cell" id="run-4-7">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 7 — Simulate tied-weight scoring (dot-product logits)</span>
-    <button class="run-btn" onclick="runCell('cell-7')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; simulate tied-weight scoring (dot-product logits)</span>
+    <button class="run-btn" onclick="runCode('run-4-7')">Run</button>
   </div>
   <div class="cell-code"><pre>import math
 
-# Simulate a tiny vocabulary with 5 tokens
-# Embeddings for each token (2D for simplicity)
+# Tiny vocabulary with 2D embeddings (for visualisation)
 embeddings = {
-    "king":   [0.9,  0.4],
-    "queen":  [0.85, 0.45],
-    "cat":    [-0.2, 0.9],
-    "dog":    [-0.1, 0.85],
-    "castle": [0.7,  0.3],
+    "king":   [0.90,  0.40],
+    "queen":  [0.85,  0.45],
+    "cat":    [-0.20, 0.90],
+    "dog":    [-0.10, 0.85],
+    "castle": [0.70,  0.30],
 }
 
-def dot(a, b):
-    return sum(x*y for x,y in zip(a,b))
+def dot(a, b): return sum(x*y for x,y in zip(a,b))
 
 def softmax(logits):
     m = max(logits)
-    exps = [math.exp(l - m) for l in logits]
-    s = sum(exps)
-    return [e/s for e in exps]
+    e = [math.exp(l-m) for l in logits]
+    s = sum(e)
+    return [x/s for x in e]
 
-# Hidden state close to "king" in embedding space
+# Hidden state after final LayerNorm -- close to "king" in embedding space
 hidden = [0.88, 0.42]
-
 tokens = list(embeddings.keys())
-logits  = [dot(hidden, embeddings[t]) for t in tokens]
-probs   = softmax(logits)
+
+# With weight tying: score = dot(hidden, token_embedding)
+logits = [dot(hidden, embeddings[t]) for t in tokens]
+probs  = softmax(logits)
 
 print("Hidden state:", hidden)
-print("\nWith weight tying — next-token probabilities:")
-for t, p in sorted(zip(tokens, probs), key=lambda x: -x[1]):
-    bar = "█" * int(p * 40)
-    print(f"  {t:<8} {p:.3f}  {bar}")
-# "king" and "queen" score highest because hidden ≈ their embeddings.</pre></div>
+print()
+print("With weight tying -- next token probabilities:")
+for t, l, p in sorted(zip(tokens, logits, probs), key=lambda x: -x[2]):
+    bar = chr(9608) * int(p * 40)
+    print(f"  {t:<8}  score={l:.3f}  prob={p:.3f}  {bar}")
+print()
+print("king and queen score highest: their embeddings are closest to hidden state.")
+</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.9  Counting Parameters             -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s9">
 <div class="section-label">4.9</div>
 <h2>Counting Parameters</h2>
-
-<p>GPT-2 "small" has 124 million parameters. That number is cited everywhere, but rarely explained. Here is the exact breakdown. Understanding it is important because it reveals where the model's capacity is actually located — and why scaling in certain directions (depth vs. width) has different effects on capability.</p>
-
-<p>The largest single component is the token embedding matrix: 50,257 × 768 = 38,597,376 parameters. This is 31% of the model. The position embedding adds 1,024 × 768 = 786,432. Then come 12 transformer blocks, each with 7,086,336 parameters (see §4.5): 12 × 7,086,336 = 85,036,032 total. A final LayerNorm contributes 1,536 parameters. The LM head shares weights with the token embedding: 0 extra. Total: ~124,421,376 — close to 124M.</p>
-
-<p>A useful mental model: each transformer block adds about 7M parameters and costs roughly one "unit" of model capacity. Doubling the number of blocks doubles the block parameter count and roughly halves the perplexity on a standard corpus. Doubling d_model is more expensive: all embedding, attention, and FFN dimensions scale quadratically in block parameters (attention is O(d²), FFN is O(d²)), but provides richer representations at each position.</p>
-
+<p>GPT-2 &ldquo;small&rdquo; has 124 million parameters. That number is cited everywhere but rarely fully explained. Here is the exact breakdown. Understanding it reveals where the model&rsquo;s capacity is actually located, why the FFN dominates, and why scaling depth is more efficient than scaling vocabulary size.</p>
+<p>The largest single component is the token embedding matrix: 50,257&nbsp;&times;&nbsp;768 = 38,597,376 parameters, or 31% of the model. The position embedding adds 1,024&nbsp;&times;&nbsp;768 = 786,432. Then come 12 transformer blocks: each block contains approximately 7,087,872 parameters (see &sect;4.5), giving 12&nbsp;&times;&nbsp;7,087,872 = 85,054,464 total. The final LayerNorm contributes 1,536. The LM head is weight-tied: zero additional parameters. Sum: 38,597,376 + 786,432 + 85,054,464 + 1,536 = 124,439,808 &mdash; approximately 124M.</p>
+<p>The dominant component by far is the FFN layers: 12&nbsp;&times;&nbsp;4,722,432 = 56,669,184 &mdash; 45.6% of the model. This is why the Geva et al. &ldquo;key-value memory&rdquo; interpretation (arXiv&nbsp;2012.14913) is plausible: there is enormous parameter capacity in those matrices to store factual associations. The attention mechanism, despite its conceptual centrality, holds only 12&nbsp;&times;&nbsp;(1,771,776+590,592) = 28,348,416 &mdash; 22.8% of the model. Per transformer block: attention is 4d&sup2; parameters and FFN is 8d&sup2; parameters (plus biases), so FFN always holds exactly twice as many parameters as attention at any scale.</p>
 <table class="param-table">
   <tr><th>Component</th><th>Shape</th><th>Parameters</th><th>% of Total</th></tr>
-  <tr><td class="ptd-name">Token embedding</td><td class="ptd-shape">50,257 × 768</td><td class="ptd-count">38,597,376</td><td>31.0%</td></tr>
-  <tr><td class="ptd-name">Position embedding</td><td class="ptd-shape">1,024 × 768</td><td class="ptd-count">786,432</td><td>0.6%</td></tr>
-  <tr><td class="ptd-name">Attention Q,K,V (×12 blocks)</td><td class="ptd-shape">12 × (3×768×768+3×768)</td><td class="ptd-count">28,340,736</td><td>22.8%</td></tr>
-  <tr><td class="ptd-name">Attention output proj (×12)</td><td class="ptd-shape">12 × (768×768+768)</td><td class="ptd-count">7,085,568</td><td>5.7%</td></tr>
-  <tr><td class="ptd-name">FFN up+down (×12 blocks)</td><td class="ptd-shape">12 × (2×768×3072+3072+768)</td><td class="ptd-count">56,680,704</td><td>45.6%</td></tr>
-  <tr><td class="ptd-name">LayerNorm ×2 per block (×12)</td><td class="ptd-shape">12 × 2 × 2 × 768</td><td class="ptd-count">36,864</td><td>0.03%</td></tr>
-  <tr><td class="ptd-name">Final LayerNorm</td><td class="ptd-shape">2 × 768</td><td class="ptd-count">1,536</td><td>0.001%</td></tr>
-  <tr><td class="ptd-name">LM head</td><td class="ptd-shape">tied to tok_emb</td><td class="ptd-count">0</td><td>0%</td></tr>
+  <tr><td class="ptd-name">Token embedding</td><td class="ptd-shape">50,257 &times; 768</td><td class="ptd-count">38,597,376</td><td>31.0%</td></tr>
+  <tr><td class="ptd-name">Position embedding</td><td class="ptd-shape">1,024 &times; 768</td><td class="ptd-count">786,432</td><td>0.6%</td></tr>
+  <tr><td class="ptd-name">Attention QKV (&times;12 blocks)</td><td class="ptd-shape">12 &times; (3&times;768&times;768 + 3&times;768)</td><td class="ptd-count">21,262,848</td><td>17.1%</td></tr>
+  <tr><td class="ptd-name">Attention output proj (&times;12)</td><td class="ptd-shape">12 &times; (768&times;768 + 768)</td><td class="ptd-count">7,085,568</td><td>5.7%</td></tr>
+  <tr><td class="ptd-name">FFN W1+b1+W2+b2 (&times;12)</td><td class="ptd-shape">12 &times; (2&times;768&times;3072 + 3072 + 768)</td><td class="ptd-count">56,669,184</td><td>45.6%</td></tr>
+  <tr><td class="ptd-name">LayerNorm &times;2 per block (&times;12)</td><td class="ptd-shape">12 &times; 2 &times; 2 &times; 768</td><td class="ptd-count">36,864</td><td>0.03%</td></tr>
+  <tr><td class="ptd-name">Final LayerNorm</td><td class="ptd-shape">2 &times; 768</td><td class="ptd-count">1,536</td><td>0.001%</td></tr>
+  <tr><td class="ptd-name">LM head (weight-tied)</td><td class="ptd-shape">tied to tok_emb</td><td class="ptd-count">0</td><td>0%</td></tr>
   <tr style="font-weight:700;"><td>TOTAL</td><td></td><td class="ptd-count">~124,439,808</td><td>100%</td></tr>
 </table>
-
-<div class="callout amber"><strong>Key insight:</strong> FFN layers hold 45.6% of GPT-2's parameters. This is why the "FFN as key-value memory" hypothesis (Geva et al. 2021) is plausible — there's enormous capacity there for storing factual associations. The attention mechanism, despite its conceptual importance, holds only 28.5% of parameters.</div>
-
-<div class="cell" id="cell-8">
+<div class="callout amber"><strong>FFN = 45.6% of parameters:</strong> Per block, attention uses 4d&sup2; params and FFN uses 8d&sup2; params &mdash; FFN always holds exactly 2&times; more. At GPT-3 scale (d=12,288, 96 blocks): attention = 4&times;12288&sup2;&times;96 = 58B, FFN = 8&times;12288&sup2;&times;96 = 116B, out of 175B total. The FFN dominates at every scale. This is the empirical basis for the Geva key-value memory hypothesis.</div>
+<div class="cell" id="run-4-8">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 8 — Build a parameter counter and apply to GPT-2</span>
-    <button class="run-btn" onclick="runCell('cell-8')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; full parameter audit for GPT-2 small</span>
+    <button class="run-btn" onclick="runCode('run-4-8')">Run</button>
   </div>
-  <div class="cell-code"><pre>def count_gpt2_params(vocab=50257, ctx=1024, d=768, n_heads=12, n_layers=12):
-    d_ff = 4 * d
+  <div class="cell-code"><pre>def audit_gpt2(vocab=50257, ctx=1024, d=768, n_heads=12, n_layers=12):
+    dff = 4 * d
     components = {
-        "Token embedding":       vocab * d,
-        "Position embedding":    ctx * d,
-        "Attn QKV (all blocks)": n_layers * (3*d*d + 3*d),
-        "Attn O proj (all)":     n_layers * (d*d + d),
-        "FFN up+down (all)":     n_layers * (d*d_ff + d_ff + d_ff*d + d),
-        "LayerNorms (all)":      n_layers * 2 * 2*d + 2*d,  # per-block + final
-        "LM head":               0,  # tied
+        "Token embedding":          vocab * d,
+        "Position embedding":       ctx * d,
+        "Attn QKV all blocks":      n_layers * (3*d*d + 3*d),
+        "Attn O proj all blocks":   n_layers * (d*d + d),
+        "FFN all blocks":           n_layers * (d*dff + dff + dff*d + d),
+        "LayerNorm all (incl final)": n_layers*2*2*d + 2*d,
+        "LM head (weight-tied)":    0,
     }
     total = sum(components.values())
-    print(f"{'Component':<30}  {'Params':>12}  {'%':>6}")
-    print("-" * 54)
+    print(f"GPT-2 small  d={d}  heads={n_heads}  layers={n_layers}  vocab={vocab}")
+    print()
+    print(f"  {'Component':<35}  {'Params':>12}  {'%':>6}")
+    print("  " + "-" * 58)
     for name, p in components.items():
-        pct = 100*p/total
-        print(f"{name:<30}  {p:>12,}  {pct:>5.1f}%")
-    print("-" * 54)
-    print(f"{'TOTAL':<30}  {total:>12,}  ({total/1e6:.2f}M)")
+        pct = 100*p/total if total else 0
+        print(f"  {name:<35}  {p:>12,}  {pct:>5.1f}%")
+    print("  " + "-" * 58)
+    print(f"  {'TOTAL':<35}  {total:>12,}  ({total/1e6:.3f}M)")
+    print()
+    attn = components["Attn QKV all blocks"] + components["Attn O proj all blocks"]
+    ffn  = components["FFN all blocks"]
+    print(f"  Attention: {attn:,} ({100*attn/total:.1f}%)")
+    print(f"  FFN:       {ffn:,} ({100*ffn/total:.1f}%)")
+    print(f"  FFN / Attn ratio: {ffn/attn:.2f}x  (always 2x by algebra: 8d^2 / 4d^2)")
 
-count_gpt2_params()</pre></div>
+audit_gpt2()</pre></div>
   <div class="cell-output"></div>
 </div>
 <hr class="section-divider">
 </section>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- §4.10  Generating Text                -->
-<!-- ═══════════════════════════════════════ -->
 <section class="section" id="s10">
 <div class="section-label">4.10</div>
 <h2>Generating Text</h2>
-
-<p>Text generation is the forward pass used as a loop. Given an input sequence of token IDs, run a forward pass to get logits for the next token, sample or select one token, append it to the sequence, and repeat. Each iteration extends the context by one token. This is the autoregressive generation loop that underlies every chatbot, code completion engine, and creative writing tool.</p>
-
-<p>The simplest strategy is <strong>greedy decoding</strong>: at every step, pick the token with the highest logit (argmax). This is fast and deterministic but produces repetitive, low-diversity text — because the highest-probability continuation is often a common phrase that repeats the most likely continuation again and again. <strong>Temperature sampling</strong> divides logits by a temperature T before softmax. T = 1 gives the raw model distribution; T < 1 sharpens it (more confident, less diverse); T > 1 flattens it (more random). <strong>Top-k</strong> restricts sampling to only the k highest-probability tokens, preventing extremely unlikely continuations from occasionally being selected.</p>
-
-<p>The generation loop must respect the context length. GPT-2's context window is 1,024 tokens — once the sequence exceeds that, the oldest tokens must be discarded (a naive sliding window) or the model must truncate. Modern long-context models (Llama-3 with 128K context) extend this with architectural changes (RoPE, GQA), but the generation loop structure is identical.</p>
-
+<p>Text generation is the forward pass used as a loop. Given an initial sequence of token IDs (the prompt), run a forward pass to get logits for the next token at the last position, select or sample one token, append it to the sequence, and repeat. Each iteration extends the context by one token. This autoregressive loop underlies every production language model application: chatbots, code completion, creative writing, and instruction following.</p>
+<p>The simplest strategy is <strong>greedy decoding</strong>: argmax over the logits at each step. This is deterministic and fast but produces repetitive, low-diversity text &mdash; the highest-probability continuation tends to keep selecting the same high-frequency phrases. <strong>Temperature</strong> divides all logits by a scalar T before softmax: T&lt;1 sharpens the distribution (higher-ranked tokens get relatively more probability), T&gt;1 flattens it (more random). T&rarr;0 recovers greedy decoding. <strong>Top-k</strong> restricts sampling to only the k highest-probability tokens (GPT-2&rsquo;s default k=50), preventing very unlikely tokens from occasionally being selected. <strong>Top-p (nucleus sampling)</strong>, introduced by Holtzman et al.&nbsp;2020 (arXiv&nbsp;1904.09751), keeps tokens until cumulative probability reaches p (typically 0.9), dynamically adjusting vocabulary size per step based on how peaked the distribution is. <strong>Min-p</strong> (2023) is an alternative: compute p_min = p_max &times; min_p_ratio and remove tokens below that threshold; it outperforms top-p at low temperatures.</p>
+<p>A crucial engineering optimisation is the <strong>KV cache</strong>: during generation, the key and value tensors for all previous positions are cached and reused rather than recomputed. Without the cache, each generation step requires a full forward pass over all T tokens (O(T&sup2;) attention per step, O(T&sup3;) total for T tokens). With the cache, each step only computes attention for the new token against cached K,V (O(T) per step, O(T&sup2;) total). At GPT-2&rsquo;s 1,024 context, the KV cache provides ~500&times; speedup by step 512.</p>
 <div class="gen-loop">
-  <div class="gl"><div class="gl-n">1</div><div class="gl-body"><h4>Encode prompt</h4><p>Convert "The sky is" → token IDs [464, 6766, 318] using the tokenizer.</p></div></div>
-  <div class="gl"><div class="gl-n">2</div><div class="gl-body"><h4>Forward pass</h4><p>Run GPTModel(token_ids) → logits shape (1, seq_len, 50257). Take last position: logits[-1].</p></div></div>
-  <div class="gl"><div class="gl-n">3</div><div class="gl-body"><h4>Sample next token</h4><p>Apply temperature, optionally top-k, then softmax → sample one token ID.</p></div></div>
-  <div class="gl"><div class="gl-n">4</div><div class="gl-body"><h4>Append and repeat</h4><p>Append sampled token to sequence. Go to step 2. Stop at max_new_tokens or &lt;|endoftext|&gt;.</p></div></div>
-  <div class="gl"><div class="gl-n">5</div><div class="gl-body"><h4>Decode</h4><p>Convert the full token ID sequence back to text using the tokenizer.</p></div></div>
+  <div class="gl"><div class="gl-n">1</div><div class="gl-body"><h4>Encode prompt</h4><p>Tokenize "The sky is" &rarr; token IDs [464, 6766, 318] using the BPE tokenizer.</p></div></div>
+  <div class="gl"><div class="gl-n">2</div><div class="gl-body"><h4>Forward pass</h4><p>GPTModel(token_ids) &rarr; logits shape (1, T, 50257). Take last position: logits[0, -1, :].</p></div></div>
+  <div class="gl"><div class="gl-n">3</div><div class="gl-body"><h4>Apply temperature + top-k</h4><p>logits /= temperature; zero out all but top k; softmax &rarr; probability distribution.</p></div></div>
+  <div class="gl"><div class="gl-n">4</div><div class="gl-body"><h4>Sample one token</h4><p>Inverse CDF sampling from the distribution; or argmax for greedy decoding.</p></div></div>
+  <div class="gl"><div class="gl-n">5</div><div class="gl-body"><h4>Append and repeat</h4><p>Append sampled token ID to sequence. Return to step 2. Stop at max_new_tokens or &lt;|endoftext|&gt;.</p></div></div>
+  <div class="gl"><div class="gl-n">6</div><div class="gl-body"><h4>Decode</h4><p>Convert full token ID sequence back to text using the tokenizer. Return string.</p></div></div>
 </div>
-
-<div class="callout"><strong>Key insight:</strong> The model runs a complete forward pass on the entire context at every generation step. This means generating 100 tokens requires 100 forward passes on contexts of length 1, 2, …, 100. The KV cache (Chapter 3, §3.11) avoids recomputing attention for already-seen tokens — cutting generation from O(n²) to O(n) per token.</div>
-
+<div class="callout"><strong>KV cache:</strong> On step t of generation, key and value tensors for positions 0&hellip;t-1 are already computed and cached. Only the new token at position t needs its K,V computed and appended. Attention for the new token against cached K,V is O(T) rather than O(T&sup2;). Generation goes from O(T&sup3;) total FLOPs to O(T&sup2;). At context length 1024, this is a 512&times; speedup by the last step. Every production inference system uses KV caching.</div>
 <div class="code-block">
   <div class="code-header"><span class="code-filename">generate.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="kw">import</span> math, random
 
-<span class="kw">def</span> <span class="fn">generate</span>(model, token_ids, max_new=<span class="nu">50</span>, temperature=<span class="nu">1.0</span>, top_k=<span class="nu">50</span>):
+<span class="kw">def</span> <span class="fn">generate</span>(model, token_ids, max_new=<span class="nu">50</span>, temperature=<span class="nu">1.0</span>, top_k=<span class="nu">50</span>):</p>
     <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(max_new):
-        <span class="cm"># Truncate to model's context length if needed</span>
-        ctx = token_ids[-model.context_len:]              <span class="lm"># ↑ keep only last context_len tokens</span>
+        ctx = token_ids[-model.context_len:]            <span class="lm"># &#8593; truncate to context window (1024 for GPT-2)</span>
+        logits = model.<span class="fn">forward</span>(ctx)[<span class="nu">0</span>][-<span class="nu">1</span>]             <span class="lm"># &#8593; last position logits: shape (50257,)</span>
 
-        logits = model.<span class="fn">forward</span>(ctx)[-<span class="nu">1</span>]                 <span class="lm"># ↑ last position's logits: shape (vocab,)</span>
+        logits = [l / temperature <span class="kw">for</span> l <span class="kw">in</span> logits]      <span class="lm"># &#8593; temperature: T<1 sharpens, T>1 flattens</span>
 
-        <span class="cm"># Apply temperature: scale logits before softmax</span>
-        logits = [l / temperature <span class="kw">for</span> l <span class="kw">in</span> logits]       <span class="lm"># ↑ T&lt;1 sharpens, T&gt;1 flattens distribution</span>
-
-        <span class="cm"># Top-k: zero out all but top_k logits</span>
         <span class="kw">if</span> top_k <span class="kw">is not</span> <span class="kw">None</span>:
-            sorted_idx = <span class="bi">sorted</span>(<span class="bi">range</span>(<span class="bi">len</span>(logits)), key=<span class="kw">lambda</span> i: -logits[i])
-            cutoff = logits[sorted_idx[top_k]]            <span class="lm"># ↑ value at position k</span>
-            logits = [l <span class="kw">if</span> l >= cutoff <span class="kw">else</span> -<span class="bi">float</span>(<span class="st">'inf'</span>) <span class="kw">for</span> l <span class="kw">in</span> logits]  <span class="lm"># ↑ mask the rest</span>
+            idx = <span class="bi">sorted</span>(<span class="bi">range</span>(<span class="bi">len</span>(logits)), key=<span class="kw">lambda</span> i:-logits[i])
+            threshold = logits[idx[top_k - <span class="nu">1</span>]]
+            logits = [l <span class="kw">if</span> l >= threshold <span class="kw">else</span> -<span class="bi">float</span>(<span class="st">"inf"</span>) <span class="kw">for</span> l <span class="kw">in</span> logits]
+            <span class="lm"># &#8593; top-k: keep only top k tokens; -inf -> probability 0 after softmax</span>
 
-        <span class="cm"># Softmax → probability distribution</span>
         m = <span class="bi">max</span>(logits)
         exps = [math.<span class="fn">exp</span>(l - m) <span class="kw">for</span> l <span class="kw">in</span> logits]
         s = <span class="bi">sum</span>(exps)
-        probs = [e / s <span class="kw">for</span> e <span class="kw">in</span> exps]                  <span class="lm"># ↑ sum-to-1 distribution over vocabulary</span>
+        probs = [e / s <span class="kw">for</span> e <span class="kw">in</span> exps]                  <span class="lm"># &#8593; softmax: sum-to-1 probability distribution</span>
 
-        <span class="cm"># Sample one token from the distribution</span>
-        r = random.<span class="fn">random</span>()
-        cumulative, next_token = <span class="nu">0.0</span>, <span class="nu">0</span>
+        r, acc = random.<span class="fn">random</span>(), <span class="nu">0.0</span>
+        next_token = <span class="nu">0</span>
         <span class="kw">for</span> i, p <span class="kw">in</span> <span class="bi">enumerate</span>(probs):
-            cumulative += p
-            <span class="kw">if</span> r <= cumulative:
-                next_token = i; <span class="kw">break</span>               <span class="lm"># ↑ inverse CDF sampling</span>
+            acc += p
+            <span class="kw">if</span> r <= acc: next_token = i; <span class="kw">break</span>         <span class="lm"># &#8593; inverse CDF sampling</span>
 
-        token_ids.append(next_token)                     <span class="lm"># ↑ extend context with new token</span>
-
-        <span class="kw">if</span> next_token == model.eos_token_id:
-            <span class="kw">break</span>                                        <span class="lm"># ↑ stop at end-of-text token</span>
+        token_ids.append(next_token)                     <span class="lm"># &#8593; extend context with sampled token</span>
+        <span class="kw">if</span> next_token == model.eos_id: <span class="kw">break</span>           <span class="lm"># &#8593; stop at &lt;|endoftext|&gt; token (ID 50256)</span>
 
     <span class="kw">return</span> token_ids
 </code></pre>
 </div>
-
 <div class="deepdive">
   <div class="deepdive-label">Deep Dive</div>
-  <a href="https://arxiv.org/abs/1904.09751" target="_blank">🔗 Holtzman et al. 2020 — The Curious Case of Neural Text Degeneration (top-p / nucleus sampling paper)</a>
-  <a href="https://huggingface.co/blog/how-to-generate" target="_blank">🔗 HuggingFace Blog — How to Generate Text (greedy, beam, top-k, top-p all visualised)</a>
+  <a href="https://arxiv.org/abs/1904.09751" target="_blank">Holtzman et al. 2020 &mdash; The Curious Case of Neural Text Degeneration (arXiv 1904.09751): introduces top-p (nucleus) sampling; shows greedy and top-k degenerate; Figure 2 is the key result</a>
+  <a href="https://huggingface.co/blog/how-to-generate" target="_blank">HuggingFace Blog &mdash; How to Generate Text: greedy, beam search, top-k, and top-p all visualised with actual GPT-2 outputs</a>
+  <a href="https://arxiv.org/abs/2202.06991" target="_blank">Pope et al. 2022 &mdash; Efficiently Scaling Transformer Inference (arXiv 2202.06991): KV cache memory analysis and partitioning strategies for large models</a>
 </div>
-
-<div class="cell" id="cell-9">
+<div class="cell" id="run-4-9">
   <div class="cell-header">
-    <span class="cell-label">▶ Cell 9 — Greedy vs temperature sampling on a toy 6-token vocabulary</span>
-    <button class="run-btn" onclick="runCell('cell-9')">▶ Run</button>
+    <span class="cell-label">&#9654; Try it &mdash; temperature + top-k effects on a toy distribution</span>
+    <button class="run-btn" onclick="runCode('run-4-9')">Run</button>
+  </div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+vocab  = ["the", "a", "blue", "vast", "dark", "clear", "endless"]
+logits = [3.2, 2.1, 1.8, 1.4, 1.1, 0.8, 0.3]
+
+def softmax_t(logits, T):
+    scaled = [l/T for l in logits]
+    m = max(scaled)
+    e = [math.exp(l-m) for l in scaled]
+    s = sum(e)
+    return [x/s for x in e]
+
+def top_k_filter(logits, k):
+    idx = sorted(range(len(logits)), key=lambda i: -logits[i])
+    out = [-float("inf")] * len(logits)
+    for i in idx[:k]: out[i] = logits[i]
+    return out
+
+print("Temperature effect (no top-k):")
+print(f"  {'Token':<10}", end="")
+for T in [0.2, 0.5, 1.0, 2.0]: print(f"  T={T:.1f}", end="")
+print()
+for i, word in enumerate(vocab):
+    print(f"  {word:<10}", end="")
+    for T in [0.2, 0.5, 1.0, 2.0]:
+        p = softmax_t(logits, T)[i]
+        print(f"  {p:.3f}", end="")
+    print()
+
+print()
+print("Top-k effect (T=1.0):")
+for k in [2, 3, 7]:
+    filtered = top_k_filter(logits, k)
+    probs = softmax_t(filtered, 1.0)
+    top = [(vocab[i], probs[i]) for i in sorted(range(len(probs)), key=lambda x:-probs[x]) if probs[i] > 0]
+    print(f"  top-{k}: {[(w, round(p,3)) for w,p in top]}")
+</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
+<section class="section" id="s11">
+<div class="section-label">4.11</div>
+<h2>The Residual Stream View</h2>
+<p>All the components described so far can be unified under a single conceptual frame: the <strong>residual stream</strong>. Every transformer block reads from a shared tensor of shape (B, T, d_model), computes a correction, and writes it back additively. Nothing is ever replaced; everything is accumulated. This view, formalised by Elhage et al. in 2021 (transformer-circuits.pub), transforms an otherwise opaque stack of operations into an interpretable system of simultaneous read/write operations on a common information bus.</p>
+<p>The residual stream starts as the sum of token embeddings and position embeddings. At every subsequent operation &mdash; each attention sublayer, each FFN sublayer &mdash; a delta is computed from the current stream and added back. By the time the stream reaches the final LayerNorm after 12 blocks, it carries the cumulative result of all 24 read/write operations (2 per block &times; 12 blocks). The LM head then reads from this final stream to produce vocabulary logits. Crucially, the stream is never <em>consumed</em>: every layer reads its full content and every layer writes back to the full content. Earlier layers&rsquo; contributions persist throughout.</p>
+<p>This framing has deep implications. It means each attention head and each FFN layer is best understood not as transforming a representation, but as adding a <em>specific component</em> to the stream. Mechanistic interpretability research (Anthropic, DeepMind) decomposes models by identifying which components contribute which types of information to the stream at each layer. The residual stream view also explains why residual connections cannot be removed: they are not a gradient trick alone &mdash; they are the <em>architecture</em>. The stream is the shared state that all layers communicate through.</p>
+<div class="stream-diag">
+  <div class="stream-diag-title">Residual Stream &mdash; Cumulative Writes Through 12 Blocks</div>
+  <div class="stream-row"><div class="stream-lbl">input</div><div class="stream-bar sb-in">token_id[0..T-1] &mdash; integer indices, no information yet</div></div>
+  <div class="stream-row"><div class="stream-lbl">embed</div><div class="stream-bar sb-emb">tok_emb + pos_emb: token meaning + positional context added to stream</div></div>
+  <div class="stream-row"><div class="stream-lbl">block 1</div><div class="stream-bar sb-blk">stream += attn_1(LN(stream)) &nbsp; then &nbsp; stream += ffn_1(LN(stream))</div></div>
+  <div class="stream-row"><div class="stream-lbl">block 2</div><div class="stream-bar sb-blk">stream += attn_2(LN(stream)) &nbsp; then &nbsp; stream += ffn_2(LN(stream))</div></div>
+  <div class="stream-row"><div class="stream-lbl">&hellip;</div><div class="stream-bar" style="background:var(--bg-aside);border:1px dashed var(--border);font-size:11px;color:var(--text-secondary);">blocks 3&ndash;11: each adds two more deltas to the stream</div></div>
+  <div class="stream-row"><div class="stream-lbl">block 12</div><div class="stream-bar sb-blk">stream += attn_12(LN(stream)) &nbsp; then &nbsp; stream += ffn_12(LN(stream))</div></div>
+  <div class="stream-row"><div class="stream-lbl">output</div><div class="stream-bar sb-out">final LN &rarr; lm_head: read from stream to produce vocabulary logits</div></div>
+</div>
+<div class="callout blue"><strong>Superposition hypothesis:</strong> The residual stream has d_model=768 dimensions but must represent a far larger number of distinct features. Research (Elhage et al. 2022) suggests that features are stored in <em>superposition</em>: multiple near-orthogonal directions share the same dimensions, with interference tolerated as long as features rarely co-occur. This makes the residual stream a highly compressed information bus, not a clean one-feature-per-dimension representation.</div>
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">residual_stream.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="cm"># The residual stream view: every layer ADDS to a shared tensor</span>
+<span class="cm"># Nothing is replaced -- contributions accumulate</span>
+
+<span class="kw">def</span> <span class="fn">gpt_as_residual_stream</span>(token_ids, tok_emb, pos_emb, blocks, final_ln, lm_head):</p>
+    <span class="cm"># Initialise stream: token meaning + position context</span>
+    stream = tok_emb[token_ids]  + pos_emb[<span class="bi">range</span>(<span class="bi">len</span>(token_ids))]
+    <span class="lm"># &#8593; stream shape: (T, 768) -- all positional and semantic content starts here</span>
+
+    <span class="kw">for</span> block <span class="kw">in</span> blocks:
+        <span class="cm"># Each block ADDS two deltas; never replaces</span>
+        stream = stream + block.attn(block.ln1(stream))  <span class="lm"># &#8593; attn delta: cross-position information</span>
+        stream = stream + block.ffn(block.ln2(stream))   <span class="lm"># &#8593; FFN delta: per-position computation</span>
+        <span class="cm"># stream still contains ALL previous contributions, just enriched</span>
+
+    logits = lm_head(final_ln(stream))  <span class="lm"># &#8593; read from stream; 24 accumulated writes inform this</span>
+    <span class="kw">return</span> logits
+
+<span class="cm"># Key insight: every attention head and FFN layer can be studied</span>
+<span class="cm"># independently as a "residual stream reader+writer".</span>
+<span class="cm"># Mechanistic interpretability decomposes models this way.</span>
+</code></pre>
+</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">Elhage et al. 2021 &mdash; A Mathematical Framework for Transformer Circuits (transformer-circuits.pub): the residual stream formalisation; Section 2 is essential reading for mechanistic interpretability</a>
+  <a href="https://transformer-circuits.pub/2022/toy_model/index.html" target="_blank">Elhage et al. 2022 &mdash; Toy Models of Superposition (transformer-circuits.pub): how features are stored in superposition within the residual stream; explains the d=768 compression puzzle</a>
+  <a href="https://arxiv.org/abs/2304.14997" target="_blank">Geva et al. 2023 &mdash; Dissecting Recall of Factual Associations in GPT (arXiv 2304.14997): traces how factual knowledge flows through the residual stream layer by layer</a>
+</div>
+<div class="cell" id="run-4-10">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; simulate additive residual stream writes</span>
+    <button class="run-btn" onclick="runCode('run-4-10')">Run</button>
   </div>
   <div class="cell-code"><pre>import math, random
 random.seed(0)
 
-# Toy vocabulary and "model" logits
-vocab = ["the", "a", "cat", "sat", "dog", "jumped"]
-logits = [3.2, 2.1, 1.8, 1.2, 0.9, 0.4]  # raw model logits for next token
+# Simulate a tiny residual stream (d=4, T=3 tokens)
+d = 4
 
-def softmax_temp(logits, T=1.0):
-    scaled = [l/T for l in logits]
-    m = max(scaled)
-    exps = [math.exp(l-m) for l in scaled]
-    s = sum(exps)
-    return [e/s for e in exps]
+def rand_vec(scale=0.3):
+    return [random.gauss(0, scale) for _ in range(d)]
 
-def sample(probs):
-    r = random.random()
-    acc = 0.0
-    for i, p in enumerate(probs):
-        acc += p
-        if r <= acc:
-            return i
-    return len(probs) - 1
+def vec_add(a, b): return [x+y for x,y in zip(a,b)]
+def vec_norm(v): return math.sqrt(sum(x**2 for x in v))
 
-print("Next-token distribution at different temperatures:\n")
-print(f"{'Token':<10}", end="")
-for T in [0.1, 0.5, 1.0, 2.0]:
-    print(f"  T={T:>3}", end="")
+# Initial stream: token + position embeddings
+stream = [rand_vec(0.5) for _ in range(3)]  # 3 token positions
+
+print("Initial stream (token + pos embeddings):")
+for i, v in enumerate(stream):
+    print(f"  pos {i}: {[round(x,3) for x in v]}  norm={vec_norm(v):.3f}")
+
+# Simulate 3 blocks each adding a small delta
+for block_idx in range(3):
+    attn_delta = [rand_vec(0.1) for _ in range(3)]
+    stream = [vec_add(stream[i], attn_delta[i]) for i in range(3)]
+    ffn_delta = [rand_vec(0.15) for _ in range(3)]
+    stream = [vec_add(stream[i], ffn_delta[i]) for i in range(3)]
+    print(f"After block {block_idx+1}: pos 0 norm={vec_norm(stream[0]):.3f}  (contributions accumulate)")
+
 print()
-print("-" * 50)
-for i, (word, logit) in enumerate(zip(vocab, logits)):
-    print(f"{word:<10}", end="")
-    for T in [0.1, 0.5, 1.0, 2.0]:
-        p = softmax_temp(logits, T)[i]
-        print(f"  {p:.3f}", end="")
-    print()
-
-print("\nGreedy decoding always picks:", vocab[logits.index(max(logits))])
-# Try changing the logits above and re-running!</pre></div>
+print("Stream is never replaced -- every block adds to it.")
+print("24 writes (2 per block x 12 blocks) all visible in the final stream.)"
+</pre></div>
   <div class="cell-output"></div>
 </div>
+<hr class="section-divider">
+</section>
+<section class="section" id="s12">
+<div class="section-label">4.12</div>
+<h2>Attention Head Patterns</h2>
+<p>GPT-2 small has 12 attention heads per block, 12 blocks deep &mdash; 144 attention heads total. Each head independently computes its own Q, K, V projections from the residual stream, attends across positions, and writes a contribution back to the stream. The 144 heads do not all do the same thing. Research by Clark et al. (2019) and Olsson et al. (2022) identified that individual heads specialise into distinct, interpretable functions that can be characterised by their attention patterns.</p>
+<p>The most well-studied specialisation is the <strong>induction head</strong> (Olsson et al. 2022, arXiv&nbsp;2209.11895). An induction head implements in-context copying: if the sequence contains the pattern [A][B]&hellip;[A], the head attends to the position after the first [A] when processing the second [A], predicting [B] as the next token. This mechanism is responsible for most of GPT-2&rsquo;s ability to repeat patterns seen earlier in the context. Induction heads emerge reliably in all transformers above 2 layers and are thought to be one of the fundamental computational primitives of transformer circuits.</p>
+<p>Other documented head types include: <strong>previous-token heads</strong> (attend to position i-1, copy recent context forward), <strong>duplicate-token heads</strong> (suppress repeated tokens), <strong>positional heads</strong> (attend to fixed relative offsets regardless of content), and <strong>syntactic heads</strong> (track subject-verb agreement or noun-modifier dependencies). Not all heads are interpretable &mdash; many attend diffusely or serve unclear functions. The distribution of head types varies between layers: early layers tend to have more positional and syntactic heads; late layers have more semantic and task-specific heads.</p>
+<div class="attn-grid">
+  <div class="ag-card"><h4>Induction Heads</h4><p>Pattern: [A][B]...[A] &rarr; attends back to first [A]&rsquo;s successor to predict [B]. Enables in-context pattern copying. Emerges in all transformers above 2 layers (Olsson et al. 2022).</p></div>
+  <div class="ag-card"><h4>Previous-Token Heads</h4><p>Always attends to position i-1. Effectively copies the token one step back into the current position&rsquo;s representation. Provides short-range sequential context to later heads.</p></div>
+  <div class="ag-card"><h4>Duplicate-Token Heads</h4><p>Detects and signals repeated tokens. Used by downstream components to suppress or penalise repetitions. Helps explain why transformers with nucleus sampling produce less repetitive text than greedy decoding.</p></div>
+  <div class="ag-card"><h4>Syntactic Heads</h4><p>Track grammatical dependencies: subject-verb agreement, noun-adjective relationships, coreference. Tend to appear in early-to-middle layers. Documented in BERT probing studies (Clark et al. 2019).</p></div>
+</div>
+<div class="callout purple"><strong>Heads are composable:</strong> Elhage et al. 2021 showed that a 2-layer transformer&rsquo;s behaviour can be decomposed into a sum of three terms: the direct path (embedding straight to LM head), single-layer paths (each head writes to LM head directly), and two-hop paths (head in layer 1 composes with head in layer 2). This composability extends to deeper models and is the foundation of circuit-level analysis.</div>
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">head_patterns.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">import</span> math
 
-<!-- Summary -->
+<span class="kw">def</span> <span class="fn">causal_attention_pattern</span>(Q, K, head_dim, seq_len):</p>
+    <span class="cm"># Q, K: (seq_len, head_dim) -- query and key matrices for one head</span>
+    scale = math.<span class="fn">sqrt</span>(head_dim)           <span class="lm"># &#8593; scale by sqrt(d_k) to control dot product magnitude</span>
+    attn = []
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(seq_len):</p>
+        row = []
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(seq_len):</p>
+            <span class="kw">if</span> j > i:   <span class="cm"># causal mask: future positions are -inf</span>
+                row.append(-<span class="bi">float</span>(<span class="st">"inf"</span>))  <span class="lm"># &#8593; -inf -> probability 0 after softmax: token i cannot see j>i</span>
+            <span class="kw">else</span>:
+                qk = <span class="bi">sum</span>(Q[i][k]*K[j][k] <span class="kw">for</span> k <span class="kw">in</span> <span class="bi">range</span>(head_dim)) / scale
+                row.append(qk)             <span class="lm"># &#8593; scaled dot product: how much does position i attend to j?</span>
+        <span class="cm"># softmax over unmasked positions</span>
+        m = <span class="bi">max</span>(r <span class="kw">for</span> r <span class="kw">in</span> row <span class="kw">if</span> r != -<span class="bi">float</span>(<span class="st">"inf"</span>))
+        exp_row = [math.<span class="fn">exp</span>(r - m) <span class="kw">if</span> r != -<span class="bi">float</span>(<span class="st">"inf"</span>) <span class="kw">else</span> <span class="nu">0.0</span> <span class="kw">for</span> r <span class="kw">in</span> row]
+        s = <span class="bi">sum</span>(exp_row)
+        attn.append([e/s <span class="kw">for</span> e <span class="kw">in</span> exp_row])  <span class="lm"># &#8593; softmax: attention weights sum to 1 over unmasked positions</span>
+    <span class="kw">return</span> attn  <span class="cm"># (seq_len, seq_len) lower-triangular attention pattern</span>
+</code></pre>
+</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/2209.11895" target="_blank">Olsson et al. 2022 &mdash; In-context Learning and Induction Heads (arXiv 2209.11895): the induction head discovery; shows induction heads account for most of the phase change at 2 layers</a>
+  <a href="https://arxiv.org/abs/1906.04341" target="_blank">Clark et al. 2019 &mdash; What Does BERT Look At? An Analysis of BERT's Attention (arXiv 1906.04341): systematic survey of attention head patterns; identifies syntactic and positional heads</a>
+  <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html" target="_blank">Anthropic &mdash; In-context Learning and Induction Heads (transformer-circuits.pub): interactive attention pattern explorer with real GPT-2 heads</a>
+</div>
+<div class="cell" id="run-4-11">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; compute a causal attention pattern for a 6-token sequence</span>
+    <button class="run-btn" onclick="runCode('run-4-11')">Run</button>
+  </div>
+  <div class="cell-code"><pre>import math, random
+random.seed(7)
+
+def softmax_masked(scores):</p>
+    m = max(s for s in scores if s != float("-inf"))
+    e = [math.exp(s-m) if s != float("-inf") else 0.0 for s in scores]
+    sm = sum(e)
+    return [x/sm for x in e]
+
+def causal_attn(Q, K, d_h):
+    T = len(Q)
+    scale = math.sqrt(d_h)
+    pattern = []
+    for i in range(T):
+        scores = [sum(Q[i][k]*K[j][k] for k in range(d_h))/scale
+                  if j <= i else float("-inf")
+                  for j in range(T)]
+        pattern.append(softmax_masked(scores))
+    return pattern
+
+T, dh = 6, 4
+Q = [[random.gauss(0,1) for _ in range(dh)] for _ in range(T)]
+K = [[random.gauss(0,1) for _ in range(dh)] for _ in range(T)]
+pat = causal_attn(Q, K, dh)
+
+tokens = ["The", "cat", "sat", "on", "the", "mat"]
+print("Causal attention pattern (row=query position, col=key position):")
+print()
+print(f"  {'':<6}", end="")
+for t in tokens: print(f"  {t:<5}", end="")
+print()
+for i, row in enumerate(pat):
+    print(f"  {tokens[i]:<6}", end="")
+    for j, w in enumerate(row):
+        if j > i: print(f"  {'--':<5}", end="")
+        else: print(f"  {w:.3f}", end="")
+    print()
+print()
+print("Lower triangle only (causal mask). Each row sums to 1.0.)"
+</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
+<section class="section" id="s13">
+<div class="section-label">4.13</div>
+<h2>GPT-2 in Numbers: A Complete Parameter Audit</h2>
+<p>This section provides the definitive, exhaustive parameter count for every size in the GPT-2 family. The formula for total parameters is: (vocab &times; d) + (ctx &times; d) + n_layers &times; [2 &times; (2d) + 3d&sup2; + 3d + d&sup2; + d + 2 &times; (2d) + d &times; 4d + 4d + 4d &times; d + d] + 2d. The weight-tied LM head contributes 0 additional parameters in all GPT-2 variants.</p>
+<p>Per transformer block the exact parameter count is: two LayerNorms (4d), QKV projection (3d&sup2; + 3d), output projection (d&sup2; + d), FFN W1 (4d&sup2; + 4d), FFN W2 (4d&sup2; + d). Summing: 12d&sup2; + 13d per block. For d=768: 12&times;768&sup2; + 13&times;768 = 7,077,888 + 9,984 = 7,087,872. For d=1024: 12&times;1024&sup2; + 13&times;1024 = 12,582,912 + 13,312 = 12,596,224. These are the numbers that determine how GPT-2 family models fit into VRAM: float16 uses 2 bytes per parameter; activations during forward pass add approximately batch_size &times; seq_len &times; d &times; n_layers &times; 4 bytes.</p>
+<p>To run GPT-2 small at float32: 124M &times; 4 bytes = 496MB weights, plus activations. At float16: 248MB. At int8: 124MB. GPT-2 XL at float16: 1.5B &times; 2 = 3GB, comfortably within a single modern GPU. LLaMA-2 7B at float16: 7B &times; 2 = 14GB, requiring one A100-40GB. LLaMA-2 70B at int4 (4 bits per weight): 70B &times; 0.5 = 35GB &mdash; fits on two A100-40GB or one A100-80GB. These VRAM calculations are critical for deployment planning.</p>
+<table class="param-table">
+  <tr><th>Model</th><th>Layers</th><th>d_model</th><th>Heads</th><th>Context</th><th>Parameters</th><th>FP16 VRAM</th></tr>
+  <tr><td class="ptd-name">GPT-2 small</td><td>12</td><td class="ptd-shape">768</td><td>12</td><td>1,024</td><td class="ptd-count">124M</td><td>~248 MB</td></tr>
+  <tr><td class="ptd-name">GPT-2 medium</td><td>24</td><td class="ptd-shape">1,024</td><td>16</td><td>1,024</td><td class="ptd-count">345M</td><td>~690 MB</td></tr>
+  <tr><td class="ptd-name">GPT-2 large</td><td>36</td><td class="ptd-shape">1,280</td><td>20</td><td>1,024</td><td class="ptd-count">774M</td><td>~1.5 GB</td></tr>
+  <tr><td class="ptd-name">GPT-2 XL</td><td>48</td><td class="ptd-shape">1,600</td><td>25</td><td>1,024</td><td class="ptd-count">1.5B</td><td>~3.0 GB</td></tr>
+  <tr><td class="ptd-name">GPT-3</td><td>96</td><td class="ptd-shape">12,288</td><td>96</td><td>2,048</td><td class="ptd-count">175B</td><td>~350 GB</td></tr>
+  <tr><td class="ptd-name">LLaMA-2 7B</td><td>32</td><td class="ptd-shape">4,096</td><td>32</td><td>4,096</td><td class="ptd-count">7B</td><td>~14 GB</td></tr>
+  <tr><td class="ptd-name">LLaMA-2 70B</td><td>80</td><td class="ptd-shape">8,192</td><td>64</td><td>4,096</td><td class="ptd-count">70B</td><td>~140 GB</td></tr>
+</table>
+<div class="callout green"><strong>VRAM rule of thumb:</strong> float16 weights cost 2 bytes per parameter. Add ~20% for KV cache at typical context lengths, ~50% for activations during inference (more during training). For deployment: FP16 model_gb &asymp; params_billions &times; 2. For training with Adam: multiply by ~12 (weights + gradients + two momentum terms, all at FP32).</div>
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">param_audit.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">def</span> <span class="fn">exact_params</span>(n_layers, d, n_heads, vocab=<span class="nu">50257</span>, ctx=<span class="nu">1024</span>, tied=<span class="kw">True</span>):</p>
+    dff = <span class="nu">4</span> * d
+    tok_emb  = vocab * d             <span class="lm"># &#8593; token embedding table: vocab_size x d_model</span>
+    pos_emb  = ctx * d               <span class="lm"># &#8593; position embedding: context_len x d_model</span>
+    ln_final = <span class="nu">2</span> * d                 <span class="lm"># &#8593; final LayerNorm: scale + shift</span>
+    lm_head  = <span class="nu">0</span> <span class="kw">if</span> tied <span class="kw">else</span> vocab * d  <span class="lm"># &#8593; LM head: 0 if weight-tied, else full matrix</span>
+    per_block = (
+        <span class="nu">2</span> * <span class="nu">2</span> * d +          <span class="lm"># &#8593; 2x LayerNorm (scale+shift each): 4d</span>
+        <span class="nu">3</span>*d*d + <span class="nu">3</span>*d +       <span class="lm"># &#8593; QKV weight + QKV bias: 3d^2 + 3d</span>
+        d*d + d +             <span class="lm"># &#8593; output projection weight + bias: d^2 + d</span>
+        d*dff + dff +         <span class="lm"># &#8593; FFN W1 + b1: 4d^2 + 4d</span>
+        dff*d + d             <span class="lm"># &#8593; FFN W2 + b2: 4d^2 + d</span>
+    )
+    <span class="kw">return</span> tok_emb + pos_emb + n_layers * per_block + ln_final + lm_head
+
+<span class="cm"># Per-block formula simplifies to: 12d^2 + 13d</span>
+<span class="kw">def</span> <span class="fn">per_block_formula</span>(d):</p>
+    <span class="kw">return</span> <span class="nu">12</span>*d*d + <span class="nu">13</span>*d  <span class="lm"># &#8593; exact: 12d^2 (weight matrices) + 13d (biases)</span>
+</code></pre>
+</div>
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive</div>
+  <a href="https://arxiv.org/abs/2005.14165" target="_blank">Brown et al. 2020 &mdash; Language Models are Few-Shot Learners (arXiv 2005.14165): GPT-3 paper; Appendix B has the full 175B architecture specification including all 96-layer dimensions</a>
+  <a href="https://arxiv.org/abs/2302.13971" target="_blank">Touvron et al. 2023 &mdash; LLaMA: Open and Efficient Foundation Language Models (arXiv 2302.13971): LLaMA architecture; Section 2 specifies RMSNorm, RoPE, SwiGLU choices and all dimension tables</a>
+  <a href="https://arxiv.org/abs/2203.15556" target="_blank">Hoffmann et al. 2022 &mdash; Training Compute-Optimal Language Models (Chinchilla, arXiv 2203.15556): optimal parameter/data/compute tradeoffs; Table A2 shows how depth scales with compute budget</a>
+</div>
+<div class="cell" id="run-4-12">
+  <div class="cell-header">
+    <span class="cell-label">&#9654; Try it &mdash; complete parameter audit for any GPT-style model</span>
+    <button class="run-btn" onclick="runCode('run-4-12')">Run</button>
+  </div>
+  <div class="cell-code"><pre>def exact_params(n_layers, d, vocab=50257, ctx=1024, tied=True):
+    dff = 4 * d
+    tok_emb  = vocab * d
+    pos_emb  = ctx * d
+    per_b    = 2*2*d + 3*d*d+3*d + d*d+d + d*dff+dff + dff*d+d  # = 12d^2 + 13d
+    final_ln = 2 * d
+    lm_head  = 0 if tied else vocab * d
+    return tok_emb + pos_emb + n_layers*per_b + final_ln + lm_head
+
+models = [
+    ("GPT-2 small",  12, 768,   50257, 1024, True),
+    ("GPT-2 medium", 24, 1024,  50257, 1024, True),
+    ("GPT-2 large",  36, 1280,  50257, 1024, True),
+    ("GPT-2 XL",     48, 1600,  50257, 1024, True),
+    ("LLaMA-2 7B",   32, 4096,  32000, 4096, False),
+]
+
+print(f"{'Model':<16}  {'Params':>14}  {'FP16 MB':>10}  {'Per-block formula check'}")
+print("-" * 72)
+for name, nl, d, vocab, ctx, tied in models:
+    p     = exact_params(nl, d, vocab, ctx, tied)
+    mb    = p * 2 / 1e6
+    check = 12*d*d + 13*d  # per-block formula
+    print(f"{name:<16}  {p:>14,}  {mb:>9.0f}MB  12*{d}^2+13*{d} = {check:,}/block")
+print()
+print("Per-block = 12d^2 + 13d exactly.")
+print("FP16 VRAM = params * 2 bytes. Add ~20% for KV cache + activations.)"
+</pre></div>
+  <div class="cell-output"></div>
+</div>
+<hr class="section-divider">
+</section>
 <section class="section" id="summary">
 <div class="section-label">Summary</div>
-<h2>Chapter 4 — Key Takeaways</h2>
+<h2>Chapter 4 &mdash; Key Takeaways</h2>
 <table class="param-table">
   <tr><th>Concept</th><th>Key Number / Fact</th></tr>
-  <tr><td><strong>Layer Normalisation</strong></td><td>Pre-norm (before sublayer) stabilises training; γ=1, β=0 at init → identity at start</td></tr>
-  <tr><td><strong>GELU</strong></td><td>Smooth gate: allows small gradients for negative inputs; GELU(-1) ≈ -0.159 vs ReLU(-1) = 0</td></tr>
-  <tr><td><strong>FeedForward</strong></td><td>4× expansion: 768 → 3,072 → 768. Holds 45.6% of GPT-2's parameters.</td></tr>
-  <tr><td><strong>Residual connections</strong></td><td>x + F(x) — gradient bypass always = 1.0; enables 12→96 layer training without vanishing</td></tr>
-  <tr><td><strong>Transformer block</strong></td><td>LN→Attn→residual→LN→FFN→residual. GPT-2: 7.1M params × 12 blocks = 85M block params</td></tr>
-  <tr><td><strong>GPT-2 architecture</strong></td><td>vocab=50,257  ctx=1,024  d=768  heads=12  layers=12  → 124M parameters total</td></tr>
-  <tr><td><strong>Weight tying</strong></td><td>LM head = token embedding (transposed). Saves 38.6M params, improves perplexity.</td></tr>
-  <tr><td><strong>Parameter count</strong></td><td>Embeddings 39.4M (31%) + blocks 85M (68%) + misc ~1M. FFN is the biggest component.</td></tr>
-  <tr><td><strong>Greedy decoding</strong></td><td>argmax at each step — deterministic, repetitive. Temperature + top-k add diversity.</td></tr>
-  <tr><td><strong>Generation loop</strong></td><td>Forward → logits[-1] → sample → append → repeat. KV cache makes this O(n) per token.</td></tr>
+  <tr><td class="ptd-name">Layer Normalisation</td><td>Pre-LN (before sublayer) converges 40% faster than Post-LN; tolerates 3&times; larger LR. RMSNorm is 7% faster. &gamma;=1,&beta;=0 at init &rarr; identity.</td></tr>
+  <tr><td class="ptd-name">GELU Activation</td><td>Smooth probabilistic gate: GELU(x) = x&Phi;(x). GELU(-1)&asymp;-0.159 vs ReLU(-1)=0. Nonzero gradient everywhere &mdash; no dying neurons. LLaMA uses SwiGLU.</td></tr>
+  <tr><td class="ptd-name">FeedForward Sublayer</td><td>4&times; expansion: 768&rarr;3072&rarr;768. Per-block: 4.72M params. 12 blocks: 56.7M = 45.6% of model. Rows of W1 are key pattern detectors; rows of W2 are value memories (Geva 2021).</td></tr>
+  <tr><td class="ptd-name">Shortcut Connections</td><td>x + F(x): bypass gradient always 1.0. At init, F(x)&asymp;0 so stack starts as identity. Enables 96-layer GPT-3 and 80-layer LLaMA-3.</td></tr>
+  <tr><td class="ptd-name">Transformer Block</td><td>LN&rarr;Attn&rarr;residual &rarr; LN&rarr;FFN&rarr;residual. Shape in = shape out = (B,T,768). GPT-2: 12d&sup2;+13d = 7.09M params per block.</td></tr>
+  <tr><td class="ptd-name">Stacking Blocks</td><td>N identical-architecture blocks with independent weights. Depth outperforms width at fixed params (Levine 2020). GPT-3: 96 layers; LLaMA-2 70B: 80 layers.</td></tr>
+  <tr><td class="ptd-name">Full GPT Model</td><td>tok_emb + pos_emb &rarr; N blocks &rarr; final LN &rarr; lm_head. GPT-2: vocab=50257, ctx=1024, d=768, h=12, N=12 &rarr; 124M params.</td></tr>
+  <tr><td class="ptd-name">Weight Tying</td><td>lm_head.weight = tok_emb.weight. Saves 38.6M params (147MB), improves PPL by ~1.4. GPT-2/3, BERT, OPT use it; LLaMA does not.</td></tr>
+  <tr><td class="ptd-name">Counting Parameters</td><td>Token emb 31% + position emb 0.6% + 12 blocks 68% + misc &lt;0.1%. FFN always 2&times; more params than attention per block (8d&sup2; vs 4d&sup2;).</td></tr>
+  <tr><td class="ptd-name">Generating Text</td><td>Forward &rarr; logits[-1] &rarr; temperature &rarr; top-k/top-p &rarr; sample &rarr; append &rarr; repeat. KV cache makes generation O(T&sup2;) total instead of O(T&sup3;).</td></tr>
+  <tr><td class="ptd-name">Residual Stream View</td><td>All 24 sublayers (2 per block &times; 12) read from and write to a single shared (B,T,768) stream. Nothing replaced; everything accumulated. Foundation of mechanistic interpretability.</td></tr>
+  <tr><td class="ptd-name">Attention Head Patterns</td><td>144 heads total (12 heads &times; 12 blocks). Types: induction, previous-token, duplicate-token, syntactic. Heads compose multiplicatively across layers.</td></tr>
+  <tr><td class="ptd-name">Complete Parameter Audit</td><td>Per block: 12d&sup2;+13d. GPT-2 small: 124M. GPT-2 XL: 1.5B. LLaMA-2 7B: 7B. FP16 VRAM &asymp; params_billions &times; 2 GB.</td></tr>
 </table>
 </section>
-
-<nav class="ch-nav">
-  <a href="chapter3.html"><span class="cnd">← Chapter 3</span><span class="cnt">The Transformer Architecture</span></a>
-  <a href="chapter5.html" style="text-align:right;"><span class="cnd">Chapter 5 →</span><span class="cnt">Pretraining on Unlabeled Data</span></a>
-</nav>
-
+<div class="continue-bar" style="margin-top:40px;margin-bottom:20px;">
+  <a href="chapter3.html" class="continue-btn prev"><span class="continue-chapter">&larr; Chapter 3</span>The Transformer Architecture</a>
+  <a href="chapter5.html" class="continue-btn next"><span class="continue-chapter">Chapter 5 &rarr;</span>Pretraining</a>
+</div>
 </div><!-- /container -->
 
 <script>
-async function runCell(id){
-  const cell=document.getElementById(id);
-  const code=cell.querySelector('.cell-code pre').textContent;
-  const out=cell.querySelector('.cell-output');
-  const btn=cell.querySelector('.run-btn');
-  if(!window.pyodide){out.textContent='Python runtime still loading — try again in a moment.';return;}
-  btn.disabled=true;out.className='cell-output running';out.textContent='Running...';
-  try{
-    window.pyodide.runPython('import sys,io;sys.stdout=io.StringIO()');
+async function runCode(id) {
+  const cell = document.getElementById(id);
+  const code = cell.querySelector('.cell-code pre').textContent;
+  const out  = cell.querySelector('.cell-output');
+  const btn  = cell.querySelector('.run-btn');
+  if (!window.pyodide) {
+    out.textContent = 'Python runtime still loading — try again in a moment.';
+    return;
+  }
+  btn.disabled = true;
+  out.className = 'cell-output running';
+  out.textContent = 'Running...';
+  try {
+    window.pyodide.runPython('import sys, io; sys.stdout = io.StringIO()');
     await window.pyodide.runPythonAsync(code);
-    const r=window.pyodide.runPython('sys.stdout.getvalue()');
-    out.className='cell-output';out.textContent=r||'(no output)';
-  }catch(e){out.className='cell-output error';out.textContent='Error: '+e.message;}
-  btn.disabled=false;
+    const r = window.pyodide.runPython('sys.stdout.getvalue()');
+    out.className = 'cell-output';
+    out.textContent = r || '(no output)';
+  } catch(e) {
+    out.className = 'cell-output error';
+    out.textContent = 'Error: ' + e.message;
+  }
+  btn.disabled = false;
 }
-function copyCode(btn){
-  const pre=btn.closest('.code-block').querySelector('pre');
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
   navigator.clipboard.writeText(pre.textContent);
-  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
 }
 </script>
 <script>
-(async()=>{
-  try{
-    const p=await loadPyodide();window.pyodide=p;
-    document.getElementById('pyodide-status').textContent='✓ Python runtime ready — click ▶ Run on any cell.';
-    setTimeout(()=>{const s=document.getElementById('pyodide-status');if(s)s.style.display='none';},2000);
-  }catch(e){document.getElementById('pyodide-status').textContent='Python runtime unavailable — view code only.';}
+(async () => {
+  try {
+    const p = await loadPyodide();
+    window.pyodide = p;
+    document.getElementById('pyodide-status').textContent = 'Python runtime ready — click Run on any cell.';
+    setTimeout(() => {
+      const s = document.getElementById('pyodide-status');
+      if (s) s.style.display = 'none';
+    }, 2500);
+  } catch(e) {
+    document.getElementById('pyodide-status').textContent = 'Python runtime unavailable — view code only.';
+  }
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>

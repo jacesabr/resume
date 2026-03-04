@@ -184,6 +184,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
 .ch-nav a:hover{color:var(--accent);}
 .cnd{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
 .cnt{font-size:15px;font-weight:500;}
+/* continuation buttons */
+.continue-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);margin:24px 0 0;}
+.continue-bar.top-bar{border-top:none;margin-top:0;}
+.continue-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s;}
+.continue-btn.prev{background:var(--bg-aside);color:var(--text);border:1px solid var(--border);}
+.continue-btn.prev:hover{background:var(--border);color:var(--text);}
+.continue-btn.next{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+.continue-btn.next:hover{opacity:.88;}
+.continue-btn.disabled{background:var(--bg-aside);color:var(--text-secondary);border:1px solid var(--border-light);pointer-events:none;opacity:.5;}
+.continue-chapter{font-family:var(--font-mono);font-size:10px;opacity:.7;display:block;}
 /* QKV projection diagram */
 .qkv-wrap{display:flex;gap:8px;margin:22px 0;align-items:flex-start;font-size:12px;flex-wrap:wrap;}
 .qkv-input{border:1px solid var(--border);border-radius:7px;padding:10px 14px;background:var(--bg-aside);text-align:center;min-width:80px;}
@@ -304,6 +314,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-si
     </ul>
   </div>
 </nav>
+
+<div class="continue-bar top-bar">
+  <a href="chapter2.html" class="continue-btn prev">
+    <span class="continue-chapter">← Chapter 2</span>
+    Working with Text Data
+  </a>
+  <a href="chapter4.html" class="continue-btn next">
+    <span class="continue-chapter">Chapter 4 →</span>
+    Implementing GPT
+  </a>
+</div>
 
 <div id="pyodide-status">⏳ Loading Python runtime…</div>
 <main>
@@ -1708,7 +1729,830 @@ print("\nStack 12 such blocks (each with trained weights) = GPT-2 small.")</pre>
 <hr class="section-divider">
 </section>
 
+<!-- ════════════════════════════════════ §3.13 ════ -->
+<section class="section" id="s13">
+<div class="section-label">3.13</div>
+<h2>Rotary Position Embeddings (RoPE)</h2>
+<p>GPT-2's learned positional embeddings have a hard ceiling: they cannot extrapolate beyond the 1,024-position context they were trained on. Ask GPT-2 to process token 1,025 and the model has no positional representation for it — it either truncates or produces garbage. The root cause is that absolute position embeddings inject position as a fixed additive offset before any computation, divorcing the positional signal from the content it is supposed to qualify. <strong>RoPE</strong> (Rotary Position Embedding, Su et al. 2021, arXiv 2104.09864) solves this with a fundamentally different approach: rather than adding position to the token vector, it <em>rotates</em> the query and key vectors by an angle proportional to their position before the dot product.</p>
+
+<p>The mathematical insight is elegant. Define the inner product between query at position m and key at position n. RoPE constructs rotation matrices R_m and R_n such that:</p>
+<div class="formula">
+  <span class="eq-label">ROPE CORE IDENTITY — SU ET AL. 2021</span>
+  ⟨R_m · q,  R_n · k⟩  =  ⟨q, R_{n−m} · k⟩
+  <span class="eq-note">The absolute positions m and n disappear; only the <em>relative offset</em> (n − m) remains in the dot product. Relative position attention emerges automatically from absolute position rotations.</span>
+</div>
+
+<p>In practice, RoPE operates on pairs of dimensions. For a d-dimensional vector, it applies d/2 independent 2D rotations. Pair (i, i+1) is rotated by angle θ_i · pos, where θ_i = 10000^(−2i/d). This is the same geometric progression as sinusoidal PE — but applied multiplicatively as a rotation rather than additively as an offset. The rotation matrix for position <em>pos</em> across dimension pair <em>i</em> is:</p>
+<div class="formula">
+  <span class="eq-label">ROPE ROTATION — DIMENSION PAIR i AT POSITION pos</span>
+  [cos(θ_i·pos)  −sin(θ_i·pos)] [q_{2i}  ]
+  [sin(θ_i·pos)   cos(θ_i·pos)] [q_{2i+1}]
+  <span class="eq-note">θ_i = 10000^(−2i/d_head). Each dimension pair rotates at a different frequency. Only Q and K are rotated — V is not. Applied before the QK dot product.</span>
+</div>
+
+<p>Three properties make RoPE the de facto standard positional encoding in modern LLMs (LLaMA 1/2/3, Mistral, Falcon, GPT-NeoX, PaLM 2, Gemma): <strong>(1) Relative position falls out naturally</strong> — no explicit relative attention bias needed. <strong>(2) Long-context extrapolation</strong> — by increasing the RoPE base from 10,000 to 500,000 (LLaMA-3), models trained on 8K tokens can be fine-tuned to 128K+ with minimal degradation. <strong>(3) Zero additional parameters</strong> — RoPE is a fixed function of position, not a lookup table. GPT-2's W_PE costs 786K parameters; RoPE costs zero.</p>
+
+<div class="callout blue"><strong>Key insight:</strong> RoPE's extrapolation advantage comes from its frequency structure. At training context length 8K with base 10,000, the highest-frequency dimension completes thousands of full rotations — it has "seen" every phase. Extending to 16K just means more rotations of the same frequencies. With base 10,000, dimension 0 completes 8000/(2π) ≈ 1,273 cycles at 8K tokens. Dimension d/2−1 completes 0.0025 cycles. Increasing the base to 500,000 slows all dimensions by 50×, so even the slowest dimensions stay in their training range when extrapolating.</div>
+
+<!-- RoPE diagram: rotation in 2D for one dimension pair -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">ROPE — ROTATION OF ONE DIMENSION PAIR AT DIFFERENT POSITIONS</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div id="rope-vis" style="flex:1;min-width:280px;border:1px solid var(--border);border-radius:8px;padding:16px;background:var(--bg-card);">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-bottom:10px;">Dimension pair 0 (fast frequency, θ=1.0)</div>
+      <div id="rope-circles" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="flex:1;min-width:200px;border:1px solid var(--border);border-radius:8px;padding:16px;background:var(--bg-card);">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Model comparisons</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <thead><tr><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border);font-size:11px;">Model</th><th style="padding:4px 8px;border-bottom:1px solid var(--border);font-size:11px;">PE type</th><th style="padding:4px 8px;border-bottom:1px solid var(--border);font-size:11px;">Base</th><th style="padding:4px 8px;border-bottom:1px solid var(--border);font-size:11px;">Max ctx</th></tr></thead>
+        <tbody style="font-family:var(--font-mono);">
+          <tr><td style="padding:4px 8px">GPT-2</td><td style="padding:4px 8px;color:var(--amber)">learned abs</td><td style="padding:4px 8px">—</td><td style="padding:4px 8px">1,024</td></tr>
+          <tr><td style="padding:4px 8px">LLaMA-1</td><td style="padding:4px 8px;color:var(--blue)">RoPE</td><td style="padding:4px 8px">10k</td><td style="padding:4px 8px">2,048</td></tr>
+          <tr><td style="padding:4px 8px">Mistral 7B</td><td style="padding:4px 8px;color:var(--blue)">RoPE</td><td style="padding:4px 8px">10k</td><td style="padding:4px 8px">8,192</td></tr>
+          <tr><td style="padding:4px 8px">LLaMA-3</td><td style="padding:4px 8px;color:var(--green)">RoPE</td><td style="padding:4px 8px">500k</td><td style="padding:4px 8px">128k+</td></tr>
+          <tr><td style="padding:4px 8px">GPT-4</td><td style="padding:4px 8px;color:var(--blue)">RoPE (est)</td><td style="padding:4px 8px">—</td><td style="padding:4px 8px">128k</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var c=document.getElementById('rope-circles');
+    var positions=[0,1,2,4,8,16];
+    var theta=1.0;
+    positions.forEach(function(pos){
+      var angle=theta*pos;
+      var cos_v=Math.cos(angle).toFixed(2);
+      var sin_v=Math.sin(angle).toFixed(2);
+      var deg=Math.round(angle*180/Math.PI)%360;
+      var d=document.createElement('div');
+      d.style.cssText='width:72px;text-align:center;font-family:var(--font-mono);font-size:10px;';
+      d.innerHTML='<div style="width:56px;height:56px;border-radius:50%;border:2px solid var(--border);position:relative;margin:0 auto 4px;">'
+        +'<div style="position:absolute;top:50%;left:50%;width:2px;height:24px;background:var(--blue);transform-origin:bottom center;transform:translateX(-50%) translateY(-100%) rotate('+deg+'deg);border-radius:2px;"></div>'
+        +'<div style="position:absolute;top:50%;left:50%;width:5px;height:5px;border-radius:50%;background:var(--blue);transform:translate(-50%,-50%);"></div>'
+        +'</div>'
+        +'<div style="color:var(--text-secondary)">pos='+pos+'</div>'
+        +'<div style="color:var(--blue)">'+deg+'°</div>';
+      c.appendChild(d);
+    });
+  })();
+  </script>
+  <div style="font-size:11px;color:var(--text-secondary);margin-top:8px;">Each token's Q and K vectors are rotated by an angle proportional to position. The dot product Q·K then depends only on the <em>difference</em> in angles — i.e., relative position.</div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/2104.09864" target="_blank">↗ RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al. 2021. The original RoPE paper. Section 3: derivation of the rotation matrices and proof that relative position falls out of the dot product.</a>
+  <a href="https://blog.eleuther.ai/rotary-embeddings/" target="_blank">↗ Rotary Embeddings: A Relative Revolution — EleutherAI Blog (2021). The best intuitive explanation of RoPE, including the complex-number view and why it generalises to arbitrary context lengths.</a>
+  <a href="https://arxiv.org/abs/2309.16039" target="_blank">↗ LongRoPE — Chen et al. 2023. Extends context to 2M tokens by rescaling RoPE frequencies. Used by Phi-3 and Yi-Long. Shows how the base frequency controls extrapolation range.</a>
+</div>
+
+<div class="cell" id="cell-13">
+  <div class="cell-header"><span class="cell-label">▶ RoPE from scratch — rotate Q/K and verify relative position property</span><button class="run-btn" onclick="runCell('cell-13')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math
+
+def rope_rotate(vec, pos, base=10000):
+    """Apply RoPE rotation to a vector at a given position.
+    Operates on pairs of dimensions (d must be even)."""
+    d = len(vec)                         # ↑ d must be even — we rotate in pairs
+    assert d % 2 == 0
+    out = list(vec)
+    for i in range(d // 2):
+        theta = base ** (-2 * i / d)     # ↑ Same frequency as sinusoidal PE
+        angle = pos * theta              # ↑ Rotation angle = position × frequency
+        cos_a, sin_a = math.cos(angle), math.sin(angle)
+        x0, x1 = vec[2*i], vec[2*i+1]   # ↑ Take a pair of dimensions
+        out[2*i]   =  x0 * cos_a - x1 * sin_a   # ↑ 2D rotation formula
+        out[2*i+1] =  x0 * sin_a + x1 * cos_a   # ↑ standard rotation matrix
+    return out
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+# Verify the key property: dot(R_m·q, R_n·k) depends only on (n-m)
+d = 8
+import random; random.seed(42)
+q = [random.gauss(0, 1) for _ in range(d)]   # ↑ Query vector (content)
+k = [random.gauss(0, 1) for _ in range(d)]   # ↑ Key vector (content)
+
+print("RoPE RELATIVE POSITION PROPERTY")
+print("dot(R_m·q, R_n·k) should equal dot(R_0·q, R_{n-m}·k) for any m")
+print()
+print(f"{'m':>4}  {'n':>4}  {'offset':>7}  {'dot(Rm·q, Rn·k)':>18}  {'dot(R0·q, R_{n-m}·k)':>22}  {'match?'}")
+print("-"*80)
+for (m, n) in [(0,0),(0,3),(5,8),(0,5),(5,10),(10,15)]:
+    rq_m = rope_rotate(q, m)             # ↑ Rotate q by position m
+    rk_n = rope_rotate(k, n)             # ↑ Rotate k by position n
+    d1 = dot(rq_m, rk_n)               # ↑ Full dot product
+    # Relative version: both start at 0, offset = n-m
+    rq_0    = rope_rotate(q, 0)
+    rk_diff = rope_rotate(k, n - m)
+    d2 = dot(rq_0, rk_diff)
+    match = "YES" if abs(d1 - d2) < 1e-9 else "NO"
+    print(f"  {m:>3}   {n:>3}    {n-m:>5}    {d1:>18.6f}    {d2:>22.6f}    {match}")
+
+print()
+print("Conclusion: dot product depends ONLY on relative offset (n-m),")
+print("not on absolute positions m and n separately.")
+print()
+print("This is why RoPE enables relative position attention with zero extra parameters.")
+print("LLaMA-3 uses base=500_000 — try changing base and re-running.")</pre></div>
+  <div class="cell-output" id="cell-13-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.14 ════ -->
+<section class="section" id="s14">
+<div class="section-label">3.14</div>
+<h2>Grouped Query Attention (GQA) and the KV Cache</h2>
+<p>At inference time, the transformer generates tokens one at a time. Generating token t+1 requires computing attention over all t previous tokens. Without optimisation, this means re-computing the keys and values for every previous token on every generation step — a cost that grows quadratically with sequence length. The <strong>KV cache</strong> eliminates this redundancy: keys and values for all previous tokens are computed once and stored, then reused on every subsequent step. Only the new token's Q, K, V need to be computed fresh.</p>
+
+<p>The memory cost is the problem. For a single sequence of length N, one layer of GPT-2 small (12 heads, d_head=64, FP16) stores: N × 12 × 64 × 2 bytes per matrix × 2 matrices (K and V) × 12 layers = N × 36,864 bytes. At N=1,024: <strong>37.7 MB</strong>. For LLaMA-3 70B at N=8,192: 70 layers × 8 KV heads × 128-dim × 2 bytes × 2 × 8,192 = <strong>14.7 GB</strong> — more than half the GPU's memory just for the KV cache of one sequence at full context.</p>
+
+<p><strong>Multi-Query Attention (MQA)</strong>, introduced by Shazeer (2019), was the first solution: use H query heads but only 1 shared K and 1 shared V. The KV cache shrinks by a factor of H (×8 for an 8-head model). Quality drops modestly — queries can no longer attend from specialised perspectives since all share the same key/value projection. <strong>Grouped Query Attention (GQA)</strong>, introduced by Ainslie et al. (2023, arXiv 2305.13245), finds the middle ground: G groups of query heads share one K/V pair each, where 1 ≤ G ≤ H. LLaMA-2 70B uses G=8 groups with H=64 query heads — 8 KV heads shared across 64 queries. KV cache is 8× smaller than MHA, and quality nearly matches MHA.</p>
+
+<div class="formula">
+  <span class="eq-label">KV CACHE MEMORY — PER TOKEN, PER LAYER</span>
+  bytes = 2 × n_kv_heads × d_head × 2 bytes (FP16)
+  <span class="eq-note">Factor of 2: one for K, one for V. n_kv_heads = n_heads in MHA, 1 in MQA, n_heads/G in GQA. Scale by N×L for full cache.</span>
+</div>
+
+<div class="callout green"><strong>Key insight:</strong> The KV cache is what makes LLM inference fast despite the autoregressive constraint. Without it, generating a 1,000-token response requires 1,000 full forward passes — each pass processing tokens 1 through t. With the cache, each pass processes only 1 new token: the generated token. The prefill phase (processing the input prompt) fills the cache; the decode phase (generating new tokens) consumes it one step at a time. This is why LLMs respond slowly to long prompts but generate tokens rapidly once they start.</div>
+
+<!-- GQA diagram showing MHA vs MQA vs GQA -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:12px;">MHA vs MQA vs GQA — KV HEAD SHARING (8 QUERY HEADS SHOWN)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--blue);margin-bottom:10px;">MHA (standard)</div>
+      <div style="display:flex;gap:3px;justify-content:center;margin-bottom:8px;">
+        <div style="display:flex;flex-direction:column;gap:2px;align-items:center;" title="H1">
+          <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--blue);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--green);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;align-items:center;">
+          <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--blue);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--green);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;align-items:center;">
+          <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--blue);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--green);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;align-items:center;">
+          <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--blue);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+          <div style="width:12px;height:14px;border-radius:3px;background:var(--green);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">8 KV pairs<br>KV cache: 1×</div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent);margin-bottom:10px;">MQA (Shazeer 2019)</div>
+      <div style="display:flex;gap:3px;justify-content:center;margin-bottom:4px;">
+        <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+        <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+        <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+        <div style="width:14px;height:18px;border-radius:3px;background:var(--accent);"></div>
+      </div>
+      <div style="display:flex;gap:0;justify-content:center;margin-bottom:4px;">
+        <div style="font-size:18px;color:var(--text-secondary);">↘↙↓↘</div>
+      </div>
+      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px;">
+        <div style="width:12px;height:14px;border-radius:3px;background:var(--blue);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+        <div style="width:12px;height:14px;border-radius:3px;background:var(--green);font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">1 KV pair shared<br>KV cache: 8× smaller</div>
+    </div>
+
+    <div style="border:2px solid var(--green);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px;">GQA G=2 (LLaMA-2)</div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:6px;">
+        <div style="border:1px dashed var(--border);border-radius:5px;padding:4px;">
+          <div style="display:flex;gap:2px;margin-bottom:3px;">
+            <div style="width:12px;height:16px;border-radius:3px;background:var(--accent);"></div>
+            <div style="width:12px;height:16px;border-radius:3px;background:var(--accent);"></div>
+          </div>
+          <div style="display:flex;gap:2px;">
+            <div style="width:10px;height:12px;border-radius:3px;background:var(--blue);font-size:6px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+            <div style="width:10px;height:12px;border-radius:3px;background:var(--green);font-size:6px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+          </div>
+        </div>
+        <div style="border:1px dashed var(--border);border-radius:5px;padding:4px;">
+          <div style="display:flex;gap:2px;margin-bottom:3px;">
+            <div style="width:12px;height:16px;border-radius:3px;background:var(--accent);"></div>
+            <div style="width:12px;height:16px;border-radius:3px;background:var(--accent);"></div>
+          </div>
+          <div style="display:flex;gap:2px;">
+            <div style="width:10px;height:12px;border-radius:3px;background:var(--blue);font-size:6px;color:#fff;display:flex;align-items:center;justify-content:center;">K</div>
+            <div style="width:10px;height:12px;border-radius:3px;background:var(--green);font-size:6px;color:#fff;display:flex;align-items:center;justify-content:center;">V</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">2 KV pairs, 2Q each<br>KV cache: 4× smaller</div>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive KV cache size calculator -->
+<div style="border:1px solid var(--border);border-radius:8px;padding:18px;margin:22px 0;background:var(--bg-card);">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:14px;">KV CACHE SIZE CALCULATOR — ADJUST SLIDERS</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+    <div>
+      <label style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">Seq length N: <span id="kvc-n-val">4096</span></label><br>
+      <input type="range" id="kvc-n" min="512" max="131072" step="512" value="4096" style="width:100%;accent-color:var(--blue);" oninput="calcKVC()">
+    </div>
+    <div>
+      <label style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">Layers L: <span id="kvc-l-val">32</span></label><br>
+      <input type="range" id="kvc-l" min="8" max="96" step="4" value="32" style="width:100%;accent-color:var(--blue);" oninput="calcKVC()">
+    </div>
+    <div>
+      <label style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">KV heads: <span id="kvc-h-val">8</span></label><br>
+      <input type="range" id="kvc-h" min="1" max="64" step="1" value="8" style="width:100%;accent-color:var(--green);" oninput="calcKVC()">
+    </div>
+    <div>
+      <label style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">d_head: <span id="kvc-d-val">128</span></label><br>
+      <input type="range" id="kvc-d" min="32" max="256" step="32" value="128" style="width:100%;accent-color:var(--accent);" oninput="calcKVC()">
+    </div>
+  </div>
+  <div id="kvc-result" style="font-family:var(--font-mono);font-size:13px;color:var(--text);background:var(--bg-aside);padding:12px 16px;border-radius:6px;"></div>
+</div>
+<script>
+function calcKVC(){
+  var N=+document.getElementById('kvc-n').value;
+  var L=+document.getElementById('kvc-l').value;
+  var H=+document.getElementById('kvc-h').value;
+  var D=+document.getElementById('kvc-d').value;
+  document.getElementById('kvc-n-val').textContent=N.toLocaleString();
+  document.getElementById('kvc-l-val').textContent=L;
+  document.getElementById('kvc-h-val').textContent=H;
+  document.getElementById('kvc-d-val').textContent=D;
+  var bytes = 2 * N * L * H * D * 2; // 2 for K+V, 2 bytes FP16
+  var mb = bytes / 1e6;
+  var gb = bytes / 1e9;
+  var result = 'KV cache: ' + (gb >= 1 ? gb.toFixed(2) + ' GB' : mb.toFixed(0) + ' MB');
+  result += ' &nbsp;|&nbsp; formula: 2 × ' + N.toLocaleString() + ' × ' + L + ' × ' + H + ' × ' + D + ' × 2 bytes';
+  if(gb > 8) result += ' &nbsp;<span style="color:var(--accent)">⚠ exceeds 1×A100 40GB limit</span>';
+  else if(gb > 4) result += ' &nbsp;<span style="color:var(--amber)">⚠ large — consider GQA</span>';
+  else result += ' &nbsp;<span style="color:var(--green)">✓ fits comfortably</span>';
+  document.getElementById('kvc-result').innerHTML = result;
+}
+calcKVC();
+</script>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/2305.13245" target="_blank">↗ GQA: Training Generalized Multi-Query Transformer Models — Ainslie et al. 2023. The GQA paper. Table 2: quality vs speed tradeoff across G=1 (MQA) to G=H (MHA). Uptrained from MHA checkpoints in 5% of pretraining compute.</a>
+  <a href="https://arxiv.org/abs/1911.02150" target="_blank">↗ Fast Transformer Decoding: One Write-Head is All You Need — Shazeer 2019. MQA original paper. Demonstrates single K/V with minimal quality degradation at significant inference speedup.</a>
+  <a href="https://arxiv.org/abs/2211.05102" target="_blank">↗ Efficiently Scaling Transformer Inference — Pope et al. 2022. Detailed analysis of prefill vs decode phases, KV cache memory requirements, and when different parallelism strategies are optimal.</a>
+</div>
+
+<div class="cell" id="cell-14">
+  <div class="cell-header"><span class="cell-label">▶ KV cache — simulate prefill + decode, measure token/s with and without cache</span><button class="run-btn" onclick="runCell('cell-14')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random, time
+random.seed(99)
+
+# Parameters (tiny for demo)
+D, H, DH = 8, 2, 4   # d_model, n_heads, d_head
+L = 3                  # ↑ number of layers
+
+def matmul(W, x):
+    """W is (rows × cols), x is (cols,) — returns (rows,) vector."""
+    return [sum(W[r][c]*x[c] for c in range(len(x))) for r in range(len(W))]
+
+def dot(a, b): return sum(x*y for x,y in zip(a,b))
+def softmax(x):
+    mx=max(x); e=[math.exp(v-mx) for v in x]; s=sum(e); return [v/s for v in e]
+
+rand_mat = lambda r,c: [[random.gauss(0,0.02) for _ in range(c)] for _ in range(r)]
+
+# Weights for one layer (per head)
+Wq = [[rand_mat(DH,D) for _ in range(H)] for _ in range(L)]
+Wk = [[rand_mat(DH,D) for _ in range(H)] for _ in range(L)]
+Wv = [[rand_mat(DH,D) for _ in range(H)] for _ in range(L)]
+
+def attention_with_cache(x_new, kv_cache, layer, head):
+    """x_new: new token embedding. kv_cache: list of (k,v) pairs from past tokens."""
+    q = matmul(Wq[layer][head], x_new)   # ↑ Compute Q for new token only
+    k = matmul(Wk[layer][head], x_new)   # ↑ Compute K for new token only
+    v = matmul(Wv[layer][head], x_new)   # ↑ Compute V for new token only
+
+    # Retrieve cached K and V from all previous tokens
+    all_k = [kv[0] for kv in kv_cache] + [k]   # ↑ Cached + new
+    all_v = [kv[1] for kv in kv_cache] + [v]   # ↑ Cached + new
+
+    scale = math.sqrt(DH)
+    scores = [dot(q, ki) / scale for ki in all_k]  # ↑ Q dot all past K's
+    weights = softmax(scores)
+    out = [sum(weights[j]*all_v[j][d] for j in range(len(all_v))) for d in range(DH)]
+    return out, (k, v)   # ↑ Return output + new (k,v) to add to cache
+
+# Simulate generation: 20 tokens
+PROMPT_LEN = 10
+GEN_LEN    = 20
+
+# PREFILL: process prompt tokens, fill cache
+kv_caches = [[[] for _ in range(H)] for _ in range(L)]
+prompt_tokens = [[random.gauss(0,1) for _ in range(D)] for _ in range(PROMPT_LEN)]
+
+print("=== PREFILL PHASE ===")
+print(f"Processing {PROMPT_LEN}-token prompt...")
+for pos, tok in enumerate(prompt_tokens):
+    for l in range(L):
+        for h in range(H):
+            _, kv_pair = attention_with_cache(tok, kv_caches[l][h], l, h)
+            kv_caches[l][h].append(kv_pair)
+print(f"KV cache filled: {PROMPT_LEN} entries × {L} layers × {H} heads = {PROMPT_LEN*L*H} (k,v) pairs")
+print(f"Each pair: {DH} floats — real model: 128 floats, FP16")
+print()
+
+# DECODE: generate tokens one at a time, reusing cache
+print("=== DECODE PHASE (with KV cache) ===")
+times = []
+for gen_step in range(GEN_LEN):
+    new_tok = [random.gauss(0,1) for _ in range(D)]
+    t0 = time.time()
+    for l in range(L):
+        for h in range(H):
+            _, kv_pair = attention_with_cache(new_tok, kv_caches[l][h], l, h)
+            kv_caches[l][h].append(kv_pair)
+    times.append(time.time() - t0)
+    if gen_step < 3 or gen_step == GEN_LEN-1:
+        ctx_len = PROMPT_LEN + gen_step + 1
+        print(f"  Step {gen_step+1:>3}: context={ctx_len} tokens, "
+              f"time={times[-1]*1000:.3f}ms, "
+              f"ops proportional to ctx_len={ctx_len}")
+
+print()
+print("Cache-based decode: O(N) work per step (only new token needs new Q)")
+print("Without cache: O(N²) work per step (recompute all K,V from scratch)")
+print()
+total_kv = PROMPT_LEN + GEN_LEN
+cache_bytes_fp16 = total_kv * L * H * DH * 2 * 2  # K + V, FP16
+print(f"Final cache size: {total_kv} × {L} × {H} × {DH} × 2(KV) × 2(FP16) = {cache_bytes_fp16} bytes")
+print(f"Real LLaMA-3 70B at N=8192: ~14.7 GB just for KV cache")</pre></div>
+  <div class="cell-output" id="cell-14-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.15 ════ -->
+<section class="section" id="s15">
+<div class="section-label">3.15</div>
+<h2>Weight Initialisation &amp; the Output Projection Scaling</h2>
+<p>Deep neural networks are exquisitely sensitive to how their weights are initialised. Too large: activations explode, gradients overflow, training diverges in step 1. Too small: activations shrink exponentially with depth, reaching zero before the first gradient update — effectively the vanishing activation problem at initialisation. The goal is to initialise such that the <em>variance of activations</em> remains constant as the signal propagates through the network. Xavier/Glorot initialisation (2010) achieves this for linear layers by drawing weights from N(0, 2/(fan_in + fan_out)).</p>
+
+<p>nanoGPT uses a refined version: all weights from N(0, 0.02) — a conservative fixed standard deviation that keeps activations in a well-behaved range for the model sizes concerned. But there is one critical exception: the <strong>output projection layers</strong> (c_proj in both Attention and MLP). These are the layers that write directly back to the residual stream. Karpathy applies a modified initialisation to them:</p>
+
+<div class="formula">
+  <span class="eq-label">OUTPUT PROJECTION INIT — NANOGPT (KARPATHY 2022)</span>
+  std = 0.02 / √(2 × n_layer)
+  <span class="eq-note">For GPT-2 small with 12 layers: std = 0.02 / √24 = 0.00408. The 2 accounts for both the attention output projection AND the MLP output projection — two additions per block.</span>
+</div>
+
+<p>The motivation comes from the residual stream analysis. Each of the L blocks adds its output directly to the stream. At initialisation, if each block adds a correction with standard deviation σ, the cumulative stream has standard deviation σ√L (sum of L independent random variables). For GPT-2-XL (48 layers), σ=0.02 gives stream std of 0.02√48 ≈ 0.14 — manageable. But for GPT-3 (96 layers), this grows to 0.02√96 ≈ 0.196. The /√(2L) scaling ensures that as the model deepens, the stream starts in a controlled state regardless of depth. Without it, the final LayerNorm before the LM head must compensate for increasingly large magnitudes — harder to optimise.</p>
+
+<p>The full GPT-2 small parameter budget, counted precisely: embedding W_E (38.6M) + positional W_PE (0.79M) + 12 blocks × [LN1 (1.5K) + Attn W_QKV (1.77M) + Attn W_O (0.59M) + LN2 (1.5K) + MLP W_fc (2.36M) + MLP W_cp (2.36M)] + final LN (1.5K) + LM head (0 if tied to W_E) = <strong>124M parameters</strong> total.</p>
+
+<div class="callout amber"><strong>Key insight:</strong> The tied embedding weights (§3.16) mean the LM head is not an extra 38.6M parameters — it reuses W_E transposed. This is not a minor detail: in GPT-2 small, the embedding matrix is 31% of the total parameter count. Tying it saves ~38.6M parameters while improving coherence between input and output representations, because the model must learn embeddings that work both as input representations and as output logit weights simultaneously.</div>
+
+<!-- Parameter budget table -->
+<div style="margin:22px 0;overflow-x:auto;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:8px;">GPT-2 SMALL PARAMETER BUDGET (124M TOTAL)</div>
+  <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+    <thead><tr style="background:var(--bg-aside);">
+      <th style="padding:8px 12px;border:1px solid var(--border);text-align:left">Component</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">Shape</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">Params</th>
+      <th style="padding:8px 12px;border:1px solid var(--border)">% of total</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">Token embedding W_E</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">50257 × 768</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">38.60M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;color:var(--accent)">31.2%</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">Positional emb W_PE</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">1024 × 768</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">0.79M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">0.6%</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">Attention QKV (×12)</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">768 × 2304 × 12</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">21.23M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">17.1%</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">Attention proj W_O (×12)</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">768 × 768 × 12</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">7.08M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">5.7%</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">MLP c_fc + c_proj (×12)</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">768↔3072 × 12</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">56.62M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;color:var(--blue)">45.7%</td></tr>
+      <tr><td style="padding:7px 12px;border:1px solid var(--border)">LayerNorm γ/β (×25)</td><td style="padding:7px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">768 × 2 × 25</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono)">0.038M</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center">0.03%</td></tr>
+      <tr style="background:var(--bg-aside);font-weight:600;"><td style="padding:8px 12px;border:1px solid var(--border)">LM head (tied to W_E)</td><td style="padding:8px 12px;border:1px solid var(--border);font-family:var(--font-mono);text-align:center">768 × 50257</td><td style="padding:8px 12px;border:1px solid var(--border);text-align:right;font-family:var(--font-mono);color:var(--green)">0 (shared)</td><td style="padding:8px 12px;border:1px solid var(--border);text-align:center;color:var(--green)">0% extra</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">↗ nanoGPT model.py — Karpathy. The _init_weights method: the exact /√(2L) formula and which layers receive it. Lines 152-170.</a>
+  <a href="https://arxiv.org/abs/1502.01852" target="_blank">↗ Delving Deep into Rectifiers — He et al. 2015. He initialisation: N(0, √(2/fan_in)) for ReLU networks. The basis for most modern initialisation schemes.</a>
+  <a href="https://arxiv.org/abs/2310.02994" target="_blank">↗ Scaling Reparameterization — Peng et al. 2023. Analysis of how output projection scaling interacts with residual stream growth at depth — the theoretical basis for the nanoGPT choice.</a>
+</div>
+
+<div class="cell" id="cell-15">
+  <div class="cell-header"><span class="cell-label">▶ Initialisation — why output projections need /√(2L) scaling</span><button class="run-btn" onclick="runCell('cell-15')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(42)
+
+def gauss(std):
+    return random.gauss(0, std)
+
+def simulate_stream_std(n_layers, proj_std, D=64, n_trials=500):
+    """Simulate the residual stream std after n_layers of additions."""
+    final_stds = []
+    for _ in range(n_trials):
+        stream = [gauss(0.02) for _ in range(D)]   # ↑ Initial embedding std=0.02
+        for l in range(n_layers):
+            # Each block adds two corrections: attention output + MLP output
+            # Each has the given proj_std
+            attn_out = [gauss(proj_std) for _ in range(D)]
+            mlp_out  = [gauss(proj_std) for _ in range(D)]
+            stream = [stream[d] + attn_out[d] + mlp_out[d] for d in range(D)]
+        stream_std = math.sqrt(sum(v**2 for v in stream) / D)
+        final_stds.append(stream_std)
+    return sum(final_stds) / len(final_stds)
+
+print("Residual stream std after L layers of additions")
+print("(goal: keep std manageable so LayerNorm doesn't need to work too hard)")
+print()
+print(f"{'Layers':>7}  {'std=0.02 (naive)':>18}  {'std=0.02/√(2L) (scaled)':>25}  {'Target (√(init_var + L×correction_var))'}")
+print("-"*90)
+
+for L in [4, 8, 12, 24, 48, 96]:
+    std_naive  = simulate_stream_std(L, 0.02)              # ↑ No scaling
+    std_scaled = simulate_stream_std(L, 0.02 / math.sqrt(2*L))   # ↑ With /√(2L)
+    target = math.sqrt(0.02**2 + 2*L * (0.02/math.sqrt(2*L))**2)  # ↑ Theoretical
+    print(f"  {L:>5}    {std_naive:>16.4f}    {std_scaled:>23.4f}    {target:.4f} (theory)")
+
+print()
+print("Without scaling: stream std grows as √L — at 96 layers, ~10× larger than init.")
+print("With /√(2L): stream std stays approximately constant regardless of depth.")
+print()
+print("GPT-2 small (12 layers): 0.02 / √24 = 0.02 / 4.899 = 0.00408")
+print(f"  = {0.02 / math.sqrt(24):.5f}")
+print()
+print("GPT-3 (96 layers): 0.02 / √192 = 0.02 / 13.86 = 0.00144")
+print(f"  = {0.02 / math.sqrt(192):.5f}")
+print()
+print("Try changing L to 96 and comparing naive vs scaled — the difference is dramatic.")</pre></div>
+  <div class="cell-output" id="cell-15-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.16 ════ -->
+<section class="section" id="s16">
+<div class="section-label">3.16</div>
+<h2>Induction Heads &amp; In-Context Learning</h2>
+<p>Among the most striking results of mechanistic interpretability is the discovery that a specific circuit — the <strong>induction head</strong> — is responsible for in-context learning. Olsson et al. (2022, "In-context Learning and Induction Heads") showed that induction heads form in 2-layer models after approximately 2 billion training tokens, and that their formation coincides precisely with a sharp phase transition in in-context learning ability. Remove the induction heads, and the model loses its ability to learn from examples in the prompt.</p>
+
+<p>The induction head circuit requires exactly two attention layers working together. <strong>Layer 1 — the prefix head</strong>: attends from each token to the token immediately before it, copying that token's identity into the current residual stream. <strong>Layer 2 — the induction head</strong>: reads the "what came before me" information written by layer 1 and attends back to wherever that pattern appeared previously in the sequence. The combined effect: if the sequence contains [A][B] ... [A], the induction head predicts [B] at the second [A] — it completes the pattern from prior context.</p>
+
+<div class="formula">
+  <span class="eq-label">INDUCTION HEAD — CIRCUIT COMPOSITION (OLSSON ET AL. 2022)</span>
+  prefix_head writes: "token at position i−1 was [X]"
+  induction_head reads: find position j where "token at j−1 was [X]"
+  prediction: token at position j+1
+  <span class="eq-note">This is the mechanism for few-shot learning: [cat → mat] [dog → ???] becomes an induction pattern where "what follows 'dog' in the prior context" is retrieved.</span>
+</div>
+
+<p>Induction heads are universal: they appear in every transformer trained on natural language, code, or arithmetic. They appear in models as small as 2 layers with 2 heads. They are not designed; they emerge spontaneously. Elhage et al. (2022) found that when induction heads form in a 2-layer model, the loss curves show a distinct "kink" — a sudden improvement that corresponds exactly to this circuit self-organising.</p>
+
+<p>The broader implication is profound: in-context learning in a transformer is implemented by a small number of identifiable, composable circuits. The 12 attention heads in GPT-2 small are not all doing the same thing — specific heads implement specific functions. This is the program of mechanistic interpretability: reverse-engineer the algorithm the model has learned, head by head, circuit by circuit.</p>
+
+<div class="callout purple"><strong>Key insight:</strong> The induction head is the simplest example of circuit composition across layers — Layer 1's output is literally the input to Layer 2's key computation. This means two-layer models can implement algorithms that one-layer models cannot: any computation that requires two sequential steps. GPT-2's 12 layers give it room for circuits composed of up to 12 sequential operations, enabling far richer internal algorithms than a shallow model.</div>
+
+<!-- Induction head circuit diagram -->
+<div style="margin:22px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">INDUCTION HEAD CIRCUIT — PATTERN COMPLETION</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;">
+    <div style="font-family:var(--font-mono);font-size:12px;line-height:2;white-space:nowrap;">
+      <div style="color:var(--text-secondary);margin-bottom:4px;">Sequence:&nbsp;&nbsp;</div>
+      <div style="display:flex;gap:6px;margin-bottom:4px;flex-wrap:nowrap;">
+        <span style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-aside);">the</span>
+        <span style="padding:4px 8px;border:2px solid var(--amber);border-radius:4px;background:var(--amber-light);color:var(--amber);">cat</span>
+        <span style="padding:4px 8px;border:2px solid var(--blue);border-radius:4px;background:var(--blue-light);color:var(--blue);">sat</span>
+        <span style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-aside);">on</span>
+        <span style="padding:4px 8px;border:2px solid var(--amber);border-radius:4px;background:var(--amber-light);color:var(--amber);">cat</span>
+        <span style="padding:4px 8px;border:2px solid var(--green);border-radius:4px;background:var(--green-light);color:var(--green);">→ sat?</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;">
+        Prefix head (L1): [cat₂] writes "I was preceded by 'cat'" → [sat₃] sees "what follows 'cat'"<br>
+        Induction head (L2): query "what follows 'cat'?" → attends to [sat₃] → predicts "sat"<br>
+        <span style="color:var(--green)">Pattern: [A][B] ... [A] → predict [B]. Works for any A, any B.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html" target="_blank">↗ In-context Learning and Induction Heads — Olsson et al. 2022 (Anthropic). The paper that identified induction heads as the mechanism for in-context learning. Section 5: the ablation experiment proving heads are causal.</a>
+  <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank">↗ A Mathematical Framework for Transformer Circuits — Elhage et al. 2021. Section 4: composition of QK and OV circuits across layers — the formal machinery for understanding how induction heads work.</a>
+  <a href="https://arxiv.org/abs/2209.11895" target="_blank">↗ Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small — Wang et al. 2022. Reverse-engineers a 13-component circuit across all 12 layers of GPT-2 small — the most complete mechanistic analysis of a real task.</a>
+</div>
+
+<div class="cell" id="cell-16">
+  <div class="cell-header"><span class="cell-label">▶ Induction head — simulate the circuit detecting repeated patterns</span><button class="run-btn" onclick="runCell('cell-16')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+
+def softmax(x):
+    mx = max(x); e = [math.exp(v-mx) for v in x]; s = sum(e); return [v/s for v in e]
+
+# Simulate a simplified induction head circuit
+# Vocabulary: small for demo
+vocab = ["the", "cat", "sat", "on", "mat", "dog", "ran", "off"]
+V = len(vocab)
+tok2id = {w: i for i, w in enumerate(vocab)}
+id2tok = {i: w for w, i in tok2id.items()}
+
+# Test sequence: has a repeated pattern [cat][sat] ... [cat][?]
+# The induction head should predict "sat" at the second occurrence
+sequence = ["the", "cat", "sat", "on", "the", "cat"]
+
+print("Induction head circuit demonstration")
+print(f"Sequence: {' '.join(sequence)}")
+print()
+
+# LAYER 1 — PREFIX HEAD
+# Each position i writes "what came at position i-1" into the stream.
+# Simplified: position_signal[i] = token_id at position i-1 (else -1)
+prefix_signal = [-1] + [tok2id[t] for t in sequence[:-1]]
+print("Layer 1 (prefix head) — 'what preceded me?'")
+for i, (tok, prev_id) in enumerate(zip(sequence, prefix_signal)):
+    prev = id2tok[prev_id] if prev_id >= 0 else "START"
+    print(f"  pos {i}: '{tok}' ← was preceded by '{prev}'")
+print()
+
+# LAYER 2 — INDUCTION HEAD
+# Current query at position T-1: "I was preceded by 'cat' (id=1)"
+# Find: where else in the sequence was 'cat' (id=1) the preceding token?
+current_pos = len(sequence) - 1
+current_prev_id = prefix_signal[current_pos]
+
+print(f"Layer 2 (induction head) — query at pos {current_pos}: '{sequence[current_pos]}'")
+print(f"  'I was preceded by: {id2tok[current_prev_id]}'")
+print(f"  Searching for positions where the same predecessor appeared...")
+print()
+
+# Compute attention scores: high where prefix_signal matches
+scores = []
+for j in range(current_pos + 1):  # causal: can only attend to past + self
+    if j == 0:
+        scores.append(-1e9)  # ↑ No predecessor at position 0 (masked)
+    elif prefix_signal[j] == current_prev_id:
+        scores.append(5.0)   # ↑ Strong match: same predecessor!
+    else:
+        scores.append(0.1)   # ↑ Weak: different predecessor
+
+weights = softmax(scores)
+
+print("Attention weights (induction head, current query):")
+for j, (tok, w) in enumerate(zip(sequence, weights)):
+    if j <= current_pos:
+        bar = "█" * int(w * 20)
+        flag = " ← MATCH!" if prefix_signal[j] == current_prev_id and j > 0 else ""
+        print(f"  pos {j}: '{tok:>4}' | {w:.4f} {bar}{flag}")
+
+# The induction head attends to position where cat→sat occurred
+# Then predicts what followed THAT position
+best_match = max(range(current_pos+1), key=lambda j: weights[j])
+if best_match + 1 < len(sequence):
+    prediction = sequence[best_match + 1]
+    print(f"\nPrediction: attend to pos {best_match} ('{sequence[best_match]}')")
+    print(f"  → next token after that was: '{prediction}'")
+    print(f"  → induction head predicts: '{prediction}'  ✓")
+print()
+print("This is in-context learning: the pattern [cat][sat] seen in the prompt")
+print("is retrieved and completed at the second [cat], without any weight updates.")</pre></div>
+  <div class="cell-output" id="cell-16-out">Click Run to execute.</div>
+</div>
+
+<hr class="section-divider">
+</section>
+
+<!-- ════════════════════════════════════ §3.17 ════ -->
+<section class="section" id="s17">
+<div class="section-label">3.17</div>
+<h2>The Generation Loop &amp; Sampling Strategies</h2>
+<p>Everything in this chapter converges on a single function: <strong>generate</strong>. Given a prompt of T tokens, the model runs a forward pass producing logits[T−1] — a 50,257-dimensional vector of unnormalised log-probabilities over the next token. One token is sampled or selected. It is appended to the context. The forward pass runs again for position T+1. This continues until an end-of-sequence token is produced or a length limit is hit. The KV cache (§3.14) means only the new token needs a full forward pass; all previous keys and values are already computed.</p>
+
+<p>The choice of how to select from the logit distribution has dramatic consequences for output quality. Five strategies, from simplest to most sophisticated:</p>
+
+<ul style="margin:12px 0 18px 24px;line-height:2.2;">
+  <li><strong>Greedy (argmax)</strong>: Always take the highest-probability token. Fast, deterministic, but repetitive — the model gets stuck in loops. Collapsed to 0 diversity.</li>
+  <li><strong>Top-k sampling</strong> (Fan et al. 2018): Keep only the k highest-probability tokens, renormalise, and sample. k=50 is common. Prevents very low-probability tokens from occasionally polluting output.</li>
+  <li><strong>Top-p (nucleus) sampling</strong> (Holtzman et al. 2019): Keep the smallest set of tokens whose probabilities sum to at least p. p=0.9 is typical. Adapts to the distribution — when the model is confident, only 2–3 tokens pass the threshold; when uncertain, 50+ tokens contribute.</li>
+  <li><strong>Temperature scaling</strong>: Divide all logits by T before softmax. T&lt;1 makes the distribution sharper (more deterministic). T&gt;1 makes it flatter (more random). T=1 is the raw model probability. nanoGPT uses T=1.0 by default.</li>
+  <li><strong>Min-p sampling</strong> (Nguyen 2023): Filter tokens below min_p × max_probability. Adaptive like nucleus but threshold scales with the peak probability — tighter filtering when confident.</li>
+</ul>
+
+<div class="formula">
+  <span class="eq-label">TEMPERATURE-SCALED SAMPLING (INFERENCE)</span>
+  p_i = exp(z_i / T) / Σⱼ exp(zⱼ / T)
+  <span class="eq-note">T=0.0: argmax (greedy). T=1.0: raw model probabilities. T=2.0: near-uniform. GPT-4 default: T=1.0 + top_p=1.0 for chat, T=0 for code.</span>
+</div>
+
+<p>The <strong>prefill vs decode</strong> distinction is the most important operational fact about LLM inference. Prefill: all T prompt tokens are processed in one parallel forward pass — O(T²) attention computation, but highly parallelisable, runs fast on GPU. Decode: each new token is one sequential step — O(T) attention (thanks to KV cache), but sequential and cannot be parallelised across tokens. This asymmetry is why latency to first token (TTFT) scales with prompt length, but subsequent token generation speed (throughput) is nearly constant.</p>
+
+<div class="callout"><strong>Key insight:</strong> The generation loop is the transformer's bottleneck in production. The KV cache trades memory for speed — it converts O(N²) recomputation into O(N) memory reads. But at scale (batch size 128, context 8K, 70B model), the KV cache alone requires 14.7 GB × 128 = 1.88 TB of memory — impossible on a single node. Production LLM serving systems (vLLM, TensorRT-LLM) use PagedAttention (Kwon et al. 2023) to page-manage the KV cache like virtual memory, enabling tens of thousands of concurrent requests on the same GPU cluster.</div>
+
+<!-- Generation loop phases -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;">
+  <div style="border:2px solid var(--blue);border-radius:8px;padding:16px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px;">PREFILL PHASE</div>
+    <div style="font-size:13px;line-height:1.9;color:var(--text-secondary);">
+      <div>Input: T prompt tokens</div>
+      <div>Computation: O(T²) attention</div>
+      <div>Parallelism: <strong style="color:var(--blue)">full</strong> — all T tokens at once</div>
+      <div>Result: KV cache filled for T tokens</div>
+      <div>Bottleneck: <strong>compute</strong></div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--blue);margin-top:10px;background:var(--blue-light);padding:8px;border-radius:4px;">token→token→token→...→ first output token</div>
+  </div>
+  <div style="border:2px solid var(--accent);border-radius:8px;padding:16px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;">DECODE PHASE</div>
+    <div style="font-size:13px;line-height:1.9;color:var(--text-secondary);">
+      <div>Input: 1 new token at a time</div>
+      <div>Computation: O(N) per step (KV cache)</div>
+      <div>Parallelism: <strong style="color:var(--accent)">none</strong> — sequential</div>
+      <div>Result: new token appended to context</div>
+      <div>Bottleneck: <strong>memory bandwidth</strong></div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);margin-top:10px;background:var(--accent-light);padding:8px;border-radius:4px;">→ tok_T+1 → tok_T+2 → tok_T+3 → ...</div>
+  </div>
+</div>
+
+<!-- nanoGPT generate function -->
+<div class="code-block">
+  <div class="code-header"><span class="code-filename">nanogpt_generate.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+<pre><code><span class="kw">@torch.no_grad</span>()
+<span class="kw">def</span> <span class="fn">generate</span>(<span class="pr">self</span>, idx, max_new_tokens, temperature=<span class="nu">1.0</span>, top_k=<span class="kw">None</span>):
+    <span class="st">"""idx: (B, T) LongTensor of prompt token ids."""</span>
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="bi">range</span>(max_new_tokens):
+        idx_cond = idx <span class="kw">if</span> idx.<span class="fn">size</span>(<span class="nu">1</span>) &lt;= <span class="pr">self</span>.config.block_size <span class="kw">else</span> idx[:, -<span class="pr">self</span>.config.block_size:]
+        <span class="lm">        # ↑ Truncate to max context (block_size=1024 for GPT-2).
+        #   The model cannot process sequences longer than it was trained on.</span>
+
+        logits, _ = <span class="pr">self</span>(idx_cond)
+        <span class="lm">        # ↑ Full forward pass. Returns logits of shape (B, T, vocab_size).
+        #   Note: no KV cache in nanoGPT — educational simplicity over speed.</span>
+
+        logits = logits[:, <span class="nu">-1</span>, :] / temperature
+        <span class="lm">        # ↑ Take ONLY the last position's logits (that's the prediction for token T+1).
+        #   Divide by temperature: T&lt;1 → sharper, T&gt;1 → flatter distribution.</span>
+
+        <span class="kw">if</span> top_k <span class="kw">is not None</span>:
+            v, _ = torch.<span class="fn">topk</span>(logits, <span class="fn">min</span>(top_k, logits.<span class="fn">size</span>(-<span class="nu">1</span>)))
+            logits[logits &lt; v[:, [-<span class="nu">1</span>]]] = <span class="nu">-float</span>(<span class="st">'Inf'</span>)
+            <span class="lm">            # ↑ Top-k: zero out all logits below the k-th highest.
+            #   After softmax, only top-k tokens have nonzero probability.</span>
+
+        probs = <span class="cl">F</span>.<span class="fn">softmax</span>(logits, dim=<span class="nu">-1</span>)
+        <span class="lm">        # ↑ Convert logits to probabilities. Shape: (B, vocab_size).</span>
+
+        idx_next = torch.<span class="fn">multinomial</span>(probs, num_samples=<span class="nu">1</span>)
+        <span class="lm">        # ↑ Sample one token from the probability distribution.
+        #   multinomial is stochastic — each call gives different output.
+        #   Use temperature=0+argmax for greedy/deterministic generation.</span>
+
+        idx = torch.<span class="fn">cat</span>((idx, idx_next), dim=<span class="nu">1</span>)
+        <span class="lm">        # ↑ Append the new token. Next iteration: T → T+1.
+        #   The autoregressive loop: every output token becomes part of input.</span>
+
+    <span class="kw">return</span> idx</code></pre>
+</div>
+
+<div class="deepdive">
+  <div class="deepdive-label">Deep Dive — Learn More</div>
+  <a href="https://arxiv.org/abs/1904.09751" target="_blank">↗ The Curious Case of Neural Text Degeneration — Holtzman et al. 2019. Introduces nucleus (top-p) sampling. Table 1: quantitative comparison showing why greedy/beam produce degenerate text while nucleus does not.</a>
+  <a href="https://arxiv.org/abs/2309.00071" target="_blank">↗ Efficient Memory Management for Large Language Model Serving with PagedAttention — Kwon et al. 2023. vLLM paper. Treats KV cache as paged virtual memory, achieving 24× higher throughput than HuggingFace Transformers at the same latency SLA.</a>
+  <a href="https://arxiv.org/abs/2211.05102" target="_blank">↗ Efficiently Scaling Transformer Inference — Pope et al. 2022 (Google). The most rigorous analysis of prefill vs decode arithmetic intensity, when models are compute-bound vs memory-bound, and how to schedule batches accordingly.</a>
+</div>
+
+<div class="cell" id="cell-17">
+  <div class="cell-header"><span class="cell-label">▶ Sampling strategies — compare greedy, top-k, top-p, temperature on a fixed logit distribution</span><button class="run-btn" onclick="runCell('cell-17')">▶ Run</button></div>
+  <div class="cell-code"><pre>import math, random
+random.seed(0)
+
+# Simulate a realistic next-token logit distribution
+# (as if the model is about to continue "the cat sat on the")
+vocab = ["mat", "floor", "roof", "sofa", "bed", "chair", "table",
+         "ground", "rug", "grass", "step", "porch", "lap", "shelf"]
+N = len(vocab)
+
+# Raw logits — "mat" is most likely, rest are spread out
+logits = [4.2, 1.8, 0.5, 0.9, 0.7, 1.1, 0.4, 1.3, 1.0, 0.6, 0.3, 0.2, 0.8, 0.1]
+assert len(logits) == N
+
+def softmax(x):
+    mx = max(x); e = [math.exp(v-mx) for v in x]; s = sum(e); return [v/s for v in e]
+
+def sample_categorical(probs, rand_val):
+    """Sample from categorical distribution given a uniform random value."""
+    cumsum = 0
+    for i, p in enumerate(probs):
+        cumsum += p
+        if rand_val <= cumsum:
+            return i
+    return len(probs) - 1
+
+def top_k_filter(logits, k):
+    """Zero out all but top-k logits."""
+    indexed = sorted(enumerate(logits), key=lambda x: -x[1])
+    threshold = indexed[k-1][1]
+    return [l if l >= threshold else -1e9 for l in logits]
+
+def top_p_filter(logits, p):
+    """Keep smallest set of tokens summing to >= p probability."""
+    probs = softmax(logits)
+    sorted_idx = sorted(range(N), key=lambda i: -probs[i])
+    cum_p = 0
+    keep = set()
+    for i in sorted_idx:
+        cum_p += probs[i]
+        keep.add(i)
+        if cum_p >= p: break
+    return [logits[i] if i in keep else -1e9 for i in range(N)]
+
+# Show probabilities under each strategy
+base_probs = softmax(logits)
+print(f"{'Token':>8}  {'Raw logit':>10}  {'Base prob':>10}  {'T=0.5':>8}  {'T=2.0':>8}  {'Top-k=3':>8}  {'Top-p=0.9':>10}")
+print("-"*75)
+for i in range(N):
+    p_cold  = softmax([l/0.5 for l in logits])[i]    # ↑ Low temp = sharper
+    p_warm  = softmax([l/2.0 for l in logits])[i]    # ↑ High temp = flatter
+    p_topk  = softmax(top_k_filter(logits, 3))[i]    # ↑ Only top 3 tokens
+    p_topp  = softmax(top_p_filter(logits, 0.9))[i]  # ↑ Tokens summing to 0.9
+    bar = "█" * int(base_probs[i] * 20)
+    print(f"  {vocab[i]:>6}  {logits[i]:>10.2f}  {base_probs[i]:>8.4f} {bar:<8}  {p_cold:>6.4f}  {p_warm:>6.4f}  {p_topk:>6.4f}  {p_topp:>10.4f}")
+
+print()
+# Show how many tokens are in the nucleus at p=0.9
+nucleus = top_p_filter(logits, 0.9)
+in_nucleus = sum(1 for l in nucleus if l > -1e4)
+print(f"Top-p=0.9 nucleus size: {in_nucleus} tokens (out of {N})")
+print(f"  → the model is fairly confident: only {in_nucleus} tokens pass the 90% threshold")
+
+print()
+print("Simulate 10 greedy vs 10 nucleus samples (seed varies):")
+for trial in range(10):
+    r = (trial * 7.3 + 1.1) % 1.0  # deterministic "random" for demo
+    greedy = vocab[max(range(N), key=lambda i: base_probs[i])]
+    nucleus_probs = softmax(top_p_filter(logits, 0.9))
+    sampled = vocab[sample_categorical(nucleus_probs, r)]
+    print(f"  trial {trial+1:2d}: greedy='{greedy}', nucleus='{sampled}'")</pre></div>
+  <div class="cell-output" id="cell-17-out">Click Run to execute.</div>
+</div>
+
+<!-- Summary table -->
+<div style="margin:32px 0;">
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:10px;">CHAPTER 3 SUMMARY — ALL DESIGN DECISIONS IN ONE TABLE</div>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+      <thead><tr style="background:var(--bg-aside);">
+        <th style="padding:8px 12px;border:1px solid var(--border);text-align:left">Design choice</th>
+        <th style="padding:8px 12px;border:1px solid var(--border)">GPT-2 value</th>
+        <th style="padding:8px 12px;border:1px solid var(--border)">LLaMA-3 70B</th>
+        <th style="padding:8px 12px;border:1px solid var(--border);text-align:left">Why it matters</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">d_model</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">768</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">8,192</td><td style="padding:7px 12px;border:1px solid var(--border)">Residual stream capacity</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">n_layers</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">12</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">80</td><td style="padding:7px 12px;border:1px solid var(--border)">Circuit depth; gradient path length</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">n_heads</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">12</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">64 Q / 8 KV</td><td style="padding:7px 12px;border:1px solid var(--border)">Parallel relational subspaces; KV cache size</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">d_head</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">64</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">128</td><td style="padding:7px 12px;border:1px solid var(--border)">√d_k scaling; attention expressivity per head</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">FFN expansion</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">4× (GELU)</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">8/3× (SwiGLU)</td><td style="padding:7px 12px;border:1px solid var(--border)">Key-value memory capacity; activation sparsity</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">Positional encoding</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">learned abs</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">RoPE (500k)</td><td style="padding:7px 12px;border:1px solid var(--border)">Context extrapolation; relative position</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">Normalisation</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">pre-LN</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">pre-RMSNorm</td><td style="padding:7px 12px;border:1px solid var(--border)">Gradient stability; 7% speed gain for RMSNorm</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">KV sharing</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">MHA (none)</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">GQA (G=8)</td><td style="padding:7px 12px;border:1px solid var(--border)">KV cache size: 8× smaller, near-MHA quality</td></tr>
+        <tr><td style="padding:7px 12px;border:1px solid var(--border)">Flash Attention</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">no (orig)</td><td style="padding:7px 12px;border:1px solid var(--border);text-align:center;font-family:var(--font-mono)">yes (FA2)</td><td style="padding:7px 12px;border:1px solid var(--border)">8× less HBM IO; 3× wall-clock speedup</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="section-divider">
+</section>
+
 </main>
+</div>
+
+<div class="container">
+  <div class="continue-bar" style="margin-top:40px;margin-bottom:20px;">
+    <a href="chapter2.html" class="continue-btn prev">
+      <span class="continue-chapter">← Chapter 2</span>
+      Working with Text Data
+    </a>
+    <a href="chapter4.html" class="continue-btn next">
+      <span class="continue-chapter">Chapter 4 →</span>
+      Implementing GPT
+    </a>
+  </div>
 </div>
 
 <script>
