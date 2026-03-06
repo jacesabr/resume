@@ -1327,6 +1327,7 @@ print(f"\n1B tokens, T=1024, stride=512 -> {examples_1B:,} training windows.")
   <div class="code-block">
     <div class="code-header">
       <span class="code-filename">dataloader.py</span>
+      <a href="https://colab.research.google.com/#create=true" target="_blank" class="code-colab" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a>
       <button class="code-copy" onclick="copyCode(this)">Copy</button>
     </div>
 <pre><code><span class="kw">import</span> torch
@@ -1808,6 +1809,7 @@ print("The dot product q·k then depends on (pos_q - pos_k), not absolute positi
   <div class="code-block">
     <div class="code-header">
       <span class="code-filename">gpt2_input.py — GPT-2 forward pass (input stage only)</span>
+      <a href="https://colab.research.google.com/#create=true" target="_blank" class="code-colab" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a>
       <button class="code-copy" onclick="copyCode(this)">Copy</button>
     </div>
 <pre><code><span class="kw">import</span> torch
@@ -2328,6 +2330,143 @@ print("  Shannon entropy of English: ~1.0 BPC (theoretical minimum)")
 </section>
 
 <!-- ══════════════════════════════════════════════════════════ -->
+<!-- §2.16  Common Misconceptions                               -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section class="section" id="s16">
+  <div class="section-label">2.16</div>
+  <h2>Common Misconceptions</h2>
+
+  <p>Several persistent misunderstandings about the input pipeline are worth correcting explicitly, because they lead to wrong intuitions about what the model is actually doing.</p>
+
+  <div style="margin:22px 0;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <p style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:14px;">"The embeddings are random numbers"</p>
+      <p style="margin:0;">They <em>start</em> random (initialised from N(0, 0.02) in GPT-2). But they are <code>nn.Parameter</code> objects &mdash; they participate in backpropagation and get updated every training step. After training on billions of tokens, each 768-number vector encodes rich semantic meaning. Similar words ("cat" and "dog") end up close together in the 768-dimensional space; unrelated words ("cat" and "piano") end up far apart. The geometry is the entire point &mdash; it emerges from next-token prediction, not from any explicit programming.</p>
+    </div>
+
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <p style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:14px;">"Token and positional embeddings are the same table"</p>
+      <p style="margin:0;">They are two completely separate <code>nn.Embedding</code> layers with different sizes and purposes. The token table (<code>wte</code>) has <strong>50,257 rows</strong> &mdash; one per vocabulary token. The positional table (<code>wpe</code>) has only <strong>1,024 rows</strong> &mdash; one per position in the context window. They learn different things: meaning vs. position. The token embedding for "cat" is the same regardless of where "cat" appears in the sequence; the positional embedding for position 3 is the same regardless of which token sits there.</p>
+    </div>
+
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <p style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:14px;">"Why addition and not concatenation?"</p>
+      <p style="margin:0;">Concatenation would double the vector size (768 &rarr; 1,536), increasing compute cost for everything downstream &mdash; every attention head, every FFN layer, every layer norm. Addition keeps the same dimensionality. It works because the model learns during training to place token meaning and position identity in approximately orthogonal subspaces of the 768-dimensional space. The information blends without interference. This was a design choice in the original Vaswani et al. 2017 paper, and it has held up across every major architecture since.</p>
+    </div>
+
+    <div style="padding:16px 20px;">
+      <p style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:14px;">"nn.Embedding does complex math"</p>
+      <p style="margin:0;">It is literally an index lookup &mdash; give it ID 367, get back row 367. It is mathematically equivalent to one-hot encoding followed by a matrix multiply, but it skips all the multiplications by zero. <code>nn.Embedding(50257, 768)</code> allocates a [50,257 &times; 768] weight matrix; calling it with an integer index returns that row. It is a memory operation, not a compute operation, making it extremely fast on GPUs. The key subtlety: even though it is "just a lookup," the table weights are <code>nn.Parameter</code> objects &mdash; they receive gradients and get updated during training.</p>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="callout blue"><strong>The deepest misconception</strong> is thinking that the input pipeline requires complex mathematics. Everything before the transformer blocks is either a <strong>lookup</strong> (embedding tables) or an <strong>addition</strong> (token + position). No matrix multiplies, no activation functions, no attention. The real complexity begins in the transformer blocks (Chapter 3). The input pipeline's job is simply to convert text into a (B, T, 768) tensor &mdash; and it does so with elegant simplicity.</div>
+
+  <div class="cell" id="run-2-16">
+    <div class="cell-header">
+      <span class="cell-label">&#9654; Try it &mdash; Prove that nn.Embedding is just an index lookup</span>
+      <button class="run-btn" onclick="runCode('run-2-16')">Run</button>
+    </div>
+    <div class="cell-code"><pre>import random, math
+
+random.seed(42)
+
+# Simulate nn.Embedding: it's just a 2D list (matrix) with row lookup
+class FakeEmbedding:
+    def __init__(self, num_rows, num_cols):
+        # Initialize random weights (like nn.Embedding does)
+        self.weight = [[random.gauss(0, 0.02) for _ in range(num_cols)]
+                       for _ in range(num_rows)]
+        self.num_rows = num_rows
+        self.num_cols = num_cols
+
+    def __call__(self, indices):
+        """This is ALL nn.Embedding does: return weight[index] for each index."""
+        return [self.weight[i] for i in indices]
+
+# Create two separate tables — just like GPT-2
+tok_emb = FakeEmbedding(50257, 768)   # token embedding: 50,257 rows
+pos_emb = FakeEmbedding(1024, 768)    # position embedding: 1,024 rows
+
+print("=== Misconception 1: 'They are the same table' ===")
+print(f"Token embedding:    {tok_emb.num_rows} rows x {tok_emb.num_cols} cols = {tok_emb.num_rows * tok_emb.num_cols:,} params")
+print(f"Position embedding: {pos_emb.num_rows} rows x {pos_emb.num_cols} cols = {pos_emb.num_rows * pos_emb.num_cols:,} params")
+print(f"Completely separate tables with different sizes.\n")
+
+# Show the lookup is just indexing
+print("=== Misconception 2: 'It does complex math' ===")
+token_ids = [464, 3797, 3332]  # "The cat sat"
+positions = [0, 1, 2]
+
+tok_vecs = tok_emb(token_ids)
+pos_vecs = pos_emb(positions)
+
+print(f"tok_emb([464, 3797, 3332]) = 3 rows from the token table")
+print(f"  Token 464 -> [{tok_vecs[0][0]:.4f}, {tok_vecs[0][1]:.4f}, {tok_vecs[0][2]:.4f}, ... 768 dims]")
+print(f"pos_emb([0, 1, 2])         = 3 rows from the position table")
+print(f"  Pos 0   -> [{pos_vecs[0][0]:.4f}, {pos_vecs[0][1]:.4f}, {pos_vecs[0][2]:.4f}, ... 768 dims]")
+
+# Show addition vs concatenation
+print(f"\n=== Misconception 3: 'Why not concatenation?' ===")
+# Addition: same dimension
+added = [t + p for t, p in zip(tok_vecs[0], pos_vecs[0])]
+print(f"Addition:       768 dims -> 768 dims (same size, downstream is efficient)")
+# Concatenation: doubled dimension
+concat = tok_vecs[0] + pos_vecs[0]  # list concatenation
+print(f"Concatenation:  768 dims -> {len(concat)} dims (doubled! every layer would be 2x slower)")
+
+ratio = len(concat) / len(added)
+print(f"\nConcat would make every downstream operation {ratio:.0f}x more expensive.")
+print(f"Addition works because the model learns orthogonal subspaces during training.")
+
+# One-hot equivalence proof
+print(f"\n=== Bonus: Embedding lookup = one-hot x matrix ===")
+V_tiny, d_tiny = 5, 3
+table = [[random.gauss(0, 0.5) for _ in range(d_tiny)] for _ in range(V_tiny)]
+token_id = 2
+
+# Method 1: direct lookup
+direct = table[token_id]
+
+# Method 2: one-hot multiply (what nn.Embedding avoids)
+one_hot = [1.0 if i == token_id else 0.0 for i in range(V_tiny)]
+matmul = [sum(one_hot[i] * table[i][j] for i in range(V_tiny)) for j in range(d_tiny)]
+
+print(f"Direct lookup of row {token_id}: {[f'{x:.3f}' for x in direct]}")
+print(f"One-hot x matrix:               {[f'{x:.3f}' for x in matmul]}")
+print(f"Identical? {all(abs(a-b) < 1e-10 for a,b in zip(direct, matmul))}")
+print(f"But one-hot multiply does {V_tiny} x {d_tiny} = {V_tiny*d_tiny} multiplications (mostly by 0)")
+print(f"Direct lookup does 0 multiplications — just returns the row.")
+print(f"At GPT-2 scale: avoids 50,257 x 768 = {50257*768:,} wasted multiplications per token.")</pre></div>
+    <div class="cell-output"></div>
+  </div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- §2.17  What Comes Next — The Transformer                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section class="section" id="s17">
+  <div class="section-label">2.17</div>
+  <h2>What Comes Next &mdash; The Transformer</h2>
+
+  <p>The input embeddings are the finished product of this chapter. A (B, T, 768) tensor where every position encodes both <em>what the token means</em> (from the token embedding) and <em>where it sits</em> (from the positional embedding). This tensor flows into the transformer blocks &mdash; and everything changes.</p>
+
+  <p>Each transformer block contains two operations: <strong>masked self-attention</strong> (where each token looks at all previous tokens and asks "how relevant are you to me?" via dot-product scores) and a <strong>feed-forward network</strong> (which processes what attention gathered). The critical insight: the shape stays constant through every block. What changes is the <em>meaning</em> packed into those 768 numbers. At the start: "this word at this position." At the end: "this word, in context, considering everything before it." Block 1 picks up shallow patterns ("sat" is near "cat"). Block 12 encodes deep abstractions (narrative coherence, topic tracking). Same shape, vastly richer content.</p>
+
+  <p>After the final block, each token's 768-dimensional vector is projected to 50,257 logits (one score per vocabulary word), softmax converts these to probabilities, and the highest-probability token is selected. Append it, feed the whole sequence back in, and repeat. This autoregressive loop is how GPT generates text &mdash; and the entire model runs from scratch for every single new token. There is no persistent memory between steps; the only "memory" is the growing sequence of tokens being fed back as input. Chapter 3 builds every component of this machinery from scratch.</p>
+
+  <div class="callout green"><strong>Everything in this pipeline</strong> &mdash; token embeddings, positional embeddings, Q/K/V matrices, FFN weights, and the output linear layer &mdash; starts as random numbers. Training on billions of tokens shapes all of these parameters so that the mechanical operations (lookups, dot products, matrix multiplies, softmax) produce the emergent effect of language understanding. There is no explicit programming of grammar or meaning. The model discovers these patterns purely from next-token prediction.</div>
+
+  <hr class="section-divider">
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ -->
 <!-- Summary                                                   -->
 <!-- ══════════════════════════════════════════════════════════ -->
 <section class="section" id="summary">
@@ -2357,6 +2496,8 @@ print("  Shannon entropy of English: ~1.0 BPC (theoretical minimum)")
       <tr><td><strong>Byte fallback</strong></td><td>UTF-8 chars encode to 1–4 bytes. GPT-2's bytes-to-unicode bijection enables any byte sequence to be tokenized. Japanese/CJK: 3 bytes/char = 3 tokens in English-centric vocab without CJK merges.</td></tr>
       <tr><td><strong>Token fertility</strong></td><td>Tokens per semantic unit. English: 1.3 tok/word. Amharic: 10× more tokens for same content. Larger vocabulary → lower fertility for non-English. Fertility disparity = cost and quality bias against non-English users.</td></tr>
       <tr><td><strong>Information-theoretic view</strong></td><td>BPE minimizes average token count ≈ minimizes per-token entropy. PPL = exp(mean cross-entropy). BPC = bits per character. Shannon entropy of English ≈ 1.0 BPC. GPT-4 class: ~0.9 BPC.</td></tr>
+      <tr><td><strong>Common misconceptions</strong></td><td>Embeddings start random but become meaningful via backpropagation. Token and positional embeddings are separate tables. Addition (not concatenation) preserves dimensionality. nn.Embedding is a pure index lookup, not a matrix multiply.</td></tr>
+      <tr><td><strong>What comes next</strong></td><td>The (B, T, 768) input tensor flows into transformer blocks: masked self-attention (cross-token context) + FFN (per-token processing). Shape stays constant; meaning deepens through each block. After the final block: project to 50,257 logits, softmax, sample. Repeat autoregressively.</td></tr>
     </tbody>
   </table>
 </section>

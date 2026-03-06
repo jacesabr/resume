@@ -278,7 +278,7 @@ for g, desc in groups:
 <p>The head adds almost no parameters. A 5-class sentiment classifier on GPT-2 small (768-dimensional hidden states): <code>Linear(768, 5)</code> = 768 &times; 5 + 5 = 3,845 parameters. The full GPT-2 small has 117,000,000 parameters. The head is 0.0033% of the model. For binary classification (spam / ham): <code>Linear(768, 2)</code> = 1,538 parameters. When doing pure feature extraction with a frozen backbone, those 1,538 parameters are the only ones that change during the entire training run. The pretrained model contributes 99.9987% of the computation; the head finds which linear direction in the existing representation space separates the classes.</p>
 <div class="callout blue"><strong>Key insight:</strong> The classification head does not add knowledge &mdash; it locates the direction in the pretrained representation space that separates your target classes. That direction almost certainly already exists in the 768-dimensional space; the head is a search algorithm, not a learning algorithm.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">classifier_head.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">classifier_head.py</span><a href="https://colab.research.google.com/#create=true" target="_blank" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
 
 <span class="kw">class</span> <span class="cl">GPTClassifier</span>(nn.Module):
@@ -449,7 +449,7 @@ for size, rule in rules:
 <p>To counteract the class imbalance, weight the loss by the inverse class frequency: the spam class weight = total / (2 &times; spam_count) &asymp; 3.73; the ham class weight &asymp; 0.58. Every spam example then contributes 3.73/0.58 &asymp; 6.4&times; more gradient signal than a ham example, effectively equalising the model's exposure to both classes. A fine-tuned GPT-2 with this weighting achieves F1 &asymp; 0.97&ndash;0.99 on the spam class. The performance comes almost entirely from the pretrained representations: the model already understands phrases like &ldquo;FREE entry&rdquo; and &ldquo;claim your prize&rdquo;; it just needs to learn that those patterns map to class 1.</p>
 <div class="callout green"><strong>Key insight:</strong> The SMS Spam Collection is 86.6% ham. A model predicting ham always achieves 86.6% accuracy, 0% spam recall, and F1 = 0.000. Never report accuracy as the primary metric on an imbalanced dataset. The baseline to beat is F1 &asymp; 0.00, not accuracy 86.6%.</div>
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">spam_trainer.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">spam_trainer.py</span><a href="https://colab.research.google.com/#create=true" target="_blank" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><span class="kw">from</span> transformers <span class="kw">import</span> GPT2Tokenizer
 <span class="kw">import</span> torch, torch.nn <span class="kw">as</span> nn
 

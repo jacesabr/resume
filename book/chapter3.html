@@ -414,93 +414,9 @@ print("Try increasing D to 768 (GPT-2 small) and watch the pattern hold.")</pre>
 <section class="section" id="s2">
 <div class="section-label">3.2</div>
 <h2>Token Embeddings &amp; the Vocabulary</h2>
-<p>Before any computation can begin, the model must convert discrete tokens — integers from 0 to 50,256 — into continuous vectors it can do linear algebra on. The <strong>embedding matrix</strong> W_E is a lookup table of shape [vocab_size, d_model]. Token ID 0 maps to row 0, token ID 42 maps to row 42. For GPT-2 small: [50,257 × 768] = <strong>38.6 million parameters</strong>. That's 31% of the model's total 124M, just for this one table.</p>
-<p>Proximity in embedding space encodes semantic similarity. After training, <code>king − man + woman ≈ queen</code> holds geometrically. The embedding for "Paris" and "Lyon" are close; "Paris" and "photosynthesis" are far. These relationships emerge purely from predicting next tokens on enough text — no supervised labels needed.</p>
-<p>There's a counterintuitive paradox: antonyms like "hot" and "cold" end up <em>close</em> in embedding space. They appear in identical contexts ("the weather was very ___"), so the model learns similar representations for both. Embeddings capture distributional context, not semantic meaning in the human sense.</p>
-<p><strong>The vocabulary padding trick</strong>: GPT-2's BPE tokenizer produces exactly 50,257 tokens. nanoGPT uses <strong>50,304</strong> instead — 47 phantom tokens that are never used. Why? 50,304 = 786 × 64 — the nearest multiple of 64 above 50,257. The LM head is a matrix multiply of shape [seq_len, 768] × [768, vocab_size]. When vocab_size is a multiple of 64, CUDA tensor cores operate at full warp occupancy on this matmul. Karpathy reported <strong>~25% training speedup</strong> from this single change with zero modeling cost.</p>
-
-<div class="callout amber"><strong>Key insight:</strong> A multiple-of-64 dimension isn't a modeling choice — it's a hardware alignment trick. CUDA GPU warps process groups of 32 threads; tensor core tiles are 8×8 or 16×16 elements. An unaligned dimension forces the kernel to pad internally with partial warps, wasting compute. Pad it yourself to the nearest multiple of 64 and the compiler takes a fully-optimised path.</div>
-
-<!-- Vocab padding diagram -->
-<div style="margin:22px 0;">
-  <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.8px;margin-bottom:8px;">VOCABULARY SIZE — ACTUAL vs PADDED</div>
-  <div class="vocab-wrap">
-    <div class="vocab-actual">
-      <div class="vocab-label">50,257 tokens</div>
-      <div class="vocab-note">Real BPE vocabulary — every token seen during training</div>
-    </div>
-    <div class="vocab-pad">
-      <div class="vocab-label">+47</div>
-      <div class="vocab-note">Phantom padding (never sampled)</div>
-    </div>
-  </div>
-  <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-top:6px;">50,304 = 786 × 64  →  full CUDA warp occupancy  →  ~25% faster LM head matmul</div>
-</div>
-
-<div class="deepdive">
-  <div class="deepdive-label">Deep Dive — Learn More</div>
-  <a href="https://arxiv.org/abs/2005.14165" target="_blank">↗ Language Models are Few-Shot Learners (GPT-3) — Brown et al. 2020. The paper that scaled embedding tables to 175B parameters and established the modern vocab/embed conventions.</a>
-  <a href="https://github.com/karpathy/nanoGPT/blob/master/model.py" target="_blank">↗ nanoGPT model.py — Karpathy. Line 108: vocab_size=50304. The canonical example of dimension padding for CUDA efficiency.</a>
-</div>
-
-<div class="cell" id="cell-2">
-  <div class="cell-header"><span class="cell-label">▶ Cosine similarity — embedding space geometry</span><button class="run-btn" onclick="runCell('cell-2')">▶ Run</button></div>
-  <div class="cell-code"><pre>import math, random
-random.seed(17)
-
-def cosine(a, b):
-    dot = sum(x*y for x,y in zip(a,b))
-    na = math.sqrt(sum(x*x for x in a))
-    nb = math.sqrt(sum(x*x for x in b))
-    return dot / (na * nb + 1e-9)
-
-# Simulate word embeddings in 8-dim space
-# In reality: 768-dim, trained on 40GB of text
-D = 8
-random.seed(99)
-
-# "Paris" and "London" should be close (both European capitals in context)
-paris  = [random.gauss(0.5, 0.1) for _ in range(D)]
-london = [p + random.gauss(0, 0.15) for p in paris]   # similar to Paris
-
-# "king" and "queen" — similar but shifted by a gender axis
-king  = [random.gauss(0, 0.3) for _ in range(D)]
-queen = [k + random.gauss(0.1, 0.05) for k in king]   # close to king
-
-# "photosynthesis" — unrelated to capitals
-photo = [random.gauss(0, 1.0) for _ in range(D)]      # random direction
-
-# "hot" and "cold" — antonyms, but same distributional context
-hot  = [random.gauss(0.8, 0.2) for _ in range(D)]
-cold = [h + random.gauss(0, 0.2) for h in hot]        # similar contexts!
-
-pairs = [
-    ("paris", "london",  paris, london),
-    ("king",  "queen",   king,  queen),
-    ("paris", "photo.",  paris, photo),
-    ("hot",   "cold",    hot,   cold),
-    ("paris", "king",    paris, king),
-]
-
-print(f"{'Word pair':>22}  {'Cosine sim':>12}  {'Interpretation'}")
-print("-"*65)
-for w1, w2, v1, v2 in pairs:
-    sim = cosine(v1, v2)
-    interp = "very similar" if sim > 0.9 else "similar" if sim > 0.7 else "unrelated" if sim < 0.2 else "different"
-    print(f"  {w1:>8} ↔ {w2:<8}  {sim:>12.4f}  {interp}")
-
-print()
-print("Counter-intuitive: 'hot' and 'cold' are close because they share")
-print("distributional contexts ('the temperature was very __', etc).")
-print("Embeddings capture context, not human-sense meaning.")
-print()
-# Vocab parameter count
-vocab, d = 50257, 768
-print(f"GPT-2 small embedding matrix: {vocab} × {d} = {vocab*d:,} parameters = {vocab*d/1e6:.1f}M")
-print(f"nanoGPT padded:               50304 × {d} = {50304*d:,} parameters = {50304*d/1e6:.1f}M")
-print(f"Extra from padding: {(50304-50257)*d:,} params, {(50304-50257)*d/1e6:.3f}M — negligible")</pre></div>
-  <div class="cell-output" id="cell-2-out">Click Run to execute.</div>
-</div>
+<p>Token embeddings convert discrete integer IDs into continuous vectors the transformer can process. The embedding matrix W<sub>E</sub> is a lookup table of shape [V, d_model] &mdash; GPT-2 small: [50,257 &times; 768] = <strong>38.6M parameters</strong> (31% of the model). After training, proximity in this space encodes semantic similarity: <code>king &minus; man + woman &asymp; queen</code>. Chapter 2 (&sect;2.10&ndash;2.12) covers embedding geometry, weight tying, and the full input pipeline in depth; here we focus on what matters for attention.</p>
+<p>The key fact for this chapter: the embedding table is a <strong>pure index lookup</strong> &mdash; no matrix multiply, no activation function. Each token ID selects a row, producing a (B, T, d_model) tensor that enters the residual stream. The model learns to encode both semantic meaning and distributional context in these vectors during training, creating the geometric structure that attention heads later exploit.</p>
+<div class="callout amber"><strong>Practical detail &mdash; vocabulary padding:</strong> nanoGPT pads vocabulary from 50,257 to 50,304 (nearest multiple of 64) for CUDA tensor core alignment, yielding ~25% speedup on the LM head matmul. See <a href="chapter2.html#s10">Chapter 2, &sect;2.10</a> for the full embedding parameter analysis.</div>
 
 <hr class="section-divider">
 </section>
@@ -509,17 +425,16 @@ print(f"Extra from padding: {(50304-50257)*d:,} params, {(50304-50257)*d/1e6:.3f
 <section class="section" id="s3">
 <div class="section-label">3.3</div>
 <h2>Positional Embeddings</h2>
-<p>Self-attention has no inherent notion of word order. The sentence "the cat sat on the mat" and "the mat sat on the cat" produce identical Q, K, V vectors if processed without position information — the model would predict the same next token from both. To break this symmetry, a positional vector is added to each token embedding before the first block.</p>
-<p>The original Vaswani et al. transformer used <strong>sinusoidal encodings</strong> — fixed functions of position and dimension. For position <em>pos</em> and dimension <em>i</em>:</p>
+<p>Self-attention is permutation-invariant &mdash; without position information, "the cat sat on the mat" and "the mat sat on the cat" produce identical representations. A positional vector is added to each token embedding before the first block. Chapter 2 (&sect;2.11) covers the four main approaches in depth; here we summarise what matters for the attention mechanism.</p>
+<p><strong>GPT-2</strong> uses learned absolute embeddings: a W<sub>PE</sub> matrix of shape [1024, 768] where each row is a trainable vector. <strong>LLaMA/Mistral</strong> use RoPE (Rotary Position Embeddings, Su et al. 2021): rotation matrices applied to Q and K vectors so that their dot product naturally encodes relative distance &mdash; covered in detail in &sect;3.13. The original <strong>Vaswani et al. 2017</strong> transformer used fixed sinusoidal encodings:</p>
 <div class="formula">
-  <span class="eq-label">SINUSOIDAL POSITIONAL ENCODING — VASWANI ET AL. 2017</span>
+  <span class="eq-label">SINUSOIDAL POSITIONAL ENCODING &mdash; VASWANI ET AL. 2017</span>
   PE(pos, 2i)    =  sin(pos / 10000^(2i / d_model))<br>
   PE(pos, 2i+1)  =  cos(pos / 10000^(2i / d_model))
   <span class="eq-note">Wavelengths range from 2π (dim 0, finest) to 10,000×2π (dim d_model/2, coarsest) — log-spaced over the full range</span>
 </div>
 <p>Why base 10,000? The wavelengths form a geometric progression from 2π ≈ 6.28 positions (dimension 0) to 62,832 positions (dimension d_model/2). This log-spaced distribution means the model can distinguish nearby tokens (via fast-frequency dimensions) and track long-range position (via slow-frequency dimensions) simultaneously from the same encoding.</p>
 <p>The sinusoidal choice has a remarkable mathematical property: for any fixed offset k, <strong>PE(pos+k) is a linear function of PE(pos)</strong>. There exists a rotation matrix R_k (block-diagonal, 2×2 rotations in each dimension pair) such that PE(pos+k) = R_k · PE(pos). This means the model can learn to attend to "k positions ahead" by learning a linear transformation of positional encodings — relative position is encoded in a linearly accessible way.</p>
-<p><strong>GPT-2 uses learned absolute embeddings</strong> instead: a separate W_PE matrix of shape [1024, 768] where each row is a trainable vector for that position. This costs 1024 × 768 = 786,432 parameters (less than 1% of total) but cannot extrapolate to sequences longer than the training context. Modern architectures (LLaMA, Mistral) use <strong>RoPE</strong> (Rotary Positional Embeddings) — a hybrid that rotates Q and K vectors directly by the position angle, enabling relative position awareness and extrapolation beyond the training length.</p>
 
 <div class="callout green"><strong>Key insight:</strong> Sinusoidal PE's base 10,000 is not arbitrary — it's chosen so that, at the maximum training length (512 tokens for the original transformer), the slowest-frequency dimension completes only ~0.05 of a full cycle. This ensures all dimensions still distinguish positions meaningfully, rather than repeating. The same principle scales: LLaMA-3 uses base 500,000 to handle 128K+ context windows.</div>
 
@@ -762,7 +677,7 @@ print("Try replacing `raw` with [1.0, 2.0, 3.0] to see normalisation on small va
 </div>
 
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">qkv_projections.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">qkv_projections.py</span><a href="https://colab.research.google.com/#create=true" target="_blank" class="code-colab" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="cm"># Inside CausalSelfAttention.__init__:</span>
 <span class="pr">self</span>.c_attn = nn.<span class="fn">Linear</span>(config.n_embd, <span class="nu">3</span> * config.n_embd, bias=config.bias)
 <span class="lm"># ↑ A SINGLE linear that produces Q, K, and V concatenated.
@@ -1001,7 +916,7 @@ print(f"  Softmax scaled:{[round(p,4) for p in softmax(scores_scaled)]}")</pre><
 </div>
 
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">nanogpt_mha_forward.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">nanogpt_mha_forward.py</span><a href="https://colab.research.google.com/#create=true" target="_blank" class="code-colab" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="kw">def</span> <span class="fn">forward</span>(<span class="pr">self</span>, x):
     B, T, C = x.<span class="fn">size</span>()  <span class="cm"># batch, sequence length, embedding dim (768)</span>
     <span class="lm">                      # ↑ x is the residual stream: [B, T, 768]</span>
@@ -1215,7 +1130,7 @@ print("  exp(-inf) = 0  (exact, but can cause NaN in edge cases)")</pre></div>
 <p>In nanoGPT, Flash Attention is one line:</p>
 
 <div class="code-block">
-  <div class="code-header"><span class="code-filename">nanogpt_flash.py</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+  <div class="code-header"><span class="code-filename">nanogpt_flash.py</span><a href="https://colab.research.google.com/#create=true" target="_blank" class="code-colab" style="font-size:11px;color:var(--blue);margin-right:10px;text-decoration:none;opacity:.7;">Open in Colab &#8599;</a><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
 <pre><code><span class="cm"># nanoGPT — the entire attention computation (replaces ~20 lines of manual code)</span>
 y = torch.nn.functional.<span class="fn">scaled_dot_product_attention</span>(
     q, k, v,
