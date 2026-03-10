@@ -26,10 +26,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,244,
 .hd h1 em{color:var(--accent);font-style:normal}
 .hd .sub{color:var(--dim);max-width:560px;margin-bottom:18px;font-size:14.5px}
 .hd-links{display:flex;gap:8px;flex-wrap:wrap}
-.hd-showcase{margin-top:14px}
-.hd-showcase p{font-size:14px;color:var(--dim);line-height:1.8}
-.hd-showcase a{color:var(--accent);font-weight:500;border-bottom:1px solid transparent;transition:border-color .15s}
-.hd-showcase a:hover{border-bottom-color:var(--accent)}
+.hd-showcase{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.hd-showcase .row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.hd-showcase .row span{font-size:14.5px;color:var(--text);font-weight:500}
+.hd-showcase .row a{font-size:13px;font-weight:600;color:#fff;background:#7c3aed;padding:8px 20px;border-radius:6px;white-space:nowrap;transition:all .15s;letter-spacing:.01em}
+.hd-showcase .row a:hover{background:#6d28d9;transform:translateY(-1px);box-shadow:0 2px 8px rgba(124,58,237,.3)}
 .btn{padding:6px 16px;border-radius:5px;font-size:13px;font-weight:500;transition:all .15s;display:inline-block}
 .btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.85}
 .btn-s{border:1px solid var(--border);color:var(--dim)}.btn-s:hover{border-color:var(--accent);color:var(--accent)}
@@ -123,7 +124,11 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
       <a href="mailto:jace100233260@gmail.com" class="btn btn-p">Get in touch</a>
     </div>
     <div class="hd-showcase">
-      <p>I created a <a href="https://realsynth.xyz/" target="_blank">Synthetic Human</a> · I wrote a <a href="book/index.html">book on LLMs</a> · I code <a href="#">LLMs from scratch</a> · I code <a href="#">Neural Nets from scratch</a></p>
+      <div class="row"><span>I created a Synthetic Human</span><a href="https://realsynth.xyz/" target="_blank">See it live →</a></div>
+      <div class="row"><span>I wrote a book on LLMs</span><a href="book/index.html">Read it →</a></div>
+      <div class="row"><span>I code LLMs from scratch</span><a href="#">See how →</a></div>
+      <div class="row"><span>I code Neural Nets from scratch</span><a href="#">See how →</a></div>
+      <div class="row"><span>I code Transformers from scratch</span><a href="#">See how →</a></div>
     </div>
   </div>
 
