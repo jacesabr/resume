@@ -25,7 +25,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,244,
 .hd h1{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:5px}
 .hd h1 em{color:var(--accent);font-style:normal}
 .hd .sub{color:var(--dim);max-width:560px;margin-bottom:14px;font-size:14.5px}
-.hd-links{display:flex;gap:8px;flex-wrap:wrap}
 /* Showcase grid */
 .sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:14px}
 .sc-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;display:block;transition:border-color .15s,transform .15s}
@@ -36,9 +35,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,244,
 .sc-desc{font-size:12.5px;color:var(--dim);line-height:1.6;margin-bottom:8px}
 .sc-tags{display:flex;flex-wrap:wrap;gap:4px}
 .sc-tag{font-size:10.5px;padding:2px 7px;border-radius:3px;background:rgba(194,105,74,.08);color:var(--accent);font-weight:500;letter-spacing:.02em}
-.btn{padding:6px 16px;border-radius:5px;font-size:13px;font-weight:500;transition:all .15s;display:inline-block}
-.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.85}
-.btn-s{border:1px solid var(--border);color:var(--dim)}.btn-s:hover{border-color:var(--accent);color:var(--accent)}
 
 /* Section */
 sec{display:block}
@@ -83,7 +79,6 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <div class="logo">Jace<em>.</em></div>
   <div class="nav-r">
     <a href="#showcase">Showcase</a>
-    <a href="#expertise">Expertise</a>
     <a href="#contact">Contact</a>
     <a href="mailto:jacesabr@gmail.com" class="nav-cta">Get in touch</a>
   </div>
@@ -95,34 +90,27 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <div class="hd">
     <h1><em>Jace Sabr</em> — AI Consultant</h1>
     <p class="sub">Working globally.</p>
-    <div class="hd-links">
-      <a href="mailto:jacesabr@gmail.com" class="btn btn-p">Get in touch</a>
-    </div>
   </div>
 
-  <!-- Consulting -->
-  <div class="sec" id="consulting">
-    <div class="sec-label">Consulting</div>
-    <h2>AI Advisory</h2>
-    <p>I work with startups, small businesses, and governments — building AI systems that fit, from quick prototypes for a five-person team to national-scale rollouts. Model choice, deployment, compliance, and training the people who'll actually use it.</p>
-  </div>
-
-  <!-- Expertise -->
-  <div class="sec" id="expertise">
-    <div class="sec-label">Expertise</div>
-    <h2>Technical Skills</h2>
-    <div class="two" style="margin-top:12px">
+  <!-- Advisory + Skills (split) -->
+  <div class="sec" id="advisory">
+    <div class="two">
       <div>
-        <p style="font-weight:500;color:var(--text);font-size:13.5px;margin-bottom:6px">LLM &amp; AI</p>
+        <div class="sec-label">Consulting</div>
+        <h2>AI Advisory</h2>
+        <p>I work with startups, small businesses, and governments — building AI systems that fit, from quick prototypes for a five-person team to national-scale rollouts. Model choice, deployment, compliance, and training the people who'll actually use it.</p>
+      </div>
+      <div>
+        <div class="sec-label">Expertise</div>
+        <h2>Technical Skills</h2>
+        <p style="font-weight:500;color:var(--text);font-size:13px;margin-bottom:4px;margin-top:6px">LLM &amp; AI</p>
         <ul class="list">
           <li>LLM fine-tuning (LoRA, QLoRA, SFT, DPO)</li>
           <li>RAG, memory architecture, retrieval systems</li>
           <li>Prompt engineering and safety</li>
           <li>vLLM, llama.cpp, HuggingFace, Venice AI</li>
         </ul>
-      </div>
-      <div>
-        <p style="font-weight:500;color:var(--text);font-size:13.5px;margin-bottom:6px">Engineering</p>
+        <p style="font-weight:500;color:var(--text);font-size:13px;margin-bottom:4px;margin-top:10px">Engineering</p>
         <ul class="list">
           <li>MERN stack — React, Node.js, MongoDB, Express</li>
           <li>REST APIs, SSE streaming, JWT auth</li>
