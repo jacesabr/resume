@@ -63,10 +63,6 @@ sec{display:block}
 .pill:hover{border-color:var(--accent);color:var(--text)}
 .pill .n{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);min-width:22px}
 
-/* Tags */
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.tag{font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);color:var(--dim)}
-
 /* Contact */
 .contact{text-align:center;padding:3rem 0 1rem}
 .contact h2{font-size:18px;font-weight:600;margin-bottom:6px}
@@ -86,7 +82,6 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 <nav>
   <div class="logo">Jace<em>.</em></div>
   <div class="nav-r">
-    <a href="#morrigan">Morrigan</a>
     <a href="#showcase">Showcase</a>
     <a href="#expertise">Expertise</a>
     <a href="#contact">Contact</a>
@@ -110,14 +105,6 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
     <div class="sec-label">Consulting</div>
     <h2>AI Advisory</h2>
     <p>I work with startups, small businesses, and governments — building AI systems that fit, from quick prototypes for a five-person team to national-scale rollouts. Model choice, deployment, compliance, and training the people who'll actually use it.</p>
-  </div>
-
-  <!-- Morrigan -->
-  <div class="sec" id="morrigan">
-    <div class="sec-label">Flagship</div>
-    <h2>Morrigan — Synthetic Human</h2>
-    <p>An AI companion that remembers conversations, builds trust over time, has its own inner thoughts, and pushes back when she disagrees. Built from scratch on a fine-tuned LLaMA 3.</p>
-    <a href="https://uncensored-ai.onrender.com/" target="_blank" class="btn btn-p" style="margin-top:4px">Try Morrigan live →</a>
   </div>
 
   <!-- Expertise -->
@@ -149,9 +136,14 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
   <!-- Showcase -->
   <div class="sec" id="showcase">
     <div class="sec-label">Showcase</div>
-    <h2>Builds &amp; Notebooks</h2>
-    <p>Self-contained projects and Colab notebooks — small things I build to sharpen the tools.</p>
+    <h2>Projects &amp; Notebooks</h2>
+    <p>Builds, full products, and Colab notebooks — from flagship work to small experiments.</p>
     <div class="sc-grid">
+      <a href="https://uncensored-ai.onrender.com/" target="_blank" class="sc-card">
+        <div class="sc-title">Morrigan — Synthetic Human <span class="sc-arrow">→</span></div>
+        <div class="sc-desc">AI companion that remembers, builds trust over time, has inner thoughts, and pushes back when she disagrees. Built on fine-tuned LLaMA 3.</div>
+        <div class="sc-tags"><span class="sc-tag">Flagship</span><span class="sc-tag">LLaMA 3</span></div>
+      </a>
       <a href="https://colab.research.google.com/drive/1EHl74ZNGO84glJvspE8-PRhyEU9Qx4vJ" target="_blank" class="sc-card">
         <div class="sc-title">LLM From Scratch <span class="sc-arrow">→</span></div>
         <div class="sc-desc">Tokenizer, attention, and GPT pretraining built up from primitives in a single Colab.</div>
@@ -204,39 +196,6 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
       <a href="resnet.html" class="pill"><span class="n">DL6</span>ResNets &amp; Skip Connections</a>
       <a href="reinforcement-learning.html" class="pill"><span class="n">DL7</span>Reinforcement Learning</a>
       <a href="diffusion-models.html" class="pill"><span class="n">DL8</span>Diffusion Models</a>
-    </div>
-  </div>
-
-  <!-- Projects -->
-  <div class="sec" id="projects">
-    <div class="sec-label">Case Studies</div>
-    <h2>Applied Projects</h2>
-    <div class="two" style="margin-top:12px">
-      <a href="ny-session-prediction.html" class="pill" style="display:block;padding:12px 14px;height:auto">
-        <div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:3px">NY Session Price Direction</div>
-        <div style="font-size:12px;color:var(--dim)">Binary prediction using pre-market features — feature engineering, model comparison, backtesting.</div>
-        <div class="tags"><span class="tag">Trading</span><span class="tag">ML</span></div>
-      </a>
-      <a href="credit-card-fraud.html" class="pill" style="display:block;padding:12px 14px;height:auto">
-        <div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:3px">Credit Card Fraud Detection</div>
-        <div style="font-size:12px;color:var(--dim)">492 fraudulent in 284,807 transactions — extreme class imbalance, SMOTE, the accuracy trap.</div>
-        <div class="tags"><span class="tag">Finance</span><span class="tag">Classification</span></div>
-      </a>
-      <a href="ad-targeting.html" class="pill" style="display:block;padding:12px 14px;height:auto">
-        <div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:3px">Ad Targeting &amp; CTR Prediction</div>
-        <div style="font-size:12px;color:var(--dim)">LR baseline, LightGBM, Wide &amp; Deep, position bias, A/B testing at scale.</div>
-        <div class="tags"><span class="tag">Ads</span><span class="tag">Deep Learning</span></div>
-      </a>
-      <a href="video-recommendation.html" class="pill" style="display:block;padding:12px 14px;height:auto">
-        <div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:3px">Video Recommendation Engine</div>
-        <div style="font-size:12px;color:var(--dim)">Collaborative filtering, Two-Tower model, cold start, filter bubble problem.</div>
-        <div class="tags"><span class="tag">RecSys</span><span class="tag">Two-Stage</span></div>
-      </a>
-      <a href="https://punjab-events-production.up.railway.app/" target="_blank" class="pill" style="display:block;padding:12px 14px;height:auto">
-        <div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:3px">Punjab Events Aggregator</div>
-        <div style="font-size:12px;color:var(--dim)">Scrapes 9+ sources, LLM-powered extraction via Claude API, 3-pass dedup pipeline, geo-filtered REST API with MongoDB 2dsphere indexes.</div>
-        <div class="tags"><span class="tag">Full-Stack</span><span class="tag">LLM</span><span class="tag">Scraping</span></div>
-      </a>
     </div>
   </div>
 
