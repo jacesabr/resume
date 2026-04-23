@@ -57,31 +57,6 @@ sec{display:block}
 /* Two col */
 .two{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:16px}
 
-/* Morrigan block */
-.morrigan{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:14px}
-.m-top{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.m-top h3{font-size:14px;font-weight:600}
-.m-top .sub{font-size:12px;color:var(--dim);margin-top:1px}
-.m-link{font-size:12.5px;font-weight:500;color:var(--accent);white-space:nowrap}
-.m-desc{padding:12px 18px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--dim);line-height:1.7;background:rgba(194,105,74,.04)}
-.m-body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
-.m-col{padding:14px 18px}
-.m-col:first-child{border-right:1px solid var(--border)}
-.m-col .lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.m-col ul{list-style:none}
-.m-col li{font-size:12.5px;color:var(--dim);padding:2px 0;padding-left:12px;position:relative}
-.m-col li::before{content:"·";color:var(--accent);position:absolute;left:0}
-.m-stack{display:flex;gap:0;border-top:0}
-.m-stack span{flex:1;padding:9px 6px;text-align:center;font-size:11px;color:var(--dim);border-right:1px solid var(--border)}
-.m-stack span:last-child{border-right:none}
-.m-stack b{display:block;font-size:11.5px;font-weight:500;color:var(--text);margin-bottom:1px}
-
-/* Book */
-.book-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:14px}
-.book-row h3{font-size:14px;font-weight:600;margin-bottom:3px}
-.book-row p{font-size:13px;color:var(--dim)}
-.book-meta{font-size:11.5px;color:var(--muted);margin-top:4px}
-
 /* Pills grid */
 .pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px;margin-top:12px}
 .pill{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:8px 12px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px;transition:border-color .15s}
@@ -103,7 +78,7 @@ sec{display:block}
 
 footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--muted);font-size:11.5px}
 
-@media(max-width:640px){.nav-r a:not(.nav-cta){display:none}.two,.m-body{grid-template-columns:1fr}.m-col:first-child{border-right:none;border-bottom:1px solid var(--border)}.book-row{flex-direction:column;align-items:flex-start}.m-stack{flex-wrap:wrap}.m-stack span{min-width:33%}}
+@media(max-width:640px){.nav-r a:not(.nav-cta){display:none}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -123,55 +98,26 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 
   <!-- Header -->
   <div class="hd">
-    <h1><em>Jace Sabr</em> — AI Consultant &amp; Author</h1>
+    <h1><em>Jace Sabr</em> — AI Consultant</h1>
     <p class="sub">Working globally.</p>
     <div class="hd-links">
       <a href="mailto:jacesabr@gmail.com" class="btn btn-p">Get in touch</a>
-      <a href="https://uncensored-ai.onrender.com/" target="_blank" class="btn btn-s">See Morrigan live →</a>
     </div>
   </div>
 
   <!-- Consulting -->
   <div class="sec" id="consulting">
     <div class="sec-label">Consulting</div>
-    <h2>End-to-End AI Advisory</h2>
-    <p>Strategy through implementation — LLM selection, fine-tuning, deployment, governance, and regulatory alignment (EU AI Act, GCC). Vendor evaluation, staff training, and cross-departmental integration at national scale.</p>
+    <h2>AI Advisory</h2>
+    <p>I help governments and large companies pick, build, and roll out AI systems — from choosing the right model to keeping it compliant and training the team to use it.</p>
   </div>
 
   <!-- Morrigan -->
   <div class="sec" id="morrigan">
-    <div class="sec-label">Flagship Project</div>
-    <h2>Morrigan — Cognitive Architecture for a Synthetic Human</h2>
-    <p>Full-stack AI companion built from scratch — persistent memory, trust progression, inner thought pipeline, and self-initiated conversation. Fine-tuned LLaMA 3, MERN, Railway.</p>
-    <div class="morrigan">
-      <div class="m-top">
-        <div>
-          <h3>Unleashed AI</h3>
-          <div class="sub">She remembers, contradicts herself, earns trust, and pushes back.</div>
-        </div>
-        <a href="https://uncensored-ai.onrender.com/" target="_blank" class="m-link">Live →</a>
-      </div>
-      <div class="m-body">
-        <div class="m-col">
-          <div class="lbl">Capabilities</div>
-          <ul>
-            <li>Ebbinghaus memory decay + cosine retrieval</li>
-            <li>7-level trust with depth-gated personality</li>
-            <li>Inner thought pipeline (generate → score → compose)</li>
-            <li>Somatic marker + anti-sycophancy guard</li>
-          </ul>
-        </div>
-        <div class="m-col">
-          <div class="lbl">Architecture</div>
-          <ul>
-            <li>13-layer dynamic prompt assembly</li>
-            <li>99 personality atoms across 4 depth tiers</li>
-            <li>Functional Theory of Mind + LIWC-22 analysis</li>
-            <li>Contradiction classifier + milestone detection</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <div class="sec-label">Flagship</div>
+    <h2>Morrigan — Synthetic Human</h2>
+    <p>An AI companion that remembers conversations, builds trust over time, has its own inner thoughts, and pushes back when she disagrees. Built from scratch on a fine-tuned LLaMA 3.</p>
+    <a href="https://uncensored-ai.onrender.com/" target="_blank" class="btn btn-p" style="margin-top:4px">Try Morrigan live →</a>
   </div>
 
   <!-- Expertise -->
@@ -322,6 +268,6 @@ footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color
 
 </div>
 
-<footer>© 2026 Jace Sabr · AI Consultant &amp; Author · GCC-based, working globally</footer>
+<footer>© 2026 Jace Sabr · AI Consultant · Working globally</footer>
 </body>
 </html>
